@@ -25,22 +25,22 @@ include_once("../../../inc/functions.php");		// загружаем функци�
 include_once("../../../inc/login.php");		// загружаем функции
 
 
-$blibase=_POST('blibase');
-$pdata=_POST('pdata');
+$blibase=PostDef('blibase');
+$pdata=PostDef('pdata');
 
 $arr=  explode("\n", $pdata);
-
+//var_dump($arr);
 foreach ($arr as $value) {
     $st=$value;
-    $arr2=  explode("\t", $st);
+    $arr2=  explode(";", $st);
     $mobile="";
     $smstxt="";
     if (isset($arr2[0])) $mobile=$arr2[0];
     if (isset($arr2[1])) $smstxt=$arr2[1];
     if ($smstxt!=""){
         if ($mobile[0]=="8"){$mobile[0]="7";};
-        $SQL = "INSERT INTO smslist (mobile,smstxt,status) VALUES ('$mobile','$smstxt','')";        
-        $result = $sqlcn->ExecuteSQL( $SQL ) or die("Не могу добавить агента!".mysqli_error($sqlcn->idsqlconnection));
+        $SQL = "INSERT INTO sms_by_list (mobile,smstxt,status) VALUES ('$mobile','$smstxt','')";        
+        $result = $sqlcn->ExecuteSQL( $SQL ) or die("Не могу добавить текст СМС!".mysqli_error($sqlcn->idsqlconnection));
     };
 
 }

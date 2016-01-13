@@ -92,7 +92,7 @@ jQuery("#workmen").jqGrid({
                 searchoptions:{dataUrl: 'controller/server/common/getlistorgs.php?addnone=true'}},
                 {name:'placename',index:'placename', width:150,search: false},
    		{name:'groupnomename',index:'groupnomename', width:150,stype:'select',
-                    searchoptions:{dataUrl: 'controller/server/equipment/getlistgroupname.php?addnone=true'}},
+                    searchoptions:{dataUrl: route + 'controller/server/equipment/getlistgroupname.php?addnone=true'}},
                 {name:'idnome',index:'idnome', width:50},
                 {name:'invnum',index:'invnum', width:100},
    		{name:'nomename',index:'nomename', width:200},
@@ -101,7 +101,7 @@ jQuery("#workmen").jqGrid({
                 {name:'byear',index:'byear', width:50,search: false}		
    	],
         onSelectRow: function(ids) {        
-         $("#photoid").load("controller/server/equipment/getphoto.php?eqid="+ids);         
+         $("#photoid").load(route + "controller/server/equipment/getphoto.php?eqid="+ids);         
                 //$('#tbl_rep').jqGrid('GridUnload');
                 $.jgrid.gridUnload("#tbl_rep");
                 jQuery("#tbl_rep").jqGrid('setGridParam',{url:"controller/server/equipment/getrepinfo.php?eqid="+ids});              
@@ -110,7 +110,7 @@ jQuery("#workmen").jqGrid({
                      datatype: "json",
                      colNames:['Id','Дата начала','Дата окончания','Организация','Стоимость','Комментарий','Статус','Отправитель','Получатель','Документ',''],
                      colModel:[
-                     	{name:'id',index:'id', width:25,editable:false},
+                     	{name:'id',index:'id', width:25,editable:false,hidden:true},
                         {name:'dt',index:'dt', width:95,editable:true,sorttype:"date",editoptions:{size:20, 
                                 dataInit:function(el){ 
                                     vl=$(el).val();
@@ -159,6 +159,7 @@ jQuery("#workmen").jqGrid({
                         jQuery("#tbl_rep").jqGrid('navGrid','#rp_nav',{edit:false,add:false,del:false,search:false});                     
                         jQuery("#tbl_rep").jqGrid('navButtonAdd','#rp_nav',{caption:"<img src='controller/client/themes/"+theme+"/ico/computer_edit.png'>",                              
                         title: "Изменить статус ремонта",
+                        buttonicon: 'none',
                             onClickButton:function(){
                                 var id = jQuery("#tbl_rep").jqGrid('getGridParam','selrow');
                                     if (id)	{ 
@@ -171,6 +172,7 @@ jQuery("#workmen").jqGrid({
                         });                         
                         jQuery("#tbl_rep").jqGrid('navButtonAdd',"#rp_nav",{caption:"<img src='controller/client/themes/"+theme+"/ico/disk.png'>",                              
                             title: "Экспорт в Excel",
+                            buttonicon: 'none',
                                 onClickButton:function(){
                                      var id = jQuery("#workmen").jqGrid('getGridParam','selrow');
                                     if (id)	{ // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
@@ -182,8 +184,8 @@ jQuery("#workmen").jqGrid({
                         });         
          
         },
-        autowidth: true,
-        shrinkToFit: true,		
+	autowidth: true,
+	shrinkToFit: true,		
 	height: 200,	
    	grouping:true,
    	groupingView : {
@@ -194,8 +196,6 @@ jQuery("#workmen").jqGrid({
    	pager: '#workmen_footer',
    	sortname: 'orgname',
     viewrecords: true,
-    autowidth: true,
-    shrinkToFit: true,		    
     rowNum:1000,    
     scroll:1,
     sortorder: "asc",
@@ -207,6 +207,7 @@ jQuery("#workmen").jqGrid('filterToolbar',{stringResult: true,searchOnEnter : fa
 
 jQuery("#workmen").jqGrid('navButtonAdd','#workmen_footer',{caption:"<img src='controller/client/themes/"+theme+"/ico/computer_error.png'>",                              
 title: "Отдать в ремонт ТМЦ",
+buttonicon: 'none',
      onClickButton:function(){
                                 var id = jQuery("#workmen").jqGrid('getGridParam','selrow');
                                     if (id)	{ // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ

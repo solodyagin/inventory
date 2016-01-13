@@ -16,15 +16,21 @@ jQuery('#list2').jqGrid({
 		if (ids == null) {
 			ids = 0;
 			if (jQuery('#list3').jqGrid('getGridParam', 'records') > 0) {
-				jQuery('#list3').jqGrid('setGridParam', {url: 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid});
-				jQuery('#list3').jqGrid('setGridParam', {editurl: 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid})
-						.trigger('reloadGrid');
+				jQuery('#list3').jqGrid('setGridParam', {
+					url: route + 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+				});
+				jQuery('#list3').jqGrid('setGridParam', {
+					editurl: route + 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+				}).trigger('reloadGrid');
 				GetSubGrid();
 			}
 		} else {
-			jQuery('#list3').jqGrid('setGridParam', {url: 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid});
-			jQuery('#list3').jqGrid('setGridParam', {editurl: 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid})
-					.trigger('reloadGrid');
+			jQuery('#list3').jqGrid('setGridParam', {
+				url: route + 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+			});
+			jQuery('#list3').jqGrid('setGridParam', {
+				editurl: route + 'controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+			}).trigger('reloadGrid');
 			GetSubGrid();
 		}
 	},
@@ -70,7 +76,8 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controll
 			$('#add_edit').dialog('open');
 			$('#add_edit').load('controller/client/view/users/user_edit.php?id=' + gsr);
 		} else {
-			alert('Сначала выберите строку!');
+			//alert('Сначала выберите строку!');
+			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
 	}
 });
@@ -82,9 +89,10 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controll
 		if (gsr) {
 			$('#add_edit').dialog({autoOpen: false, height: 440, width: 550, modal: true, title: 'Редактирование профиля'});
 			$('#add_edit').dialog('open');
-			$('#add_edit').load('controller/client/view/users/profile_add_edit.php?userid=' + gsr);
+			$('#add_edit').load('index.php?route=/controller/client/view/users/profile_add_edit.php?userid=' + gsr);
 		} else {
-			alert('Сначала выберите строку!');
+			//alert('Сначала выберите строку!');
+			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
 	}
 });
@@ -97,7 +105,8 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controll
 			var s = jQuery('#list2').jqGrid('getGridParam', 'selarrrow');
 			newWin = window.open('inc/stikerprint.php?mass=' + s, 'printWindow');
 		} else {
-			alert('Сначала выберите строку!');
+			//alert('Сначала выберите строку!');
+			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
 	}
 });
@@ -109,7 +118,7 @@ function GetSubGrid() {
 	jQuery('#list3').jqGrid({
 		height: 100,
 		autowidth: true,
-		url: 'controller/server/users/usersroles.php?userid=',
+		url: route + 'controller/server/users/usersroles.php?userid=',
 		datatype: 'json',
 		colNames: ['Id', 'Роль', 'Действия'],
 		colModel: [

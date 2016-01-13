@@ -24,6 +24,12 @@ include_once(WUO_ROOT.'/class/sql.php'); // Класс работы с БД
 include_once(WUO_ROOT.'/class/config.php'); // Класс настроек
 include_once(WUO_ROOT.'/class/users.php'); // Класс работы с пользователями
 
+// Загружаем все что нужно для работы движка
+include_once(WUO_ROOT.'/inc/connect.php'); // Соединяемся с БД, получаем $mysql_base_id
+include_once(WUO_ROOT.'/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg
+include_once(WUO_ROOT.'/inc/functions.php'); // Загружаем функции
+include_once(WUO_ROOT.'/inc/login.php'); // Создаём пользователя $user
+
 // Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим
 if (isset($_GET['route'])) {
 	$uri = $_SERVER['REQUEST_URI'];
@@ -37,20 +43,18 @@ if (isset($_GET['route'])) {
 		}
 	}
 	// Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
-	list($route, $ps) = array_pad(explode('?', $uri, 2), 2, null);
-	$PARAMS = array();
-	if ($ps) {
-		parse_str($ps, $PARAMS);
+	list($route, $p) = array_pad(explode('?', $uri, 2), 2, null);
+	if ($p) {
+		parse_str($p, $PARAMS);
 	}
-	// Подключаем запрашиваемый скрипт
+	// Разрешаем подключать php-скрипты только из каталога /controller
+	if ((strpos($route, '/controller') !== 0) || (strpos($route, '..') !== false)) {
+		die("Запрещён доступ к '$route'");
+	}
+	// Подключаем запрашиваемый скрипт		
 	if (is_file(WUO_ROOT.$route)) {
-		// Загружаем классы
+		// Загружаем необходимые классы
 		include_once(WUO_ROOT.'/class/employees.php'); // Класс работы с профилем пользователя
-		// Загружаем все что нужно для работы движка
-		include_once(WUO_ROOT.'/inc/connect.php'); // Соединяемся с БД, получаем $mysql_base_id
-		include_once(WUO_ROOT.'/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg
-		include_once(WUO_ROOT.'/inc/functions.php'); // Загружаем функции
-		include_once(WUO_ROOT.'/inc/login.php'); // Создаём пользователя $user
 		// Разрешаем доступ только выполнившим вход пользователям
 		if ($user->id == '') {
 			die('Доступ ограничен');
@@ -68,12 +72,6 @@ include_once(WUO_ROOT.'/class/cconfig.php'); // Класс работы с по�
 include_once(WUO_ROOT.'/class/bp.php'); // Класс работы с БП
 include_once(WUO_ROOT.'/class/class.phpmailer.php'); // Класс управления почтой
 include_once(WUO_ROOT.'/class/menu.php'); // Класс работы с меню
-
-// Загружаем все что нужно для работы движка
-include_once(WUO_ROOT.'/inc/connect.php'); // Соединяемся с БД, получаем $mysql_base_id
-include_once(WUO_ROOT.'/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg
-include_once(WUO_ROOT.'/inc/functions.php'); // Загружаем функции
-include_once(WUO_ROOT.'/inc/login.php'); // Проверяем вход пользователя
 
 include_once(WUO_ROOT.'/inc/autorun.php'); // Запускаем сторонние скрипты
 
@@ -94,8 +92,6 @@ if (!is_file(WUO_ROOT."/modules/$content_page.php")) {
 } else {
 	include_once(WUO_ROOT."/modules/$content_page.php");
 }
-
-//$zz = "/controller/client/themes/$cfg->theme/$content_page.php";
 
 // Загружаем главный файл темы, который разруливает что отображать на экране
 include_once(WUO_ROOT."/controller/client/themes/$cfg->theme/index.php");

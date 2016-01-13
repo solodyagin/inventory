@@ -67,7 +67,7 @@ $(document).ready(function() {
                     $( "#dtpost" ).datepicker( "destroy" );
                     $("#pg_add_edit" ).html("");
                     $("#pg_add_edit" ).dialog( "destroy" );
-                    jQuery("#tbl_equpment").jqGrid().trigger('reloadGrid');
+                    jQuery("#tbl_equpment").jqGrid().trigger('reloadGrid');                    
                 };
                 
             }); 
@@ -331,7 +331,7 @@ examples.push(function (){
         };        
     };
     function GetListPlaces(orgid,placesid){
-       url="controller/server/common/getlistplaces.php?orgid="+orgid+"&placesid="+placesid;
+       url= route + "controller/server/common/getlistplaces.php?orgid="+orgid+"&placesid="+placesid;
        $("#splaces").load(url);
        UpdateChosen();
     };
@@ -341,7 +341,7 @@ examples.push(function (){
      UpdateChosen();
     };
     function GetListGroups(groupid){
-      $("#sgroups").load("controller/server/common/getlistgroupname.php?groupid="+groupid);
+      $("#sgroups").load(route + "controller/server/common/getlistgroupname.php?groupid="+groupid);
       UpdateChosen();
     };
     function GetListNome(groupid,vendorid,nmd){
@@ -361,7 +361,8 @@ examples.push(function (){
      			success: function(answ){
        			$("#svendors").html(answ);
        			GetListNome($("#sgroupname :selected").val(),$("#svendid :selected").val(),nomeid);
-			      $("#svendid").click(function(){
+			//      $("#svendid").click(function(){
+                        $('#svendid').on('change', function(evt, params) {                                                  
 			          $("#snomes").html="идет загрузка.."; // заглушка. Зачем?? каналы счас быстрые
 				      GetListNome($("#sgroupname :selected").val(),$("#svendid :selected").val());
 				    });
@@ -402,6 +403,7 @@ examples.push(function (){
     // выбираем производителя по группе
     //$("#sgroupname").click(function(){        
     $('#sgroupname').on('change', function(evt, params) {                
+      console.log("--обработка выбора группы номенклатуры");  
       $("#svendors").html="идет загрузка.."; // заглушка. Зачем?? каналы счас быстрые
       GetListVendors($("#sgroupname :selected").val()); // перегружаем список vendors
     });
