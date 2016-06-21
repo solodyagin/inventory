@@ -211,12 +211,12 @@ function LoadTable() {
 			jQuery('#' + subgrid_table_id).remove();
 		},
 		subGrid: true,
-		multiselect: true,		
+		multiselect: true,
 		autowidth: true,
 		shrinkToFit: true,
 		pager: '#pg_nav',
 		sortname: 'equipment.id',
-		rowNum: 20,
+		rowNum: 40,
 		//loadonce: true,
 		//scroll: 1,
 		viewrecords: true,
@@ -224,7 +224,7 @@ function LoadTable() {
 		editurl: route + 'controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
 		caption: 'Оргтехника'
 	});
-	jQuery('#tbl_equpment').jqGrid('setGridHeight', $(window).innerHeight() / 3);
+	jQuery('#tbl_equpment').jqGrid('setGridHeight', $(window).innerHeight() - 285);
 	jQuery('#tbl_equpment').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 	jQuery('#tbl_equpment').jqGrid('bindKeys', '');
 	jQuery('#tbl_equpment').jqGrid('navGrid', '#pg_nav', {edit: false, add: false, del: false, search: false});
