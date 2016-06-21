@@ -234,7 +234,7 @@ function LoadTable() {
 		title: 'Выбор колонок',
 		buttonicon: 'none',
 		onClickButton: function() {
-			jQuery('#tbl_equpment').jqGrid('columnChooser');
+			jQuery('#tbl_equpment').jqGrid('columnChooser', {dialog_opts: {modal: true}});
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
