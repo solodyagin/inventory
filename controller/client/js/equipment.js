@@ -1,4 +1,4 @@
-$('#orgs').change(function() {
+$('#orgs').change(function () {
 	var exdate = new Date();
 	exdate.setDate(exdate.getDate() + 365);
 	orgid = $('#orgs :selected').val();
@@ -19,7 +19,7 @@ function LoadTable() {
 			'Производитель', 'Имя по бухгалтерии', 'Сер.№', 'Инв.№',
 			'Штрихкод', 'Организация', 'Мат.отв.', 'Оприходовано', 'Стоимость',
 			'Тек. стоимость', 'ОС', 'Списано', 'Карта', 'Комментарий', 'Ремонт',
-			'Гар.срок', 'Поставщик', ''],
+			'Гар.срок', 'Поставщик', 'Инструменты'],
 		colModel: [
 			{name: 'active', index: 'active', width: 20, search: false, frozen: true},
 			{name: 'equipment.id', index: 'equipment.id', width: 55, search: false, frozen: true, hidden: true},
@@ -31,7 +31,7 @@ function LoadTable() {
 				searchoptions: {dataUrl: route + 'controller/server/equipment/getlistgroupname.php?addnone=true'}},
 			{name: 'tmcgo', index: 'tmcgo', width: 80, search: true, stype: 'select',
 				searchoptions: {dataUrl: route + 'controller/server/equipment/getlisttmcgo.php?addnone=true'},
-				formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: 'Yes:No'}, editable: true,hiddem:true
+				formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: 'Yes:No'}, editable: true, hiddem: true
 			},
 			{name: 'getvendorandgroup.vendorname', index: 'getvendorandgroup.vendorname', width: 60},
 			{name: 'buhname', index: 'buhname', width: 155, editable: true},
@@ -58,7 +58,7 @@ function LoadTable() {
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions',
 				formatoptions: {keys: true}, search: false}
 		],
-		onSelectRow: function(ids) {
+		onSelectRow: function (ids) {
 			$('#photoid').load(route + 'controller/server/equipment/getphoto.php?eqid=' + ids);
 			jQuery('#tbl_move').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids});
 			jQuery('#tbl_move').jqGrid({
@@ -101,16 +101,16 @@ function LoadTable() {
 				]
 			});
 			//$('#tbl_rep').jqGrid('GridUnload');
-			$.jgrid.gridUnload("#tbl_rep");
-			jQuery("#tbl_rep").jqGrid('setGridParam', {url: 'controller/server/equipment/getrepinfo.php?eqid=' + ids});
-			jQuery("#tbl_rep").jqGrid({
+			$.jgrid.gridUnload('#tbl_rep');
+			jQuery('#tbl_rep').jqGrid('setGridParam', {url: 'controller/server/equipment/getrepinfo.php?eqid=' + ids});
+			jQuery('#tbl_rep').jqGrid({
 				url: 'controller/server/equipment/getrepinfo.php?eqid=' + ids,
 				datatype: 'json',
 				colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', ''],
 				colModel: [
 					{name: 'id', index: 'id', width: 25, editable: false},
-					{name: 'dt', index: 'dt', width: 95, editable: true, sorttype: "date", editoptions: {size: 20,
-							dataInit: function(el) {
+					{name: 'dt', index: 'dt', width: 95, editable: true, sorttype: 'date', editoptions: {size: 20,
+							dataInit: function (el) {
 								vl = $(el).val();
 								$(el).datepicker();
 								$(el).datepicker('option', 'dateFormat', 'dd.mm.yy');
@@ -118,7 +118,7 @@ function LoadTable() {
 							}}
 					},
 					{name: 'dtend', index: 'dtend', width: 95, editable: true, editoptions: {size: 20,
-							dataInit: function(el) {
+							dataInit: function (el) {
 								vl = $(el).val();
 								$(el).datepicker();
 								$(el).datepicker('option', 'dateFormat', 'dd.mm.yy');
@@ -127,7 +127,7 @@ function LoadTable() {
 					},
 					{name: 'kntname', index: 'kntname', width: 120},
 					{name: 'cost', index: 'cost', width: 80, editable: true, editoptions: {size: 20,
-							dataInit: function(el) {
+							dataInit: function (el) {
 								$(el).focus();
 							}}
 					},
@@ -136,7 +136,7 @@ function LoadTable() {
 						editoptions: {value: '1:Ремонт;0:Сделано'}},
 					{name: 'myac', width: 60, fixed: true, sortable: false, resize: false, formatter: 'actions',
 						formatoptions: {keys: true,
-							afterSave: function() {
+							afterSave: function () {
 								jQuery('#tbl_equpment').jqGrid().trigger('reloadGrid');
 							}
 						}}
@@ -157,7 +157,7 @@ function LoadTable() {
 				caption: '<img src="controller/client/themes/' + theme + '/ico/computer_error.png">',
 				title: 'Отдать в ремонт ТМЦ',
 				buttonicon: 'none',
-				onClickButton: function() {
+				onClickButton: function () {
 					var id = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
 					if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
 						jQuery('#tbl_equpment').jqGrid('getRowData', id);
@@ -172,7 +172,7 @@ function LoadTable() {
 			});
 
 		},
-		subGridRowExpanded: function(subgrid_id, row_id) {
+		subGridRowExpanded: function (subgrid_id, row_id) {
 			// we pass two parameters
 			// subgrid_id is a id of the div tag created whitin a table data
 			// the id of this elemenet is a combination of the "sg_" + id of the row
@@ -204,7 +204,7 @@ function LoadTable() {
 				height: 'auto'
 			});
 		},
-		subGridRowColapsed: function(subgrid_id, row_id) {
+		subGridRowColapsed: function (subgrid_id, row_id) {
 			// this function is called before removing the data
 			var subgrid_table_id;
 			subgrid_table_id = subgrid_id + '_t';
@@ -233,15 +233,25 @@ function LoadTable() {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/tag.png">',
 		title: 'Выбор колонок',
 		buttonicon: 'none',
-		onClickButton: function() {
-			jQuery('#tbl_equpment').jqGrid('columnChooser', {dialog_opts: {modal: true}});
+		onClickButton: function () {
+			jQuery('#tbl_equpment').jqGrid('columnChooser', {
+				width: 550,
+				dialog_opts: {
+					modal: true,
+					minWidth: 470,
+					height: 470
+				},
+				msel_opts: {
+					dividerLocation: 0.5
+				}
+			});
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_add.png">',
-		title: "Добавить ТМЦ",
+		title: 'Добавить ТМЦ',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
 			$('#pg_add_edit').dialog('open');
 			$('#pg_add_edit').load('controller/client/view/equipment/equipment.php?step=add&id=');
@@ -251,14 +261,13 @@ function LoadTable() {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_edit.png">',
 		title: 'Редактировать ТМЦ',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
 				$('#pg_add_edit').dialog('open');
 				$('#pg_add_edit').load('controller/client/view/equipment/equipment.php?step=edit&id=' + gsr);
 			} else {
-				//alert('Сначала выберите строку!');
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
@@ -267,23 +276,22 @@ function LoadTable() {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_go.png">',
 		title: 'Переместить ТМЦ',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 440, width: 620, modal: true, title: 'Перемещение имущества'});
 				$('#pg_add_edit').dialog('open');
 				$('#pg_add_edit').load('controller/client/view/equipment/move.php?step=move&id=' + gsr);
 			} else {
-				//alert('Сначала выберите строку!');
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
 	});
-	jQuery("#tbl_equpment").jqGrid('navButtonAdd', '#pg_nav', {
+	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_error.png">',
 		title: 'Отдать в ремонт ТМЦ',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			var id = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
 			if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
 				jQuery('#tbl_equpment').jqGrid('getRowData', id);
@@ -291,7 +299,6 @@ function LoadTable() {
 				$('#pg_add_edit').dialog('open');
 				$('#pg_add_edit').load('controller/client/view/equipment/repair.php?step=add&eqid=' + id);
 			} else {
-				//alert('Сначала выберите строку!');
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
@@ -300,14 +307,13 @@ function LoadTable() {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/table.png">',
 		title: 'Вывести штрихкоды ТМЦ',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				var s;
 				s = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selarrrow');
 				newWin = window.open('inc/ean13print.php?mass=' + s, 'printWindow');
 			} else {
-				//alert('Сначала выберите строку!');
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
@@ -316,7 +322,7 @@ function LoadTable() {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/report.png">',
 		title: 'Отчеты',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			newWin2 = window.open('?content_page=report_tmc', 'printWindow2');
 		}
 	});
@@ -324,7 +330,7 @@ function LoadTable() {
 		caption: '<img src="controller/client/themes/' + theme + '/ico/disk.png">',
 		title: 'Экспорт XML',
 		buttonicon: 'none',
-		onClickButton: function() {
+		onClickButton: function () {
 			newWin2 = window.open(route + 'controller/server/equipment/export_xml.php', 'printWindow4');
 		}
 	});
@@ -339,7 +345,7 @@ function GetListPlaces(orgid, placesid) {
 	$('#splaces').load(route + 'controller/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 	for (var selector in config) {
 		$(selector).chosen(config[selector]);
 	}

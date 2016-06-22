@@ -51,7 +51,7 @@ $.jgrid.regional["ro"] = {
 		caption: "Caută...",
 		Find: "Caută",
 		Reset: "Resetare",
-		odata: [{ oper:'eq', text:"egal"},{ oper:'ne', text:"diferit"},{ oper:'lt', text:"mai mic"},{ oper:'le', text:"mai mic sau egal"},{ oper:'gt', text:"mai mare"},{ oper:'ge', text:"mai mare sau egal"},{ oper:'bw', text:"începe cu"},{ oper:'bn', text:"nu începe cu"},{ oper:'in', text:"se găsește în"},{ oper:'ni', text:"nu se găsește în"},{ oper:'ew', text:"se termină cu"},{ oper:'en', text:"nu se termină cu"},{ oper:'cn', text:"conține"},{ oper:'nc', text:""},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}],
+		odata: [{ oper:'eq', text:"egal"},{ oper:'ne', text:"diferit"},{ oper:'lt', text:"mai mic"},{ oper:'le', text:"mai mic sau egal"},{ oper:'gt', text:"mai mare"},{ oper:'ge', text:"mai mare sau egal"},{ oper:'bw', text:"începe cu"},{ oper:'bn', text:"nu începe cu"},{ oper:'in', text:"se găsește în"},{ oper:'ni', text:"nu se găsește în"},{ oper:'ew', text:"se termină cu"},{ oper:'en', text:"nu se termină cu"},{ oper:'cn', text:"conține"},{ oper:'nc', text:""},{ oper:'nu', text:'is null'},{ oper:'nn', text:'is not null'}, {oper:'bt', text:'between'}],
 		groupOps: [	{ op: "AND", text: "toate" },	{ op: "OR",  text: "oricare" }	],
 		operandTitle : "Click to select search operation.",
 		resetTitle : "Reset Search Value"
@@ -174,6 +174,18 @@ $.jgrid.regional["ro"] = {
 		target: '',
 		checkbox : {disabled:true},
 		idName : 'id'
+	},
+	colmenu : {
+		sortasc : "Sort Ascending",
+		sortdesc : "Sort Descending",
+		columns : "Columns",
+		filter : "Filter",
+		grouping : "Group By",
+		ungrouping : "Ungroup",
+		searchTitle : "Get items with value that:",
+		freeze : "Freeze",
+		unfreeze : "Unfreeze",
+		reorder : "Move to reorder"
 	}
 };
 }));
