@@ -13,7 +13,6 @@ $this->Add("main","<i class='fa fa-list-ul fa-fw'> </i>Справочники","
 
 $this->Add("libre","<i class='fa fa-sitemap fa-fw'> </i>Список организаций","Список организаций",10,"libre/org_list","org_list");
 $this->Add("libre","<i class='fa fa-users fa-fw'> </i>Пользователи","Пользователи",10,"libre/pipl_list","pipl_list");
-$this->Add("libre","<i class='fa fa-user-plus fa-fw'> </i>Сотрудники","Сотрудники",10,"libre/dol_list","dol_list");
 $this->Add("libre","<i class='fa fa-location-arrow fa-fw'> </i>Помещения","Помещения",10,"libre/places","places");
 $this->Add("libre","<i class='fa fa-cogs fa-fw'> </i>Контрагенты","Контрагенты",10,"libre/knt_list","knt_list");
 
