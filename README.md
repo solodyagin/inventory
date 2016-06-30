@@ -2,18 +2,11 @@
 
 Система предназначена для учёта оргтехники в небольших организациях и будет полезна в основном инженерам IT отдела, ведущими учёт без фанатизма.
 
+Основным отличием от основной ветки проекта является "облегчение" системы  от модулей, не относящихся, по-моему мнению, к учёту оргтехники (например, таких как: "devicescontrol", "lanbilling", "smscenter", "worktime" и др.). Данная ветка не рекомендуется для обновления проекта взятого из основной ветки [donpadlo/webuseorg3](https://github.com/donpadlo/webuseorg3)
+
 Домашняя страница проекта: <a href="http://xn--90acbu5aj5f.xn--p1ai/?page_id=1202" target="_blank">http://грибовы.рф/?page_id=1202</a>
 
-DEMO: [http://demo.грибовы.рф/webuseorg3-master/index.php](http://demo.xn--90acbu5aj5f.xn--p1ai/webuseorg3-master/index.php)  
-Логин: `test`  
-Пароль: `test`  
-База обнуляется раз в час.
-
 Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn--p1ai/wiki/doku.php/start)
-
-Любые вопросы:  
-Skype: `pvtuning`  
-ICQ: `207074753`
 
 ### Требования
 1. Apache 2
