@@ -127,7 +127,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 						<h4 class="panel-title">Разработка</h4>
 					</div>
 					<div class="panel-body">
-						<iframe src="http://tylerlh.github.com/github-latest-commits-widget/?username=solodyagin&repo=webuseorg3&limit=5" allowtransparency="true" frameborder="0" scrolling="no" width="100%" height="250px"></iframe>
+						<iframe src="http://tylerlh.github.com/github-latest-commits-widget/?username=solodyagin&repo=webuseorg3_lite&limit=5" allowtransparency="true" frameborder="0" scrolling="no" width="100%" height="250px"></iframe>
 					</div>
 				</div>
 			<?php endif; ?>

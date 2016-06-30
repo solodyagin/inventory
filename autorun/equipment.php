@@ -7,5 +7,7 @@
 //   (добавляйте себя если что-то делали)
 // http://грибовы.рф
 
+defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+
 $cfg->quickmenu[] = '<div><a href="index.php?content_page=equipment">Имущество</a></div>';
 $cfg->quickmenu[] = '<div><a href="index.php?content_page=eq_list">ТМЦ на рабочем месте</a></div>';
