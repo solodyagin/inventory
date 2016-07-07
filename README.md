@@ -2,8 +2,8 @@
 
 Система предназначена для учёта оргтехники в небольших организациях и будет полезна в основном инженерам IT отдела, ведущими учёт без фанатизма.
 
-Основным отличием от [donpadlo/webuseorg3](https://github.com/donpadlo/webuseorg3) является "облегчение" системы  от модулей, не относящихся, по-моему мнению, к учёту оргтехники (например, таких как: "devicescontrol", "lanbilling", "smscenter", "worktime", "chat" и др.).
-Если Вы намерены использовать эти модули, то не рекомендуется обновлять webuserorg3 из этой ветки.
+Основным отличием от [donpadlo/webuseorg3](https://github.com/donpadlo/webuseorg3) является "облегчение" системы  от модулей, не относящихся, по-моему мнению, к учёту оргтехники (например, таких как: "astra", "bprocess", "cables", "chat", "devicescontrol", "ical", "lanbilling", "scriptalert", "smscenter", "worktime", "workandplans", "tasks", "userfaze", "zabbix-mon" и др.).
+> Если Вы намерены использовать эти модули, то не рекомендуется обновлять webuserorg3 из этой ветки.
 
 Домашняя страница проекта: <a href="http://xn--90acbu5aj5f.xn--p1ai/?page_id=1202" target="_blank">http://грибовы.рф/?page_id=1202</a>
 
