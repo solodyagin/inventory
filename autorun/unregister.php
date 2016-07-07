@@ -6,6 +6,24 @@ defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещае
 
 $mod = new Tmod;
 
+// Удаляем модуль astra - "Управление серверами Astra"
+$mod->UnRegister('astra');
+$result = $sqlcn->ExecuteSQL(<<<SQL
+SELECT table_name AS `name`
+FROM information_schema.tables
+WHERE table_schema = DATABASE() AND table_name LIKE "astra%";
+SQL
+		) or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+$rows = array();
+while ($row = mysqli_fetch_array($result)) {
+	$rows[] = $row['name'];
+}
+if (count($rows) > 0) {
+	$tables = implode(',', $rows);
+	$sqlcn->ExecuteSQL("DROP TABLE IF EXISTS $tables")
+			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+}
+
 // Удаляем модуль чата
 $mod->UnRegister('chat');
 $sqlcn->ExecuteSQL('DROP TABLE IF EXISTS `chat`')
@@ -30,6 +48,8 @@ if (count($rows) > 0) {
 	$sqlcn->ExecuteSQL("DROP TABLE IF EXISTS $tables")
 			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
 }
+$sqlcn->ExecuteSQL('DROP TABLE IF EXISTS `lbcfg`')
+		or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
 
 // Удаляем модуль zabbix-mon - "Мониторинг dashboard серверов Zabbix"
 $mod->UnRegister('zabbix-mon');
