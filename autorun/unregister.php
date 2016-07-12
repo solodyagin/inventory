@@ -42,6 +42,24 @@ if (count($rows) > 0) {
 			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
 }
 
+// Удаляем модуль cables - "Справочник кабелей и муфт"
+$mod->UnRegister('cables');
+$result = $sqlcn->ExecuteSQL(<<<SQL
+SELECT table_name AS `name`
+FROM information_schema.tables
+WHERE table_schema = DATABASE() AND table_name LIKE "lib_cable_%";
+SQL
+		) or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+$rows = array('lib_lines_in_muft');
+while ($row = mysqli_fetch_array($result)) {
+	$rows[] = $row['name'];
+}
+if (count($rows) > 0) {
+	$tables = implode(',', $rows);
+	$sqlcn->ExecuteSQL("DROP TABLE IF EXISTS $tables")
+			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+}
+
 // Удаляем модуль чата
 $mod->UnRegister('chat');
 $sqlcn->ExecuteSQL('DROP TABLE IF EXISTS `chat`')
