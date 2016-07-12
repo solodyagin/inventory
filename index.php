@@ -69,7 +69,6 @@ if (isset($_GET['route'])) {
 // Загружаем классы
 include_once(WUO_ROOT.'/class/mod.php'); // Класс работы с модулями
 include_once(WUO_ROOT.'/class/cconfig.php'); // Класс работы с пользовательскими настройками
-include_once(WUO_ROOT.'/class/bp.php'); // Класс работы с БП
 include_once(WUO_ROOT.'/class/class.phpmailer.php'); // Класс управления почтой
 include_once(WUO_ROOT.'/class/menu.php'); // Класс работы с меню
 
