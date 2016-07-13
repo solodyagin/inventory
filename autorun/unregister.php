@@ -95,6 +95,24 @@ if (count($tables) > 0) {
 			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
 }
 
+// Удаляем модуль smscenter - "СМС-Центр"
+$mod->UnRegister('smscenter');
+$tables = array();
+$result = $sqlcn->ExecuteSQL(<<<SQL
+SELECT table_name AS `name`
+FROM information_schema.tables
+WHERE table_schema = DATABASE() AND table_name LIKE "sms%";
+SQL
+		) or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+while ($row = mysqli_fetch_array($result)) {
+	$tables[] = $row['name'];
+}
+if (count($tables) > 0) {
+	$str = implode(',', $tables);
+	$sqlcn->ExecuteSQL("DROP TABLE IF EXISTS $str")
+			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+}
+
 // Удаляем модуль zabbix-mon - "Мониторинг dashboard серверов Zabbix"
 $mod->UnRegister('zabbix-mon');
 $sqlcn->ExecuteSQL('DROP TABLE IF EXISTS `zabbix_mod_cfg`')
