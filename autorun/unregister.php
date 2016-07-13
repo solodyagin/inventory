@@ -95,6 +95,15 @@ if (count($tables) > 0) {
 			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
 }
 
+// Удаляем модуль ical - "Календарь"
+$mod->UnRegister('ical');
+$tables = array('jqcalendar');
+if (count($tables) > 0) {
+	$str = implode(',', $tables);
+	$sqlcn->ExecuteSQL("DROP TABLE IF EXISTS $str")
+			or die('Неверный запрос: ' . mysqli_error($sqlcn->idsqlconnection));
+}
+
 // Удаляем модуль smscenter - "СМС-Центр"
 $mod->UnRegister('smscenter');
 $tables = array();

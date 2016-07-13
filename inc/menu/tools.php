@@ -13,11 +13,6 @@ $md = new Tmod; // обьявляем переменную для работы �
 
 $this->Add("main", "<i class='fa fa-cog fa-fw'> </i>Инструменты", "Инструменты", 3, "tools", "");
 
-$md->Register("ical", "Календарь", "Грибов Павел");
-if ($md->IsActive("ical") == 1) {
-	$this->Add("tools", "<i class='fa fa-calendar fa-fw'> </i>Мой календарь", "Мой календарь", 3, "tools/myical", "myical");
-}
-
 $md->Register("tasks", "Задачи", "Грибов Павел");
 if ($md->IsActive("tasks") == 1) {
 	$this->Add("tools", "<i class='fa fa-tasks fa-fw'> </i>Мои задачи", "Мои задачи", 3, "tools/mytasks", "mytasks");
