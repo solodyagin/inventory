@@ -1,17 +1,21 @@
 <?php
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 $morgs = GetArrayOrgs(); // список активный организаций
 $mhome = new Tmod;   // обьявляем переменную для работы с классом модуля
 $mhome->Register('news', 'Модуль новостей', 'Грибов Павел');
 $mhome->Register('stiknews', 'Закрепленные новости', 'Грибов Павел');
 $mhome->Register('lastmoved', 'Последние перемещения ТМЦ', 'Грибов Павел');
-$mhome->Register('usersfaze', 'Где сотрудник?', 'Грибов Павел');
 $mhome->Register('whoonline', 'Кто на сайте?', 'Грибов Павел');
 $mhome->Register('commits-widget', 'Виджет разработки на github.com на главной странице', 'Солодягин Сергей');
 ?>
@@ -52,29 +56,6 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					</div>
 				</div>
 				<!-- [/Новости] -->
-			<?php endif; ?>
-			<?php if ($mhome->IsActive('tasks') == 1): ?>
-				<!-- [Задачи] -->
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h4 class="panel-title">Постановка задачи</h4>
-					</div>
-					<div class="panel-body">
-						<?php include_once('tasks.php'); ?>
-					</div>
-				</div>
-				<!-- [/Задачи] -->
-			<?php endif; ?>
-			<?php if ($mhome->IsActive('usersfaze') == 1): ?>
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h4 class="panel-title">Состояние сотрудников</h4>
-					</div>
-					<div class="panel-body">
-						<div class="well" id="usersfazelist"></div>
-						<script src="controller/client/js/usersfazelist.js"></script>
-					</div>
-				</div>
 			<?php endif; ?>
 			<?php if ($mhome->IsActive('whoonline') == 1): ?>
 				<!-- [Кто онлайн] -->

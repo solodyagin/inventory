@@ -1,18 +1,18 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
-$page = GetDef('page');
-if (empty($page)) {
-	$page = 1;
-}
+$page = GetDef('page', '1');
 $limit = GetDef('rows');
 $sidx = GetDef('sidx', '1');
 $sord = GetDef('sord');
@@ -51,15 +51,15 @@ for ($i = 0; $i < $cnt; $i++) {
 	$data = $flt['rules'][$i]['data'];
 	if ($data != '-1') {
 		if (($field == 'placesid') or ( $field == 'getvendorandgroup.grnomeid')) {
-			$where = $where."($field = '$data')";
+			$where = $where . "($field = '$data')";
 		} else {
-			$where = $where."($field LIKE '%$data%')";
+			$where = $where . "($field LIKE '%$data%')";
 		}
 	} else {
-		$where = $where."($field LIKE '%%')";
+		$where = $where . "($field LIKE '%%')";
 	}
 	if ($i < ($cnt - 1)) {
-		$where = $where.' AND ';
+		$where = $where . ' AND ';
 	}
 }
 if ($where == '') {
@@ -72,8 +72,7 @@ if ($where == '') {
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
-
-	$sql = "SELECT COUNT(*) AS count, equipment.dtendgar,
+	$sql = "SELECT COUNT(*) AS cnt, equipment.dtendgar,
 		knt.name, getvendorandgroup.grnomeid, equipment.id AS eqid,
 		equipment.ip AS ip,
 		equipment.orgid AS eqorgid, org.name AS orgname,
@@ -98,7 +97,7 @@ if ($oper == '') {
 	LEFT JOIN knt ON knt.id = equipment.kntid $where";
 	$result = $sqlcn->ExecuteSQL($sql);
 	$row = mysqli_fetch_array($result);
-	$count = $row['count'];
+	$count = $row['cnt'];
 	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
 	if ($page > $total_pages) {
 		$page = $total_pages;
@@ -137,8 +136,8 @@ if ($oper == '') {
 	$where
 	ORDER BY $sidx $sord LIMIT $start, $limit";
 	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не получилось выбрать список оргтехники!'.
-					mysqli_error($sqlcn->idsqlconnection).' sql='.$SQL);
+			or die('Не получилось выбрать список оргтехники!' .
+					mysqli_error($sqlcn->idsqlconnection) . ' sql=' . $SQL);
 	$responce->page = $page;
 	$responce->total = $total_pages;
 	$responce->records = $count;
@@ -146,26 +145,22 @@ if ($oper == '') {
 	while ($row = mysqli_fetch_array($result)) {
 		$responce->rows[$i]['id'] = $row['eqid'];
 		if ($row['eqactive'] == '1') {
-			$active = '<img src="controller/client/themes/'.$cfg->theme.'/ico/accept.png">';
+			$active = '<i class="fa fa-check-circle" aria-hidden="true"></i>';
 		} else {
-			$active = '<img src="controller/client/themes/'.$cfg->theme.'/ico/cancel.png">';
+			$active = '<i class="fa fa-ban" aria-hidden="true"></i>';
 		}
 		if ($row['eqrepair'] == '1') {
-			$active = $active.'<img src="controller/client/themes/'.$cfg->theme.'/ico/error.png">';
+			$active = $active . '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>';
 		}
-
-		$os = ($row['os'] == 0) ? 'No' : 'Yes';
-		$eqmode = ($row['eqmode'] == 0) ? 'No' : 'Yes';
-		$eqmapyet = ($row['eqmapyet'] == 0) ? 'No' : 'Yes';
-
+		$os = ($row['os'] == '0') ? 'No' : 'Yes';
+		$eqmode = ($row['eqmode'] == '0') ? 'No' : 'Yes';
+		$eqmapyet = ($row['eqmapyet'] == '0') ? 'No' : 'Yes';
 		$dtpost = MySQLDateTimeToDateTime($row['datepost']);
 		$dtendgar = MySQLDateToDate($row['dtendgar']);
-
-		$row['tmcgo'] = ($row['tmcgo'] == 0) ? 'No' : 'Yes';
-
+		$tmcgo = ($row['tmcgo'] == '0') ? 'No' : 'Yes';
 		$responce->rows[$i]['cell'] = array(
 			$active, $row['eqid'], $row['ip'], $row['placesname'],
-			$row['nomename'], $row['grnome'], $row['tmcgo'], $row['vname'],
+			$row['nomename'], $row['grnome'], $tmcgo, $row['vname'],
 			$row['buhname'], $row['sernum'], $row['invnum'], $row['shtrihkod'],
 			$row['orgname'], $row['fio'], $dtpost, $row['cost'],
 			$row['currentcost'], $os, $eqmode, $row['eqmapyet'],
@@ -179,37 +174,36 @@ if ($oper == '') {
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	$user->TestRoles('1,4') or die('Недостаточно прав');
-
-	$SQL = "INSERT INTO places (id,orgid,name,comment,active) VALUES (null,'$orgid','$name','$comment',1)";
+	$SQL = "INSERT INTO places (id, orgid, name, comment, active) VALUES (null, '$orgid', '$name', '$comment', 1)";
 	$sqlcn->ExecuteSQL($SQL)
-			or die('Не смог вставить оргтехнику!'.mysqli_error($sqlcn->idsqlconnection));
+			or die('Не смог вставить оргтехнику!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	$user->TestRoles('1,5') or die('Недостаточно прав');
-
 	$os = ($os == 'Yes') ? 1 : 0;
 	$tmcgo = ($tmcgo == 'Yes') ? 1 : 0;
 	$mode = ($mode == 'Yes') ? 1 : 0;
 	$mapyet = ($mapyet == 'Yes') ? 1 : 0;
 	$buhname = mysqli_real_escape_string($sqlcn->idsqlconnection, $buhname);
-	$SQL = "UPDATE equipment SET buhname='$buhname',sernum='$sernum',"
-			." invnum='$invnum',shtrihkod='$shtrihkod',cost='$cost',"
-			." currentcost='$currentcost',os='$os',mode='$mode',"
-			." mapyet='$mapyet',comment='$comment',tmcgo='$tmcgo' WHERE id='$id'";
+	$SQL = <<<TXT
+		UPDATE equipment SET buhname = '$buhname', sernum = '$sernum',
+		invnum = '$invnum', shtrihkod = '$shtrihkod', cost = '$cost',
+		currentcost = '$currentcost', os = '$os', mode = '$mode',
+		mapyet = '$mapyet', comment = '$comment', tmcgo = '$tmcgo' WHERE id = '$id';
+TXT;
 	$sqlcn->ExecuteSQL($SQL)
-			or die('Не смог обновить оргтехнику!'.mysqli_error($sqlcn->idsqlconnection));
+			or die('Не смог обновить оргтехнику!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Недостаточно прав');
-
-	$SQL = "UPDATE equipment SET active=not active WHERE id='$id'";
+	$SQL = "UPDATE equipment SET active = not active WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($SQL)
-			or die('Не смог пометить на удаление оргтехнику!'.mysqli_error($sqlcn->idsqlconnection));
+			or die('Не смог пометить на удаление оргтехнику!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

@@ -1,7 +1,7 @@
 jQuery('#list2').jqGrid({
 	url: route + 'controller/server/users/libre_users.php?org_status=list',
 	datatype: 'json',
-	colNames: [' ', 'Id', 'Организация', 'Логин', 'Пароль', 'E-mail', 'Админ', ''],
+	colNames: [' ', 'Id', 'Организация', 'Логин', 'Пароль', 'E-mail', 'Администратор', ''],
 	colModel: [
 		{name: 'active', index: 'active', width: 10, search: false},
 		{name: 'users.id', index: 'users.id', width: 55, hidden: true},
@@ -12,7 +12,7 @@ jQuery('#list2').jqGrid({
 		{name: 'mode', index: 'mode', width: 45, editable: true, edittype: 'checkbox', editoptions: {value: 'Да:Нет'}, search: false},
 		{name: 'myac', width: 60, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
 	],
-	onSelectRow: function(ids) {
+	onSelectRow: function (ids) {
 		if (ids == null) {
 			ids = 0;
 			if (jQuery('#list3').jqGrid('getGridParam', 'records') > 0) {
@@ -50,10 +50,10 @@ jQuery('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);
 jQuery('#list2').jqGrid('navGrid', '#pager2', {edit: false, add: false, del: false, search: false});
 jQuery('#list2').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
-	caption: '<img src="controller/client/themes/' + theme + '/ico/tag.png">',
+	caption: '<i class="fa fa-tag" aria-hidden="true"></i>',
 	title: 'Выбор колонок',
 	buttonicon: 'none',
-	onClickButton: function() {
+	onClickButton: function () {
 		jQuery('#list2').jqGrid('columnChooser', {
 			width: 550,
 			dialog_opts: {
@@ -67,55 +67,56 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 		});
 	}
 });
-jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controller/client/themes/' + theme + '/ico/user_add.png">',
+jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
+	caption: '<i class="fa fa-user-plus" aria-hidden="true"></i>',
 	title: 'Добавить',
 	buttonicon: 'none',
-	onClickButton: function() {
+	onClickButton: function () {
 		$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Добавление пользователя'});
 		$('#add_edit').dialog('open');
 		$('#add_edit').load('controller/client/view/users/user_add.php');
 	}
 });
-jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controller/client/themes/' + theme + '/ico/user_edit.png">',
+jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
+	caption: '<i class="fa fa-user-md" aria-hidden="true"></i>',
 	title: 'Изменить данные',
 	buttonicon: 'none',
-	onClickButton: function() {
+	onClickButton: function () {
 		var gsr = jQuery('#list2').jqGrid('getGridParam', 'selrow');
 		if (gsr) {
 			$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Редактирование пользователя'});
 			$('#add_edit').dialog('open');
 			$('#add_edit').load('controller/client/view/users/user_edit.php?id=' + gsr);
 		} else {
-			//alert('Сначала выберите строку!');
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
 	}
 });
-jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controller/client/themes/' + theme + '/ico/user_comment.png">',
+jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
+	caption: '<i class="fa fa-users" aria-hidden="true"></i>',
 	title: 'Профиль',
 	buttonicon: 'none',
-	onClickButton: function() {
+	onClickButton: function () {
 		var gsr = jQuery('#list2').jqGrid('getGridParam', 'selrow');
 		if (gsr) {
 			$('#add_edit').dialog({autoOpen: false, height: 440, width: 550, modal: true, title: 'Редактирование профиля'});
 			$('#add_edit').dialog('open');
 			$('#add_edit').load('index.php?route=/controller/client/view/users/profile_add_edit.php?userid=' + gsr);
 		} else {
-			//alert('Сначала выберите строку!');
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
 	}
 });
-jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {caption: '<img src="controller/client/themes/' + theme + '/ico/vcard.png">',
+jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
+	caption: '<i class="fa fa-credit-card" aria-hidden="true"></i>',
 	title: 'Бейджик',
 	buttonicon: 'none',
-	onClickButton: function() {
+	onClickButton: function () {
 		var gsr = jQuery('#list2').jqGrid('getGridParam', 'selrow');
 		if (gsr) {
 			var s = jQuery('#list2').jqGrid('getGridParam', 'selarrrow');
 			newWin = window.open('inc/stikerprint.php?mass=' + s, 'printWindow');
 		} else {
-			//alert('Сначала выберите строку!');
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
 	}

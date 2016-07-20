@@ -1,8 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Изначальный автор данного кода - Грибов Павел
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Tequipment {
 
@@ -36,6 +44,7 @@ class Tequipment {
 	 * @global type $sqlcn
 	 * @param type $id
 	 */
+
 	function GetById($id) {
 		global $sqlcn;
 		$SQL = "SELECT equipment.comment, equipment.mapyet,	equipment.mapmoved,
@@ -64,7 +73,7 @@ class Tequipment {
 		INNER JOIN users ON users.id = equipment.usersid
 		WHERE equipment.id='$id'";
 		$result = $sqlcn->ExecuteSQL($SQL)
-				or die('Неверный запрос Tequipment.GetById: '.mysqli_error($sqlcn->idsqlconnection));
+				or die('Неверный запрос Tequipment.GetById: ' . mysqli_error($sqlcn->idsqlconnection));
 		while ($myrow = mysqli_fetch_array($result)) {
 			$this->id = $myrow['eqid'];
 			$this->orgid = $myrow['eqorgid'];
@@ -94,5 +103,3 @@ class Tequipment {
 	}
 
 }
-
-?>

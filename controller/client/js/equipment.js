@@ -100,7 +100,6 @@ function LoadTable() {
 					{startColumnName: 'orgname2', numberOfColumns: 3, titleText: 'Куда'}
 				]
 			});
-			//$('#tbl_rep').jqGrid('GridUnload');
 			$.jgrid.gridUnload('#tbl_rep');
 			jQuery('#tbl_rep').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getrepinfo.php?eqid=' + ids});
 			jQuery('#tbl_rep').jqGrid({
@@ -145,7 +144,6 @@ function LoadTable() {
 				pager: '#rp_nav',
 				sortname: 'dt',
 				scroll: 1,
-				//shrinkToFit: true,
 				viewrecords: true,
 				height: 200,
 				sortorder: 'desc',
@@ -154,7 +152,7 @@ function LoadTable() {
 			}).trigger('reloadGrid');
 			jQuery('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
 			jQuery('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
-				caption: '<img src="controller/client/themes/' + theme + '/ico/computer_error.png">',
+				caption: '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
 				title: 'Отдать в ремонт ТМЦ',
 				buttonicon: 'none',
 				onClickButton: function () {
@@ -165,12 +163,10 @@ function LoadTable() {
 						$('#pg_add_edit').dialog('open');
 						$('#pg_add_edit').load('controller/client/view/equipment/repair.php?step=add&eqid=' + id);
 					} else {
-						//alert('Выберите ТМЦ для ремонта!');
 						$().toastmessage('showWarningToast', 'Выберите ТМЦ для ремонта!');
 					}
 				}
 			});
-
 		},
 		subGridRowExpanded: function (subgrid_id, row_id) {
 			// we pass two parameters
@@ -217,8 +213,6 @@ function LoadTable() {
 		pager: '#pg_nav',
 		sortname: 'equipment.id',
 		rowNum: 40,
-		//loadonce: true,
-		//scroll: 1,
 		viewrecords: true,
 		sortorder: 'asc',
 		editurl: route + 'controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
@@ -230,7 +224,7 @@ function LoadTable() {
 	jQuery('#tbl_equpment').jqGrid('navGrid', '#pg_nav', {edit: false, add: false, del: false, search: false});
 	jQuery('#tbl_equpment').jqGrid('setFrozenColumns');
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/tag.png">',
+		caption: '<i class="fa fa-tag" aria-hidden="true"></i>',
 		title: 'Выбор колонок',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -248,17 +242,17 @@ function LoadTable() {
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_add.png">',
+		caption: '<i class="fa fa-plus-circle" aria-hidden="true"></i>',
 		title: 'Добавить ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
 			$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
 			$('#pg_add_edit').dialog('open');
-			$('#pg_add_edit').load('controller/client/view/equipment/equipment.php?step=add&id=');
+			$('#pg_add_edit').load(route + 'controller/client/view/equipment/equipment.php?step=add&id=');
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_edit.png">',
+		caption: '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
 		title: 'Редактировать ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -266,14 +260,14 @@ function LoadTable() {
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('controller/client/view/equipment/equipment.php?step=edit&id=' + gsr);
+				$('#pg_add_edit').load(route + 'controller/client/view/equipment/equipment.php?step=edit&id=' + gsr);
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_go.png">',
+		caption: '<i class="fa fa-arrows" aria-hidden="true"></i>',
 		title: 'Переместить ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -281,14 +275,14 @@ function LoadTable() {
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 440, width: 620, modal: true, title: 'Перемещение имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('controller/client/view/equipment/move.php?step=move&id=' + gsr);
+				$('#pg_add_edit').load(route + 'controller/client/view/equipment/move.php?step=move&id=' + gsr);
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/computer_error.png">',
+		caption: '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
 		title: 'Отдать в ремонт ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -304,7 +298,7 @@ function LoadTable() {
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/table.png">',
+		caption: '<i class="fa fa-table" aria-hidden="true"></i>',
 		title: 'Вывести штрихкоды ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -319,7 +313,7 @@ function LoadTable() {
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/report.png">',
+		caption: '<i class="fa fa-book" aria-hidden="true"></i>',
 		title: 'Отчеты',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -327,7 +321,7 @@ function LoadTable() {
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
-		caption: '<img src="controller/client/themes/' + theme + '/ico/disk.png">',
+		caption: '<i class="fa fa-floppy-o" aria-hidden="true"></i>',
 		title: 'Экспорт XML',
 		buttonicon: 'none',
 		onClickButton: function () {

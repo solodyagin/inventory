@@ -3,7 +3,7 @@ GetSubGrid();
 
 function GetGrid() {
 	jQuery('#list2').jqGrid({
-		url: 'controller/server/places/libre_place.php?orgid=' + defaultorgid,
+		url: route + 'controller/server/places/libre_place.php?orgid=' + defaultorgid,
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Подразделение', 'Наименование', 'Комментарий', 'Действия'],
 		colModel: [
@@ -32,7 +32,7 @@ function GetGrid() {
 		height: 140,
 		viewrecords: true,
 		sortorder: 'asc',
-		editurl: 'controller/server/places/libre_place.php?orgid=' + defaultorgid,
+		editurl: route + 'controller/server/places/libre_place.php?orgid=' + defaultorgid,
 		caption: 'Помещения',
 		onSelectRow: function (ids) {
 			GetSubGrid();
