@@ -135,7 +135,7 @@ if (!file_exists("photos/$jpegphoto")) {
 </script>
 <script src="js/FileAPI/FileAPI.min.js"></script>
 <script src="js/FileAPI/FileAPI.exif.js"></script>
-<script src="js/jquery.fileapi.js"></script>
+<script src="js/jquery.fileapi.min.js"></script>
 <script src="js/jcrop/jquery.Jcrop.min.js"></script>
 <script src="js/statics/jquery.modal.js"></script>
 <script>

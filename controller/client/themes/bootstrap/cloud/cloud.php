@@ -23,10 +23,10 @@ if ($user->TestRoles('1,3,4,6')):
 ?>
 <link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/upload.css">
 <link rel="stylesheet" href="js/skin/ui.dynatree.css">
-<script src="js/jquery.dynatree.js"></script>
+<script src="js/jquery.dynatree.min.js"></script>
 <script src="js/FileAPI/FileAPI.min.js"></script>
 <script src="js/FileAPI/FileAPI.exif.js"></script>
-<script src="js/jquery.fileapi.js"></script>
+<script src="js/jquery.fileapi.min.js"></script>
 <script src="js/jcrop/jquery.Jcrop.min.js"></script>
 <script src="js/statics/jquery.modal.js"></script>
 <div class="container-fluid">
