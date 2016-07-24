@@ -1,15 +1,21 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 $('#orgs').change(function () {
 	var exdate = new Date();
 	exdate.setDate(exdate.getDate() + 365);
 	orgid = $('#orgs :selected').val();
 	defaultorgid = orgid;
 	document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
-	//$('#tbl_equpment').jqGrid('GridUnload');
 	$.jgrid.gridUnload("#tbl_equpment");
 	LoadTable();
 });
-
-//jQuery.extend(jQuery.jgrid.defaults, {ajaxSelectOptions: {cache: false}});
 
 function LoadTable() {
 	jQuery('#tbl_equpment').jqGrid({
@@ -161,7 +167,7 @@ function LoadTable() {
 						jQuery('#tbl_equpment').jqGrid('getRowData', id);
 						$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 						$('#pg_add_edit').dialog('open');
-						$('#pg_add_edit').load('controller/client/view/equipment/repair.php?step=add&eqid=' + id);
+						$('#pg_add_edit').load(route + 'controller/client/view/equipment/repair.php?step=add&eqid=' + id);
 					} else {
 						$().toastmessage('showWarningToast', 'Выберите ТМЦ для ремонта!');
 					}
@@ -182,7 +188,7 @@ function LoadTable() {
 			$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id +
 					'" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
 			jQuery('#' + subgrid_table_id).jqGrid({
-				url: 'controller/server/equipment/paramlist.php?eqid=' + row_id,
+				url: route + 'controller/server/equipment/paramlist.php?eqid=' + row_id,
 				datatype: 'json',
 				colNames: ['Id', 'Наименование', 'Параметр', ''],
 				colModel: [
@@ -192,7 +198,7 @@ function LoadTable() {
 					{name: 'myac', width: 80, fixed: true, sortable: false, resize: false,
 						formatter: 'actions', formatoptions: {keys: true}}
 				],
-				editurl: 'controller/server/equipment/paramlist.php?eqid=' + row_id,
+				editurl: route + 'controller/server/equipment/paramlist.php?eqid=' + row_id,
 				pager: pager_id,
 				sortname: 'name',
 				sortorder: 'asc',
@@ -291,7 +297,7 @@ function LoadTable() {
 				jQuery('#tbl_equpment').jqGrid('getRowData', id);
 				$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('controller/client/view/equipment/repair.php?step=add&eqid=' + id);
+				$('#pg_add_edit').load(route + 'controller/client/view/equipment/repair.php?step=add&eqid=' + id);
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
@@ -306,7 +312,7 @@ function LoadTable() {
 			if (gsr) {
 				var s;
 				s = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selarrrow');
-				newWin = window.open('inc/ean13print.php?mass=' + s, 'printWindow');
+				newWin = window.open(route + 'inc/ean13print.php?mass=' + s, 'printWindow');
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
@@ -332,7 +338,7 @@ function LoadTable() {
 }
 
 function GetListUsers(orgid, userid) {
-	$('#susers').load('controller/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
+	$('#susers').load(route + 'controller/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
 }
 
 function GetListPlaces(orgid, placesid) {

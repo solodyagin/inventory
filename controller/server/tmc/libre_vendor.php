@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Данный код создан и распространяется по лицензии GPL v3
  * Разработчики:
@@ -26,13 +27,13 @@ if ($oper == '') {
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM vendor");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
-		$total_pages =  ($count > 0) ? ceil($count / $limit) : 0;
+	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT id, name, comment, active FROM vendor ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$sql = "SELECT id, name, comment, active FROM vendor ORDER BY $sidx $sord LIMIT $start, $limit";
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список производителей!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
@@ -41,7 +42,7 @@ if ($oper == '') {
 	$i = 0;
 	while ($row = mysqli_fetch_array($result)) {
 		$responce->rows[$i]['id'] = $row['id'];
-		if ($row['active'] == "1") {
+		if ($row['active'] == '1') {
 			$responce->rows[$i]['cell'] = array('<i class="fa fa-check-circle-o" aria-hidden="true"></i>', $row['id'], $row['name'], $row['comment']);
 		} else {
 			$responce->rows[$i]['cell'] = array('<i class="fa fa-ban" aria-hidden="true"></i>', $row['id'], $row['name'], $row['comment']);
@@ -54,8 +55,8 @@ if ($oper == '') {
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	$user->TestRoles('1,4') or die('Недостаточно прав');
-	$SQL = "INSERT INTO vendor (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "INSERT INTO vendor (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу добавить производителя!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
@@ -63,8 +64,8 @@ if ($oper == 'add') {
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	$user->TestRoles('1,5') or die('Недостаточно прав');
-	$SQL = "UPDATE vendor SET name = '$name', comment = '$comment' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE vendor SET name = '$name', comment = '$comment' WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по производителю!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
@@ -72,8 +73,8 @@ if ($oper == 'edit') {
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Недостаточно прав');
-	$SQL = "UPDATE vendor SET active = NOT active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE vendor SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по производителю!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

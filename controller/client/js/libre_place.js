@@ -1,3 +1,12 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 GetGrid();
 GetSubGrid();
 
@@ -39,13 +48,13 @@ function GetGrid() {
 			if (ids == null) {
 				ids = 0;
 				if (jQuery('#list10_d').jqGrid('getGridParam', 'records') > 0) {
-					jQuery('#list10_d').jqGrid('setGridParam', {url: 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid});
-					jQuery('#list10_d').jqGrid('setGridParam', {editurl: 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid})
+					jQuery('#list10_d').jqGrid('setGridParam', {url: route + 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid});
+					jQuery('#list10_d').jqGrid('setGridParam', {editurl: route + 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid})
 							.trigger('reloadGrid');
 				}
 			} else {
-				jQuery('#list10_d').jqGrid('setGridParam', {url: 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid});
-				jQuery('#list10_d').jqGrid('setGridParam', {editurl: 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid})
+				jQuery('#list10_d').jqGrid('setGridParam', {url: route + 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid});
+				jQuery('#list10_d').jqGrid('setGridParam', {editurl: route + 'controller/server/places/libre_place_sub.php?placesid=' + ids + '&orgid=' + defaultorgid})
 						.trigger('reloadGrid');
 			}
 		}
@@ -64,14 +73,14 @@ function GetSubGrid() {
 	jQuery('#list10_d').jqGrid({
 		height: 100,
 		autowidth: true,
-		url: 'controller/server/places/libre_place_sub.php',
+		url: route + 'controller/server/places/libre_place_sub.php',
 		datatype: 'json',
 		colNames: ['Id', 'Сотрудник', 'Действия'],
 		colModel: [
 			{name: 'places_users.id', index: 'places_users.id', width: 10, hidden: true},
 			{name: 'name', index: 'name', width: 200, editable: true, edittype: 'select', editoptions: {
 					editrules: {required: true},
-					dataUrl: 'controller/server/common/getlistusers.php?orgid=' + defaultorgid
+					dataUrl: route + 'controller/server/common/getlistusers.php?orgid=' + defaultorgid
 				}},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],

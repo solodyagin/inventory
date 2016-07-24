@@ -1,11 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Tsql {
 
@@ -22,6 +27,7 @@ class Tsql {
 	 * @param type $base
 	 * @return type
 	 */
+
 	function connect($host, $name, $pass, $base) {
 		global $codemysql;
 		$this->idsqlconnection = new mysqli($host, $name, $pass, $base);
@@ -37,12 +43,6 @@ class Tsql {
 	}
 
 	function ExecuteSQL($sql) {
-		//echo "$sql<br>";
-		//$result = mysqli_query($this->idsqlconnection, $sql);
-		//if ($result == '') {
-		//	echo mysqli_connect_error();
-		//}
-		//return $result;
 		$this->query_result = mysqli_query($this->idsqlconnection, $sql);
 		if ($this->query_result) {
 			++$this->num_queries;
@@ -62,17 +62,14 @@ class Tsql {
 
 	function start_transaction() {
 		return mysqli_query($this->idsqlconnection, 'START TRANSACTION');
-		//return mysqli_begin_transaction($this->idsqlconnection);
 	}
 
 	function commit() {
 		return mysqli_query($this->idsqlconnection, 'COMMIT');
-		//return mysqli_commit($this->idsqlconnection);
 	}
 
 	function rollback() {
 		return mysqli_query($this->idsqlconnection, 'ROLLBACK');
-		//return mysqli_rollback($this->idsqlconnection);
 	}
 
 	function close() {

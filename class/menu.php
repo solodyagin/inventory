@@ -1,11 +1,17 @@
 <?php
 
-/**
- * (с) 2011-2015 Грибов Павел
- * http://грибовы.рф * 
- * Если исходный код найден в сети - значит лицензия GPL v.3 * 
- * В противном случае - код собственность ГК Яртелесервис, Мультистрим, Телесервис, Телесервис плюс * 
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
  */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
+
 class Tmenu {
 
 	var $arr_menu = array(); // Массив где хранится меню
@@ -16,7 +22,7 @@ class Tmenu {
 	 */
 
 	/** Добавляем пункт меню. Если такой uid уже есть - то обновляем содержимое
-	 * 
+	 *
 	 * @param type $parents (main - первый уровень меню), иначе ссылка вида uid на id "родителя"
 	 * @param type $name    Наименование пункта меню
 	 * @param type $comment Пояснение
@@ -25,7 +31,7 @@ class Tmenu {
 	 * @param type $path    Путь для запуска скрипта (подставляется как content_page=$path)
 	 */
 	function Add($parents, $name, $comment, $sort, $uid, $path) {
-		// Если корневой уровень меню - то добавляем его   
+		// Если корневой уровень меню - то добавляем его
 		if ($parents == 'main') {
 			$this->count++;
 			$this->arr_menu[$this->count]['sort'] = $sort;
@@ -36,7 +42,7 @@ class Tmenu {
 			$this->arr_menu[$this->count]['uid'] = $uid;
 			$this->arr_menu[$this->count]['path'] = $path;
 		} else {
-			// Сначала ищем "родителя"     
+			// Сначала ищем "родителя"
 			foreach ($this->arr_menu as $value) {
 				if ($parents == $value['uid']) {
 					$this->count++;

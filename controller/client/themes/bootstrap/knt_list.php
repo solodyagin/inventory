@@ -50,11 +50,8 @@ if ($user->mode == 1):
 		</div>
 		<script src="controller/client/js/libre_knt.js"></script>
 	</div>
-	<?php
-else:
-	?>
+<?php else: ?>
 	<div class="alert alert-error">
 		У вас нет доступа в данный раздел!
 	</div>
-<?php
-endif;
+<?php endif;

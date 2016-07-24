@@ -1,3 +1,12 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 var addOptions = {
 	top: 0, left: 0, width: 500
 };
@@ -22,7 +31,7 @@ jQuery('#list2').jqGrid({
 	sortorder: 'asc',
 	editurl: route + 'controller/server/tmc/libre_group.php',
 	caption: 'Группы номенклатуры',
-	onSelectRow: function(ids) {
+	onSelectRow: function (ids) {
 		if (ids == null) {
 			ids = 0;
 			if (jQuery('#list10_d').jqGrid('getGridParam', 'records') > 0) {

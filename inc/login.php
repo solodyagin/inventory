@@ -1,11 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = new Tusers;
 
@@ -28,7 +33,7 @@ if ($user->randomid != '') {
 if (isset($_GET['login_step'])) {
 	if ($_GET['login_step'] == 'logout') { // если выход то стираем кукисы и ГО на главную страницу
 		$user->id = '';
-		$user->randomid = '';		
+		$user->randomid = '';
 		SetCookie('user_randomid_w3', '', 1, '/');
 	}
 	if ($_GET['login_step'] == 'enter') { // если вход то пытаемся зайти
@@ -43,9 +48,8 @@ if (isset($_GET['login_step'])) {
 		if (count($err) == 0) { // если буфер ошибок пустой, то ищем пользователя такого
 			if ($user->GetByLoginPass($enter_user_login, $enter_user_pass)) { // если нашли, то ставим печеньки
 				SetCookie('user_randomid_w3', "$user->randomid", strtotime('+30 days'), '/');
-			} else { // если не нашли в "обычном" списке, проверяем в AD (если разрешено в настойках)           
-				if (($cfg->ad == 1) and (check_LDAP_user(strtolower($enter_user_login),
-						$enter_user_pass, $cfg->ldap, $cfg->domain1, $cfg->domain2) == 'true')) {
+			} else { // если не нашли в "обычном" списке, проверяем в AD (если разрешено в настойках)
+				if (($cfg->ad == 1) and ( check_LDAP_user(strtolower($enter_user_login), $enter_user_pass, $cfg->ldap, $cfg->domain1, $cfg->domain2) == 'true')) {
 					if ($user->GetByLogin($enter_user_login)) {// если нашли, то ставим печеньки
 						SetCookie('user_randomid_w3', "$user->randomid", strtotime('+30 days'), '/');
 					} else {
@@ -53,7 +57,6 @@ if (isset($_GET['login_step'])) {
 					}
 				} else {
 					$err[] = 'Пользователь с таким логином/паролем не найден!';
-					//if ($cfg->usercanregistrate==1){$err[]="Вы можете <a href=?content_page=registration>зарегистрироваться</a>";}
 				}
 			}
 		}

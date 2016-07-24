@@ -5,14 +5,13 @@
 // http://грибовы.рф
 
 header('Content-type: application/vnd.ms-excel');
-header("Content-Disposition: attachment; filename=file.xls");
-header("Pragma: no-cache");
+header('Content-Disposition: attachment; filename=file.xls');
+header('Pragma: no-cache');
 
 $buffer = $_POST['csvBuffer'];
 
-try{
-    echo $buffer;
-}catch(Exception $e){
-
+try {
+	echo $buffer;
+} catch (Exception $e) {
+	
 }
-?>

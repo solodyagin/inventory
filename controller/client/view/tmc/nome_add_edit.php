@@ -73,7 +73,7 @@ if ($step == 'edit') {
 	});
 </script>
 <div id="messenger"></div>
-<form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="controller/server/tmc/add_edit_tmc.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
+<form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/tmc/add_edit_tmc.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
 	<div class="form-group">
 		<label for="groupid" class="col-sm-3 control-label">Группа</label>
 		<div class="col-sm-9">
@@ -94,7 +94,7 @@ if ($step == 'edit') {
 		<div class="col-sm-9">
 			<select class="chosen-select" class="form-control" name="vendorid" id="vendorid">
 				<?php
-				$result = $sqlcn->ExecuteSQL("SELECT * FROM vendor WHERE active=1 ORDER BY name");
+				$result = $sqlcn->ExecuteSQL("SELECT * FROM vendor WHERE active = 1 ORDER BY name");
 				while ($row = mysqli_fetch_array($result)) {
 					$vl = $row['id'];
 					$sl = ($row['id'] == $vendorid) ? 'selected' : '';

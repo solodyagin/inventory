@@ -50,7 +50,7 @@ if ($where != '') {
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
-	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM knt");
+	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM knt $where");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
 	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
@@ -58,8 +58,23 @@ if ($oper == '') {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT id, name, INN, KPP, bayer, supplier, dog, ERPCode, comment, active FROM knt $where ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$sql = <<<TXT
+SELECT   id,
+         name,
+         inn,
+         kpp,
+         bayer,
+         supplier,
+         dog,
+         erpcode,
+         comment,
+         active
+FROM     knt
+$where
+ORDER BY $sidx $sord
+LIMIT    $start, $limit
+TXT;
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список контрагентов!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
@@ -87,10 +102,13 @@ if ($oper == 'add') {
 	$bayer = ($bayer == 'Yes') ? '1' : '0';
 	$supplier = ($supplier == 'Yes') ? '1' : '0';
 	$dog = ($dog == 'Yes') ? '1' : '0';
-	$SQL = "INSERT INTO knt (id, name, INN, KPP, bayer, supplier, dog, ERPCode, comment, active)"
-			. " VALUES (null, '$name', '$INN', '$KPP', '$bayer', '$supplier', '$dog', '$ERPCode', '$comment', 1)";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу добавить контрагента!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = <<<TXT
+INSERT INTO knt
+            (id,name,inn,kpp,bayer,supplier,dog,erpcode,comment,active)
+VALUES      (NULL,'$name','$INN','$KPP','$bayer','$supplier','$dog','$ERPCode','$comment',1)
+TXT;
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу добавить контрагента! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
@@ -100,17 +118,23 @@ if ($oper == 'edit') {
 	$bayer = ($bayer == 'Yes') ? '1' : '0';
 	$supplier = ($supplier == 'Yes') ? '1' : '0';
 	$dog = ($dog == 'Yes') ? '1' : '0';
-	$SQL = "UPDATE knt SET name = '$name', comment = '$comment', INN = '$INN', KPP = '$KPP', bayer = '$bayer', supplier = '$supplier', dog = '$dog', ERPCode = '$ERPCode' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по контрагенту!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = <<<TXT
+UPDATE knt
+SET    name = '$name',comment = '$comment',inn = '$INN',kpp = '$KPP',bayer = '$bayer',supplier = '$supplier',dog =
+       '$dog',
+       erpcode = '$ERPCode'
+WHERE  id = '$id'
+TXT;
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по контрагенту! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
-	$SQL = "UPDATE knt SET active = not active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE knt SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по контрагенту!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

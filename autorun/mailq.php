@@ -21,6 +21,6 @@ $result11 = $sqlcn->ExecuteSQL('SELECT * FROM mailq LIMIT 1')
 while ($row = mysqli_fetch_array($result11)) {
 	mailq($row['to'], $row['title'], $row['btxt']);
 	$idm = $row['id'];
-	$result12 = $sqlcn->ExecuteSQL("DELETE FROM mailq WHERE id=$idm")
+	$result12 = $sqlcn->ExecuteSQL("DELETE FROM mailq WHERE id = $idm")
 			or $err[] = 'Не получилось удалить сообщение из очереди ' . mysqli_error($sqlcn->idsqlconnection);
 }

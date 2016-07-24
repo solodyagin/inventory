@@ -1,26 +1,28 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
 if ($user->TestRoles('1,4,5,6')) {
-	$sts = '<select name="tmcgo" id="tmcgo">';
+	echo '<select name="tmcgo" id="tmcgo">';
 	if ($addnone == 'true') {
-		$sts .= '<option value="-1">нет выбора</option>';
+		echo '<option value="-1">нет выбора</option>';
 	}
-	$sts .= '<option value="0">На месте</option>';
-	$sts .= '<option value="1">В пути</option>';
-	$sts .= '</select>';
-	echo $sts;
+	echo '<option value="0">На месте</option>';
+	echo '<option value="1">В пути</option>';
+	echo '</select>';
 } else {
 	echo 'Не достаточно прав!!!';
 }

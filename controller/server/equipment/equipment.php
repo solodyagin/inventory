@@ -72,29 +72,56 @@ if ($where == '') {
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
-	$sql = "SELECT COUNT(*) AS cnt, equipment.dtendgar,
-		knt.name, getvendorandgroup.grnomeid, equipment.id AS eqid,
-		equipment.ip AS ip,
-		equipment.orgid AS eqorgid, org.name AS orgname,
-		getvendorandgroup.vendorname AS vname, 
-		getvendorandgroup.groupname AS grnome, places.name AS placesname,
-		users_profile.fio AS fio, getvendorandgroup.nomename AS nomename,
-		buhname, sernum, invnum, shtrihkod, datepost, cost, currentcost, os,
-		equipment.mode AS eqmode, equipment.mapyet AS eqmapyet,
-		equipment.comment AS eqcomment, equipment.active AS eqactive,
-		equipment.repair AS eqrepair
-	FROM equipment
-	INNER JOIN (
-	SELECT nome.groupid AS grnomeid,nome.id AS nomeid, vendor.name AS vendorname,
-	group_nome.name AS groupname, nome.name AS nomename
-	FROM nome
-	INNER JOIN group_nome ON nome.groupid = group_nome.id
-	INNER JOIN vendor ON nome.vendorid = vendor.id
-	) AS getvendorandgroup ON getvendorandgroup.nomeid = equipment.nomeid
-	INNER JOIN org ON org.id = equipment.orgid
-	INNER JOIN places ON places.id = equipment.placesid
-	INNER JOIN users_profile ON users_profile.usersid = equipment.usersid
-	LEFT JOIN knt ON knt.id = equipment.kntid $where";
+	$sql = <<<TXT
+SELECT     COUNT(*) AS cnt,
+           equipment.dtendgar,
+           knt.name,
+           getvendorandgroup.grnomeid,
+           equipment.id                 AS eqid,
+           equipment.ip                 AS ip,
+           equipment.orgid              AS eqorgid,
+           org.name                     AS orgname,
+           getvendorandgroup.vendorname AS vname,
+           getvendorandgroup.groupname  AS grnome,
+           places.name                  AS placesname,
+           users_profile.fio            AS fio,
+           getvendorandgroup.nomename   AS nomename,
+           buhname,
+           sernum,
+           invnum,
+           shtrihkod,
+           datepost,
+           cost,
+           currentcost,
+           os,
+           equipment.mode    AS eqmode,
+           equipment.mapyet  AS eqmapyet,
+           equipment.comment AS eqcomment,
+           equipment.active  AS eqactive,
+           equipment.repair  AS eqrepair
+FROM       equipment
+INNER JOIN
+           (
+                      SELECT     nome.groupid    AS grnomeid,
+                                 nome.id         AS nomeid,
+                                 vendor.name     AS vendorname,
+                                 group_nome.name AS groupname,
+                                 nome.name       AS nomename
+                      FROM       nome
+                      INNER JOIN group_nome
+                      ON         nome.groupid = group_nome.id
+                      INNER JOIN vendor
+                      ON         nome.vendorid = vendor.id ) AS getvendorandgroup
+ON         getvendorandgroup.nomeid = equipment.nomeid
+INNER JOIN org
+ON         org.id = equipment.orgid
+INNER JOIN places
+ON         places.id = equipment.placesid
+INNER JOIN users_profile
+ON         users_profile.usersid = equipment.usersid
+LEFT JOIN  knt
+ON         knt.id = equipment.kntid $where
+TXT;
 	$result = $sqlcn->ExecuteSQL($sql);
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -110,34 +137,60 @@ if ($oper == '') {
 		$responce->records = 0;
 		jsonExit($responce);
 	}
-	$SQL = "SELECT equipment.dtendgar, tmcgo, knt.name AS kntname,
-		getvendorandgroup.grnomeid, equipment.id AS eqid,
-		equipment.ip AS ip,
-		equipment.orgid AS eqorgid, org.name AS orgname,
-		getvendorandgroup.vendorname AS vname, 
-		getvendorandgroup.groupname AS grnome, places.name AS placesname,
-		users_profile.fio AS fio, getvendorandgroup.nomename AS nomename,
-		buhname, sernum, invnum, shtrihkod, datepost, cost, currentcost, os,
-		equipment.mode AS eqmode,equipment.mapyet AS eqmapyet,
-		equipment.comment AS eqcomment, equipment.active AS eqactive,
-		equipment.repair AS eqrepair
-	FROM equipment
-	INNER JOIN (
-	SELECT nome.groupid AS grnomeid,nome.id AS nomeid, vendor.name AS vendorname,
-	group_nome.name AS groupname, nome.name AS nomename
-	FROM nome
-	INNER JOIN group_nome ON nome.groupid = group_nome.id
-	INNER JOIN vendor ON nome.vendorid = vendor.id
-	) AS getvendorandgroup ON getvendorandgroup.nomeid = equipment.nomeid
-	INNER JOIN org ON org.id = equipment.orgid
-	INNER JOIN places ON places.id = equipment.placesid
-	INNER JOIN users_profile ON users_profile.usersid = equipment.usersid
-	LEFT JOIN knt ON knt.id = equipment.kntid
-	$where
-	ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не получилось выбрать список оргтехники!' .
-					mysqli_error($sqlcn->idsqlconnection) . ' sql=' . $SQL);
+	$sql = <<<TXT
+SELECT     equipment.dtendgar,
+           tmcgo,
+           knt.name AS kntname,
+           getvendorandgroup.grnomeid,
+           equipment.id                 AS eqid,
+           equipment.ip                 AS ip,
+           equipment.orgid              AS eqorgid,
+           org.name                     AS orgname,
+           getvendorandgroup.vendorname AS vname,
+           getvendorandgroup.groupname  AS grnome,
+           places.name                  AS placesname,
+           users_profile.fio            AS fio,
+           getvendorandgroup.nomename   AS nomename,
+           buhname,
+           sernum,
+           invnum,
+           shtrihkod,
+           datepost,
+           cost,
+           currentcost,
+           os,
+           equipment.mode    AS eqmode,
+           equipment.mapyet  AS eqmapyet,
+           equipment.comment AS eqcomment,
+           equipment.active  AS eqactive,
+           equipment.repair  AS eqrepair
+FROM       equipment
+INNER JOIN
+           (
+                      SELECT     nome.groupid    AS grnomeid,
+                                 nome.id         AS nomeid,
+                                 vendor.name     AS vendorname,
+                                 group_nome.name AS groupname,
+                                 nome.name       AS nomename
+                      FROM       nome
+                      INNER JOIN group_nome
+                      ON         nome.groupid = group_nome.id
+                      INNER JOIN vendor
+                      ON         nome.vendorid = vendor.id ) AS getvendorandgroup
+ON         getvendorandgroup.nomeid = equipment.nomeid
+INNER JOIN org
+ON         org.id = equipment.orgid
+INNER JOIN places
+ON         places.id = equipment.placesid
+INNER JOIN users_profile
+ON         users_profile.usersid = equipment.usersid
+LEFT JOIN  knt
+ON         knt.id = equipment.kntid $where
+ORDER BY   $sidx $sord
+LIMIT      $start, $limit
+TXT;
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не получилось выбрать список оргтехники! ' . mysqli_error($sqlcn->idsqlconnection));
 	$responce->page = $page;
 	$responce->total = $total_pages;
 	$responce->records = $count;
@@ -174,9 +227,9 @@ if ($oper == '') {
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	$user->TestRoles('1,4') or die('Недостаточно прав');
-	$SQL = "INSERT INTO places (id, orgid, name, comment, active) VALUES (null, '$orgid', '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не смог вставить оргтехнику!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "INSERT INTO places (id, orgid, name, comment, active) VALUES (null, '$orgid', '$name', '$comment', 1)";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не смог вставить оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
@@ -188,22 +241,22 @@ if ($oper == 'edit') {
 	$mode = ($mode == 'Yes') ? 1 : 0;
 	$mapyet = ($mapyet == 'Yes') ? 1 : 0;
 	$buhname = mysqli_real_escape_string($sqlcn->idsqlconnection, $buhname);
-	$SQL = <<<TXT
-		UPDATE equipment SET buhname = '$buhname', sernum = '$sernum',
-		invnum = '$invnum', shtrihkod = '$shtrihkod', cost = '$cost',
-		currentcost = '$currentcost', os = '$os', mode = '$mode',
-		mapyet = '$mapyet', comment = '$comment', tmcgo = '$tmcgo' WHERE id = '$id';
+	$sql = <<<TXT
+UPDATE equipment
+SET    buhname = '$buhname',sernum = '$sernum',invnum = '$invnum',shtrihkod = '$shtrihkod',cost = '$cost',
+       currentcost = '$currentcost',os = '$os',mode = '$mode',mapyet = '$mapyet',comment = '$comment',tmcgo = '$tmcgo'
+WHERE  id = '$id'
 TXT;
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не смог обновить оргтехнику!' . mysqli_error($sqlcn->idsqlconnection));
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не смог обновить оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Недостаточно прав');
-	$SQL = "UPDATE equipment SET active = not active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не смог пометить на удаление оргтехнику!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE equipment SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не смог пометить на удаление оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

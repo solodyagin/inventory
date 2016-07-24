@@ -49,16 +49,22 @@ if ($oper == '') {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = <<<TXT
-		SELECT nome.id as nomeid, group_nome.name as groupname, vendor.name as vendorname, nome.name as nomename, nome.active as nomeactive
-		FROM nome
-		INNER JOIN group_nome ON group_nome.id = nome.groupid
-		INNER JOIN vendor ON nome.vendorid = vendor.id
-		$where
-		ORDER BY $sidx $sord
-		LIMIT $start, $limit
+	$sql = <<<TXT
+SELECT     nome.id         AS nomeid,
+           group_nome.name AS groupname,
+           vendor.name     AS vendorname,
+           nome.name       AS nomename,
+           nome.active     AS nomeactive
+FROM       nome
+INNER JOIN group_nome
+ON         group_nome.id = nome.groupid
+INNER JOIN vendor
+ON         nome.vendorid = vendor.id
+$where
+ORDER BY   $sidx $sord
+LIMIT      $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список номенклатуры!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
@@ -80,8 +86,8 @@ TXT;
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	$user->TestRoles('1,4') or die('Недостаточно прав');
-	$SQL = "INSERT INTO knt (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "INSERT INTO knt (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу добавить пользователя!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
@@ -89,8 +95,8 @@ if ($oper == 'add') {
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	$user->TestRoles('1,5') or die('Недостаточно прав');
-	$SQL = "UPDATE nome SET name = '$nomename' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE nome SET name = '$nomename' WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по номенклатуре!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
@@ -98,8 +104,8 @@ if ($oper == 'edit') {
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Недостаточно прав');
-	$SQL = "UPDATE nome SET active = NOT active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE nome SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по номенклатуре!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

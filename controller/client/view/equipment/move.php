@@ -97,7 +97,7 @@ echo "<script>userid1='{$tmptmc->usersid}';</script>";
 		}
 	}
 	function GetListUsers(orgid, userid) {
-		$.get('controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
+		$.get(route + 'controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
 			$('#susers').html(data);
 			UpdateChosen();
 		});

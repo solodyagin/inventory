@@ -1,3 +1,12 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 jQuery('#list2').jqGrid({
 	url: route + 'controller/server/users/libre_users.php?org_status=list',
 	datatype: 'json',
@@ -74,7 +83,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 	onClickButton: function () {
 		$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Добавление пользователя'});
 		$('#add_edit').dialog('open');
-		$('#add_edit').load('controller/client/view/users/user_add.php');
+		$('#add_edit').load(route + 'controller/client/view/users/user_add.php');
 	}
 });
 jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
@@ -86,7 +95,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 		if (gsr) {
 			$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Редактирование пользователя'});
 			$('#add_edit').dialog('open');
-			$('#add_edit').load('controller/client/view/users/user_edit.php?id=' + gsr);
+			$('#add_edit').load(route + 'controller/client/view/users/user_edit.php?id=' + gsr);
 		} else {
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
@@ -101,7 +110,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 		if (gsr) {
 			$('#add_edit').dialog({autoOpen: false, height: 440, width: 550, modal: true, title: 'Редактирование профиля'});
 			$('#add_edit').dialog('open');
-			$('#add_edit').load('index.php?route=/controller/client/view/users/profile_add_edit.php?userid=' + gsr);
+			$('#add_edit').load(route + 'controller/client/view/users/profile_add_edit.php?userid=' + gsr);
 		} else {
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
@@ -115,7 +124,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 		var gsr = jQuery('#list2').jqGrid('getGridParam', 'selrow');
 		if (gsr) {
 			var s = jQuery('#list2').jqGrid('getGridParam', 'selarrrow');
-			newWin = window.open('inc/stikerprint.php?mass=' + s, 'printWindow');
+			newWin = window.open(route + 'inc/stikerprint.php?mass=' + s, 'printWindow');
 		} else {
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}
@@ -136,7 +145,7 @@ function GetSubGrid() {
 			{name: 'places_users.id', index: 'places_users.id', width: 55, fixed: true},
 			{name: 'role', index: 'role', width: 200, editable: true, edittype: 'select', editoptions: {
 					editrules: {required: true},
-					dataUrl: 'controller/server/users/getlistroles.php?orgid=' + defaultorgid
+					dataUrl: route + 'controller/server/users/getlistroles.php?orgid=' + defaultorgid
 				}},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Данный код создан и распространяется по лицензии GPL v3
  * Разработчики:
@@ -8,7 +9,8 @@
  * http://грибовы.рф
  */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 $page = GetDef('page', '1');
 $limit = GetDef('rows');
@@ -30,8 +32,9 @@ if ($oper == '') {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT id, name, comment, active FROM group_nome ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL) or die("Не могу выбрать список групп!" . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "SELECT id, name, comment, active FROM group_nome ORDER BY $sidx $sord LIMIT $start, $limit";
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу выбрать список групп!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
 	$responce->total = $total_pages;
@@ -40,9 +43,13 @@ if ($oper == '') {
 	while ($row = mysqli_fetch_array($result)) {
 		$responce->rows[$i]['id'] = $row['id'];
 		if ($row['active'] == '1') {
-			$responce->rows[$i]['cell'] = array('<i class="fa fa-check-circle-o" aria-hidden="true"></i>', $row['id'], $row['name'], $row['comment']);
+			$responce->rows[$i]['cell'] = array(
+				'<i class="fa fa-check-circle-o" aria-hidden="true"></i>', $row['id'], $row['name'], $row['comment']
+			);
 		} else {
-			$responce->rows[$i]['cell'] = array('<i class="fa fa-ban" aria-hidden="true"></i>', $row['id'], $row['name'], $row['comment']);
+			$responce->rows[$i]['cell'] = array(
+				'<i class="fa fa-ban" aria-hidden="true"></i>', $row['id'], $row['name'], $row['comment']
+			);
 		}
 		$i++;
 	}
@@ -52,35 +59,35 @@ if ($oper == '') {
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	$user->TestRoles('1,4') or die('Недостаточно прав');
-	$SQL = "INSERT INTO group_nome (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу добавить группу!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "INSERT INTO group_nome (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу добавить группу! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	$user->TestRoles('1,5') or die('Недостаточно прав');
-	$SQL = "UPDATE group_nome SET name = '$name', comment = '$comment' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по группе!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE group_nome SET name = '$name', comment = '$comment' WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по группе! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Недостаточно прав');
-	$SQL = "UPDATE group_nome SET active = NOT active WHERE id = '$id'";
-	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по группе!' . mysqli_error($sqlcn->idsqlconnection));
-	$SQL = "SELECT * FROM group_nome WHERE id = '$id'";
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE group_nome SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по группе! ' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "SELECT * FROM group_nome WHERE id = '$id'";
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список групп!' . mysqli_error($sqlcn->idsqlconnection));
 	while ($row = mysqli_fetch_array($result)) {
 		$active = $row['active'];
 	}
-	$SQL = "UPDATE group_param SET active = '$active' WHERE groupid = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по группе!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE group_param SET active = '$active' WHERE groupid = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по группе! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

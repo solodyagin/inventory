@@ -1,3 +1,12 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 jQuery('#tbl_move').jqGrid({
 	url: route + 'controller/server/equipment/getmoveinfo.php?eqid=',
 	datatype: 'json',
@@ -26,6 +35,7 @@ jQuery('#tbl_move').jqGrid({
 	editurl: route + 'controller/server/equipment/getmoveinfo.php?eqid=',
 	caption: 'История перемещений'
 });
+
 jQuery('#tbl_move').jqGrid('destroyGroupHeader');
 jQuery('#tbl_move').jqGrid('setGroupHeaders', {
 	useColSpanStyle: true,

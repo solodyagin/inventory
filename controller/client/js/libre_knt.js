@@ -1,3 +1,12 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 var addOptions = {
 	top: 0,
 	left: 0,
@@ -85,10 +94,10 @@ jQuery('#list2').jqGrid({
 				$('#list4').css('visibility', 'visible');
 				$('#simple-btn').css('visibility', 'visible');
 				$('#simple-btn').fileapi('data', {'contractid': ids});
-				jQuery('#list4').jqGrid('setGridParam', {url: 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids});
-				jQuery('#list4').jqGrid('setGridParam', {editurl: 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids});
+				jQuery('#list4').jqGrid('setGridParam', {url: route + 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids});
+				jQuery('#list4').jqGrid('setGridParam', {editurl: route + 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids});
 				jQuery('#list4').jqGrid({
-					url: 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids,
+					url: route + 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids,
 					datatype: 'json',
 					colNames: ['Id', 'Имя файла', 'Действия'],
 					colModel: [
@@ -103,7 +112,7 @@ jQuery('#list2').jqGrid({
 					scroll: 1,
 					viewrecords: true,
 					sortorder: 'asc',
-					editurl: 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids,
+					editurl: route + 'controller/server/knt/getfilescontrakts.php?idcontract=' + ids,
 					caption: 'Прикрепленные файлы'
 				}).trigger('reloadGrid');
 				jQuery('#list4').jqGrid('navGrid', '#pager4', {edit: false, add: false, del: false, search: false});
@@ -133,7 +142,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 	}
 });
 $('#simple-btn').fileapi({
-	url: 'controller/server/common/uploadanyfiles.php',
+	url: route + 'controller/server/common/uploadanyfiles.php',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,
@@ -142,7 +151,7 @@ $('#simple-btn').fileapi({
 		if (uiEvt.result.msg != 'error') {
 			jQuery('#list4').jqGrid().trigger('reloadGrid');
 		} else {
-			alert('Ошибка загрузки файла!');
+			$().toastmessage('showErrorToast', 'Ошибка загрузки файла!');
 		}
 	},
 	elements: {

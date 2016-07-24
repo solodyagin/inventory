@@ -29,7 +29,7 @@ $comment = PostDef('comment');
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
-	$where = "WHERE kntid='$idknt'";
+	$where = "WHERE kntid = '$idknt'";
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM contract $where");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -38,8 +38,8 @@ if ($oper == '') {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT * FROM contract $where ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$sql = "SELECT * FROM contract $where ORDER BY $sidx $sord LIMIT $start, $limit";
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список договоров!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
@@ -51,7 +51,7 @@ if ($oper == '') {
 		$work = ($row['work'] == 0) ? 'No' : 'Yes';
 		$dateend = $row['dateend'] . ' 00:00:00';
 		$datestart = $row['datestart'] . ' 00:00:00';
-		if ($row['active'] == "1") {
+		if ($row['active'] == '1') {
 			$responce->rows[$i]['cell'] = array('<i class="fa fa-check-circle-o" aria-hidden="true"></i>', $row['id'], $row['num'], $row['name'], MySQLDateTimeToDateTime($datestart), MySQLDateTimeToDateTime($dateend), $work, $row['comment']);
 		} else {
 			$responce->rows[$i]['cell'] = array('<i class="fa fa-ban" aria-hidden="true"></i>', $row['id'], $row['num'], $row['name'], MySQLDateTimeToDateTime($datestart), MySQLDateTimeToDateTime($dateend), $work, $row['comment']);
@@ -67,8 +67,12 @@ if ($oper == 'add') {
 	$work = ($work == 'Yes') ? '1' : '0';
 	$datestart = DateToMySQLDateTime2($datestart);
 	$dateend = DateToMySQLDateTime2($dateend);
-	$SQL = "INSERT INTO contract (id, kntid, num, name, comment, datestart, dateend, work, active) VALUES (null,'$idknt','$num','$name','$comment','$datestart','$dateend','$work',1)";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = <<<TXT
+INSERT INTO contract
+            (id,kntid,num,name,comment,datestart,dateend,work,active)
+VALUES      (NULL,'$idknt','$num','$name','$comment','$datestart','$dateend','$work',1)
+TXT;
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу добавить данные по договору!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
@@ -79,8 +83,12 @@ if ($oper == 'edit') {
 	$work = ($work == 'Yes') ? '1' : '0';
 	$datestart = DateToMySQLDateTime2($datestart);
 	$dateend = DateToMySQLDateTime2($dateend);
-	$SQL = "UPDATE contract SET num='$num', name='$name', comment='$comment', datestart='$datestart', dateend='$dateend', work='$work' WHERE id='$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = <<<TXT
+UPDATE contract
+SET    num = '$num',name = '$name',comment = '$comment',datestart = '$datestart',dateend = '$dateend',work = '$work'
+WHERE  id = '$id'
+TXT;
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по договору!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
@@ -88,8 +96,8 @@ if ($oper == 'edit') {
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
-	$SQL = "UPDATE contract SET active = not active WHERE id='$id'";
-	$sqlcn->ExecuteSQL($SQL)
+	$sql = "UPDATE contract SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
 			or die('Не смог пометить на удаление договор!' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

@@ -1,15 +1,18 @@
 <?php
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 if ($user->mode == 1):
-?>
+	?>
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-12 col-sm-12">
@@ -35,8 +38,8 @@ if ($user->mode == 1):
 									<?php
 									$arr_themes = GetArrayFilesInDir(WUO_ROOT . '/controller/client/themes');
 									for ($i = 0; $i < count($arr_themes); $i++) {
-										$selected = ($cfg->theme == $arr_themes[$i]) ? 'selected' : '';
-										echo "<option $selected value=\"$arr_themes[$i]\">$arr_themes[$i]</option>";
+										$sl = ($arr_themes[$i] == $cfg->theme) ? 'selected' : '';
+										echo "<option value=\"$arr_themes[$i]\" $sl>$arr_themes[$i]</option>";
 									}
 									?>
 								</select>
@@ -98,10 +101,10 @@ if ($user->mode == 1):
 							<div class="checkbox">
 								<label>
 									<input type=checkbox name="form_sendemail" id="form_sendemail" value="1" <?php
-								if ($cfg->sendemail == "1") {
-									echo "checked";
-								}
-								?>> Рассылать уведомления
+									if ($cfg->sendemail == "1") {
+										echo "checked";
+									}
+									?>> Рассылать уведомления
 								</label>
 							</div>
 						</div>

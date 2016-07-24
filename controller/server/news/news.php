@@ -1,70 +1,70 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Изначальный автор данного кода - Грибов Павел
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-include_once ("../../../config.php");                    // загружаем первоначальные настройки
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
-// загружаем классы
+$page = GetDef('page', '1');
+$limit = GetDef('rows');
+$sidx = GetDef('sidx', '1');
+$sord = GetDef('sord');
+$oper = PostDef('oper');
+$id = PostDef('id');
+$title = PostDef('title');
+if (!empty($title)) {
+	$title = ClearMySqlString($sqlcn->idsqlconnection, $title);
+}
+$stiker = PostDef('stiker');
 
-include_once("../../../class/sql.php");               // загружаем классы работы с БД
-include_once("../../../class/config.php");		// загружаем классы настроек
-include_once("../../../class/users.php");		// загружаем классы работы с пользователями
-include_once("../../../class/employees.php");		// загружаем классы работы с профилем пользователя
-
-
-// загружаем все что нужно для работы движка
-
-include_once("../../../inc/connect.php");		// соеденяемся с БД, получаем $mysql_base_id
-include_once("../../../inc/config.php");              // подгружаем настройки из БД, получаем заполненый класс $cfg
-include_once("../../../inc/functions.php");		// загружаем функции
-
-$responce=new stdClass();
-$page = $_GET['page']; // get the requested page
-if ($page==0){$page=1;};
-$limit = $_GET['rows']; // get how many rows we want to have into the grid
-$sidx = $_GET['sidx']; // get index row - i.e. user click to sort
-$sord = $_GET['sord']; // get the direction
-if (isset($_POST["oper"])) {$oper= $_POST['oper'];} else {$oper="";};
-if (isset($_POST["id"])) {$id= $_POST['id'];} else {$id="";};
-if (isset($_POST["title"]))  {$title= ClearMySqlString($sqlcn->idsqlconnection,$_POST['title']);} else {$title="";};
-if (isset($_POST["stiker"])) {$stiker= $_POST['stiker'];} else {$stiker="";};
-
-if ($oper=='')
-{
-	if(!$sidx) $sidx =1;
-	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS count FROM news");
+if ($oper == '') {
+	// Проверяем может ли пользователь просматривать?
+	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM news");
 	$row = mysqli_fetch_array($result);
-	$count = $row['count'];
-
-	if( $count >0 ) {$total_pages = ceil($count/$limit);} else {$total_pages = 0;};
-	if ($page > $total_pages) $page=$total_pages;
-
-	$start = $limit*$page - $limit;
-	$SQL = "SELECT * FROM news ORDER BY $sidx $sord LIMIT $start , $limit";
-	$result = $sqlcn->ExecuteSQL( $SQL ) or die("Не могу выбрать список новостей!".mysqli_error($sqlcn->idsqlconnection));
-
+	$count = $row['cnt'];
+	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	$sql = "SELECT * FROM news ORDER BY $sidx $sord LIMIT $start, $limit";
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу выбрать список новостей! ' . mysqli_error($sqlcn->idsqlconnection));
+	$responce = new stdClass();
 	$responce->page = $page;
 	$responce->total = $total_pages;
 	$responce->records = $count;
-	$i=0;
-	while($row = mysqli_fetch_array($result)) {
-	    $responce->rows[$i]['id']=$row['id'];	    
-	    $responce->rows[$i]['cell']=array($row['id'],$row['dt'],$row['title'],$row['stiker']);		
-	    $i++;
+	$i = 0;
+	while ($row = mysqli_fetch_array($result)) {
+		$responce->rows[$i]['id'] = $row['id'];
+		$responce->rows[$i]['cell'] = array($row['id'], $row['dt'], $row['title'], $row['stiker']);
+		$i++;
 	}
-	echo json_encode($responce);
-};
+	jsonExit($responce);
+}
 
-if ($oper=='edit')
-{
-	$SQL = "UPDATE news SET title='$title',stiker='$stiker' WHERE id='$id'";
-	$result =$sqlcn->ExecuteSQL( $SQL ) or die("Не могу обновить заголовок новости!".mysqli_error($sqlcn->idsqlconnection));
-};
+if ($oper == 'edit') {
+	// Проверяем может ли пользователь редактировать?
+	$user->TestRoles('1,5') or die('Недостаточно прав');
+	$sql = "UPDATE news SET title = '$title', stiker = '$stiker' WHERE id = '$id'";
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить заголовок новости! ' . mysqli_error($sqlcn->idsqlconnection));
+	exit;
+}
 
-if ($oper=='del')
-{
-	$SQL = "DELETE FROM news WHERE id='$id'";
-	$result = $sqlcn->ExecuteSQL( $SQL ) or die("Не могу удалить новость!".mysqli_error($sqlcn->idsqlconnection));
-};
+if ($oper == 'del') {
+	// Проверяем может ли пользователь удалять?
+	$user->TestRoles('1,6') or die('Недостаточно прав');
+	$sql = "DELETE FROM news WHERE id = '$id'";
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу удалить новость! ' . mysqli_error($sqlcn->idsqlconnection));
+	exit;
+}

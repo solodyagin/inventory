@@ -47,58 +47,59 @@ class Tequipment {
 
 	function GetById($id) {
 		global $sqlcn;
-		$SQL = "SELECT equipment.comment, equipment.mapyet,	equipment.mapmoved,
-		equipment.mapx, equipment.mapy, equipment.ip, equipment.photo,
-		equipment.nomeid, getvendorandgroup.grnomeid, equipment.id AS eqid,
-		equipment.orgid AS eqorgid, org.name AS orgname,
-		getvendorandgroup.vendorname AS vname,
-		getvendorandgroup.groupname AS grnome, places.id as placesid,
-		places.name AS placesname, users.login AS userslogin,
-		users.id AS usersid, getvendorandgroup.nomename AS nomename,
-		buhname, sernum, invnum, shtrihkod, datepost, cost, currentcost, os,
-		equipment.mode AS eqmode, equipment.mapyet AS eqmapyet,
-		equipment.comment AS eqcomment, equipment.active AS eqactive,
-		equipment.repair AS eqrepair
-		FROM equipment
-		INNER JOIN (
-		SELECT nome.groupid AS grnomeid, nome.id AS nomeid,
-		vendor.name AS vendorname, group_nome.name AS groupname,
-		nome.name AS nomename
-		FROM nome
-		INNER JOIN group_nome ON nome.groupid = group_nome.id
-		INNER JOIN vendor ON nome.vendorid = vendor.id
-		) AS getvendorandgroup ON getvendorandgroup.nomeid = equipment.nomeid
-		INNER JOIN org ON org.id = equipment.orgid
-		INNER JOIN places ON places.id = equipment.placesid
-		INNER JOIN users ON users.id = equipment.usersid
-		WHERE equipment.id='$id'";
-		$result = $sqlcn->ExecuteSQL($SQL)
+		$sql = <<<TXT
+SELECT equipment.comment,equipment.mapyet,equipment.mapmoved,equipment.mapx,equipment.mapy,equipment.ip,equipment.photo,
+       equipment.nomeid,getvendorandgroup.grnomeid,equipment.id AS eqid,equipment.orgid AS eqorgid,org.name AS orgname,
+       getvendorandgroup.vendorname AS vname,getvendorandgroup.groupname AS grnome,places.id AS placesid,
+       places.name AS placesname,users.login AS userslogin,users.id AS usersid,getvendorandgroup.nomename AS nomename,
+       buhname,sernum,invnum,shtrihkod,datepost,cost,currentcost,os,equipment.mode AS eqmode,
+       equipment.mapyet AS eqmapyet,equipment.comment AS eqcomment,equipment.active AS eqactive,
+       equipment.repair AS eqrepair
+FROM   equipment
+       INNER JOIN (SELECT nome.groupid AS grnomeid,nome.id AS nomeid,vendor.name AS vendorname,
+                          group_nome.name AS groupname,
+                                                      nome.name AS nomename
+                   FROM   nome
+                          INNER JOIN group_nome
+                                  ON nome.groupid = group_nome.id
+                          INNER JOIN vendor
+                                  ON nome.vendorid = vendor.id) AS getvendorandgroup
+               ON getvendorandgroup.nomeid = equipment.nomeid
+       INNER JOIN org
+               ON org.id = equipment.orgid
+       INNER JOIN places
+               ON places.id = equipment.placesid
+       INNER JOIN users
+               ON users.id = equipment.usersid
+WHERE  equipment.id = '$id'
+TXT;
+		$result = $sqlcn->ExecuteSQL($sql)
 				or die('Неверный запрос Tequipment.GetById: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($myrow = mysqli_fetch_array($result)) {
-			$this->id = $myrow['eqid'];
-			$this->orgid = $myrow['eqorgid'];
-			$this->placesid = $myrow['placesid'];
-			$this->usersid = $myrow['usersid'];
-			$this->nomeid = $myrow['nomeid'];
-			$this->buhname = $myrow['buhname'];
-			$this->datepost = $myrow['datepost'];
-			$this->cost = $myrow['cost'];
-			$this->currentcost = $myrow['currentcost'];
-			$this->sernum = $myrow['sernum'];
-			$this->invnum = $myrow['invnum'];
-			$this->shtrihkod = $myrow['shtrihkod'];
-			$this->os = $myrow['os'];
-			$this->mode = $myrow['eqmode'];
-			$this->comment = $myrow['comment'];
-			$this->photo = $myrow['photo'];
-			$this->repair = $myrow['eqrepair'];
-			$this->active = $myrow['eqactive'];
-			$this->ip = $myrow['ip'];
-			$this->mapx = $myrow['mapx'];
-			$this->mapy = $myrow['mapy'];
-			$this->mapmoved = $myrow['mapmoved'];
-			$this->mapyet = $myrow['mapyet'];
-			$this->tmcname = $myrow['nomename'];
+		while ($row = mysqli_fetch_array($result)) {
+			$this->id = $row['eqid'];
+			$this->orgid = $row['eqorgid'];
+			$this->placesid = $row['placesid'];
+			$this->usersid = $row['usersid'];
+			$this->nomeid = $row['nomeid'];
+			$this->buhname = $row['buhname'];
+			$this->datepost = $row['datepost'];
+			$this->cost = $row['cost'];
+			$this->currentcost = $row['currentcost'];
+			$this->sernum = $row['sernum'];
+			$this->invnum = $row['invnum'];
+			$this->shtrihkod = $row['shtrihkod'];
+			$this->os = $row['os'];
+			$this->mode = $row['eqmode'];
+			$this->comment = $row['comment'];
+			$this->photo = $row['photo'];
+			$this->repair = $row['eqrepair'];
+			$this->active = $row['eqactive'];
+			$this->ip = $row['ip'];
+			$this->mapx = $row['mapx'];
+			$this->mapy = $row['mapy'];
+			$this->mapmoved = $row['mapmoved'];
+			$this->mapyet = $row['mapyet'];
+			$this->tmcname = $row['nomename'];
 		}
 	}
 

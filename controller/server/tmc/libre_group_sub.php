@@ -1,13 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 $page = GetDef('page', '1');
 $limit = GetDef('rows');
@@ -21,9 +24,6 @@ if ($groupid == '') {
 $id = PostDef('id');
 $name = PostDef('name');
 
-// если выбрана группа, то обрабатываем, иначе ничего
-//echo "!$groupid!";
-
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
@@ -35,8 +35,8 @@ if ($oper == '') {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT id, name, active FROM group_param WHERE groupid = '$groupid' ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$sql = "SELECT id, name, active FROM group_param WHERE groupid = '$groupid' ORDER BY $sidx $sord LIMIT $start, $limit";
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список параметров групп!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
@@ -61,26 +61,26 @@ if ($oper == 'add') {
 	if (($groupid == '') || ($name == '')) {
 		die();
 	}
-	$SQL = "INSERT INTO group_param (id, groupid, name, active) VALUES (null, '$groupid', '$name', 1)";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу добавить параметр группы!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "INSERT INTO group_param (id, groupid, name, active) VALUES (null, '$groupid', '$name', 1)";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу добавить параметр группы! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	$user->TestRoles('1,5') or die('Недостаточно прав');
-	$SQL = "UPDATE group_param SET name = '$name' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die("Не могу обновить данные по группе!" . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE group_param SET name = '$name' WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по группе! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	$user->TestRoles('1,6') or die('Недостаточно прав');
-	$SQL = "UPDATE group_param SET active = NOT active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по параметрам группы!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE group_param SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по параметрам группы! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

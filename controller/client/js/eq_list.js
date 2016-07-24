@@ -1,8 +1,19 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 function parseGET(url) {
-	if (!url || url == '')
+	if (!url || url == '') {
 		url = document.location.search;
-	if (url.indexOf('?') < 0)
+	}
+	if (url.indexOf('?') < 0) {
 		return Array();
+	}
 
 	url = url.split('?');
 	url = url[1];
@@ -16,15 +27,16 @@ function parseGET(url) {
 		url = url.substr(0, url.indexOf('#'));
 	}
 
-	if (url.indexOf('&') > -1)
+	if (url.indexOf('&') > -1) {
 		params = url.split('&');
-	else
+	} else {
 		params[0] = url;
+	}
 
 	for (i = 0; i < params.length; i++) {
-		if (params[i].indexOf('=') > -1)
+		if (params[i].indexOf('=') > -1) {
 			keyval = params[i].split('=');
-		else {
+		} else {
 			keyval[0] = params[i];
 			keyval[1] = true;
 		}
@@ -42,7 +54,6 @@ function ListEqByPlaces(list, pager) {
 	} else {
 		curuserid = defaultuserid;
 	}
-	//$('#prof_user').load('controller/server/getprofileinfo.php?curuserid=' + curuserid);
 	jQuery(list).jqGrid({
 		url: route + 'controller/server/equipment/eq_list.php?curuserid=' + curuserid,
 		datatype: 'json',
@@ -57,7 +68,7 @@ function ListEqByPlaces(list, pager) {
 			{name: 'shtrihkod', index: 'shtrihkod', width: 100},
 			{name: 'mode', index: 'mode', width: 55, formatter: 'checkbox', edittype: 'checkbox'}
 		],
-		onSelectRow: function(ids) {
+		onSelectRow: function (ids) {
 			$('#photoid').load(route + 'controller/server/equipment/getphoto.php?eqid=' + ids);
 			$('#geteqid').val(ids);
 			jQuery('#tbl_move').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids});
@@ -120,7 +131,6 @@ function ListEqByMat(list, pager) {
 	if (typeof (tmp) != 'undefined') {
 		curuserid = tmp;
 	}
-	//alert(tmp);
 	jQuery(list).jqGrid({
 		url: route + 'controller/server/equipment/eq_list_mat.php?curuserid=' + curuserid,
 		datatype: 'json',
@@ -139,7 +149,7 @@ function ListEqByMat(list, pager) {
 			{name: 'curc', index: 'curc', width: 100},
 			{name: 'bn', index: 'bn', width: 100}
 		],
-		onSelectRow: function(ids) {
+		onSelectRow: function (ids) {
 			$('#photoid').load(route + 'controller/server/equipment/getphoto.php?eqid=' + ids);
 			$('#geteqid').val(ids);
 			jQuery('#tbl_move').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids});
@@ -198,14 +208,12 @@ function ListEqByMat(list, pager) {
 	jQuery('#list2').jqGrid('setFrozenColumns');
 }
 
-$('#myTab a:first').click(function(e) {
-	//jQuery("#list2").GridUnload("#list2");
+$('#myTab a:first').click(function (e) {
 	$.jgrid.gridUnload('#list2');
 	ListEqByPlaces('#list2', 'pager2');
 });
 
-$('#myTab a:last').click(function(e) {
-	//jQuery("#list2").GridUnload("#list2");
+$('#myTab a:last').click(function (e) {
 	$.jgrid.gridUnload('#list2');
 	ListEqByMat('#list2', 'pager2');
 });

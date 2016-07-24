@@ -1,10 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Изначальный автор данного кода - Грибов Павел
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Tmod {
 
@@ -44,18 +50,17 @@ class Tmod {
 	 * @global type $sqlcn
 	 * @param type $name
 	 */
-
 	function UnRegister($name) {
 		global $sqlcn;
 		$modname = 'modulename_' . $name;
 		$sqlcn->ExecuteSQL("DELETE FROM config_common WHERE nameparam = '$modname'")
-				or die('Неверный запрос Tmod.UnRegister: ' . mysqli_error($sqlcn->idsqlconnection));
+				or die('Неверный запрос Tmod.UnRegister(1): ' . mysqli_error($sqlcn->idsqlconnection));
 		$modcomment = 'modulecomment_' . $name;
 		$sqlcn->ExecuteSQL("DELETE FROM config_common WHERE nameparam = '$modcomment'")
-				or die('Неверный запрос Tmod.UnRegister: ' . mysqli_error($sqlcn->idsqlconnection));
+				or die('Неверный запрос Tmod.UnRegister(2): ' . mysqli_error($sqlcn->idsqlconnection));
 		$modcopy = 'modulecopy_' . $name;
 		$sqlcn->ExecuteSQL("DELETE FROM config_common WHERE nameparam = '$modcopy'")
-				or die('Неверный запрос Tmod.UnRegister: ' . mysqli_error($sqlcn->idsqlconnection));
+				or die('Неверный запрос Tmod.UnRegister(3): ' . mysqli_error($sqlcn->idsqlconnection));
 	}
 
 	/**
@@ -66,7 +71,7 @@ class Tmod {
 	function Activate($name) {
 		global $sqlcn;
 		$modname = 'modulename_' . $name;
-		$sqlcn->ExecuteSQL("UPDATE config_common SET valueparam='1' WHERE nameparam ='$modname'")
+		$sqlcn->ExecuteSQL("UPDATE config_common SET valueparam = '1' WHERE nameparam ='$modname'")
 				or die('Неверный запрос Tmod.Activate: ' . mysqli_error($sqlcn->idsqlconnection));
 	}
 
@@ -79,7 +84,7 @@ class Tmod {
 	function DeActivate($name) {
 		global $sqlcn;
 		$modname = 'modulename_' . $name;
-		$sqlcn->ExecuteSQL("UPDATE config_common SET valueparam='0' WHERE nameparam ='$modname'")
+		$sqlcn->ExecuteSQL("UPDATE config_common SET valueparam = '0' WHERE nameparam = '$modname'")
 				or die('Неверный запрос Tmod.DeActivate: ' . mysqli_error($sqlcn->idsqlconnection));
 	}
 
@@ -92,7 +97,7 @@ class Tmod {
 	function IsActive($name) {
 		global $sqlcn;
 		$modname = 'modulename_' . $name;
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM config_common WHERE nameparam ='$modname'")
+		$result = $sqlcn->ExecuteSQL("SELECT * FROM config_common WHERE nameparam = '$modname'")
 				or die('Неверный запрос Tmod.IsActive: ' . mysqli_error($sqlcn->idsqlconnection));
 		$active = 0;
 		// проверяем, а может модуль уже зарегистрирован? Если нет, то только тогда его заносим в базу 

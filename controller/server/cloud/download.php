@@ -1,12 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
 
@@ -15,9 +19,9 @@ is_numeric($id) or die('Переданы неправильные парамет
 
 $sql = "SELECT * FROM cloud_files WHERE id = $id";
 $result = $sqlcn->ExecuteSQL($sql)
-		or die('Ошибка получения файла из базы! '.mysqli_error($sqlcn->idsqlconnection));
+		or die('Ошибка получения файла из базы! ' . mysqli_error($sqlcn->idsqlconnection));
 $row = mysqli_fetch_array($result);
-$filename = WUO_ROOT.'/files/'.$row['filename'];
+$filename = WUO_ROOT . '/files/' . $row['filename'];
 
 (file_exists($filename) && is_file($filename)) or die('Файл не найден');
 
@@ -31,7 +35,7 @@ $name = rawurldecode($row['title']);
 @ob_end_clean();
 
 header('Content-Type: application/octet-stream');
-header('Content-Disposition: attachment; filename="'.$name.'"');
+header('Content-Disposition: attachment; filename="' . $name . '"');
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Accept-Ranges: bytes');
 header('Cache-control: private');

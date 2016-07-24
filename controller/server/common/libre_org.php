@@ -33,7 +33,7 @@ if ($oper == '') {
 	$start = $limit * $page - $limit;
 	$sql = "SELECT id, name, active, picmap FROM org ORDER BY $sidx $sord LIMIT $start, $limit";
 	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список организаций!' . mysqli_error($sqlcn->idsqlconnection));
+			or die('Не могу выбрать список организаций! ' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
 	$responce->total = $total_pages;
@@ -51,28 +51,28 @@ if ($oper == '') {
 	jsonExit($responce);
 }
 
-if ($oper == 'edit') {
-	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
-	$sql = "UPDATE org SET name='$name' WHERE id='$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу обновить данные по организации!' . mysqli_error($sqlcn->idsqlconnection));
-	exit;
-}
-
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	$user->TestRoles('1,4') or die('Недостаточно прав');
 	$sql = "INSERT INTO org (id, name, active) VALUES (null, '$name', 1)";
 	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу добавить организацию!' . mysqli_error($sqlcn->idsqlconnection));
+			or die('Не могу добавить организацию! ' . mysqli_error($sqlcn->idsqlconnection));
+	exit;
+}
+
+if ($oper == 'edit') {
+	// Проверяем может ли пользователь редактировать?
+	$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
+	$sql = "UPDATE org SET name='$name' WHERE id='$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по организации! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
-	$sql = "UPDATE org SET active = not active WHERE id='$id'";
+	$sql = "UPDATE org SET active = NOT active WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу удалить организацию!' . mysqli_error($sqlcn->idsqlconnection));
+			or die('Не могу удалить организацию! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

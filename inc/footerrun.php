@@ -1,17 +1,20 @@
 <?php
 
-/* 
- * (с) 2011-2015 Грибов Павел
- * http://грибовы.рф * 
- * Если исходный код найден в сети - значит лицензия GPL v.3 * 
- * В противном случае - код собственность ГК Яртелесервис, Мультистрим, Телесервис, Телесервис плюс * 
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
  */
 
-// запускаем поочередно все скрипты из папки footerrun
-$mfiles=GetArrayFilesInDir("footerrun");
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
+
+// запускаем поочередно все скрипты из каталога /footerrun
+$mfiles = GetArrayFilesInDir(WUO_ROOT . '/footerrun');
 foreach ($mfiles as &$fname) {
-    include_once("footerrun/$fname");
+	include_once(WUO_ROOT . "/footerrun/$fname");
 }
 unset($fname);
-
-?>

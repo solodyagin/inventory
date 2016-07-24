@@ -37,23 +37,31 @@ if ($oper == '') {
 			$field = 'org.name';
 		}
 		$data = $flt['rules'][$i]['data'];
-		$where = $where . "($field LIKE '%$data%')";
+		$where .= "($field LIKE '%$data%')";
 		if ($i < ($cnt - 1)) {
-			$where = $where . ' AND ';
+			$where .= ' AND ';
 		}
 	}
 	if ($where != '') {
 		$where = 'WHERE ' . $where;
 	}
-	$SQL = <<<TXT
-		SELECT COUNT(*) AS cnt, org.id AS orgid,
-		users.id, users.orgid, users.login, users.password, users.email,
-		users.mode, users.active, org.name AS orgname
-		FROM users
-		INNER JOIN org ON users.orgid = org.id
-		$where
+	$sql = <<<TXT
+SELECT     COUNT(*) AS cnt,
+           org.id   AS orgid,
+           users.id,
+           users.orgid,
+           users.login,
+           users.password,
+           users.email,
+           users.mode,
+           users.active,
+           org.name AS orgname
+FROM       users
+INNER JOIN org
+ON         users.orgid = org.id
+$where
 TXT;
-	$result = $sqlcn->ExecuteSQL($SQL);
+	$result = $sqlcn->ExecuteSQL($sql);
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
 	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
@@ -61,17 +69,25 @@ TXT;
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = <<<TXT
-		SELECT org.id AS orgid, users.id, users.orgid, users.login,
-		users.password, users.email, users.mode, users.active,
-		org.name AS orgname FROM users
-		INNER JOIN org ON users.orgid = org.id
-		$where
-		ORDER BY $sidx $sord
-		LIMIT $start, $limit
+	$sql = <<<TXT
+SELECT     org.id AS orgid,
+           users.id,
+           users.orgid,
+           users.login,
+           users.password,
+           users.email,
+           users.mode,
+           users.active,
+           org.name AS orgname
+FROM       users
+INNER JOIN org
+ON         users.orgid = org.id
+$where
+ORDER BY   $sidx $sord
+LIMIT      $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не могу выбрать список пользователей!' . mysqli_error($sqlcn->idsqlconnection));
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу выбрать список пользователей! ' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
 	$responce->total = $total_pages;
@@ -101,26 +117,26 @@ if ($oper == 'edit') {
 	$user->TestRoles('1') or die('Недостаточно прав');
 	$imode = ($mode == 'Да') ? '1' : '0';
 	$ps = ($pass != 'скрыто') ? "`password`=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
-	$SQL = "UPDATE users SET mode='$imode', login='$login',$ps email='$email' WHERE id='$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по пользователю!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE users SET mode = '$imode', login = '$login', $ps email = '$email' WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по пользователю! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'add') {
 	// Только с полными правами можно добавлять пользователя!
 	$user->TestRoles('1') or die('Недостаточно прав');
-	$SQL = "INSERT INTO knt (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу добавить пользователя!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "INSERT INTO knt (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу добавить пользователя! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }
 
 if ($oper == 'del') {
 	// Только с полными правами можно удалять пользователя!
 	$user->TestRoles('1') or die('Недостаточно прав');
-	$SQL = "UPDATE users SET active=not active WHERE id='$id'";
-	$sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить данные по пользователю!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE users SET active = NOT active WHERE id = '$id'";
+	$sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить данные по пользователю! ' . mysqli_error($sqlcn->idsqlconnection));
 	exit;
 }

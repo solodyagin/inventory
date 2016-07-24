@@ -1,26 +1,21 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Разработчики:
-//   Грибов Павел,
-//   Сергей Солодягин (solodyagin@gmail.com)
-//   (добавляйте себя если что-то делали)
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
 
-defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
-// get the requested page
-$page = GetDef('page');
-
-// get how many rows we want to have into the grid
-if (isset($_GET['rows'])) {
-	$limit = $_GET['rows'];
-} else {
-	$rows = '';
-}
-
-$sidx = GetDef('sidx', '1'); // get index row - i.e. user click to sort
-$sord = GetDef('sord'); // get the direction
+$page = GetDef('page', '1');
+$limit = GetDef('rows');
+$sidx = GetDef('sidx', '1');
+$sord = GetDef('sord');
 $oper = PostDef('oper');
 $id = PostDef('id');
 $eqid = GetDef('eqid');
@@ -34,26 +29,53 @@ $doc = PostDef('doc');
 if ($eqid == '') {
 	$where = '';
 } else {
-	$where = "WHERE repair.eqid='$eqid'";
+	$where = "WHERE repair.eqid = '$eqid'";
 }
 
 if ($oper == '') {
-	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS count, repair.dt, repair.dtend, repair.kntid,
-			knt.name, repair.cost, repair.comment, repair.status
-			FROM repair INNER JOIN knt ON knt.id=repair.kntid $where");
+	$sql = <<<TXT
+SELECT     COUNT(*) AS cnt,
+           repair.dt,
+           repair.dtend,
+           repair.kntid,
+           knt.name,
+           repair.cost,
+           repair.comment,
+           repair.status
+FROM       repair
+INNER JOIN knt
+ON         knt.id = repair.kntid
+$where
+TXT;
+	$result = $sqlcn->ExecuteSQL($sql);
 	$row = mysqli_fetch_array($result);
-	$count = $row['count'];
+	$count = $row['cnt'];
 	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT repair.id, repair.userfrom, repair.userto, repair.doc, repair.dt, repair.dtend,
-			repair.kntid, knt.name, repair.cost, repair.comment, repair.status
-			FROM repair INNER JOIN knt ON knt.id=repair.kntid $where
-            ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не могу выбрать список ремонтов!'.mysqli_error($sqlcn->idsqlconnection));
+	$sql = <<<TXT
+SELECT     repair.id,
+           repair.userfrom,
+           repair.userto,
+           repair.doc,
+           repair.dt,
+           repair.dtend,
+           repair.kntid,
+           knt.name,
+           repair.cost,
+           repair.comment,
+           repair.status
+FROM       repair
+INNER JOIN knt
+ON         knt.id = repair.kntid
+$where
+ORDER BY   $sidx $sord
+LIMIT      $start, $limit
+TXT;
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу выбрать список ремонтов!' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
 	$responce->total = $total_pages;
@@ -88,7 +110,6 @@ if ($oper == '') {
 		} else {
 			$row['userfrom'] = 'не задано';
 		}
-
 		$responce->rows[$i]['cell'] = array($row['id'], $dt, $dtend, $row['name'],
 			$row['cost'], $row['comment'], $st, $row['userfrom'],
 			$row['userto'], $row['doc']);
@@ -98,18 +119,23 @@ if ($oper == '') {
 }
 
 if ($oper == 'edit') {
-	$dt = DateToMySQLDateTime2($dt.' 00:00:00');
-	$dtend = DateToMySQLDateTime2($dtend.' 00:00:00');
-	$SQL = "UPDATE repair SET comment='$comment', dt='$dt', dtend='$dtend',
-		status='$status', doc='$doc' WHERE id='$id'";
-	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не могу обновить статус ремонта ТМЦ! '.mysqli_error($sqlcn->idsqlconnection));
+	$dt = DateToMySQLDateTime2($dt . ' 00:00:00');
+	$dtend = DateToMySQLDateTime2($dtend . ' 00:00:00');
+	$sql = <<<TXT
+UPDATE repair
+SET    comment = '$comment',dt = '$dt',dtend = '$dtend',status = '$status',doc = '$doc'
+WHERE  id = '$id'
+TXT;
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Не могу обновить статус ремонта ТМЦ! ' . mysqli_error($sqlcn->idsqlconnection));
 	ReUpdateRepairEq();
+	exit;
 }
 
 if ($oper == 'del') {
-	$SQL = "DELETE FROM repair WHERE id='$id'";
+	$SQL = "DELETE FROM repair WHERE id = '$id'";
 	$result = $sqlcn->ExecuteSQL($SQL)
-			or die('Не могу удалить запись о ремонте! '.mysqli_error($sqlcn->idsqlconnection));
+			or die('Не могу удалить запись о ремонте! ' . mysqli_error($sqlcn->idsqlconnection));
 	ReUpdateRepairEq();
+	exit;
 }

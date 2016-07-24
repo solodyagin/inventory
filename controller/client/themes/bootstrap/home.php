@@ -103,6 +103,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 				<!-- [/Последние перемещения ТМЦ] -->
 			<?php endif; ?>
 			<?php if (($mhome->IsActive('commits-widget') == 1) && ($user->mode == 1)): ?>
+				<!-- [Виджет разработки] -->
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h4 class="panel-title">Разработка</h4>
@@ -111,6 +112,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 						<iframe src="http://tylerlh.github.com/github-latest-commits-widget/?username=solodyagin&repo=webuseorg3_lite&limit=5" allowtransparency="true" frameborder="0" scrolling="no" width="100%" height="250px"></iframe>
 					</div>
 				</div>
+				<!-- [/Виджет разработки] -->
 			<?php endif; ?>
 		</div>
 	</div>

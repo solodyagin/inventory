@@ -22,12 +22,9 @@ if ($user->TestRoles('1,4,5,6')):
 			</div>
 		</div>
 	</div>
-	<script  src="controller/client/js/libre_nome.js"></script>
-	<?php
-else:
-	?>
+	<script src="controller/client/js/libre_nome.js"></script>
+<?php else: ?>
 	<div class="alert alert-error">
 		У вас нет доступа в данный раздел!
 	</div>
-<?php
-endif;
+<?php endif;

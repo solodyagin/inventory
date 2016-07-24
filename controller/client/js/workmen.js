@@ -1,3 +1,12 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 function exportExcel(list, tmc) {
 	var mya = new Array();
 	mya = $(list).getDataIDs();
@@ -81,13 +90,13 @@ function exportExcel(list, tmc) {
 }
 
 jQuery('#workmen').jqGrid({
-	url: 'controller/server/tmc/workmen.php',
+	url: route + 'controller/server/tmc/workmen.php',
 	datatype: 'json',
 	colNames: ['Статус', 'Организация', 'Помещение', 'Группа', 'Id', 'Инв.№', 'ТМЦ', 'Ответственный', 'За месяц', 'За год'],
 	colModel: [
 		{name: 'repair', index: 'repair', width: 100, search: false},
 		{name: 'orgname', index: 'orgname', width: 155, stype: 'select',
-			searchoptions: {dataUrl: 'controller/server/common/getlistorgs.php?addnone=true'}},
+			searchoptions: {dataUrl: route + 'controller/server/common/getlistorgs.php?addnone=true'}},
 		{name: 'placename', index: 'placename', width: 150, search: false},
 		{name: 'groupnomename', index: 'groupnomename', width: 150, stype: 'select',
 			searchoptions: {dataUrl: route + 'controller/server/equipment/getlistgroupname.php?addnone=true'}},
@@ -101,7 +110,7 @@ jQuery('#workmen').jqGrid({
 	onSelectRow: function (ids) {
 		$('#photoid').load(route + 'controller/server/equipment/getphoto.php?eqid=' + ids);
 		$.jgrid.gridUnload('#tbl_rep');
-		jQuery('#tbl_rep').jqGrid('setGridParam', {url: 'controller/server/equipment/getrepinfo.php?eqid=' + ids});
+		jQuery('#tbl_rep').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getrepinfo.php?eqid=' + ids});
 		jQuery('#tbl_rep').jqGrid({
 			url: route + 'controller/server/equipment/getrepinfo.php?eqid=' + ids,
 			datatype: "json",
@@ -131,7 +140,7 @@ jQuery('#workmen').jqGrid({
 						}}
 				},
 				{name: 'comment', index: 'comment', width: 200, editable: true},
-				{name: 'status', index: 'status', width: 80, editable: true, edittype: "select", editoptions: {value: "1:В сервисе;0:Работает;2:Есть заявка;3:Списать"}},
+				{name: 'status', index: 'status', width: 80, editable: true, edittype: 'select', editoptions: {value: '1:В сервисе;0:Работает;2:Есть заявка;3:Списать'}},
 				{name: 'userfrom', index: 'userfrom', width: 200},
 				{name: 'userto', index: 'userto', width: 200},
 				{name: 'doc', index: 'doc', width: 200, editable: true},
@@ -164,7 +173,7 @@ jQuery('#workmen').jqGrid({
 					jQuery('#tbl_rep').jqGrid('getRowData', id);
 					$('#pg_add_edit').dialog({autoOpen: false, height: 480, width: 620, modal: true, title: 'Ремонт имущества'});
 					$('#pg_add_edit').dialog('open');
-					$('#pg_add_edit').load('controller/client/view/equipment/service.php?step=edit&eqid=' + id);
+					$('#pg_add_edit').load(route + 'controller/client/view/equipment/service.php?step=edit&eqid=' + id);
 				} else {
 					$().toastmessage('showWarningToast', 'Выберите ТМЦ для изменения статуса ремонта!');
 				}
@@ -201,7 +210,7 @@ jQuery('#workmen').jqGrid({
 	rowNum: 1000,
 	scroll: 1,
 	sortorder: 'asc',
-	editurl: 'controller/server/tmc/workmen.php',
+	editurl: route + 'controller/server/tmc/workmen.php',
 	caption: 'Сервисное обслуживание ТМЦ'
 });
 jQuery('#workmen').jqGrid('navGrid', '#workmen_footer', {edit: false, add: false, del: false, search: false});
@@ -217,7 +226,7 @@ jQuery('#workmen').jqGrid('navButtonAdd', '#workmen_footer', {
 			jQuery('#workmen').jqGrid('getRowData', id);
 			$('#pg_add_edit').dialog({autoOpen: false, height: 480, width: 620, modal: true, title: 'Ремонт имущества'});
 			$('#pg_add_edit').dialog('open');
-			$('#pg_add_edit').load('controller/client/view/equipment/service.php?step=add&eqid=' + id);
+			$('#pg_add_edit').load(route + 'controller/client/view/equipment/service.php?step=add&eqid=' + id);
 		} else {
 			$().toastmessage('showWarningToast', 'Выберите ТМЦ для ремонта!');
 		}

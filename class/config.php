@@ -1,8 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Изначальный автор данного кода - Грибов Павел
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Tconfig {
 
@@ -22,43 +30,41 @@ class Tconfig {
 	var $smtpport, $smtpusername, $smtppass;  // SMTP порт,пользователь,пароль пользователя для входа
 	var $emailreplyto; // куда слать ответы
 	var $sendemail;  // а вообще будем посылать почту?
-	var $version;  // версия платформы	
+	var $version;  // версия платформы
 	var $defaultorgid;   // организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
 	var $urlsite;  // где находится сайт http://
-	var $navbar = array(); // навигационная последовательность 
+	var $navbar = array(); // навигационная последовательность
 	var $quickmenu = array(); // "быстрое меню"
-        var $style="Bootstrap";   //стиль грида по умолчанию  
+	var $style = 'Bootstrap';   //стиль грида по умолчанию
 
 	function GetConfigFromBase() {
 		global $sqlcn;
 		$result = $sqlcn->ExecuteSQL('SELECT * FROM config')
-				or die('Неверный запрос Tconfig.GetConfigFromBase: '.mysqli_error($sqlcn->idsqlconnection));
-		while ($myrow = mysqli_fetch_array($result)) {
-			$this->ad = $myrow['ad'];
-			$this->domain1 = $myrow['domain1'];
-			$this->domain2 = $myrow['domain2'];
-			$this->sitename = htmlspecialchars($myrow['sitename'], ENT_QUOTES);
-			$this->usercanregistrate = $myrow['usercanregistrate'];
-			$this->useraddfromad = $myrow['useraddfromad'];
-			$this->ldap = $myrow['ldap'];
-			$this->theme = $myrow['theme'];
-			$this->emailadmin = htmlspecialchars($myrow['emailadmin']);
-			$this->smtphost = $myrow['smtphost'];  // сервер SMTP
-			$this->smtpauth = $myrow['smtpauth'];  // требуется утенфикация?
-			$this->smtpport = $myrow['smtpport'];  // SMTP порт
-			$this->smtpusername = stripslashes($myrow['smtpusername']); // SMTP имя пользователя для входа
-			$this->smtppass = stripslashes($myrow['smtppass']);  // SMTP пароль пользователя для входа
-			$this->emailreplyto = stripslashes($myrow['emailreplyto']); // куда слать ответы
-			$this->sendemail = $myrow['sendemail'];  // а вообще будем посылать почту?
-			$this->version = $myrow['version'];
-			$this->urlsite = $myrow['urlsite'];
-                        if (isset($_COOKIE['stl'])) {
-                         $this->style=$_COOKIE['stl'];
-                        } else {$this->style="Bootstrap";};
+				or die('Неверный запрос Tconfig.GetConfigFromBase: ' . mysqli_error($sqlcn->idsqlconnection));
+		while ($row = mysqli_fetch_array($result)) {
+			$this->ad = $row['ad'];
+			$this->domain1 = $row['domain1'];
+			$this->domain2 = $row['domain2'];
+			$this->sitename = htmlspecialchars($row['sitename'], ENT_QUOTES);
+			$this->usercanregistrate = $row['usercanregistrate'];
+			$this->useraddfromad = $row['useraddfromad'];
+			$this->ldap = $row['ldap'];
+			$this->theme = $row['theme'];
+			$this->emailadmin = htmlspecialchars($row['emailadmin']);
+			$this->smtphost = $row['smtphost'];  // сервер SMTP
+			$this->smtpauth = $row['smtpauth'];  // требуется утенфикация?
+			$this->smtpport = $row['smtpport'];  // SMTP порт
+			$this->smtpusername = stripslashes($row['smtpusername']); // SMTP имя пользователя для входа
+			$this->smtppass = stripslashes($row['smtppass']);  // SMTP пароль пользователя для входа
+			$this->emailreplyto = stripslashes($row['emailreplyto']); // куда слать ответы
+			$this->sendemail = $row['sendemail'];  // а вообще будем посылать почту?
+			$this->version = $row['version'];
+			$this->urlsite = $row['urlsite'];
+			$this->style = (isset($_COOKIE['stl'])) ? $_COOKIE['stl'] : 'Bootstrap';
 			if (isset($_COOKIE['defaultorgid'])) {
 				$this->defaultorgid = $_COOKIE['defaultorgid'];
 			} else {
-				$result2 = $sqlcn->ExecuteSQL('SELECT * FROM org WHERE active=1 ORDER BY id ASC LIMIT 1');
+				$result2 = $sqlcn->ExecuteSQL('SELECT * FROM org WHERE active = 1 ORDER BY id ASC LIMIT 1');
 				while ($myrow = mysqli_fetch_array($result2)) {
 					$this->defaultorgid = $myrow['id'];
 				}
@@ -68,13 +74,16 @@ class Tconfig {
 
 	function SetConfigToBase() {
 		global $sqlcn;
-		$sql = "UPDATE config SET ad='$this->ad',
-		domain1='$this->domain1',domain2='$this->domain2',sitename='$this->sitename',theme='$this->theme',
-		usercanregistrate='1',ldap='$this->ldap',emailadmin='$this->emailadmin',
-		smtphost='$this->smtphost',smtpauth='$this->smtpauth',smtpport='$this->smtpport',smtpusername='$this->smtpusername',
-		smtppass='$this->smtppass',emailreplyto='$this->emailreplyto',sendemail='$this->sendemail',urlsite='$this->urlsite'";
+		$sql = <<<TXT
+UPDATE config
+SET    ad = '$this->ad',domain1 = '$this->domain1',domain2 = '$this->domain2',sitename = '$this->sitename',theme =
+       '$this->theme',usercanregistrate = '1',ldap = '$this->ldap',emailadmin = '$this->emailadmin',
+       smtphost = '$this->smtphost',smtpauth = '$this->smtpauth',smtpport = '$this->smtpport',
+       smtpusername = '$this->smtpusername',smtppass = '$this->smtppass',emailreplyto = '$this->emailreplyto',
+       sendemail = '$this->sendemail',urlsite = '$this->urlsite'
+TXT;
 		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tconfig.SetToBase: '.mysqli_error($sqlcn->idsqlconnection));
+				or die('Неверный запрос Tconfig.SetToBase: ' . mysqli_error($sqlcn->idsqlconnection));
 		return true;
 	}
 

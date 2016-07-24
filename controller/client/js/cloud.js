@@ -8,7 +8,6 @@
  */
 
 function ViewFileList(keyme) {
-	//$('#cloud_files').jqGrid('GridUnload');
 	$.jgrid.gridUnload('#cloud_files');
 	jQuery('#cloud_files').jqGrid({
 		url: route + 'controller/server/cloud/listfiles.php?cloud_dirs_id=' + keyme,
@@ -43,7 +42,7 @@ $('#simple-btn').fileapi({
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,
 	autoUpload: true,
-	onFileComplete: function(evt, uiEvt) {
+	onFileComplete: function (evt, uiEvt) {
 		if (uiEvt.result.msg != 'error') {
 			jQuery('#cloud_files').jqGrid().trigger('reloadGrid');
 		}
@@ -63,13 +62,13 @@ function GetTree() {
 		initAjax: {
 			url: route + 'controller/server/cloud/gettree.php?'
 		},
-		onActivate: function(node) {
+		onActivate: function (node) {
 			selectedkey = node.data.key;
 			ViewFileList(selectedkey);
 			$('#simple-btn').fileapi('data', {'selectedkey': selectedkey});
 			$("#simple-btn").css('visibility', 'visible');
 		},
-		onLazyRead: function(node) {
+		onLazyRead: function (node) {
 			// Mockup a slow reqeuest ...
 			node.appendAjax({
 				url: 'sample-data2.json',
@@ -77,20 +76,20 @@ function GetTree() {
 			});
 		},
 		dnd: {
-			onDragStart: function(node) {
+			onDragStart: function (node) {
 				/** This function MUST be defined to enable dragging for the tree.
 				 *  Return false to cancel dragging of node.
 				 */
 				logMsg('tree.onDragStart(%o)', node);
 				return true;
 			},
-			onDragStop: function(node) {
+			onDragStop: function (node) {
 				// This function is optional.
 				logMsg('tree.onDragStop(%o)', node);
 			},
 			autoExpandMS: 1000,
 			preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
-			onDragEnter: function(node, sourceNode) {
+			onDragEnter: function (node, sourceNode) {
 				/** sourceNode may be null for non-dynatree droppables.
 				 *  Return false to disallow dropping on node. In this case
 				 *  onDragOver and onDragLeave are not called.
@@ -101,7 +100,7 @@ function GetTree() {
 				logMsg('tree.onDragEnter(%o, %o)', node, sourceNode);
 				return true;
 			},
-			onDragOver: function(node, sourceNode, hitMode) {
+			onDragOver: function (node, sourceNode, hitMode) {
 				/** Return false to disallow dropping this node.
 				 *
 				 */
@@ -115,24 +114,23 @@ function GetTree() {
 					return 'after';
 				}
 			},
-			onDrop: function(node, sourceNode, hitMode, ui, draggable) {
+			onDrop: function (node, sourceNode, hitMode, ui, draggable) {
 				/** This function MUST be defined to enable dropping of items on
 				 * the tree.
 				 */
 				logMsg('tree.onDrop(%o, %o, %s)', node, sourceNode, hitMode);
 				sourceNode.move(node, hitMode);
-				$.get(route + 'controller/server/cloud/movefolder.php?nodekey=' + node.data.key + '&srnodekey=' + sourceNode.data.key, function(data) {
+				$.get(route + 'controller/server/cloud/movefolder.php?nodekey=' + node.data.key + '&srnodekey=' + sourceNode.data.key, function (data) {
 					if (data != '') {
-						//alert(data);
 						$().toastmessage('showWarningToast', data);
 					}
 				});
 
 				//SaveAllNodes(node, sourceNode);
-				// expand the drop target
-//        sourceNode.expand(true);
+				//expand the drop target
+				//sourceNode.expand(true);
 			},
-			onDragLeave: function(node, sourceNode) {
+			onDragLeave: function (node, sourceNode) {
 				logMsg('tree.onDragLeave(%o, %o)', node, sourceNode);
 			}
 		}
@@ -142,15 +140,13 @@ function GetTree() {
 selectedkey = '';
 GetTree();
 
-$('#newfolder').click(function() {
+$('#newfolder').click(function () {
 	if ($('#foldername').val() == '') {
-		//alert('Введите имя папки!');
 		$().toastmessage('showWarningToast', 'Введите имя папки!');
 	} else {
 		$('#tree').dynatree('destroy');
-		$.get(route + 'controller/server/cloud/addfolder.php?foldername=' + $('#foldername').val(), function(data) {
+		$.get(route + 'controller/server/cloud/addfolder.php?foldername=' + $('#foldername').val(), function (data) {
 			if (data != '') {
-				//alert(data);
 				$().toastmessage('showWarningToast', data);
 			}
 			GetTree();
@@ -158,16 +154,14 @@ $('#newfolder').click(function() {
 	}
 });
 
-$('#delfolder').click(function() {
+$('#delfolder').click(function () {
 	if (selectedkey == '') {
-		//alert('Не выбрана папка!');
 		$().toastmessage('showWarningToast', 'Не выбрана папка!');
 	} else {
 		if (confirm('Вы подтверждаете удаление?')) {
 			$('#tree').dynatree('destroy');
-			$.get(route + 'controller/server/cloud/delfolder.php?folderkey=' + selectedkey, function(data) {
+			$.get(route + 'controller/server/cloud/delfolder.php?folderkey=' + selectedkey, function (data) {
 				if (data != '') {
-					//alert(data);
 					$().toastmessage('showWarningToast', data);
 				}
 				GetTree();

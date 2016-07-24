@@ -1,5 +1,15 @@
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
 jQuery.extend(jQuery.jgrid.defaults, {ajaxSelectOptions: {cache: false}});
-jQuery("#list2").jqGrid({
+
+jQuery('#list2').jqGrid({
 	url: route + 'controller/server/knt/libre_knt.php?org_status=list',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Имя', 'Инн', 'Кпп', 'Пок', 'Прод', 'К.договор', 'ERPCode', 'Комментарий', 'Действия'],
@@ -27,7 +37,8 @@ jQuery("#list2").jqGrid({
 	editurl: route + 'controller/server/knt/libre_knt.php?org_status=edit',
 	caption: 'Справочник контрагентов',
 	onSelectRow: function (ids) {
-		$('#info_contract').load('controller/server/knt/info_contract.php?kntid=' + ids);
+		$('#info_contract').load(route + 'controller/server/knt/info_contract.php?kntid=' + ids);
 	}
 }).trigger('reloadGrid');
+
 jQuery('#list2').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});

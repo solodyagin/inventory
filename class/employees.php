@@ -1,8 +1,16 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Изначальный автор данного кода - Грибов Павел
-// http://грибовы.рф
+/*
+ * Данный код создан и распространяется по лицензии GPL v3
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ *   (добавляйте себя если что-то делали)
+ * http://грибовы.рф
+ */
+
+// Запрещаем прямой вызов скрипта.
+defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Temployees {
 
@@ -20,9 +28,13 @@ class Temployees {
 
 	function Add() {
 		global $sqlcn;
-		$sqlcn->ExecuteSQL("INSERT INTO users_profile (id, usersid, faza, code, enddate, post)"
-						." VALUES (NULL, '$this->usersid', '$this->faza', '$this->code', '$this->enddate', '$this->post')")
-				or die('Неверный запрос Temployees.Add: '.mysqli_error($sqlcn->idsqlconnection));
+		$sql = <<<TXT
+INSERT INTO users_profile
+            (id,usersid,faza,code,enddate,post)
+VALUES      (NULL,'$this->usersid','$this->faza','$this->code','$this->enddate','$this->post') 
+TXT;
+		$sqlcn->ExecuteSQL($sql)
+				or die('Неверный запрос Temployees.Add: ' . mysqli_error($sqlcn->idsqlconnection));
 	}
 
 	/**
@@ -31,10 +43,13 @@ class Temployees {
 	 */
 	function Update() {
 		global $sqlcn;
-		$sqlcn->ExecuteSQL("UPDATE users_profile"
-						." SET fio='$this->fio', faza='$this->faza', code='$this->code', enddate='$this->enddate', post='$this->post'"
-						." WHERE code='$this->code'")
-				or die('Неверный запрос Temployees.Update: '.mysqli_error($sqlcn->idsqlconnection));
+		$sql = <<<TXT
+UPDATE users_profile
+SET    fio = '$this->fio',faza = '$this->faza',code = '$this->code',enddate = '$this->enddate',post = '$this->post'
+WHERE  code = '$this->code' 
+TXT;
+		$sqlcn->ExecuteSQL($sql)
+				or die('Неверный запрос Temployees.Update: ' . mysqli_error($sqlcn->idsqlconnection));
 	}
 
 	/**
@@ -43,15 +58,15 @@ class Temployees {
 	 */
 	function GetByERPCode() {
 		global $sqlcn;
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM users_profile WHERE code='$this->code'")
-				or die('Неверный запрос Temployees.GetByERPCode: '.mysqli_error($sqlcn->idsqlconnection));
-		while ($myrow = mysqli_fetch_array($result)) {
-			$this->id = $myrow['id'];
-			$this->usersid = $myrow['usersid'];
-			$this->fio = $myrow['fio'];
-			$this->faza = $myrow['faza'];
-			$this->enddate = $myrow['enddate'];
-			$this->post = $myrow['post'];
+		$result = $sqlcn->ExecuteSQL("SELECT * FROM users_profile WHERE code = '$this->code'")
+				or die('Неверный запрос Temployees.GetByERPCode: ' . mysqli_error($sqlcn->idsqlconnection));
+		while ($row = mysqli_fetch_array($result)) {
+			$this->id = $row['id'];
+			$this->usersid = $row['usersid'];
+			$this->fio = $row['fio'];
+			$this->faza = $row['faza'];
+			$this->enddate = $row['enddate'];
+			$this->post = $row['post'];
 		}
 	}
 
@@ -63,14 +78,12 @@ class Temployees {
 	 */
 	function EmployeesYetByERPCode($TERPCode) {
 		global $sqlcn;
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM users_profile WHERE code='$TERPCode'")
-				or die('Ошибка (EmployeesYetByERPCode): '.mysqli_error($sqlcn->idsqlconnection));
-		while ($myrow = mysqli_fetch_array($result)) {
+		$result = $sqlcn->ExecuteSQL("SELECT * FROM users_profile WHERE code = '$TERPCode'")
+				or die('Ошибка (EmployeesYetByERPCode): ' . mysqli_error($sqlcn->idsqlconnection));
+		while ($row = mysqli_fetch_array($result)) {
 			return true;
 		}
 		return false;
 	}
 
 }
-
-?>

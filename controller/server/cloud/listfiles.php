@@ -12,10 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$page = GetDef('page');
-if (empty($page)) {
-	$page = 1;
-}
+$page = GetDef('page', '1');
 $limit = GetDef('rows');
 $sidx = GetDef('sidx', '1');
 $sord = GetDef('sord');
@@ -27,18 +24,24 @@ $cloud_dirs_id = GetDef('cloud_dirs_id');
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
-	$sql = "SELECT COUNT(*) AS count FROM cloud_files WHERE cloud_dirs_id='$cloud_dirs_id'";
+	$sql = "SELECT COUNT(*) AS cnt FROM cloud_files WHERE cloud_dirs_id = '$cloud_dirs_id'";
 	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать количество записей! ' . mysqli_error($lb->idsqlconnection));
 	$row = mysqli_fetch_array($result);
-	$count = $row['count'];
+	$count = $row['cnt'];
 	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
-	$SQL = "SELECT * FROM cloud_files WHERE cloud_dirs_id='$cloud_dirs_id' ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($SQL)
+	$sql = <<<TXT
+SELECT   *
+FROM     cloud_files
+WHERE    cloud_dirs_id = '$cloud_dirs_id'
+ORDER BY $sidx $sord
+LIMIT    $start, $limit
+TXT;
+	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список файлов! ' . mysqli_error($sqlcn->idsqlconnection));
 	$responce = new stdClass();
 	$responce->page = $page;
@@ -75,7 +78,7 @@ if ($oper == '') {
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
-	$sql = "UPDATE cloud_files SET title='$title' WHERE id='$id'";
+	$sql = "UPDATE cloud_files SET title = '$title' WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу выполнить запрос! ' . mysqli_error($lb->idsqlconnection));
 	exit;
@@ -83,7 +86,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
-	$sql = "DELETE FROM cloud_files WHERE id='$id'";
+	$sql = "DELETE FROM cloud_files WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу выполнить запрос! ' . mysqli_error($lb->idsqlconnection));
 	exit;
