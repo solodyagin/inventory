@@ -61,7 +61,7 @@ if ($user->mode == '1'):
 			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/users/libre_users_form.php?step=add" method="post" name="form1" target="_self">
 				<div class="form-group">
 					<label for="orgid">Организация</label>
-					<select class="form-control" name="orgid" id="orgid">
+					<select class="chosen-select form-control" name="orgid" id="orgid">
 						<?php
 						$morgs = GetArrayOrgs();
 						for ($i = 0; $i < count($morgs); $i++) {
@@ -72,7 +72,7 @@ if ($user->mode == '1'):
 						?>
 					</select>
 					<label for="mode">Права</label>
-					<select name="mode" id="mode" class="form-control">
+					<select name="mode" id="mode" class="chosen-select form-control">
 						<option value="0" selected>Пользователь</option>
 						<option value="1">Администратор</option>
 					</select>
@@ -89,6 +89,11 @@ if ($user->mode == '1'):
 			<div id="messenger"></div>
 		</div>
 	</div>
+	<script>
+		for (var selector in config) {
+			$(selector).chosen(config[selector]);
+		}
+	</script>
 	<?php
 else:
 	echo 'Нужны права администратора!';

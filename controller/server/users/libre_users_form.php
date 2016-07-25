@@ -12,6 +12,8 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
+$err = array();
+
 // Требуются полные права!
 if ($user->TestRoles('1')) {
 	// Получаем переменные, проверяем на правильность заполнения
@@ -58,7 +60,6 @@ if ($user->TestRoles('1')) {
 			$tmpuser->fio = $login;
 			$tmpuser->Add(GetRandomId(60), $orgid, $login, $pass, $email, $mode);
 		}
-		exit;
 	}
 
 	// Редактируем пользователя
