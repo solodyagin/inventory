@@ -46,6 +46,43 @@ function parseGET(url) {
 	return (GET);
 }
 
+function LoadMoveInfoTable(ids) {
+	var sUrl = route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids;
+	jQuery('#tbl_move').jqGrid('setGridParam', {url: sUrl});
+	jQuery('#tbl_move').jqGrid({
+		url: sUrl,
+		datatype: 'json',
+		colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'Комментарий'],
+		colModel: [
+			{name: 'id', index: 'id', width: 25},
+			{name: 'dt', index: 'dt', width: 95},
+			{name: 'orgname1', index: 'orgname1', width: 120},
+			{name: 'place1', index: 'place1', width: 80},
+			{name: 'user1', index: 'user1', width: 90},
+			{name: 'orgname2', index: 'orgname2', width: 120},
+			{name: 'place2', index: 'place2', width: 80},
+			{name: 'user2', index: 'user2', width: 90},
+			{name: 'comment', index: 'comment', width: 200, editable: true}
+		],
+		autowidth: true,
+		pager: '#pager4',
+		sortname: 'dt',
+		scroll: 1,
+		viewrecords: true,
+		height: 'auto',
+		sortorder: 'desc',
+		caption: 'История перемещений'
+	}).trigger('reloadGrid');
+	jQuery('#tbl_move').jqGrid('destroyGroupHeader');
+	jQuery('#tbl_move').jqGrid('setGroupHeaders', {
+		useColSpanStyle: true,
+		groupHeaders: [
+			{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
+			{startColumnName: 'orgname2', numberOfColumns: 3, titleText: 'Куда'}
+		]
+	});
+}
+
 function ListEqByPlaces(list, pager) {
 	$_GET = parseGET();
 	tmp = $_GET['usid'];
@@ -71,44 +108,10 @@ function ListEqByPlaces(list, pager) {
 		onSelectRow: function (ids) {
 			$('#photoid').load(route + 'controller/server/equipment/getphoto.php?eqid=' + ids);
 			$('#geteqid').val(ids);
-			jQuery('#tbl_move').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids});
-			jQuery('#tbl_move').jqGrid({
-				url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids,
-				datatype: 'json',
-				colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'Комментарий'],
-				colModel: [
-					{name: 'id', index: 'id', width: 25},
-					{name: 'dt', index: 'dt', width: 95},
-					{name: 'orgname1', index: 'orgname1', width: 120},
-					{name: 'place1', index: 'place1', width: 80},
-					{name: 'user1', index: 'user1', width: 90},
-					{name: 'orgname2', index: 'orgname2', width: 120},
-					{name: 'place2', index: 'place2', width: 80},
-					{name: 'user2', index: 'user2', width: 90},
-					{name: 'comment', index: 'comment', width: 200, editable: true},
-				],
-				autowidth: true,
-				pager: '#pager4',
-				sortname: 'dt',
-				scroll: 1,
-				shrinkToFit: false,
-				viewrecords: true,
-				height: 'auto',
-				sortorder: 'desc',
-				caption: 'История перемещений'
-			}).trigger('reloadGrid');
-			jQuery('#tbl_move').jqGrid('destroyGroupHeader');
-			jQuery('#tbl_move').jqGrid('setGroupHeaders', {
-				useColSpanStyle: true,
-				groupHeaders: [
-					{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
-					{startColumnName: 'orgname2', numberOfColumns: 3, titleText: 'Куда'}
-				]
-			});
+			LoadMoveInfoTable(ids);
 		},
 		autowidth: true,
 		height: 200,
-		shrinkToFit: true,
 		grouping: true,
 		groupingView: {
 			groupText: ['<b>{0} - {1} Item(s)</b>'],
@@ -152,44 +155,10 @@ function ListEqByMat(list, pager) {
 		onSelectRow: function (ids) {
 			$('#photoid').load(route + 'controller/server/equipment/getphoto.php?eqid=' + ids);
 			$('#geteqid').val(ids);
-			jQuery('#tbl_move').jqGrid('setGridParam', {url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids});
-			jQuery('#tbl_move').jqGrid({
-				url: route + 'controller/server/equipment/getmoveinfo.php?eqid=' + ids,
-				datatype: 'json',
-				colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Человек', 'Организация', 'Помещение', 'Человек', 'Комментарий'],
-				colModel: [
-					{name: 'id', index: 'id', width: 25},
-					{name: 'dt', index: 'dt', width: 95},
-					{name: 'orgname1', index: 'orgname1', width: 120},
-					{name: 'place1', index: 'place1', width: 80},
-					{name: 'user1', index: 'user1', width: 90},
-					{name: 'orgname2', index: 'orgname2', width: 120},
-					{name: 'place2', index: 'place2', width: 80},
-					{name: 'user2', index: 'user2', width: 90},
-					{name: 'comment', index: 'comment', width: 200, editable: true},
-				],
-				autowidth: true,
-				pager: '#pager4',
-				sortname: 'dt',
-				scroll: 1,
-				shrinkToFit: false,
-				viewrecords: true,
-				height: 'auto',
-				sortorder: 'desc',
-				caption: 'История перемещений'
-			}).trigger('reloadGrid');
-			jQuery('#tbl_move').jqGrid('destroyGroupHeader');
-			jQuery('#tbl_move').jqGrid('setGroupHeaders', {
-				useColSpanStyle: true,
-				groupHeaders: [
-					{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
-					{startColumnName: 'orgname2', numberOfColumns: 3, titleText: 'Куда'}
-				]
-			});
+			LoadMoveInfoTable(ids);
 		},
 		autowidth: true,
 		height: 200,
-		shrinkToFit: true,
 		grouping: true,
 		groupingView: {
 			groupText: ['<b>{0} - {1} Item(s)</b>'],

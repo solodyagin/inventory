@@ -22,7 +22,7 @@ if ($md->IsActive('workmen') == 1) {
 }
 
 $this->Add('tools', '<i class="fa fa-check fa-fw"> </i>Контроль договоров', 'Контроль договоров', 3, 'tools/dog_knt', 'dog_knt');
-$this->Add('tools', '<i class="fa fa-clone fa-fw"> </i>ТМЦ на моем рабочем месте', 'ТМЦ на моем рабочем месте', 3, 'tools/eq_list', 'eq_list');
+$this->Add('tools', '<i class="fa fa-clone fa-fw"> </i>ТМЦ на моём рабочем месте', 'ТМЦ на моём рабочем месте', 3, 'tools/eq_list', 'eq_list');
 
 $md->Register('ping', 'Проверка доступности ТМЦ по ping', 'Грибов Павел');
 if ($md->IsActive('ping') == 1) {
