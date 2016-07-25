@@ -181,7 +181,7 @@ function LoadTable() {
 			// the row_id is the id of the row
 			// If we wan to pass additinal parameters to the url we can use
 			// a method getRowData(row_id) - which returns associative array in type name-value
-			// here we can easy construct the flowing                
+			// here we can easy construct the flowing
 			var subgrid_table_id, pager_id;
 			subgrid_table_id = subgrid_id + '_t';
 			pager_id = 'p_' + subgrid_table_id;

@@ -30,13 +30,23 @@ if ($step == 'edit') {
 }
 ?>
 <script src="js/tinymce/jquery.tinymce.min.js"></script>
-<div id="messenger"></div>    
+<div id="messenger"></div>
 <form enctype="multipart/form-data" action="?content_page=news&step=<?php echo "$step&newsid=$id"; ?>" method="post" name="form1" target="_self">
-    <input name="dtpost" id="dtpost" value="<?php echo $dtpost; ?>"><br>
-    <input name="title" id="title" value="<?php echo $title; ?>" class="span8" placeholder="Заголовок"><br>
-    <textarea class="span12" id="txt" name="txt" rows="15" placeholder="Введите новость">
-		<?php echo $txt; ?>
-    </textarea>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-4">
+				<input name="dtpost" id="dtpost" class="form-control" value="<?php echo $dtpost; ?>">
+			</div>
+		</div>
+		<div class="row">
+			<input name="title" id="title" class="form-control" value="<?php echo $title; ?>" placeholder="Заголовок">
+		</div>
+		<div class="row">
+			<textarea id="txt" name="txt" rows="15" placeholder="Введите новость">
+				<?php echo $txt; ?>
+			</textarea>
+		</div>
+	</div>
 </form>
 <script>
 	$('#pg_add_edit').dialog({
@@ -66,8 +76,7 @@ if ($step == 'edit') {
 			if (error == 0) { // если ошибок нет то отправляем данные
 				return true;
 			} else {
-				var err_text = 'Не все обязательные поля заполнены!<hr>';
-				$('#messenger').html(err_text);
+				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
 				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
 			}

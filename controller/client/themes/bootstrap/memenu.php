@@ -12,7 +12,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 ?>
 <label for="orgs">Организация:</label>
-<select class="form-control" name="orgs" id="orgs">
+<select class="chosen-select form-control" name="orgs" id="orgs">
 	<?php
 	for ($i = 0; $i < count($morgs); $i++) {
 		$idorg = $morgs[$i]['id'];
@@ -23,12 +23,19 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 	?>
 </select>
 <label for="stl">Стиль:</label>
-<select class="form-control" name="stl" id="stl">
+<select class="chosen-select form-control" name="stl" id="stl">
 	<?php
-	$sl = ($cfg->style == "Bootstrap") ? 'selected' : '';
+	$sl = ($cfg->style == 'Bootstrap') ? 'selected' : '';
 	echo "<option value=\"Bootstrap\" $sl>Bootstrap</option>";
-	$sl = ($cfg->style == "Normal") ? 'selected' : '';
+	$sl = ($cfg->style == 'Normal') ? 'selected' : '';
 	echo "<option value=\"Normal\" $sl>Normal</option>";
 	?>
 </select>
+<script>
+$(document).ready(function () {
+	for (var selector in config) {
+		$(selector).chosen(config[selector]);
+	}
+});
+</script>
 <script src="controller/client/js/memenu.js"></script>

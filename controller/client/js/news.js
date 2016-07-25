@@ -35,25 +35,45 @@ jQuery('#list2').jqGrid('navGrid', '#pager2', {edit: false, add: false, del: fal
 
 // добавляем в таблицу кнопку "Добавить"
 jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
-	caption: 'Добавить',
+	caption: '<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+	title: 'Добавить',
+	buttonicon: 'none',
 	onClickButton: function () {
-		//$('#pg_add_edit').dialog('destroy');
-		$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 800, modal: false, title: 'Добавление новости'});
+		$('#pg_add_edit').empty();
+		$('#pg_add_edit').dialog({
+			autoOpen: false,
+			height: 600,
+			width: 800,
+			modal: false,
+			title: 'Добавление новости',
+			open: function () {
+				$(this).load(route + 'controller/client/view/news/news.php?step=add');
+			}
+		});
 		$('#pg_add_edit').dialog('open');
-		$('#pg_add_edit').load(route + 'controller/client/view/news/news.php?step=add');
 	}
 });
 
 // добавляем в таблицу кнопку "Отредактировать"
 jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
-	caption: 'Отредактировать',
+	caption: '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
+	title: 'Отредактировать',
+	buttonicon: 'none',
 	onClickButton: function () {
 		var gsr = jQuery('#list2').jqGrid('getGridParam', 'selrow');
 		if (gsr) {
-			//$('#pg_add_edit').dialog('destroy');
-			$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 800, modal: false, title: 'Редактирование новости'});
+			$('#pg_add_edit').empty();
+			$('#pg_add_edit').dialog({
+				autoOpen: false,
+				height: 600,
+				width: 800,
+				modal: false,
+				title: 'Редактирование новости',
+				open: function () {
+					$(this).load(route + 'controller/client/view/news/news.php?step=edit&id=' + gsr);
+				}
+			});
 			$('#pg_add_edit').dialog('open');
-			$('#pg_add_edit').load(route + 'controller/client/view/news/news.php?step=edit&id=' + gsr);
 		} else {
 			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 		}

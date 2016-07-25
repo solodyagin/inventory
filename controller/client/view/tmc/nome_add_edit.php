@@ -23,8 +23,9 @@ $vendorid = '';
 $groupid = '';
 
 if ($step == 'edit') {
-	$SQL = "SELECT * FROM nome WHERE id = '$id'";
-	$result = $sqlcn->ExecuteSQL($SQL) or die('Неверный запрос : ' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "SELECT * FROM nome WHERE id = '$id'";
+	$result = $sqlcn->ExecuteSQL($sql)
+			or die('Неверный запрос : ' . mysqli_error($sqlcn->idsqlconnection));
 	while ($row = mysqli_fetch_array($result)) {
 		$groupid = $row['groupid'];
 		$vendorid = $row['vendorid'];
@@ -52,8 +53,7 @@ if ($step == 'edit') {
 			if (error == 0) { // если ошибок нет то отправляем данные
 				return true;
 			} else {
-				var err_text = 'Не все обязательные поля заполнены!<hr>';
-				$('#messenger').html(err_text);
+				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
 				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
 			}
@@ -77,7 +77,7 @@ if ($step == 'edit') {
 	<div class="form-group">
 		<label for="groupid" class="col-sm-3 control-label">Группа</label>
 		<div class="col-sm-9">
-			<select class="chosen-select" class="form-control" name="groupid" id="groupid">
+			<select class="chosen-select form-control" name="groupid" id="groupid">
 				<?php
 				$result = $sqlcn->ExecuteSQL("SELECT * FROM group_nome WHERE active = 1 ORDER BY name");
 				while ($row = mysqli_fetch_array($result)) {
@@ -92,7 +92,7 @@ if ($step == 'edit') {
 	<div class="form-group">
 		<label for="vendorid" class="col-sm-3 control-label">Производитель</label>
 		<div class="col-sm-9">
-			<select class="chosen-select" class="form-control" name="vendorid" id="vendorid">
+			<select class="chosen-select form-control" name="vendorid" id="vendorid">
 				<?php
 				$result = $sqlcn->ExecuteSQL("SELECT * FROM vendor WHERE active = 1 ORDER BY name");
 				while ($row = mysqli_fetch_array($result)) {
