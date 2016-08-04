@@ -22,7 +22,7 @@ $result = $sqlcn->ExecuteSQL($sql)
 <select name="suserid" id="suserid">
 	<?php
 	if ($addnone == 'true') {
-		echo '<option value="-1">нет выбора</option>';
+		echo '<option value="-1">не выбрано</option>';
 	}
 	while ($row = mysqli_fetch_array($result)) {
 		$z = $row['id'];

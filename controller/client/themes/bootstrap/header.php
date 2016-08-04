@@ -80,7 +80,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 			}
 		</style>
 	</head>
-	<body>
+	<body style="font-size: <?php echo $cfg->fontsize; ?>;">
 		<?php if (!$printable): ?>
 			<div class="header">
 				<a href="#menu"></a>

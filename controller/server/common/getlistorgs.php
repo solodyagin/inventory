@@ -21,7 +21,7 @@ if ($user->mode == '1') {
 			or die("Не могу выбрать список организаций!" . mysqli_error($sqlcn->idsqlconnection));
 	echo '<select name="sogrsname" id="sorgsname">';
 	if ($addnone == 'true') {
-		echo '<option value="-1">нет выбора</option>';
+		echo '<option value="-1">не выбрано</option>';
 	}
 	while ($row = mysqli_fetch_array($result)) {
 		echo "<option value=\"{$row['id']}\">{$row['name']}</option>";

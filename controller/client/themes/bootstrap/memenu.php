@@ -31,11 +31,19 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 	echo "<option value=\"Normal\" $sl>Normal</option>";
 	?>
 </select>
+<label for="fontsize">Размер шрифта:</label>
+<select class="chosen-select form-control" name="fontsize" id="fontsize">
+	<option value="11px">11px</option>
+	<option value="12px">12px</option>
+	<option value="13px">13px</option>
+	<option value="14px">14px</option>
+</select>
 <script>
-$(document).ready(function () {
-	for (var selector in config) {
-		$(selector).chosen(config[selector]);
-	}
-});
+	$(document).ready(function () {
+		for (var selector in config) {
+			$(selector).chosen(config[selector]);
+		}
+		$('#fontsize').val("<?php echo $cfg->fontsize; ?>").trigger('chosen:updated');
+	});
 </script>
 <script src="controller/client/js/memenu.js"></script>

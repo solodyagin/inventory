@@ -18,7 +18,7 @@ $addnone = GetDef('addnone');
 if ($user->TestRoles('1,4,5,6')) {
 	echo '<select name="tmcgo" id="tmcgo">';
 	if ($addnone == 'true') {
-		echo '<option value="-1">нет выбора</option>';
+		echo '<option value="-1">не выбрано</option>';
 	}
 	echo '<option value="0">На месте</option>';
 	echo '<option value="1">В пути</option>';

@@ -21,7 +21,7 @@ if ($user->TestRoles('1,4,5,6')) {
 			or die('Не могу выбрать список групп!' . mysqli_error($sqlcn->idsqlconnection));
 	echo '<select name="sgroupname" id="sgroupname">';
 	if ($addnone == 'true') {
-		echo '<option value="-1" >нет выбора</option>';
+		echo '<option value="-1" >не выбрано</option>';
 	}
 	while ($row = mysqli_fetch_array($result)) {
 		echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';

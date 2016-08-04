@@ -26,7 +26,7 @@ $result = $sqlcn->ExecuteSQL($sql)
 		or die('Не могу выбрать список помещений! ' . mysqli_error($sqlcn->idsqlconnection));
 echo '<select name="splacestmc" id="splacestmc" size="10">';
 if ($addnone == 'true') {
-	echo '<option value="-1">нет выбора</option>';
+	echo '<option value="-1">не выбрано</option>';
 }
 while ($row = mysqli_fetch_array($result)) {
 	$sl = ($row['eqid'] == $placesid) ? 'selected' : '';

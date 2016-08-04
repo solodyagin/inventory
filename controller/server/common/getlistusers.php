@@ -31,7 +31,7 @@ $result = $sqlcn->ExecuteSQL($sql) or
 		die('Не могу выбрать список пользователей!' . mysqli_error($sqlcn->idsqlconnection));
 echo '<select class="chosen-select" name=suserid' . $dopname . " id=suserid" . $dopname . ">";
 if ($addnone == 'true') {
-	echo '<option value="-1">нет выбора</option>';
+	echo '<option value="-1">не выбрано</option>';
 }
 while ($row = mysqli_fetch_array($result)) {
 	$sl = ($row['id'] == $userid) ? 'selected' : '';
