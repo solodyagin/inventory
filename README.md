@@ -30,6 +30,7 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
   - mod_rewrite
 2. PHP 5
   - extension=php_mysqli.dll
+  - extension=php_ldap.dll
 3. MySQL или MariaDB
 
 ### Установка
