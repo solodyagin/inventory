@@ -9,7 +9,13 @@
  * http://грибовы.рф
  */
 
+/* Объявляем глобальные переменные */
 define('WUO_ROOT', dirname(__FILE__));
+$err = array(); // Массив с сообщениями об ошибках для показа пользователю при генерации страницы
+$ok = array(); // Массив с информационными сообщениями для показа пользователю при генерации страницы
+
+/* Некоторые установки */
+date_default_timezone_set('Europe/Moscow'); // Временная зона по умолчанию
 
 /* Загружаем первоначальные настройки. Если не получилось - запускаем инсталлятор */
 $rez = @include_once(WUO_ROOT . '/config.php');
@@ -28,7 +34,7 @@ include_once(WUO_ROOT . '/class/config.php'); // Класс настроек
 include_once(WUO_ROOT . '/class/users.php'); // Класс работы с пользователями
 
 /* Загружаем все что нужно для работы движка */
-include_once(WUO_ROOT . '/inc/connect.php'); // Соединяемся с БД, получаем $mysql_base_id
+include_once(WUO_ROOT . '/inc/connect.php'); // Соединяемся с БД
 include_once(WUO_ROOT . '/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg
 include_once(WUO_ROOT . '/inc/functions.php'); // Загружаем функции
 include_once(WUO_ROOT . '/inc/login.php'); // Создаём пользователя $user

@@ -28,7 +28,7 @@ include_once(WUO_ROOT.'/config.php'); // загружаем первоначал
 include_once(WUO_ROOT.'/class/sql.php'); // загружаем классы работы с БД
 include_once(WUO_ROOT.'/class/config.php'); // загружаем классы настроек
 // загружаем все что нужно для работы движка
-include_once(WUO_ROOT.'/inc/connect.php'); // соединяемся с БД, получаем $mysql_base_id
+include_once(WUO_ROOT.'/inc/connect.php'); // соединяемся с БД
 include_once(WUO_ROOT.'/inc/config.php'); // подгружаем настройки из БД, получаем заполненый класс $cfg
 include_once(WUO_ROOT.'/inc/functions.php'); // загружаем функции
 
