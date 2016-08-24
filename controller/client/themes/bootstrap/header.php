@@ -26,7 +26,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/jquery-ui.min.css">
 		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/jquery.mmenu.all.css">
 		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/mmenu.css">
-		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/plugins/ui.multiselect.css">
+		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/ui.multiselect.css">
 		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/bootstrap.min.css">
 		<?php if ($cfg->style == 'Bootstrap'): ?>
 			<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/ui.jqgrid-bootstrap.css">
@@ -38,8 +38,9 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 		<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/font-awesome.min.css">
 		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/js/jquery-1.11.0.min.js"></script>
 		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/js/jquery-ui.min.js"></script>
-		<script src="js/jquery.mmenu.min.all.js"></script>	
-		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/plugins/ui.multiselect.js"></script>
+		<script src="js/jquery.mmenu.min.all.js"></script>
+		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/js/plugins/localisation/jquery.localisation-min.js"></script>
+		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/js/ui.multiselect.js"></script>
 		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/js/i18n/grid.locale-ru.js"></script>
 		<script src="controller/client/themes/<?php echo $cfg->theme; ?>/js/jquery.jqGrid.min.js"></script>
 		<script src="js/chosen.jquery.min.js"></script>
@@ -72,6 +73,10 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 				'.chosen-select-no-results': {no_results_text: 'Ничего не найдено!'},
 				'.chosen-select-width': {width: '95%'}
 			}
+
+			$(function(){
+				$.localise('ui-multiselect', {/*language: 'en',*/ path: 'controller/client/themes/<?php echo $cfg->theme; ?>/js/locale/'});
+			});
 		</script>
 		<style>
 			.chosen-container .chosen-results {

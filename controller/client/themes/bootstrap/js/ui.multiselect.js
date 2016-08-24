@@ -70,7 +70,7 @@ $.widget("ui.multiselect", {
 			this.options.show = 'show';
 			this.options.hide = 'hide';
 		}
-		this.useProp = !!$.fn.prop;
+		
 		// init lists
 		this._populateLists(this.element.find('option'));
 		
@@ -87,7 +87,7 @@ $.widget("ui.multiselect", {
 					});
 				},
 				receive: function(event, ui) {
-					ui.item.data('optionLink')[ this.useProp ? 'prop' : 'attr' ]('selected', true);
+					ui.item.data('optionLink').attr('selected', true);
 					// increment count
 					that.count += 1;
 					that._updateCount();
@@ -123,10 +123,10 @@ $.widget("ui.multiselect", {
 			var options = that.element.find('option').not(":selected");
 			if (that.availableList.children('li:hidden').length > 1) {
 				that.availableList.children('li').each(function(i) {
-					if ($(this).is(":visible")) $(options[i-1])[ that.useProp ? 'prop' : 'attr' ]('selected', true); 
+					if ($(this).is(":visible")) $(options[i-1]).attr('selected', 'selected'); 
 				});
 			} else {
-				options[ that.useProp ? 'prop' : 'attr' ]('selected', true);
+				options.attr('selected', 'selected');
 			}
 			that._populateLists(that.element.find('option'));
 			return false;
@@ -163,7 +163,7 @@ $.widget("ui.multiselect", {
 	},
 	_getOptionNode: function(option) {
 		option = $(option);
-		var node = $('<li class="ui-state-default ui-element" title="'+option.text()+'"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
+		var node = $('<li class="ui-state-default ui-element" title="'+option.text()+'" data-selected-value="' + option.val() + '"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
 		node.data('optionLink', option);
 		return node;
 	},
@@ -176,7 +176,7 @@ $.widget("ui.multiselect", {
 		return clone;
 	},
 	_setSelected: function(item, selected) {
-		item.data('optionLink')[ this.useProp ? 'prop' : 'attr' ]('selected', selected);
+		item.data('optionLink').attr('selected', selected);
 
 		if (selected) {
 			var selectedItem = this._cloneWithData(item);
