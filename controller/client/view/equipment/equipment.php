@@ -60,7 +60,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $step = GetDef('step', 'add');
 $id = GetDef('id');
 
-if ($user->TestRoles('1,4,5,6')):
+if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 	echo "<script>orgid='';</script>";
 	echo "<script>placesid='';</script>";
 	echo "<script>userid='';</script>";

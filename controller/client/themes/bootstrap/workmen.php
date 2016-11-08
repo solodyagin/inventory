@@ -8,11 +8,25 @@
  * http://грибовы.рф
  */
 
+/*
+ * Инструменты / Менеджер по обслуживанию
+ */
+
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-if (in_array($user->mode, [0, 1])):
+// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+if (($user->mode != 1) && (!$user->TestRoles('1,3,4,5,6'))):
 	?>
+
+	<div class="alert alert-danger">
+		У вас нет доступа в раздел "Инструменты / Менеджер по обслуживанию"!<br><br>
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
+		"Полный доступ", "Просмотр", "Добавление", "Редактирование", "Удаление".
+	</div>
+
+<?php else: ?>
+
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="col-xs-12 col-md-12 col-sm-12">
@@ -35,8 +49,5 @@ if (in_array($user->mode, [0, 1])):
 		<input type="hidden" name="csvBuffer" id="csvBuffer" value="">
 	</form>
 	<script src="controller/client/js/workmen.js"></script>
-<?php else: ?>
-	<div class="alert alert-error">
-		У вас нет доступа в данный раздел!
-	</div>
+
 <?php endif;

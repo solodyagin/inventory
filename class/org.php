@@ -21,19 +21,21 @@ class Torgs {
 
 	/**
 	 * Получить данные о пользователе по идентификатору
-	 * @global type $sqlcn
 	 * @param type $id
 	 */
 
 	function GetById($id) {
-		global $sqlcn;
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM org WHERE id = '$id'")
-				or die('Неверный запрос Torgs.GetById: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
-			$this->id = $row['sid'];
-			$this->name = $row['name'];
-			$this->picmap = $row['picmap'];
-			$this->active = $row['active'];
+		$sql = 'SELECT * FROM org WHERE id = :id';
+		try {
+			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			if ($row) {
+				$this->id = $row['sid'];
+				$this->name = $row['name'];
+				$this->picmap = $row['picmap'];
+				$this->active = $row['active'];
+			}
+		} catch (PDOException $e) {
+			throw new Exception('Неверный запрос Torgs.GetById: ' . $e->getMessage());
 		}
 	}
 

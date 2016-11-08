@@ -8,12 +8,26 @@
  * http://грибовы.рф
  */
 
+/*
+ * Справочники / Список организаций
+ */
+
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-echo "<link rel='stylesheet' type='text/css' href='controller/client/themes/$cfg->theme/css/upload.css'>";
-if ($user->mode == 1):
+// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+if (($user->mode != 1) && (!$user->TestRoles('1'))):
 	?>
+
+	<div class="alert alert-danger">
+		У вас нет доступа в раздел "Справочники / Список организаций"!<br><br>
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
+		"Полный доступ".
+	</div>
+
+<?php else: ?>
+
+	<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/upload.css">
 	<script src="js/FileAPI/FileAPI.min.js"></script>
 	<script src="js/FileAPI/FileAPI.exif.js"></script>
 	<script src="js/jquery.fileapi.min.js"></script>
@@ -39,8 +53,5 @@ if ($user->mode == 1):
 		</div>
 	</div>
 	<script src="controller/client/js/org_list.js"></script>
-<?php else: ?>
-	<div class="alert alert-error">
-		У вас нет доступа в данный раздел!
-	</div>
+
 <?php endif;

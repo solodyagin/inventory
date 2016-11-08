@@ -23,7 +23,7 @@ $cloud_dirs_id = GetDef('cloud_dirs_id');
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$sql = "SELECT COUNT(*) AS cnt FROM cloud_files WHERE cloud_dirs_id = '$cloud_dirs_id'";
 	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать количество записей! ' . mysqli_error($lb->idsqlconnection));
@@ -77,7 +77,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 	$sql = "UPDATE cloud_files SET title = '$title' WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу выполнить запрос! ' . mysqli_error($lb->idsqlconnection));
@@ -85,7 +85,7 @@ if ($oper == 'edit') {
 }
 
 if ($oper == 'del') {
-	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
 	$sql = "DELETE FROM cloud_files WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу выполнить запрос! ' . mysqli_error($lb->idsqlconnection));

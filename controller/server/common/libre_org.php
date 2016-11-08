@@ -22,7 +22,7 @@ $name = PostDef('name');
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM org");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -53,7 +53,7 @@ if ($oper == '') {
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	$user->TestRoles('1,4') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
 	$sql = "INSERT INTO org (id, name, active) VALUES (null, '$name', 1)";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу добавить организацию! ' . mysqli_error($sqlcn->idsqlconnection));
@@ -62,7 +62,7 @@ if ($oper == 'add') {
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 	$sql = "UPDATE org SET name='$name' WHERE id='$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по организации! ' . mysqli_error($sqlcn->idsqlconnection));
@@ -70,7 +70,7 @@ if ($oper == 'edit') {
 }
 
 if ($oper == 'del') {
-	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
 	$sql = "UPDATE org SET active = NOT active WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу удалить организацию! ' . mysqli_error($sqlcn->idsqlconnection));

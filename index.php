@@ -29,6 +29,8 @@ $time_start = microtime(true); // Засекаем время начала вы�
 header('Content-Type: text/html; charset=utf-8');
 
 /* Загружаем классы */
+include_once(WUO_ROOT . '/class/singleton.php');
+include_once(WUO_ROOT . '/class/database.php'); // Класс работы с БД
 include_once(WUO_ROOT . '/class/sql.php'); // Класс работы с БД
 include_once(WUO_ROOT . '/class/config.php'); // Класс настроек
 include_once(WUO_ROOT . '/class/users.php'); // Класс работы с пользователями
@@ -93,14 +95,14 @@ $gmenu->GetFromFiles(WUO_ROOT . '/inc/menu');
 $content_page = (isset($_GET['content_page'])) ? $_GET['content_page'] : 'home';
 
 // Загружаем и выполняем сначала /modules/$content_page.php, затем /controller/client/themes/$cfg->theme/$content_page.php
-// Если таких файлов нет, то принудительно выполняем только /controller/client/themes/$cfg->theme/home.php
+// Если таких файлов нет, то выполняем /controller/client/themes/$cfg->theme/home.php
 if (!is_file(WUO_ROOT . "/controller/client/themes/$cfg->theme/$content_page.php")) {
 	$content_page = 'home';
 	$err[] = 'Вы попытались открыть несуществующий раздел!';
 }
-if (!is_file(WUO_ROOT . "/modules/$content_page.php")) {
-	include_once(WUO_ROOT . '/modules/home.php');
-} else {
+
+// Если есть модуль, то загружаем.
+if (is_file(WUO_ROOT . "/modules/$content_page.php")) {
 	include_once(WUO_ROOT . "/modules/$content_page.php");
 }
 

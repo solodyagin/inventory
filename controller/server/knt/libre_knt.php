@@ -49,7 +49,7 @@ if ($where != '') {
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM knt $where");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -61,12 +61,12 @@ if ($oper == '') {
 	$sql = <<<TXT
 SELECT   id,
          name,
-         inn,
-         kpp,
+         INN,
+         KPP,
          bayer,
          supplier,
          dog,
-         erpcode,
+         ERPCode,
          comment,
          active
 FROM     knt
@@ -98,13 +98,13 @@ TXT;
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	$user->TestRoles('1,4') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
 	$bayer = ($bayer == 'Yes') ? '1' : '0';
 	$supplier = ($supplier == 'Yes') ? '1' : '0';
 	$dog = ($dog == 'Yes') ? '1' : '0';
 	$sql = <<<TXT
 INSERT INTO knt
-            (id,name,inn,kpp,bayer,supplier,dog,erpcode,comment,active)
+            (id,name,INN,KPP,bayer,supplier,dog,ERPCode,comment,active)
 VALUES      (NULL,'$name','$INN','$KPP','$bayer','$supplier','$dog','$ERPCode','$comment',1)
 TXT;
 	$sqlcn->ExecuteSQL($sql)
@@ -114,15 +114,15 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 	$bayer = ($bayer == 'Yes') ? '1' : '0';
 	$supplier = ($supplier == 'Yes') ? '1' : '0';
 	$dog = ($dog == 'Yes') ? '1' : '0';
 	$sql = <<<TXT
 UPDATE knt
-SET    name = '$name',comment = '$comment',inn = '$INN',kpp = '$KPP',bayer = '$bayer',supplier = '$supplier',dog =
+SET    name = '$name',comment = '$comment',INN = '$INN',KPP = '$KPP',bayer = '$bayer',supplier = '$supplier',dog =
        '$dog',
-       erpcode = '$ERPCode'
+       ERPCode = '$ERPCode'
 WHERE  id = '$id'
 TXT;
 	$sqlcn->ExecuteSQL($sql)
@@ -132,7 +132,7 @@ TXT;
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
 	$sql = "UPDATE knt SET active = NOT active WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по контрагенту!' . mysqli_error($sqlcn->idsqlconnection));

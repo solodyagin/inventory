@@ -8,14 +8,28 @@
  * http://грибовы.рф
  */
 
+/*
+ * Настройка / Удаление объектов
+ */
+
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-if ($user->mode == 1):
+// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+if (($user->mode != 1) && (!$user->TestRoles('1'))):
 	?>
+
+	<div class="alert alert-danger">
+		У вас нет доступа в раздел "Настройка / Удаление объектов"!<br><br>
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
+		"Полный доступ".
+	</div>
+
+<?php else: ?>
+
 	<div class="well">
-		<button name="bdel" id="bdel" class="btn btn-primary">Начать удаление</button></p>
-	<div id="infoblock"></div>
+		<button name="bdel" id="bdel" class="btn btn-primary">Начать удаление</button>
+		<div id="infoblock"></div>
 	</div>
 	<script>
 		$('#bdel').click(function () {
@@ -23,8 +37,5 @@ if ($user->mode == 1):
 			return false;
 		});
 	</script>
-<?php else: ?>
-	<div class="alert alert-error">
-		У вас нет доступа в данный раздел!
-	</div>
+
 <?php endif;

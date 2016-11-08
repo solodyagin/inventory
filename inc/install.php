@@ -81,7 +81,7 @@ mysqli_close($conn);
 $data = '<?php
 $debug = false; // Режим отладки - РЕКОМЕНДУЮ поставить false !!!
 $userewrite = 0; // Использовать модуль mod_rewrite для ЧПУ
-$codemysql = "utf8"; // Кодировка базы
+$mysql_char = "utf8"; // Кодировка базы
 $mysql_host = "' . $dbhost . '"; // Хост БД
 $mysql_user = "' . $dbuser . '"; // Пользователь БД
 $mysql_pass = "' . $dbpass . '"; // Пароль пользователя БД

@@ -15,7 +15,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
-if ($user->TestRoles('1,4,5,6')) {
+if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 	$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY BINARY(name)';
 	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу выбрать список групп!' . mysqli_error($sqlcn->idsqlconnection));
@@ -28,5 +28,5 @@ if ($user->TestRoles('1,4,5,6')) {
 	}
 	echo '</select>';
 } else {
-	echo 'Не достаточно прав!!!';
+	echo 'Недостаточно прав';
 }

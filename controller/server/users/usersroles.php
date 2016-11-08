@@ -50,7 +50,7 @@ $roles = array(
 
 if ($oper == '') {
 	// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
-	$user->TestRoles('1,3') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM usersroles WHERE userid = '$userid'");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -78,7 +78,7 @@ if ($oper == '') {
 
 if ($oper == 'add') {
 	// Только с полными правами можно добавлять роль!
-	$user->TestRoles('1') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
 	$sql = "INSERT INTO usersroles (userid, role) VALUES ('$userid', '$role')";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу добавить роль пользователя!' . mysqli_error($sqlcn->idsqlconnection));
@@ -87,7 +87,7 @@ if ($oper == 'add') {
 
 if ($oper == 'del') {
 	// Только с полными правами можно удалять роль!
-	$user->TestRoles('1') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
 	$sql = "DELETE FROM usersroles WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу удалить роль пользователя!' . mysqli_error($sqlcn->idsqlconnection));

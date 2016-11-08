@@ -20,7 +20,7 @@ if ($id != '') {
 	$eqid = $id;
 }
 
-if ($user->TestRoles('1,4,5,6')) {
+if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 	if ($step == 'add') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		if ($dtpost == '') {

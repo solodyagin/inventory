@@ -36,6 +36,7 @@ class Tusers {
 	 * Проверяем соответствие роли
 	 *
 	 * Роли:
+	 * http://грибовы.рф/wiki/doku.php/основы:доступ:роли
 	 *            1="Полный доступ"
 	 *            2="Просмотр финансовых отчетов"
 	 *            3="Просмотр"
@@ -46,76 +47,76 @@ class Tusers {
 	 *            8="Манипуляции с деньгами"
 	 *            9="Редактирование карт"
 	 *
-	 * @global type $sqlcn
-	 * @param type $roles
+	 * @param string $roles
 	 * @return boolean
 	 */
 
 	function TestRoles($roles) {
-		global $sqlcn;
-		$sql = "SELECT * FROM usersroles WHERE userid = '$this->id' AND role IN ($roles)";
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.TestRoles: ' . mysqli_error($sqlcn->idsqlconnection));
-		return (mysqli_num_rows($result) > 0);
+		$sql = "SELECT COUNT(*) FROM usersroles WHERE userid = :id AND role IN ($roles)";
+		return (DB::prepare($sql)->execute(array(':id' => $this->id))->fetchColumn() > 0);
 	}
 
 	/**
 	 * Обновляем данные о последнем посещении
-	 * @global type $sqlcn
 	 * @param type $id
 	 */
 	function UpdateLastdt($id) {
-		global $sqlcn;
 		$lastdt = date('Y-m-d H:i:s');
-		$sql = "UPDATE users SET lastdt = '$lastdt' WHERE id = '$id'";
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.UpdateLastdt: ' . mysqli_error($sqlcn->idsqlconnection));
+		$sql = 'UPDATE users SET lastdt = :lastdt WHERE id = :id';
+		DB::prepare($sql)->execute(array(':lastdt' => $lastdt, ':id' => $id));
 	}
 
 	/**
 	 * Обновляем данные о текущем пользователе в базу
-	 * @global type $sqlcn
 	 */
 	function Update() {
-		global $sqlcn;
-		// ToDo $sqlcn->escape() все параметры
 		$sql = <<<TXT
 UPDATE users
-SET    orgid = '$this->orgid',login = '$this->login',`password` = '$this->password',salt = '$this->salt',email =
-       '$this->email'
-       ,mode = '$this->mode',active = '$this->active'
-WHERE  id = '$this->id'
+SET orgid = :orgid, login = :login, `password` = :password, salt = :salt,
+	email = :email, mode = :mode, active = :active
+WHERE id = :id
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.Update(1): ' . mysqli_error($sqlcn->idsqlconnection));
+		DB::prepare($sql)->execute(array(
+			':orgid' => $this->orgid,
+			':login' => $this->login,
+			':password' => $this->password,
+			':salt' => $this->salt,
+			':email' => $this->email,
+			':mode' => $this->mode,
+			':active' => $this->active,
+			':id' => $this->id
+		));
 		$sql = <<<TXT
 UPDATE users_profile
-SET    fio = '$this->fio',telephonenumber = '$this->telephonenumber',homephone = '$this->homephone',
-       jpegphoto = '$this->jpegphoto',code = '$this->tab_num',post = '$this->post'
-WHERE  usersid = '$this->id'
+SET fio = :fio, telephonenumber = :telephonenumber, homephone = :homephone,
+	jpegphoto = :jpegphoto, code = :code, post = :post
+WHERE usersid = :userid
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.Update(2): ' . mysqli_error($sqlcn->idsqlconnection));
+		DB::prepare($sql)->execute(array(
+			':fio' => $this->fio,
+			':telephonenumber' => $this->telephonenumber,
+			':homephone' => $this->homephone,
+			':jpegphoto' => $this->jpegphoto,
+			':code' => $this->tab_num,
+			':post' => $this->post,
+			':userid' => $this->id
+		));
 	}
 
 	/**
 	 * Получить данные о пользователе по логину
-	 * @global type $sqlcn
 	 * @param type $login
 	 */
 	function GetByLogin($login) {
-		global $sqlcn;
-		$login = $sqlcn->escape($login);
 		$sql = <<<TXT
 SELECT users_profile.*,users.*,users.id AS sid
 FROM   users
        INNER JOIN users_profile
                ON users_profile.usersid = users.id
-WHERE  users.login = '$login'
+WHERE  users.login = :login
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.GetByLogin: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		$row = DB::prepare($sql)->execute(array(':login' => $login))->fetch();
+		if ($row) {
 			$this->id = $row['sid'];
 			$this->randomid = $row['randomid'];
 			$this->orgid = $row['orgid'];
@@ -138,26 +139,21 @@ TXT;
 	}
 
 	/**
-	 * Получить данные о пользователе по логину/паролю
-	 * @global type $sqlcn
+	 * Получить данные о пользователе по логину и паролю
 	 * @param type $login
 	 * @param type $pass
 	 */
 	function GetByLoginPass($login, $pass) {
-		global $sqlcn;
-		$login = $sqlcn->escape($login);
-		$pass = $sqlcn->escape($pass);
 		$sql = <<<TXT
 SELECT users_profile.*,users.*,users.id AS sid
 FROM   users
        INNER JOIN users_profile
                ON users_profile.usersid = users.id
-WHERE  users.login = '$login'
-       AND users.`password` = SHA1(CONCAT(SHA1('$pass'), users.salt))
+WHERE  users.login = :login
+       AND users.`password` = SHA1(CONCAT(SHA1(:pass), users.salt))
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.GetByLoginPass: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		$row = DB::prepare($sql)->execute(array(':login' => $login, ':pass' => $pass))->fetch();
+		if ($row) {
 			$this->id = $row['sid'];
 			$this->randomid = $row['randomid'];
 			$this->orgid = $row['orgid'];
@@ -181,22 +177,18 @@ TXT;
 
 	/**
 	 * Получить данные о пользователе по идентификатору
-	 * @global type $sqlcn
-	 * @param type $idz
+	 * @param type $id
 	 */
-	function GetById($idz) {
-		global $sqlcn;
-		$idz = $sqlcn->escape($idz);
+	function GetById($id) {
 		$sql = <<<TXT
 SELECT users_profile.*,users.*,users.id AS sid
 FROM   users
        INNER JOIN users_profile
                ON users_profile.usersid = users.id
-WHERE  users.id = '$idz'
+WHERE  users.id = :id
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.GetById: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+		if ($row) {
 			$this->id = $row['sid'];
 			$this->randomid = $row['randomid'];
 			$this->orgid = $row['orgid'];
@@ -219,24 +211,20 @@ TXT;
 	}
 
 	/**
-	 * Получить данные о пользователе по идентификатору TRUE - нашли, FALSE - не нашли
-	 * @global type $sqlcn
-	 * @param type $id
+	 * Получить данные о пользователе по идентификатору randomid
+	 * @param type $randomid
 	 * @return boolean
 	 */
-	function GetByRandomId($id) {
-		global $sqlcn;
-		$id = $sqlcn->escape($id);
+	function GetByRandomId($randomid) {
 		$sql = <<<TXT
 SELECT users_profile.*,users.*,users.id AS sid
 FROM   users
        INNER JOIN users_profile
                ON users_profile.usersid = users.id
-WHERE  users.randomid = '$id'
+WHERE  users.randomid = :randomid
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.GetByRandomId: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
+		if ($row) {
 			$this->id = $row['sid'];
 			$this->randomid = $row['randomid'];
 			$this->orgid = $row['orgid'];
@@ -259,17 +247,14 @@ TXT;
 	}
 
 	/**
-	 * Получить данные о пользователе по идентификатору TRUE - нашли, FALSE - не нашли. БЕЗ ПРОФИЛЯ
-	 * @global type $sqlcn
-	 * @param type $id
+	 * Получить данные о пользователе по идентификатору. БЕЗ ПРОФИЛЯ
+	 * @param type $randomid
 	 * @return boolean
 	 */
-	function GetByRandomIdNoProfile($id) {
-		global $sqlcn;
-		$id = $sqlcn->escape($id);
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM users WHERE randomid='$id'")
-				or die('Неверный запрос Tusers.GetByRandomId: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+	function GetByRandomIdNoProfile($randomid) {
+		$sql = 'SELECT * FROM users WHERE randomid = :randomid';
+		$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
+		if ($row) {
 			$this->id = $row['id'];
 			$this->randomid = $row['randomid'];
 			$this->orgid = $row['orgid'];
@@ -287,7 +272,6 @@ TXT;
 
 	/**
 	 * Добавляем пользователя с текущими данными
-	 * @global type $sqlcn4
 	 * @param string $randomid
 	 * @param string $orgid
 	 * @param string $login
@@ -296,7 +280,6 @@ TXT;
 	 * @param string $mode
 	 */
 	function Add($randomid, $orgid, $login, $pass, $email, $mode) {
-		global $sqlcn;
 		$this->randomid = $randomid;
 		$this->orgid = $orgid;
 		$this->login = $login;
@@ -307,56 +290,59 @@ TXT;
 		$this->mode = $mode;
 		$sql = <<<TXT
 INSERT INTO users
-            (id,randomid,orgid,login,password,salt,email,mode,lastdt,active)
-VALUES      (NULL,'$this->randomid','$this->orgid','$this->login','$this->password','$this->salt','$this->email',
-             '$this->mode',NOW(),
+            (id, randomid, orgid, login, password, salt, email, mode, lastdt, active)
+VALUES      (NULL, :randomid, :orgid, :login, :password, :salt, :email,
+             :mode, NOW(),
              1)
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.Add(1): ' . mysqli_error($sqlcn->idsqlconnection));
-		$fio = $this->fio;
-		$code = $this->tab_num;
-		$telephonenumber = $this->telephonenumber;
-		$homephone = $this->homephone;
-		$jpegphoto = $this->jpegphoto;
-		$rid = $this->randomid;
-		$post = $this->post;
+		DB::prepare($sql)->execute(array(
+			':randomid' => $this->randomid,
+			':orgid' => $this->orgid,
+			':login' => $this->login,
+			':password' => $this->password,
+			':salt' => $this->salt,
+			':email' => $this->email,
+			':mode' => $this->mode
+		));
 
 		$zx = new Tusers;
 
-		if ($zx->GetByRandomIdNoProfile($rid)) {
+		if ($zx->GetByRandomIdNoProfile($this->randomid)) {
 			// добавляю профиль
 			$sql = <<<TXT
 INSERT INTO users_profile
-            (id,usersid,fio,code,telephonenumber,homephone,jpegphoto,post,faza,enddate,res1)
-VALUES      (NULL,'$zx->id','$fio','$code','$telephonenumber','$homephone','$jpegphoto','$post','',NOW(),'')
+            (id, usersid, fio, code, telephonenumber, homephone, jpegphoto, post, faza, enddate, res1)
+VALUES      (NULL, :userid, :fio, :code, :telephonenumber, :homephone, :jpegphoto, :post, '', NOW(), '')
 TXT;
-			$sqlcn->ExecuteSQL($sql)
-					or die('Неверный запрос Tusers.Add(2): ' . mysqli_error($sqlcn->idsqlconnection));
+			DB::prepare($sql)->execute(array(
+				':userid' => $zx->id,
+				':fio' => $this->fio,
+				':code' => $this->tab_num,
+				':telephonenumber' => $this->telephonenumber,
+				':homephone' => $this->homephone,
+				':jpegphoto' => $this->jpegphoto,
+				':post' => $this->post
+			));
 		} else {
 			die('Не найден пользователь по randomid Tusers.Add');
 		}
 	}
 
 	/**
-	 * Получить данные о пользователе по  коду из профиля FALSE - если ничего не нашли
-	 * @global type $sqlcn
+	 * Получить данные о пользователе по коду из профиля
 	 * @param type $code
 	 * @return boolean
 	 */
 	function GetByCode($code) {
-		global $sqlcn;
-		$code = $sqlcn->escape($code);
 		$sql = <<<TXT
 SELECT users_profile.*,users.*
 FROM   users_profile
        INNER JOIN users
                ON users_profile.usersid = users.id
-WHERE  users_profile.code = '$code'
+WHERE  users_profile.code = :code
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tusers.GetByCode: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		DB::prepare($sql)->execute(array(':code' => $code))->fetch();
+		if ($row) {
 			$this->id = $row['usersid'];
 			$this->randomid = $row['randomid'];
 			$this->orgid = $row['orgid'];

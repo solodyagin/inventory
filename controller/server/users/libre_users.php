@@ -27,7 +27,7 @@ $mode = PostDef('mode');
 
 if ($oper == '') {
 	// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
-	$user->TestRoles('1,3') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3')) or die('Недостаточно прав');
 	$flt = json_decode($filters, true);
 	$cnt = count($flt['rules']);
 	$where = '';
@@ -114,7 +114,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Только с полными правами можно редактировать пользователя!
-	$user->TestRoles('1') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
 	$imode = ($mode == 'Да') ? '1' : '0';
 	$ps = ($pass != 'скрыто') ? "`password`=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
 	$sql = "UPDATE users SET mode = '$imode', login = '$login', $ps email = '$email' WHERE id = '$id'";
@@ -125,7 +125,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'add') {
 	// Только с полными правами можно добавлять пользователя!
-	$user->TestRoles('1') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
 	$sql = "INSERT INTO knt (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу добавить пользователя! ' . mysqli_error($sqlcn->idsqlconnection));
@@ -134,7 +134,7 @@ if ($oper == 'add') {
 
 if ($oper == 'del') {
 	// Только с полными правами можно удалять пользователя!
-	$user->TestRoles('1') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
 	$sql = "UPDATE users SET active = NOT active WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по пользователю! ' . mysqli_error($sqlcn->idsqlconnection));

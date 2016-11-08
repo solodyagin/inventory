@@ -138,7 +138,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
 	$sql = "UPDATE move SET comment = '$comment' WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить комментарий!' . mysqli_error($sqlcn->idsqlconnection));
@@ -147,7 +147,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	$user->TestRoles('1,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
 	$sql = "DELETE FROM move WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу удалить запись о перемещении!' . mysqli_error($sqlcn->idsqlconnection));

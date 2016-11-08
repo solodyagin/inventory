@@ -14,7 +14,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $id = GetDef('id');
 
 // Если пользователь - "Администратор"
-if ($user->mode == '1'):
+if ($user->mode == 1):
 	$tmpuser = new Tusers;
 	$tmpuser->GetById($id);
 	$orgid = $tmpuser->orgid;

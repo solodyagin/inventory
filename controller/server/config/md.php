@@ -22,7 +22,7 @@ $active = PostDef('active');
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM config_common WHERE nameparam LIKE 'modulename_%'");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -73,7 +73,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
 	$sql = "UPDATE config_common SET valueparam = '$active' WHERE id = '$id'";
 	$result = $sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по модулю!' . mysqli_error($sqlcn->idsqlconnection));
@@ -82,7 +82,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	$user->TestRoles('1,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT * FROM config_common WHERE id = '$id'")
 			or die('Не могу выбрать список модулей!' . mysqli_error($sqlcn->idsqlconnection));
 	while ($row = mysqli_fetch_array($result)) {

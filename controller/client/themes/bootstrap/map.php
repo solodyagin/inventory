@@ -8,12 +8,29 @@
  * http://грибовы.рф
  */
 
+/*
+ * Отчёты / Размещение ТМЦ на карте
+ */
+
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$morgs = GetArrayOrgs();
-if ($user->mode == 1):
+// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+if (($user->mode != 1) && (!$user->TestRoles('1'))):
 	?>
+
+	<div class="alert alert-danger">
+		У вас нет доступа в раздел "Отчёты / Размещение ТМЦ на карте"!<br><br>
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
+		"Полный доступ".
+	</div>
+
+<?php else: ?>
+
+	<?php
+	$morgs = GetArrayOrgs();
+	?>
+
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="col-xs-4 col-md-4 col-sm-4"> 
@@ -38,8 +55,5 @@ if ($user->mode == 1):
 	<script src="https://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU"></script>
 	<script src="controller/client/js/mapsplaces.js"></script>
 	<script src="controller/client/js/maps.js"></script>
-<?php else: ?>
-	<div class="alert alert-error">
-		У вас нет доступа в данный раздел!
-	</div>
+
 <?php endif;

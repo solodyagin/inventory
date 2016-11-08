@@ -12,7 +12,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Если пользователь - "Администратор"
-if ($user->mode == '1'):
+if ($user->mode == 1):
 	?>
 	<script>
 		$(function () {

@@ -15,7 +15,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
-if ($user->mode == '1') {
+if ($user->mode == 1) {
 	$sql = "SELECT * FROM org WHERE active = 1 ORDER BY BINARY(name)";
 	$result = $sqlcn->ExecuteSQL($sql)
 			or die("Не могу выбрать список организаций!" . mysqli_error($sqlcn->idsqlconnection));

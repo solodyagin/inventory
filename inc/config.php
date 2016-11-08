@@ -15,5 +15,5 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 /*
  * Получаем настройки из базы
  */
-$cfg = new Tconfig;
+$cfg = Tconfig::getInstance();
 $cfg->GetConfigFromBase();

@@ -41,12 +41,10 @@ class Tequipment {
 
 	/**
 	 * Обновляем профиль работника с текущими данными (все что заполнено)
-	 * @global type $sqlcn
 	 * @param type $id
 	 */
 
 	function GetById($id) {
-		global $sqlcn;
 		$sql = <<<TXT
 SELECT equipment.comment,equipment.mapyet,equipment.mapmoved,equipment.mapx,equipment.mapy,equipment.ip,equipment.photo,
        equipment.nomeid,getvendorandgroup.grnomeid,equipment.id AS eqid,equipment.orgid AS eqorgid,org.name AS orgname,
@@ -71,11 +69,10 @@ FROM   equipment
                ON places.id = equipment.placesid
        INNER JOIN users
                ON users.id = equipment.usersid
-WHERE  equipment.id = '$id'
+WHERE  equipment.id = :id
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tequipment.GetById: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+		if ($row) {
 			$this->id = $row['eqid'];
 			$this->orgid = $row['eqorgid'];
 			$this->placesid = $row['placesid'];

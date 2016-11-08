@@ -39,7 +39,7 @@ $suserid = PostDef('suserid');
 // Выполняем только при наличии у пользователя соответствующей роли
 // http://грибовы.рф/wiki/doku.php/основы:доступ:роли
 
-if (($user->TestRoles('1,4,5,6')) && ($step != '')) {
+if ((($user->mode == 1) || $user->TestRoles('1,4,5,6')) && ($step != '')) {
 	if ($step != 'move') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		$dtendgar = DateToMySQLDateTime2(PostDef('dtendgar') . ' 00:00:00');

@@ -15,7 +15,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
-if ($user->TestRoles('1,4,5,6')) {
+if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 	echo '<select name="tmcgo" id="tmcgo">';
 	if ($addnone == 'true') {
 		echo '<option value="-1">не выбрано</option>';
@@ -24,5 +24,5 @@ if ($user->TestRoles('1,4,5,6')) {
 	echo '<option value="1">В пути</option>';
 	echo '</select>';
 } else {
-	echo 'Не достаточно прав!!!';
+	echo 'Недостаточно прав';
 }

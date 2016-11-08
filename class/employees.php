@@ -23,65 +23,83 @@ class Temployees {
 
 	/**
 	 * Добавляем профиль работника с текущими данными (все что заполнено)
-	 * @global type $sqlcn
 	 */
 
 	function Add() {
-		global $sqlcn;
 		$sql = <<<TXT
 INSERT INTO users_profile
-            (id,usersid,faza,code,enddate,post)
-VALUES      (NULL,'$this->usersid','$this->faza','$this->code','$this->enddate','$this->post') 
+       (id, usersid, faza, code, enddate, post)
+VALUES (NULL, :usersid, :faza, :code, :enddate, :post) 
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Temployees.Add: ' . mysqli_error($sqlcn->idsqlconnection));
+		try {
+			DB::prepare($sql)->execute(array(
+				':usersid' => $this->usersid,
+				':faza' => $this->faza,
+				':code' => $this->code,
+				':enddate' => $this->enddate,
+				':post' => $this->post
+			));
+		} catch (PDOException $e) {
+			throw new Exception('Неверный запрос Temployees.Add: ' . $e->getMessage());
+		}
 	}
 
 	/**
 	 * Обновляем профиль работника с текущими данными (все что заполнено)
-	 * @global type $sqlcn
 	 */
 	function Update() {
-		global $sqlcn;
 		$sql = <<<TXT
 UPDATE users_profile
-SET    fio = '$this->fio',faza = '$this->faza',code = '$this->code',enddate = '$this->enddate',post = '$this->post'
-WHERE  code = '$this->code' 
+SET    fio = :fio, faza = :faza, code = :code, enddate = :enddate, post = :post
+WHERE  code = :code 
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Temployees.Update: ' . mysqli_error($sqlcn->idsqlconnection));
+		try {
+			DB::prepare($sql)->execute(array(
+				':fio' => $this->fio,
+				':faza' => $this->faza,
+				':code' => $this->code,
+				':enddate' => $this->enddate,
+				':post' => $this->post
+			));
+		} catch (PDOException $e) {
+			throw new Exception('Неверный запрос Temployees.Update: ' . $e->getMessage());
+		}
 	}
 
 	/**
 	 * Обновляем профиль работника с текущими данными (все что заполнено)
-	 * @global type $sqlcn
 	 */
 	function GetByERPCode() {
-		global $sqlcn;
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM users_profile WHERE code = '$this->code'")
-				or die('Неверный запрос Temployees.GetByERPCode: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
-			$this->id = $row['id'];
-			$this->usersid = $row['usersid'];
-			$this->fio = $row['fio'];
-			$this->faza = $row['faza'];
-			$this->enddate = $row['enddate'];
-			$this->post = $row['post'];
+		$sql = 'SELECT * FROM users_profile WHERE code = :code';
+		try {
+			$row = DB::prepare($sql)->execute(array(':code' => $this->code))->fetch();
+			if ($row) {
+				$this->id = $row['id'];
+				$this->usersid = $row['usersid'];
+				$this->fio = $row['fio'];
+				$this->faza = $row['faza'];
+				$this->enddate = $row['enddate'];
+				$this->post = $row['post'];
+			}
+		} catch (PDOException $e) {
+			throw new Exception('Неверный запрос Temployees.GetByERPCode: ' . $e->getMessage());
 		}
 	}
 
 	/**
 	 * А есть ли такой в базе (проверка по ERPCode. Если есть - возврат 1, иначе 0
-	 * @global type $sqlcn
 	 * @param type $TERPCode
 	 * @return boolean
 	 */
 	function EmployeesYetByERPCode($TERPCode) {
-		global $sqlcn;
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM users_profile WHERE code = '$TERPCode'")
-				or die('Ошибка (EmployeesYetByERPCode): ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
-			return true;
+		$sql = 'SELECT * FROM users_profile WHERE code = :code';
+		try {
+			$row = DB::prepare($sql)->execute(array(':code' => $TERPCode))->fetch();
+			if ($row) {
+				return true;
+			}
+		} catch (PDOException $e) {
+			throw new Exception('Ошибка (EmployeesYetByERPCode): ' . $e->getMessage());
 		}
 		return false;
 	}

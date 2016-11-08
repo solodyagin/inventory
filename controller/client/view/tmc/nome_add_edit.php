@@ -12,9 +12,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Проверка прав
-if (!$user->TestRoles('1,4,5,6')) {
-	die('Нужны права администратора!');
-}
+(($user->mode == 1) || $user->TestRoles('1,4,5,6')) or die('Недостаточно прав');
 
 $step = GetDef('step');
 $id = GetDef('id');

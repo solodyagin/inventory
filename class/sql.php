@@ -20,7 +20,7 @@ class Tsql {
 
 	/**
 	 * Соединяемся с БД и выбираем таблицу, получаем $idsqlconnection
-	 * @global type $codemysql
+	 * @global type $mysql_char
 	 * @param type $host
 	 * @param type $name
 	 * @param type $pass
@@ -29,16 +29,16 @@ class Tsql {
 	 */
 
 	function connect($host, $name, $pass, $base) {
-		global $codemysql;
+		global $mysql_char;
 		$this->idsqlconnection = new mysqli($host, $name, $pass, $base);
 		if (mysqli_connect_errno()) {
 			$serr = mysqli_connect_error();
 			echo "Error connect to Mysql or select base: $serr";
 			return $serr;
 		} else {
-			mysqli_query($this->idsqlconnection, "SET NAMES $codemysql");
+			mysqli_query($this->idsqlconnection, "SET NAMES $mysql_char");
 			mysqli_query($this->idsqlconnection, "SET sql_mode=''");
-			mysqli_set_charset($this->idsqlconnection, "$codemysql");
+			mysqli_set_charset($this->idsqlconnection, "$mysql_char");
 		}
 	}
 

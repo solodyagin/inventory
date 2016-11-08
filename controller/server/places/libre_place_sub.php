@@ -25,7 +25,7 @@ $comment = PostDef('comment');
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM places_users WHERE placesid = '$placesid'");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -63,8 +63,8 @@ TXT;
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	$user->TestRoles('1,4') or die('Недостаточно прав');
-	if (($placesid == '') or ( $name == '')) {
+	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
+	if (($placesid == '') || ($name == '')) {
 		die();
 	}
 	$sql = "INSERT INTO places_users (id, placesid, userid) VALUES (null, '$placesid', '$name')";
@@ -75,7 +75,7 @@ if ($oper == 'add') {
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
 	$sql = "UPDATE places_users SET userid = '$name' WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу обновить данные по помещениям/пользователям! ' . mysqli_error($sqlcn->idsqlconnection));
@@ -84,7 +84,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	$user->TestRoles('1,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
 	$sql = "DELETE FROM places_users WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не могу удалить помещение/пользователя! ' . mysqli_error($sqlcn->idsqlconnection));

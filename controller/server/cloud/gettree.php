@@ -14,7 +14,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Выполняем только при наличии у пользователя соответствующей роли
 // http://грибовы.рф/wiki/doku.php/основы:доступ:роли
-$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 $foldername = GetDef('foldername');
 

@@ -13,7 +13,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Проверяем может ли пользователь редактировать?
-$user->TestRoles('1,5') or die('Для редактирования не хватает прав!');
+(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 
 $nodekey = GetDef('nodekey');
 $srnodekey = GetDef('srnodekey');

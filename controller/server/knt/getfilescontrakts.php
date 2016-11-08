@@ -23,7 +23,7 @@ $where = "WHERE idcontract = '$idcontract'";
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM files_contract $where");
 	$row = mysqli_fetch_array($result);
 	$count = $row['cnt'];
@@ -55,7 +55,7 @@ if ($oper == '') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	$user->TestRoles('1,6') or die('Для удаления не хватает прав!');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
 	$sql = "DELETE FROM files_contract WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не смог удалить файл! ' . mysqli_error($sqlcn->idsqlconnection));

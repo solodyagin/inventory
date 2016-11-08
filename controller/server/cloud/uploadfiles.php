@@ -13,7 +13,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Проверяем: может ли пользователь добавлять файлы?
-$user->TestRoles('1,4') or die('Недостаточно прав');
+(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
 
 $selectedkey = PostDef('selectedkey');
 $orig_file = $_FILES['filedata']['name'];

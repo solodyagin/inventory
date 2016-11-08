@@ -8,11 +8,25 @@
  * http://грибовы.рф
  */
 
+/*
+ * Справочники / Группы ТМЦ
+ */
+
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-if ($user->TestRoles('1,4,5,6')):
+// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+if (($user->mode != 1) && (!$user->TestRoles('1,4,5,6'))):
 	?>
+
+	<div class="alert alert-danger">
+		У вас нет доступа в раздел "Справочники / Группы ТМЦ"!<br><br>
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
+		"Полный доступ", "Добавление", "Редактирование", "Удаление".
+	</div>
+
+<?php else: ?>
+
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-12 col-md-12 col-sm-12">
@@ -24,8 +38,5 @@ if ($user->TestRoles('1,4,5,6')):
 		</div>
 	</div>
 	<script src="controller/client/js/libre_group.js"></script>
-<?php else: ?>
-	<div class="alert alert-error">
-		У вас нет доступа в данный раздел!
-	</div>
+
 <?php endif;

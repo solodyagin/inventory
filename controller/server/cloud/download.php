@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 $id = GetDef('id');
 is_numeric($id) or die('Переданы неправильные параметры');

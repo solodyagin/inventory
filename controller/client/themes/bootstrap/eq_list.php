@@ -8,11 +8,25 @@
  * http://грибовы.рф
  */
 
+/*
+ * Инструменты / ТМЦ на моём рабочем месте
+ */
+
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-if (in_array($user->mode, array(0, 1))):
+// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+if (($user->mode != 1) && (!$user->TestRoles('1,3,4,5,6'))):
 	?>
+
+	<div class="alert alert-danger">
+		У вас нет доступа в раздел "Инструменты / ТМЦ на моём рабочем месте"!<br><br>
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
+		"Полный доступ", "Просмотр", "Добавление", "Редактирование", "Удаление".
+	</div>
+
+<?php else: ?>
+
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<ul class="nav nav-tabs" id="myTab">
@@ -40,8 +54,5 @@ if (in_array($user->mode, array(0, 1))):
 		</div>
 	</div>
 	<script src="controller/client/js/eq_list.js"></script>
-<?php else: ?>
-	<div class="alert alert-error">
-		У вас нет доступа в данный раздел!
-	</div>
+
 <?php endif;

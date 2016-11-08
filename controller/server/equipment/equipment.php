@@ -71,7 +71,7 @@ if ($where == '') {
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	$user->TestRoles('1,3,4,5,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 	$sql = <<<TXT
 SELECT     COUNT(*) AS cnt,
            equipment.dtendgar,
@@ -226,7 +226,7 @@ TXT;
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	$user->TestRoles('1,4') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
 	$sql = "INSERT INTO places (id, orgid, name, comment, active) VALUES (null, '$orgid', '$name', '$comment', 1)";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не смог вставить оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
@@ -235,7 +235,7 @@ if ($oper == 'add') {
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	$user->TestRoles('1,5') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
 	$os = ($os == 'Yes') ? 1 : 0;
 	$tmcgo = ($tmcgo == 'Yes') ? 1 : 0;
 	$mode = ($mode == 'Yes') ? 1 : 0;
@@ -254,7 +254,7 @@ TXT;
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	$user->TestRoles('1,6') or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
 	$sql = "UPDATE equipment SET active = NOT active WHERE id = '$id'";
 	$sqlcn->ExecuteSQL($sql)
 			or die('Не смог пометить на удаление оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));

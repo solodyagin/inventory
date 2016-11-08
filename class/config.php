@@ -12,13 +12,11 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tconfig {
+class Tconfig extends Singleton {
 
-	var $mysql_host, $mysql_user, $mysql_pass, $mysql_base; // настойки соединения с БД
-	var $base_id;
 	var $sitename;   // название сайта
 	var $ad;   // использовать для аутенфикации Active Directory 0-нет 1-да
-	var $domain1 = 'khortitsa';   // домен AD первого уровня (например khortitsa)
+	var $domain1;   // домен AD первого уровня (например khortitsa)
 	var $domain2;   // домен AD второго уровня (например com)
 	var $ldap;   // сервер ldap
 	var $usercanregistrate; // может ли пользователь регистрироваться на сайте сам 1-да
@@ -39,10 +37,8 @@ class Tconfig {
 	var $fontsize = '12px';   //стиль грида по умолчанию 
 
 	function GetConfigFromBase() {
-		global $sqlcn;
-		$result = $sqlcn->ExecuteSQL('SELECT * FROM config')
-				or die('Неверный запрос Tconfig.GetConfigFromBase: ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
+		$arr = DB::prepare('SELECT * FROM config')->execute()->fetchAll();
+		foreach ($arr as $row) {
 			$this->ad = $row['ad'];
 			$this->domain1 = $row['domain1'];
 			$this->domain2 = $row['domain2'];
@@ -63,30 +59,48 @@ class Tconfig {
 			$this->urlsite = $row['urlsite'];
 			$this->style = (isset($_COOKIE['stl'])) ? $_COOKIE['stl'] : 'Bootstrap';
 			$this->fontsize = (isset($_COOKIE['fontsize'])) ? $_COOKIE['fontsize'] : '12px';
-			if (isset($_COOKIE['defaultorgid'])) {
-				$this->defaultorgid = $_COOKIE['defaultorgid'];
-			} else {
-				$result2 = $sqlcn->ExecuteSQL('SELECT * FROM org WHERE active = 1 ORDER BY id ASC LIMIT 1');
-				while ($myrow = mysqli_fetch_array($result2)) {
-					$this->defaultorgid = $myrow['id'];
-				}
+		}
+		if (isset($_COOKIE['defaultorgid'])) {
+			$this->defaultorgid = $_COOKIE['defaultorgid'];
+		} else {
+			$row = DB::prepare('SELECT * FROM org WHERE active = 1 ORDER BY id ASC LIMIT 1')->execute()->fetch();
+			if ($row) {
+				$this->defaultorgid = $row['id'];
 			}
 		}
 	}
 
 	function SetConfigToBase() {
-		global $sqlcn;
 		$sql = <<<TXT
 UPDATE config
-SET    ad = '$this->ad',domain1 = '$this->domain1',domain2 = '$this->domain2',sitename = '$this->sitename',theme =
-       '$this->theme',usercanregistrate = '1',ldap = '$this->ldap',emailadmin = '$this->emailadmin',
-       smtphost = '$this->smtphost',smtpauth = '$this->smtpauth',smtpport = '$this->smtpport',
-       smtpusername = '$this->smtpusername',smtppass = '$this->smtppass',emailreplyto = '$this->emailreplyto',
-       sendemail = '$this->sendemail',urlsite = '$this->urlsite'
+SET ad = :ad, domain1 = :domain1, domain2 = :domain2, sitename = :sitename,
+    theme = :theme, usercanregistrate = '1', ldap = :ldap, emailadmin = :emailadmin,
+    smtphost = :smtphost, smtpauth = :smtpauth, smtpport = :smtpport,
+    smtpusername = :smtpusername, smtppass = :smtppass, emailreplyto = :emailreplyto,
+    sendemail = :sendemail, urlsite = :urlsite
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Неверный запрос Tconfig.SetToBase: ' . mysqli_error($sqlcn->idsqlconnection));
-		return true;
+		try {
+			DB::prepare($sql)->execute(array(
+				':ad' => $this->ad,
+				':domain1' => $this->domain1,
+				':domain2' => $this->domain2,
+				':sitename' => $this->sitename,
+				':theme' => $this->theme,
+				':ldap' => $this->ldap,
+				':emailadmin' => $this->emailadmin,
+				':smtphost' => $this->smtphost,
+				':smtpauth' => $this->smtpauth,
+				':smtpport' => $this->smtpport,
+				':smtpusername' => $this->smtpusername,
+				':smtppass' => $this->smtppass,
+				':emailreplyto' => $this->emailreplyto,
+				':sendemail' => $this->sendemail,
+				':urlsite' => $this->urlsite
+			));
+			return true;
+		} catch (PDOException $e) {
+			return false;
+		}
 	}
 
 }
