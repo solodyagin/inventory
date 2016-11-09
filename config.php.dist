@@ -11,10 +11,9 @@
 
 $debug = false; // Режим отладки - РЕКОМЕНДУЮ поставить false !!!
 
-$userewrite = 0; // Использовать модуль rewrite
+$userewrite = 0; // Использовать модуль mod_rewrite
 
-$codemysql = 'utf8'; // Кодировка базы
-
+$mysql_char = 'utf8'; // Кодировка базы
 $mysql_host = 'localhost'; // Хост БД
 $mysql_user = 'root'; // Пользователь БД
 $mysql_pass = ''; // Пароль пользователя БД

@@ -29,8 +29,9 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
 1. Apache 2
   - mod_rewrite
 2. PHP 5
-  - extension=php_mysqli.dll
   - extension=php_ldap.dll
+  - extension=php_mysqli.dll
+  - extension=php_pdo_mysql.dll
 3. MySQL или MariaDB
 
 ### Установка
@@ -42,7 +43,7 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
 
 Если используете пакет "Денвер", то необходимо в `httpd.conf` изменить кодироку по умолчанию: 
 `AddDefaultCharset utf-8`  
-Так-же при отображении "кракозябров", возможно стоит поменять кодировку в файле `config.php`. Например `$codemysql = 'utf8-bin';` или `$codemysql = 'utf8_general_ci';`
+Так-же при отображении "кракозябров", возможно стоит поменять кодировку в файле `config.php`. Например `$mysql_char = 'utf8-bin';` или `$mysql_char = 'utf8_general_ci';`
 
 ### Обновление
 
