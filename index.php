@@ -35,6 +35,26 @@ include_once(WUO_ROOT . '/class/sql.php'); // Класс работы с БД
 include_once(WUO_ROOT . '/class/config.php'); // Класс настроек
 include_once(WUO_ROOT . '/class/users.php'); // Класс работы с пользователями
 
+/**
+ * Задаём обработчик исключений
+ * @global boolean $debug
+ * @param Exception $ex
+ * @throws Exception
+ */
+function exception_handler($ex) {
+	global $debug;
+	switch (get_class($ex)) {
+		case 'DBException':
+			$pr = $ex->getPrevious();
+			die(($pr && $debug) ? $ex->getMessage() . ': ' . $pr->getMessage() : $ex->getMessage());
+			break;
+		default:
+			throw $ex;
+	}
+}
+
+set_exception_handler('exception_handler');
+
 /* Загружаем все что нужно для работы движка */
 include_once(WUO_ROOT . '/inc/connect.php'); // Соединяемся с БД
 include_once(WUO_ROOT . '/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg

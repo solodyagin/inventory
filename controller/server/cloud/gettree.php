@@ -19,43 +19,46 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $foldername = GetDef('foldername');
 
 function GetTree($key) {
-	global $sqlcn;
-	$sql = "SELECT * FROM cloud_dirs WHERE parent = $key";
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу прочитать папку! ' . mysqli_error($sqlcn->idsqlconnection));
-	$cnt = mysqli_num_rows($result);
-	if ($cnt != 0) {
+	$sql = 'SELECT * FROM cloud_dirs WHERE parent = :key';
+	try {
+		$arr = DB::prepare($sql)->execute(array(':key' => $key))->fetchAll();
 		$pz = 0;
-		while ($row = mysqli_fetch_array($result)) {
+		foreach ($arr as $row) {
 			$name = $row['name'];
 			$key = $row['id'];
 			echo '{"title":"' . $name . '","isFolder":true,"key":"' . $key . '","children":[';
 			GetTree($key);
 			echo ']}';
 			$pz++;
-			if ($pz < $cnt) {
+			if ($pz < count($arr)) {
 				echo ',';
 			}
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу прочитать папку!', 0, $ex);
 	}
 }
 
+echo '[';
+
 // читаю корневые папки
 $sql = 'SELECT * FROM cloud_dirs WHERE parent = 0';
-$result = $sqlcn->ExecuteSQL($sql)
-		or die('Не могу прочитать папку! ' . mysqli_error($sqlcn->idsqlconnection));
-$cnt = mysqli_num_rows($result);
-echo '[';
-$pz = 0;
-while ($row = mysqli_fetch_array($result)) {
-	$name = $row['name'];
-	$key = $row['id'];
-	echo '{"title":"' . $name . '","isFolder":true,"key":"' . $key . '","children":[';
-	GetTree($key);
-	echo ']}';
-	$pz++;
-	if ($pz < $cnt) {
-		echo ',';
+try {
+	$arr = DB::prepare($sql)->execute()->fetchAll();
+	$pz = 0;
+	foreach ($arr as $row) {
+		$name = $row['name'];
+		$key = $row['id'];
+		echo '{"title":"' . $name . '","isFolder":true,"key":"' . $key . '","children":[';
+		GetTree($key);
+		echo ']}';
+		$pz++;
+		if ($pz < count($arr)) {
+			echo ',';
+		}
 	}
+} catch (PDOException $ex) {
+	throw new DBException('Не могу прочитать папку!', 0, $ex);
 }
+
 echo ']';

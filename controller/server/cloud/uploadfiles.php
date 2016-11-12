@@ -30,13 +30,21 @@ if (!in_array($orig_file, $dis)) {
 		$rs['msg'] = $userfile_name;
 		$sz = filesize($dst);
 		if ($selectedkey != '') {
-			$SQL = <<<TXT
+			$sql = <<<TXT
 INSERT INTO cloud_files
             (id,cloud_dirs_id,title,filename,dt,sz)
-VALUES      (NULL,'$selectedkey','$orig_file','$userfile_name',NOW(),$sz)
+VALUES      (NULL, :selectedkey, :orig_file, :userfile_name, NOW(), :sz)
 TXT;
-			$sqlcn->ExecuteSQL($SQL)
-					or die('Не могу добавить файл! ' . mysqli_error($sqlcn->idsqlconnection));
+			try {
+				DB::prepare($sql)->execute(array(
+					':selectedkey' => $selectedkey,
+					':orig_file' => $orig_file,
+					':userfile_name' => $userfile_name,
+					':sz' => $sz
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Не могу добавить файл!', 0, $ex);
+			}
 		}
 	}
 }

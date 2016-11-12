@@ -17,13 +17,19 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $id = GetDef('id');
 is_numeric($id) or die('Переданы неправильные параметры');
 
-$sql = "SELECT * FROM cloud_files WHERE id = $id";
-$result = $sqlcn->ExecuteSQL($sql)
-		or die('Ошибка получения файла из базы! ' . mysqli_error($sqlcn->idsqlconnection));
-$row = mysqli_fetch_array($result);
-$filename = WUO_ROOT . '/files/' . $row['filename'];
+$filename = '';
 
-(file_exists($filename) && is_file($filename)) or die('Файл не найден');
+$sql = 'SELECT * FROM cloud_files WHERE id = :id';
+try {
+	$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+	if ($row) {
+		$filename = WUO_ROOT . '/files/' . $row['filename'];
+	}
+} catch (PDOException $ex) {
+	throw new DBException('Ошибка получения файла из базы!', 0, $ex);
+}
+
+(!empty($filename) && file_exists($filename) && is_file($filename)) or die('Файл не найден');
 
 // Органичение скорости скачивания - 10.0 MB/s
 $download_rate = 10.0;

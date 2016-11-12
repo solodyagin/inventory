@@ -34,8 +34,8 @@ class Torgs {
 				$this->picmap = $row['picmap'];
 				$this->active = $row['active'];
 			}
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Torgs.GetById: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Torgs.GetById', 0, $ex);
 		}
 	}
 

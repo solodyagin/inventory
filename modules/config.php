@@ -9,22 +9,25 @@
 
 defined('WUO_ROOT') or die('Доступ запрещён'); // Запрещаем прямой вызов скрипта.
 
-if (isset($_GET['config']) == 'save') {
-	$cfg->sitename = ClearMySqlString($sqlcn->idsqlconnection, $_POST['form_sitename']);
-	$cfg->ad = (isset($_POST['form_cfg_ad'])) ? $_POST['form_cfg_ad'] : 0;
-	$cfg->ldap = $_POST['form_cfg_ldap'];
-	$cfg->domain1 = $_POST['form_cfg_domain1'];
-	$cfg->domain2 = $_POST['form_cfg_domain2'];
-	$cfg->theme = $_POST['form_cfg_theme_sl'];
-	$cfg->emailadmin = $_POST['form_emailadmin'];
-	$cfg->smtphost = $_POST['form_smtphost']; // Сервер SMTP
-	$cfg->smtpauth = (isset($_POST['form_smtpauth'])) ? $_POST['form_smtpauth'] : 0; // Требуется утенфикация?
-	$cfg->smtpport = $_POST['form_smtpport']; // SMTP порт
-	$cfg->smtpusername = $_POST['form_smtpusername'];  // SMTP имя пользователя для входа
-	$cfg->smtppass = $_POST['form_smtppass']; // SMTP пароль пользователя для входа
-	$cfg->emailreplyto = $_POST['form_emailreplyto'];  // Куда слать ответы
-	$cfg->urlsite = $_POST['urlsite'];  // А где сайт лежит?
-	$cfg->sendemail = (isset($_POST['form_sendemail'])) ? $_POST['form_sendemail'] : 0; // А вообще будем посылать почту?
+$step = filter_input(INPUT_GET, 'config');
+
+if ($step == 'save') {
+	$cfg->sitename = filter_input(INPUT_POST, 'form_sitename');
+	$opt = array('options' => array('default' => 0));
+	$cfg->ad = filter_input(INPUT_POST, 'form_cfg_ad', FILTER_VALIDATE_INT, $opt);
+	$cfg->ldap = filter_input(INPUT_POST, 'form_cfg_ldap');
+	$cfg->domain1 = filter_input(INPUT_POST, 'form_cfg_domain1');
+	$cfg->domain2 = filter_input(INPUT_POST, 'form_cfg_domain2');
+	$cfg->theme = filter_input(INPUT_POST, 'form_cfg_theme_sl');
+	$cfg->emailadmin = filter_input(INPUT_POST, 'form_emailadmin');
+	$cfg->smtphost = filter_input(INPUT_POST, 'form_smtphost'); // Сервер SMTP
+	$cfg->smtpauth = filter_input(INPUT_POST, 'form_smtpauth', FILTER_VALIDATE_INT, $opt); // Требуется аутентификация?
+	$cfg->smtpport = filter_input(INPUT_POST, 'form_smtpport'); // SMTP порт
+	$cfg->smtpusername = filter_input(INPUT_POST, 'form_smtpusername');  // SMTP имя пользователя для входа
+	$cfg->smtppass = filter_input(INPUT_POST, 'form_smtppass'); // SMTP пароль пользователя для входа
+	$cfg->emailreplyto = filter_input(INPUT_POST, 'form_emailreplyto');  // Куда слать ответы
+	$cfg->urlsite = filter_input(INPUT_POST, 'urlsite');  // А где сайт находится?
+	$cfg->sendemail = filter_input(INPUT_POST, 'form_sendemail', FILTER_VALIDATE_INT, $opt); // А вообще будем посылать почту?
 	$res = $cfg->SetConfigToBase();
 	if ($res == true) {
 		$ok[] = 'Успешно сохранено!';

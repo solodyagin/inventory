@@ -44,8 +44,8 @@ class Tmod {
 				$sql = 'INSERT INTO config_common (id, nameparam, valueparam) VALUES (null, :modcopy, :copy)';
 				DB::prepare($sql)->execute(array(':modcopy' => "modulecopy_$name", ':copy' => $copy));
 			}
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Tmod.Register: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tmod.Register', 0, $ex);
 		}
 	}
 
@@ -57,12 +57,14 @@ class Tmod {
 		try {
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modname';
 			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
+
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modcomment';
 			DB::prepare($sql)->execute(array(':modcomment' => "modulecomment_$name"));
+
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modcopy';
 			DB::prepare($sql)->execute(array(':modcopy' => "modulecopy_$name"));
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Tmod.UnRegister: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tmod.UnRegister', 0, $ex);
 		}
 	}
 
@@ -74,8 +76,8 @@ class Tmod {
 		try {
 			$sql = "UPDATE config_common SET valueparam = '1' WHERE nameparam = :modname";
 			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Tmod.Activate: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tmod.Activate', 0, $ex);
 		}
 	}
 
@@ -87,8 +89,8 @@ class Tmod {
 		try {
 			$sql = "UPDATE config_common SET valueparam = '0' WHERE nameparam = :modname";
 			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Tmod.Activate: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tmod.DeActivate', 0, $ex);
 		}
 	}
 
@@ -105,8 +107,8 @@ class Tmod {
 			if ($row) {
 				$active = $row['valueparam'];
 			}
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Tmod.IsActive: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tmod.IsActive', 0, $ex);
 		}
 		return $active;
 	}

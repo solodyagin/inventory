@@ -13,12 +13,16 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 $eqid = GetDef('eqid');
 
-$sql = "SELECT * FROM equipment WHERE id = '$eqid'";
-$result = $sqlcn->ExecuteSQL($sql)
-		or die('Не могу выбрать список фото!' . mysqli_error($sqlcn->idsqlconnection));
 $photo = '';
-while ($row = mysqli_fetch_array($result)) {
-	$photo = $row['photo'];
+
+$sql = 'SELECT * FROM equipment WHERE id = :eqid';
+try {
+	$row = DB::prepare($sql)->execute(array(':eqid' => $eqid))->fetch();
+	if ($row) {
+		$photo = $row['photo'];
+	}
+} catch (PDOException $ex) {
+	throw new DBException('Не могу выбрать список фото!', 0, $ex);
 }
 ?>
 <div class="thumbnails">

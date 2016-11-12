@@ -70,8 +70,17 @@ if ($where == '') {
 /////////////////////////////
 
 if ($oper == '') {
-	// Проверяем может ли пользователь просматривать?
+	// Проверка: может ли пользователь просматривать?
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
+	$count = 0;
+
 	$sql = <<<TXT
 SELECT     COUNT(*) AS cnt,
            equipment.dtendgar,
@@ -122,22 +131,30 @@ ON         users_profile.usersid = equipment.usersid
 LEFT JOIN  knt
 ON         knt.id = equipment.kntid $where
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql);
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
-	if ($page > $total_pages) {
-		$page = $total_pages;
+	try {
+		$row = DB::prepare($sql)->execute(array())->fetch();
+		if ($row) {
+			$count = $row['cnt'];
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не получилось выбрать список оргтехники!', 0, $ex);
 	}
-	$responce = new stdClass();
-	$start = $limit * $page - $limit;
-	if ($start < 0) {
-		$responce->page = 0;
-		$responce->total = 0;
-		$responce->records = 0;
-		jsonExit($responce);
-	}
-	$sql = <<<TXT
+
+	if ($count > 0) {
+		$total_pages = ceil($count / $limit);
+		if ($page > $total_pages) {
+			$page = $total_pages;
+		}
+		$start = $limit * $page - $limit;
+		if ($start < 0) {
+			jsonExit($responce);
+		}
+
+		$responce->page = $page;
+		$responce->total = $total_pages;
+		$responce->records = $count;
+
+		$sql = <<<TXT
 SELECT     equipment.dtendgar,
            tmcgo,
            knt.name AS kntname,
@@ -189,53 +206,63 @@ ON         knt.id = equipment.kntid $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не получилось выбрать список оргтехники! ' . mysqli_error($sqlcn->idsqlconnection));
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['eqid'];
-		if ($row['eqactive'] == '1') {
-			$active = '<i class="fa fa-check-circle" aria-hidden="true"></i>';
-		} else {
-			$active = '<i class="fa fa-ban" aria-hidden="true"></i>';
+		try {
+			$arr = DB::prepare($sql)->execute()->fetchAll();
+			$i = 0;
+			foreach ($arr as $row) {
+				$responce->rows[$i]['id'] = $row['eqid'];
+				if ($row['eqactive'] == '1') {
+					$active = '<i class="fa fa-check-circle" aria-hidden="true"></i>';
+				} else {
+					$active = '<i class="fa fa-ban" aria-hidden="true"></i>';
+				}
+				if ($row['eqrepair'] == '1') {
+					$active = $active . '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>';
+				}
+				$os = ($row['os'] == '0') ? 'No' : 'Yes';
+				$eqmode = ($row['eqmode'] == '0') ? 'No' : 'Yes';
+				$eqmapyet = ($row['eqmapyet'] == '0') ? 'No' : 'Yes';
+				$dtpost = MySQLDateTimeToDateTime($row['datepost']);
+				$dtendgar = MySQLDateToDate($row['dtendgar']);
+				$tmcgo = ($row['tmcgo'] == '0') ? 'No' : 'Yes';
+				$responce->rows[$i]['cell'] = array(
+					$active, $row['eqid'], $row['ip'], $row['placesname'],
+					$row['nomename'], $row['grnome'], $tmcgo, $row['vname'],
+					$row['buhname'], $row['sernum'], $row['invnum'], $row['shtrihkod'],
+					$row['orgname'], $row['fio'], $dtpost, $row['cost'],
+					$row['currentcost'], $os, $eqmode, $row['eqmapyet'],
+					$row['eqcomment'], $row['eqrepair'], $dtendgar, $row['kntname']
+				);
+				$i++;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не получилось выбрать список оргтехники!', 0, $ex);
 		}
-		if ($row['eqrepair'] == '1') {
-			$active = $active . '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>';
-		}
-		$os = ($row['os'] == '0') ? 'No' : 'Yes';
-		$eqmode = ($row['eqmode'] == '0') ? 'No' : 'Yes';
-		$eqmapyet = ($row['eqmapyet'] == '0') ? 'No' : 'Yes';
-		$dtpost = MySQLDateTimeToDateTime($row['datepost']);
-		$dtendgar = MySQLDateToDate($row['dtendgar']);
-		$tmcgo = ($row['tmcgo'] == '0') ? 'No' : 'Yes';
-		$responce->rows[$i]['cell'] = array(
-			$active, $row['eqid'], $row['ip'], $row['placesname'],
-			$row['nomename'], $row['grnome'], $tmcgo, $row['vname'],
-			$row['buhname'], $row['sernum'], $row['invnum'], $row['shtrihkod'],
-			$row['orgname'], $row['fio'], $dtpost, $row['cost'],
-			$row['currentcost'], $os, $eqmode, $row['eqmapyet'],
-			$row['eqcomment'], $row['eqrepair'], $dtendgar, $row['kntname']
-		);
-		$i++;
 	}
 	jsonExit($responce);
 }
 
 if ($oper == 'add') {
-	// Проверяем может ли пользователь добавлять?
+	// Проверка: может ли пользователь добавлять?
 	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
-	$sql = "INSERT INTO places (id, orgid, name, comment, active) VALUES (null, '$orgid', '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не смог вставить оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'INSERT INTO places (id, orgid, name, comment, active) VALUES (null, :orgid, :name, :comment, 1)';
+	try {
+		DB::prepare($sql)->execute(array(
+			':orgid' => $orgid,
+			':name' => $name,
+			':comment' => $comment
+		));
+	} catch (PDOException $ex) {
+		throw new DBException('Не смог добавить оргтехнику!', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'edit') {
-	// Проверяем может ли пользователь редактировать?
+	// Проверка: может ли пользователь редактировать?
 	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
+
 	$os = ($os == 'Yes') ? 1 : 0;
 	$tmcgo = ($tmcgo == 'Yes') ? 1 : 0;
 	$mode = ($mode == 'Yes') ? 1 : 0;
@@ -243,20 +270,40 @@ if ($oper == 'edit') {
 	$buhname = mysqli_real_escape_string($sqlcn->idsqlconnection, $buhname);
 	$sql = <<<TXT
 UPDATE equipment
-SET    buhname = '$buhname',sernum = '$sernum',invnum = '$invnum',shtrihkod = '$shtrihkod',cost = '$cost',
-       currentcost = '$currentcost',os = '$os',mode = '$mode',mapyet = '$mapyet',comment = '$comment',tmcgo = '$tmcgo'
-WHERE  id = '$id'
+SET    buhname = :buhname, sernum = :sernum, invnum = :invnum, shtrihkod = :shtrihkod, cost = :cost,
+       currentcost = :currentcost, os = :os, mode = :mode, mapyet = :mapyet, comment = :comment, tmcgo = :tmcgo
+WHERE  id = :id
 TXT;
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не смог обновить оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
+	try {
+		DB::prepare($sql)->execute(array(
+			':buhname' => $buhname,
+			':sernum' => $sernum,
+			':invnum' => $invnum,
+			':shtrihkod' => $shtrihkod,
+			':cost' => $cost,
+			':currentcost' => $currentcost,
+			':os' => $os,
+			':mode' => $mode,
+			':mapyet' => $mapyet,
+			':comment' => $comment,
+			':tmcgo' => $tmcgo,
+			':id' => $id
+		));
+	} catch (PDOException $ex) {
+		throw new DBException('Не смог обновить оргтехнику!', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
-	$sql = "UPDATE equipment SET active = NOT active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не смог пометить на удаление оргтехнику! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'UPDATE equipment SET active = NOT active WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не смог пометить на удаление оргтехнику!', 0, $ex);
+	}
 	exit;
 }

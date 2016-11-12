@@ -22,72 +22,104 @@ $title = PostDef('title');
 $cloud_dirs_id = GetDef('cloud_dirs_id');
 
 if ($oper == '') {
-	// Проверяем может ли пользователь просматривать?
+	// Проверка: может ли пользователь просматривать?
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-	$sql = "SELECT COUNT(*) AS cnt FROM cloud_files WHERE cloud_dirs_id = '$cloud_dirs_id'";
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать количество записей! ' . mysqli_error($lb->idsqlconnection));
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
-	if ($page > $total_pages) {
-		$page = $total_pages;
+
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
+	$count = 0;
+
+	$sql = 'SELECT COUNT(*) AS cnt FROM cloud_files WHERE cloud_dirs_id = :cloud_dirs_id';
+	try {
+		$row = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetch();
+		if ($row) {
+			$count = $row['cnt'];
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать количество записей!', 0, $ex);
 	}
-	$start = $limit * $page - $limit;
-	$sql = <<<TXT
+
+	if ($count > 0) {
+		$total_pages = ceil($count / $limit);
+		if ($page > $total_pages) {
+			$page = $total_pages;
+		}
+		$start = $limit * $page - $limit;		
+		if ($start < 0) {
+			jsonExit($responce);
+		}
+		
+		$responce->page = $page;
+		$responce->total = $total_pages;
+		$responce->records = $count;
+
+		$sql = <<<TXT
 SELECT   *
 FROM     cloud_files
-WHERE    cloud_dirs_id = '$cloud_dirs_id'
+WHERE    cloud_dirs_id = :cloud_dirs_id
 ORDER BY $sidx $sord
 LIMIT    $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список файлов! ' . mysqli_error($sqlcn->idsqlconnection));
-	$responce = new stdClass();
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['id'];
-		switch (pathinfo($row['filename'], PATHINFO_EXTENSION)) {
-			case 'jpeg':
-			case 'jpg':
-			case 'png':
-				$ico = '<i class="fa fa-file-image-o" aria-hidden="true"></i>';
-				break;
-			case 'xls':
-			case 'ods':
-				$ico = '<i class="fa a-file-excel-o" aria-hidden="true"></i>';
-				break;
-			case 'doc':
-			case 'odt':
-				$ico = '<i class="fa fa-file-word-o" aria-hidden="true"></i>';
-				break;
-			default:
-				$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
+		try {
+			$i = 0;
+			$arr = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetchAll();
+			foreach ($arr as $row) {
+				$responce->rows[$i]['id'] = $row['id'];
+				switch (pathinfo($row['filename'], PATHINFO_EXTENSION)) {
+					case 'jpeg':
+					case 'jpg':
+					case 'png':
+						$ico = '<i class="fa fa-file-image-o" aria-hidden="true"></i>';
+						break;
+					case 'xls':
+					case 'ods':
+						$ico = '<i class="fa a-file-excel-o" aria-hidden="true"></i>';
+						break;
+					case 'doc':
+					case 'odt':
+						$ico = '<i class="fa fa-file-word-o" aria-hidden="true"></i>';
+						break;
+					default:
+						$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
+				}
+				$ico = '<a target="_blank" href="index.php?route=/controller/server/cloud/download.php?id=' . $row['id'] . '">' . $ico . '</a>';
+				$title = $row['title'];
+				$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
+				$i++;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу выбрать список файлов!', 0, $ex);
 		}
-		$ico = '<a target="_blank" href="index.php?route=/controller/server/cloud/download.php?id=' . $row['id'] . '">' . $ico . '</a>';
-		$title = $row['title'];
-		$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
-		$i++;
 	}
 	jsonExit($responce);
 }
 
 if ($oper == 'edit') {
-	// Проверяем может ли пользователь редактировать?
+	// Проверка: может ли пользователь редактировать?
 	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
-	$sql = "UPDATE cloud_files SET title = '$title' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу выполнить запрос! ' . mysqli_error($lb->idsqlconnection));
+
+	$sql = 'UPDATE cloud_files SET title = :title WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':title' => $title, ':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выполнить запрос!', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'del') {
+	// Проверка: может ли пользователь удалять?
 	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
-	$sql = "DELETE FROM cloud_files WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу выполнить запрос! ' . mysqli_error($lb->idsqlconnection));
+
+	$sql = 'DELETE FROM cloud_files WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выполнить запрос!', 0, $ex);
+	}
 	exit;
 }

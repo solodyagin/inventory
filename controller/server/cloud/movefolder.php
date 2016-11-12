@@ -18,6 +18,9 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $nodekey = GetDef('nodekey');
 $srnodekey = GetDef('srnodekey');
 
-$sql = "UPDATE cloud_dirs SET parent = '$nodekey' WHERE id = '$srnodekey'";
-$sqlcn->ExecuteSQL($sql)
-		or die('Не могу обновить дерево папок! ' . mysqli_error($sqlcn->idsqlconnection));
+$sql = 'UPDATE cloud_dirs SET parent = :nodekey WHERE id = :srnodekey';
+try {
+	DB::prepare($sql)->execute(array(':nodekey' => $nodekey, ':srnodekey' => $srnodekey));
+} catch (PDOException $ex) {
+	throw new DBException('Не могу обновить дерево папок!', 0, $ex);
+}

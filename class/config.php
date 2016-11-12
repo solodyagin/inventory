@@ -37,36 +37,40 @@ class Tconfig extends Singleton {
 	var $fontsize = '12px';   //стиль грида по умолчанию 
 
 	function GetConfigFromBase() {
-		$arr = DB::prepare('SELECT * FROM config')->execute()->fetchAll();
-		foreach ($arr as $row) {
-			$this->ad = $row['ad'];
-			$this->domain1 = $row['domain1'];
-			$this->domain2 = $row['domain2'];
-			$this->sitename = htmlspecialchars($row['sitename'], ENT_QUOTES);
-			$this->usercanregistrate = $row['usercanregistrate'];
-			$this->useraddfromad = $row['useraddfromad'];
-			$this->ldap = $row['ldap'];
-			$this->theme = $row['theme'];
-			$this->emailadmin = htmlspecialchars($row['emailadmin']);
-			$this->smtphost = $row['smtphost'];  // сервер SMTP
-			$this->smtpauth = $row['smtpauth'];  // требуется утенфикация?
-			$this->smtpport = $row['smtpport'];  // SMTP порт
-			$this->smtpusername = stripslashes($row['smtpusername']); // SMTP имя пользователя для входа
-			$this->smtppass = stripslashes($row['smtppass']);  // SMTP пароль пользователя для входа
-			$this->emailreplyto = stripslashes($row['emailreplyto']); // куда слать ответы
-			$this->sendemail = $row['sendemail'];  // а вообще будем посылать почту?
-			$this->version = $row['version'];
-			$this->urlsite = $row['urlsite'];
-			$this->style = (isset($_COOKIE['stl'])) ? $_COOKIE['stl'] : 'Bootstrap';
-			$this->fontsize = (isset($_COOKIE['fontsize'])) ? $_COOKIE['fontsize'] : '12px';
-		}
-		if (isset($_COOKIE['defaultorgid'])) {
-			$this->defaultorgid = $_COOKIE['defaultorgid'];
-		} else {
-			$row = DB::prepare('SELECT * FROM org WHERE active = 1 ORDER BY id ASC LIMIT 1')->execute()->fetch();
-			if ($row) {
-				$this->defaultorgid = $row['id'];
+		try {
+			$arr = DB::prepare('SELECT * FROM config')->execute()->fetchAll();
+			foreach ($arr as $row) {
+				$this->ad = $row['ad'];
+				$this->domain1 = $row['domain1'];
+				$this->domain2 = $row['domain2'];
+				$this->sitename = htmlspecialchars($row['sitename'], ENT_QUOTES);
+				$this->usercanregistrate = $row['usercanregistrate'];
+				$this->useraddfromad = $row['useraddfromad'];
+				$this->ldap = $row['ldap'];
+				$this->theme = $row['theme'];
+				$this->emailadmin = htmlspecialchars($row['emailadmin']);
+				$this->smtphost = $row['smtphost'];  // сервер SMTP
+				$this->smtpauth = $row['smtpauth'];  // требуется утенфикация?
+				$this->smtpport = $row['smtpport'];  // SMTP порт
+				$this->smtpusername = stripslashes($row['smtpusername']); // SMTP имя пользователя для входа
+				$this->smtppass = stripslashes($row['smtppass']);  // SMTP пароль пользователя для входа
+				$this->emailreplyto = stripslashes($row['emailreplyto']); // куда слать ответы
+				$this->sendemail = $row['sendemail'];  // а вообще будем посылать почту?
+				$this->version = $row['version'];
+				$this->urlsite = $row['urlsite'];
+				$this->style = (isset($_COOKIE['stl'])) ? $_COOKIE['stl'] : 'Bootstrap';
+				$this->fontsize = (isset($_COOKIE['fontsize'])) ? $_COOKIE['fontsize'] : '12px';
 			}
+			if (isset($_COOKIE['defaultorgid'])) {
+				$this->defaultorgid = $_COOKIE['defaultorgid'];
+			} else {
+				$row = DB::prepare('SELECT * FROM org WHERE active = 1 ORDER BY id ASC LIMIT 1')->execute()->fetch();
+				if ($row) {
+					$this->defaultorgid = $row['id'];
+				}
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tconfig.GetConfigFromBase', 0, $ex);
 		}
 	}
 
@@ -98,7 +102,7 @@ TXT;
 				':urlsite' => $this->urlsite
 			));
 			return true;
-		} catch (PDOException $e) {
+		} catch (PDOException $ex) {
 			return false;
 		}
 	}

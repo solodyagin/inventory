@@ -22,10 +22,10 @@ try {
 		mailq($row['to'], $row['title'], $row['btxt']);
 		try {
 			DB::prepare('DELETE FROM mailq WHERE id = :id')->execute(array(':id' => $row['id']));
-		} catch (PDOException $e) {
-			$err[] = 'Не получилось удалить сообщение из очереди ' . $e->getMessage();
+		} catch (PDOException $ex) {
+			$err[] = 'Не получилось удалить сообщение из очереди ' . $ex->getMessage();
 		}
 	}
-} catch (PDOException $e) {
-	$err[] = 'Не получилось прочитать очередь сообщений ' . $e->getMessage();
+} catch (PDOException $ex) {
+	$err[] = 'Не получилось прочитать очередь сообщений ' . $ex->getMessage();
 }

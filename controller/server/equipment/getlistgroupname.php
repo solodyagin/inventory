@@ -16,15 +16,18 @@ $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
 if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
-	$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY BINARY(name)';
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список групп!' . mysqli_error($sqlcn->idsqlconnection));
 	echo '<select name="sgroupname" id="sgroupname">';
 	if ($addnone == 'true') {
 		echo '<option value="-1" >не выбрано</option>';
 	}
-	while ($row = mysqli_fetch_array($result)) {
-		echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+	$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY BINARY(name)';
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		foreach ($arr as $row) {
+			echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список групп!', 0, $ex);
 	}
 	echo '</select>';
 } else {

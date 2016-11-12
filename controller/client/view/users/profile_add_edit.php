@@ -38,7 +38,7 @@ if ($user->mode == 1):
 	$fio = $tmpuser->fio;
 	$photo = $tmpuser->jpegphoto;
 	if ($photo == '') {
-		$photo = WUO_ROOT . "/controller/client/themes/$cfg->theme/img/noimage.jpg";
+		$photo = 'noimage.jpg';
 	}
 	$code = $tmpuser->tab_num;
 	$post = $tmpuser->post;

@@ -23,23 +23,21 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 				for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
 					if ($(this).attr('name') == field[i]) { //проверяем поле формы на пустоту
 						if (!$(this).val()) {// если в поле пустое
-							$(this).css('border', 'red 1px solid');// устанавливаем рамку красного цвета
 							error = 1;// определяем индекс ошибки
+							$(this).parent().addClass('has-error');
 						} else {
-							$(this).css('border', 'gray 1px solid');// устанавливаем рамку обычного цвета
+							$(this).parent().removeClass('has-error');
 						}
 					}
 				}
 			});
-			if (error == 0) { // если ошибок нет то отправляем данные
-				return true;
-			} else {
-				var err_text = 'Не все обязательные поля заполнены!<hr>';
+			if (error == 1) {
 				$('#messenger').addClass('alert alert-error');
-				$('#messenger').html(err_text);
+				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
 				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
 			}
+			return true;			
 		});
 	});
 	$(document).ready(function () {

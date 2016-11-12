@@ -21,31 +21,41 @@ if (($user->mode == 1) && ($step != '')) {
 	}
 	$title = PostDef('title');
 	if ($title == '') {
-		$title = 'Не задан заголовок!';
+		$err[] = 'Не задан заголовок!';
 	}
-	$txt = ClearMySqlString($sqlcn->idsqlconnection, PostDef('txt'));
+	$txt = PostDef('txt');
 	if ($txt == '') {
-		$txt = 'Нету тела новости!';
+		$err[] = 'Нет текста новости!';
 	}
-	$newsid = GetDef('newsid');
 
-	if ($step == 'add') {
-		if (count($err) == 0) {
-			$sql = "INSERT INTO news (id,dt,title,body) VALUES (NULL,'$dtpost','$title','$txt')";
-			$result = $sqlcn->ExecuteSQL($sql);
-			//echo "$sql";
-			if ($result == '') {
-				die('Не смог добавить новость!: ' . mysqli_error($sqlcn->idsqlconnection));
+	if (count($err) == 0) {
+		if ($step == 'add') {
+			$sql = 'INSERT INTO news (id, dt, title, body) VALUES (NULL, :dtpost, :title, :txt)';
+			try {
+				DB::prepare($sql)->execute(array(
+					':dtpost' => $dtpost,
+					':title' => $title,
+					':txt' => $txt
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Не смог добавить новость!', 0, $ex);
 			}
 		}
-	}
 
-	if (($step == 'edit') && ($newsid != '')) {
-		if (count($err) == 0) {
-			$sql = "UPDATE news SET dt='$dtpost',title='$title',body='$txt' WHERE id='$newsid'";
-			$result = $sqlcn->ExecuteSQL($sql);
-			if ($result == '') {
-				die('Не смог отредактировать новость!: ' . mysqli_error($sqlcn->idsqlconnection));
+		if ($step == 'edit') {
+			$newsid = GetDef('newsid');
+			if ($newsid != '') {
+				$sql = 'UPDATE news SET dt = :dtpost, title= :title, body= :txt WHERE id = :newsid';
+				try {
+					DB::prepare($sql)->execute(array(
+						':dtpost' => $dtpost,
+						':title' => $title,
+						':txt' => $txt,
+						':newsid' => $newsid
+					));
+				} catch (PDOException $ex) {
+					throw new DBException('Не смог отредактировать новость!', 0, $ex);
+				}
 			}
 		}
 	}

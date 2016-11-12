@@ -66,15 +66,36 @@ INNER JOIN users_profile
 ON         users_profile.usersid = useridto
 $where
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql);
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
-	if ($page > $total_pages) {
-		$page = $total_pages;
+
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
+	$count = 0;
+
+	try {
+		$row = DB::prepare($sql)->execute()->fetch();
+		if ($row) {
+			$count = $row['cnt'];
+		}
+	} catch (PDOException $ex) {
+		throw new DBException($ex->getMessage());
 	}
-	$start = $limit * $page - $limit;
-	$sql = <<<TXT
+
+	if ($count > 0) {
+		$total_pages = ceil($count / $limit);
+		if ($page > $total_pages) {
+			$page = $total_pages;
+		}
+		$responce->page = $page;
+		$responce->total = $total_pages;
+		$responce->records = $count;
+
+		$start = $limit * $page - $limit;
+
+		$sql = <<<TXT
 SELECT     mv.id,
            mv.eqid,
            nome.name,
@@ -119,19 +140,19 @@ $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список перемещений! ' . mysqli_error($sqlcn->idsqlconnection));
-	$responce = new stdClass();
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['id'];
-		$responce->rows[$i]['cell'] = array($row['id'], $row['dt'],
-			$row['orgname1'], $row['place1'], $row['user1'], $row['orgname2'],
-			$row['place2'], $row['user2'], $row['name'], $row['comment']);
-		$i++;
+		try {
+			$i = 0;
+			$arr = DB::prepare($sql)->execute()->fetchAll();
+			foreach ($arr as $row) {
+				$responce->rows[$i]['id'] = $row['id'];
+				$responce->rows[$i]['cell'] = array($row['id'], $row['dt'],
+					$row['orgname1'], $row['place1'], $row['user1'], $row['orgname2'],
+					$row['place2'], $row['user2'], $row['name'], $row['comment']);
+				$i++;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу выбрать список перемещений!', 0, $ex);
+		}
 	}
 	jsonExit($responce);
 }
@@ -139,17 +160,23 @@ TXT;
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
-	$sql = "UPDATE move SET comment = '$comment' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу обновить комментарий!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = 'UPDATE move SET comment = :comment WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':comment' => $comment, ':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу обновить комментарий!', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
-	$sql = "DELETE FROM move WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу удалить запись о перемещении!' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = 'DELETE FROM move WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу удалить запись о перемещении!', 0, $ex);
+	}
 	exit;
 }

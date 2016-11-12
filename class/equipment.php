@@ -71,32 +71,36 @@ FROM   equipment
                ON users.id = equipment.usersid
 WHERE  equipment.id = :id
 TXT;
-		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
-		if ($row) {
-			$this->id = $row['eqid'];
-			$this->orgid = $row['eqorgid'];
-			$this->placesid = $row['placesid'];
-			$this->usersid = $row['usersid'];
-			$this->nomeid = $row['nomeid'];
-			$this->buhname = $row['buhname'];
-			$this->datepost = $row['datepost'];
-			$this->cost = $row['cost'];
-			$this->currentcost = $row['currentcost'];
-			$this->sernum = $row['sernum'];
-			$this->invnum = $row['invnum'];
-			$this->shtrihkod = $row['shtrihkod'];
-			$this->os = $row['os'];
-			$this->mode = $row['eqmode'];
-			$this->comment = $row['comment'];
-			$this->photo = $row['photo'];
-			$this->repair = $row['eqrepair'];
-			$this->active = $row['eqactive'];
-			$this->ip = $row['ip'];
-			$this->mapx = $row['mapx'];
-			$this->mapy = $row['mapy'];
-			$this->mapmoved = $row['mapmoved'];
-			$this->mapyet = $row['mapyet'];
-			$this->tmcname = $row['nomename'];
+		try {
+			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			if ($row) {
+				$this->id = $row['eqid'];
+				$this->orgid = $row['eqorgid'];
+				$this->placesid = $row['placesid'];
+				$this->usersid = $row['usersid'];
+				$this->nomeid = $row['nomeid'];
+				$this->buhname = $row['buhname'];
+				$this->datepost = $row['datepost'];
+				$this->cost = $row['cost'];
+				$this->currentcost = $row['currentcost'];
+				$this->sernum = $row['sernum'];
+				$this->invnum = $row['invnum'];
+				$this->shtrihkod = $row['shtrihkod'];
+				$this->os = $row['os'];
+				$this->mode = $row['eqmode'];
+				$this->comment = $row['comment'];
+				$this->photo = $row['photo'];
+				$this->repair = $row['eqrepair'];
+				$this->active = $row['eqactive'];
+				$this->ip = $row['ip'];
+				$this->mapx = $row['mapx'];
+				$this->mapy = $row['mapy'];
+				$this->mapmoved = $row['mapmoved'];
+				$this->mapyet = $row['mapyet'];
+				$this->tmcname = $row['nomename'];
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tequipment.GetById', 0, $ex);
 		}
 	}
 

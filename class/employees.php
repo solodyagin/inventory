@@ -39,8 +39,8 @@ TXT;
 				':enddate' => $this->enddate,
 				':post' => $this->post
 			));
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Temployees.Add: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Temployees.Add', 0, $ex);
 		}
 	}
 
@@ -61,8 +61,8 @@ TXT;
 				':enddate' => $this->enddate,
 				':post' => $this->post
 			));
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Temployees.Update: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Temployees.Update', 0, $ex);
 		}
 	}
 
@@ -81,8 +81,8 @@ TXT;
 				$this->enddate = $row['enddate'];
 				$this->post = $row['post'];
 			}
-		} catch (PDOException $e) {
-			throw new Exception('Неверный запрос Temployees.GetByERPCode: ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Temployees.GetByERPCode', 0, $ex);
 		}
 	}
 
@@ -98,8 +98,8 @@ TXT;
 			if ($row) {
 				return true;
 			}
-		} catch (PDOException $e) {
-			throw new Exception('Ошибка (EmployeesYetByERPCode): ' . $e->getMessage());
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Temployees.EmployeesYetByERPCode', 0, $ex);
 		}
 		return false;
 	}

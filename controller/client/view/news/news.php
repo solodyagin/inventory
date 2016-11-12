@@ -18,11 +18,16 @@ $title = '';
 $txt = '';
 
 if ($step == 'edit') {
-	$result = $sqlcn->ExecuteSQL("SELECT * FROM news WHERE id = '$id'");
-	while ($row = mysqli_fetch_array($result)) {
-		$dtpost = MySQLDateTimeToDateTimeNoTime($row['dt']);
-		$title = $row['title'];
-		$txt = $row['body'];
+	$sql = 'SELECT * FROM news WHERE id = :id';
+	try {
+		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+		if ($row) {
+			$dtpost = MySQLDateTimeToDateTimeNoTime($row['dt']);
+			$title = $row['title'];
+			$txt = $row['body'];
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не смог выбрать новость', 0, $ex);
 	}
 } else {
 	$step = 'add';
@@ -30,24 +35,6 @@ if ($step == 'edit') {
 }
 ?>
 <script src="js/tinymce/jquery.tinymce.min.js"></script>
-<div id="messenger"></div>
-<form enctype="multipart/form-data" action="?content_page=news&step=<?php echo "$step&newsid=$id"; ?>" method="post" name="form1" target="_self">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-4">
-				<input name="dtpost" id="dtpost" class="form-control" value="<?php echo $dtpost; ?>">
-			</div>
-		</div>
-		<div class="row">
-			<input name="title" id="title" class="form-control" value="<?php echo $title; ?>" placeholder="Заголовок">
-		</div>
-		<div class="row">
-			<textarea id="txt" name="txt" rows="15" placeholder="Введите новость">
-				<?php echo $txt; ?>
-			</textarea>
-		</div>
-	</div>
-</form>
 <script>
 	$('#pg_add_edit').dialog({
 		close: function () {
@@ -57,29 +44,28 @@ if ($step == 'edit') {
 	});
 
 	$(function () {
-		var field = new Array('dtpost', 'title', 'txt');//поля обязательные
-		$('form1').submit(function () {// обрабатываем отправку формы
+		var field = new Array('dtpost', 'title', 'txt'); // поля обязательные
+		$('form').submit(function () {// обрабатываем отправку формы
 			var error = 0; // индекс ошибки
 			$('form').find(':input').each(function () {// проверяем каждое поле в форме
 				for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
-					if ($(this).attr('name') == field[i]) { //проверяем поле формы на пустоту
-						if (!$(this).val()) {// если в поле пустое
-							$(this).css('border', 'red 1px solid');// устанавливаем рамку красного цвета
+					if ($(this).attr('name') == field[i]) { // проверяем поле формы на пустоту
+						if (!$(this).val()) { // если в поле пустое
 							error = 1;// определяем индекс ошибки
+							$(this).parent().addClass('has-error');
 						} else {
-							$(this).css('border', 'gray 1px solid');// устанавливаем рамку обычного цвета
+							$(this).parent().removeClass('has-error');
 						}
-
 					}
 				}
 			});
-			if (error == 0) { // если ошибок нет то отправляем данные
-				return true;
-			} else {
+			if (error == 1) {
+				$('#messenger').addClass('alert alert-danger');
 				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
 				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
 			}
+			return true;
 		});
 	});
 
@@ -97,12 +83,9 @@ if ($step == 'edit') {
 			theme: 'modern',
 			mode: 'none',
 			'theme_advanced_buttons3_add': 'code',
-			plugins: 'save fullscreen link emoticons code',
-			toolbar: 'save fullscreen link emoticons',
+			plugins: 'fullscreen link emoticons code',
+			toolbar: 'fullscreen link emoticons',
 			save_enablewhendirty: true,
-			save_onsavecallback: function () {
-				document.form1.submit();
-			}
 		});
 	});
 
@@ -114,3 +97,29 @@ if ($step == 'edit') {
 		$('#dtpost').datepicker('setDate', "<?php echo $dtpost; ?>");
 <?php endif; ?>
 </script>
+<form enctype="multipart/form-data" action="?content_page=news&step=<?php echo "$step&newsid=$id"; ?>" method="post" name="form1" target="_self">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-4">
+				<input name="dtpost" id="dtpost" class="form-control" value="<?php echo $dtpost; ?>">
+			</div>
+		</div>
+		<div class="row-fluid">
+			<input name="title" id="title" class="form-control" value="<?php echo $title; ?>" placeholder="Заголовок">
+		</div>
+		<div class="row-fluid">
+			<textarea id="txt" name="txt" rows="13" placeholder="Введите новость">
+				<?php echo $txt; ?>
+			</textarea>
+		</div>
+		<div class="row">
+			<div class="col-md-offset-10 col-md-2">
+				<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">	
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div id="messenger"></div>
+		</div>
+	</div>
+</form>
+

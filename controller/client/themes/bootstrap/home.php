@@ -49,8 +49,8 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<div class="panel-body">
 						<div class="well" id="newslist"></div>    
 						<ul class="pager">
-							<li class="previous"><a href="#" id="newsprev" name="newsprev">&larr; Назад</a></li>
-							<li class="next"><a href="#" id="newsnext" name="newsnext">Вперед &rarr;</a></li>
+							<li class="previous"><a href="javascript:void(0)" id="newsprev" name="newsprev">&larr; Назад</a></li>
+							<li class="next"><a href="javascript:void(0)" id="newsnext" name="newsnext">Вперед &rarr;</a></li>
 						</ul>
 						<script src="controller/client/js/news_main.js"></script>
 					</div>

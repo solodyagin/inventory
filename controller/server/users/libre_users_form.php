@@ -58,6 +58,11 @@ if (($user->mode == 1) || $user->TestRoles('1')) {
 			$tmpuser = new Tusers;
 			$tmpuser->active = 1;
 			$tmpuser->fio = $login;
+			$tmpuser->tab_num = '';
+			$tmpuser->post = '';
+			$tmpuser->telephonenumber = '';
+			$tmpuser->homephone = '';
+			$tmpuser->jpegphoto = '';
 			$tmpuser->Add(GetRandomId(60), $orgid, $login, $pass, $email, $mode);
 		}
 	}

@@ -49,7 +49,7 @@ if (isset($_GET['login_step'])) {
 			if ($user->GetByLoginPass($enter_user_login, $enter_user_pass)) { // если нашли, то ставим печеньки
 				SetCookie('user_randomid_w3', "$user->randomid", strtotime('+30 days'), '/');
 			} else { // если не нашли в "обычном" списке, проверяем в AD (если разрешено в настойках)
-				if (($cfg->ad == 1) and ( check_LDAP_user(strtolower($enter_user_login), $enter_user_pass, $cfg->ldap, $cfg->domain1, $cfg->domain2) == 'true')) {
+				if (($cfg->ad == 1) && check_LDAP_user(strtolower($enter_user_login), $enter_user_pass, $cfg->ldap, $cfg->domain1, $cfg->domain2)) {
 					if ($user->GetByLogin($enter_user_login)) {// если нашли, то ставим печеньки
 						SetCookie('user_randomid_w3', "$user->randomid", strtotime('+30 days'), '/');
 					} else {

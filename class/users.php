@@ -53,7 +53,11 @@ class Tusers {
 
 	function TestRoles($roles) {
 		$sql = "SELECT COUNT(*) FROM usersroles WHERE userid = :id AND role IN ($roles)";
-		return (DB::prepare($sql)->execute(array(':id' => $this->id))->fetchColumn() > 0);
+		try {
+			return (DB::prepare($sql)->execute(array(':id' => $this->id))->fetchColumn() > 0);
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.TestRoles', 0, $ex);
+		}
 	}
 
 	/**
@@ -63,44 +67,52 @@ class Tusers {
 	function UpdateLastdt($id) {
 		$lastdt = date('Y-m-d H:i:s');
 		$sql = 'UPDATE users SET lastdt = :lastdt WHERE id = :id';
-		DB::prepare($sql)->execute(array(':lastdt' => $lastdt, ':id' => $id));
+		try {
+			DB::prepare($sql)->execute(array(':lastdt' => $lastdt, ':id' => $id));
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.UpdateLastdt', 0, $ex);
+		}
 	}
 
 	/**
 	 * Обновляем данные о текущем пользователе в базу
 	 */
 	function Update() {
-		$sql = <<<TXT
+		try {
+			$sql = <<<TXT
 UPDATE users
 SET orgid = :orgid, login = :login, `password` = :password, salt = :salt,
 	email = :email, mode = :mode, active = :active
 WHERE id = :id
 TXT;
-		DB::prepare($sql)->execute(array(
-			':orgid' => $this->orgid,
-			':login' => $this->login,
-			':password' => $this->password,
-			':salt' => $this->salt,
-			':email' => $this->email,
-			':mode' => $this->mode,
-			':active' => $this->active,
-			':id' => $this->id
-		));
-		$sql = <<<TXT
+			DB::prepare($sql)->execute(array(
+				':orgid' => $this->orgid,
+				':login' => $this->login,
+				':password' => $this->password,
+				':salt' => $this->salt,
+				':email' => $this->email,
+				':mode' => $this->mode,
+				':active' => $this->active,
+				':id' => $this->id
+			));
+			$sql = <<<TXT
 UPDATE users_profile
 SET fio = :fio, telephonenumber = :telephonenumber, homephone = :homephone,
 	jpegphoto = :jpegphoto, code = :code, post = :post
 WHERE usersid = :userid
 TXT;
-		DB::prepare($sql)->execute(array(
-			':fio' => $this->fio,
-			':telephonenumber' => $this->telephonenumber,
-			':homephone' => $this->homephone,
-			':jpegphoto' => $this->jpegphoto,
-			':code' => $this->tab_num,
-			':post' => $this->post,
-			':userid' => $this->id
-		));
+			DB::prepare($sql)->execute(array(
+				':fio' => $this->fio,
+				':telephonenumber' => $this->telephonenumber,
+				':homephone' => $this->homephone,
+				':jpegphoto' => $this->jpegphoto,
+				':code' => $this->tab_num,
+				':post' => $this->post,
+				':userid' => $this->id
+			));
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.Update', 0, $ex);
+		}
 	}
 
 	/**
@@ -115,25 +127,29 @@ FROM   users
                ON users_profile.usersid = users.id
 WHERE  users.login = :login
 TXT;
-		$row = DB::prepare($sql)->execute(array(':login' => $login))->fetch();
-		if ($row) {
-			$this->id = $row['sid'];
-			$this->randomid = $row['randomid'];
-			$this->orgid = $row['orgid'];
-			$this->login = $row['login'];
-			$this->password = $row['password'];
-			$this->salt = $row['salt'];
-			$this->email = $row['email'];
-			$this->mode = $row['mode'];
-			$this->lastdt = $row['lastdt'];
-			$this->active = $row['active'];
-			$this->telephonenumber = $row['telephonenumber'];
-			$this->jpegphoto = $row['jpegphoto'];
-			$this->homephone = $row['homephone'];
-			$this->fio = $row['fio'];
-			$this->tab_num = $row['code'];
-			$this->post = $row['post'];
-			return true;
+		try {
+			$row = DB::prepare($sql)->execute(array(':login' => $login))->fetch();
+			if ($row) {
+				$this->id = $row['sid'];
+				$this->randomid = $row['randomid'];
+				$this->orgid = $row['orgid'];
+				$this->login = $row['login'];
+				$this->password = $row['password'];
+				$this->salt = $row['salt'];
+				$this->email = $row['email'];
+				$this->mode = $row['mode'];
+				$this->lastdt = $row['lastdt'];
+				$this->active = $row['active'];
+				$this->telephonenumber = $row['telephonenumber'];
+				$this->jpegphoto = $row['jpegphoto'];
+				$this->homephone = $row['homephone'];
+				$this->fio = $row['fio'];
+				$this->tab_num = $row['code'];
+				$this->post = $row['post'];
+				return true;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.GetByLogin', 0, $ex);
 		}
 		return false;
 	}
@@ -152,25 +168,29 @@ FROM   users
 WHERE  users.login = :login
        AND users.`password` = SHA1(CONCAT(SHA1(:pass), users.salt))
 TXT;
-		$row = DB::prepare($sql)->execute(array(':login' => $login, ':pass' => $pass))->fetch();
-		if ($row) {
-			$this->id = $row['sid'];
-			$this->randomid = $row['randomid'];
-			$this->orgid = $row['orgid'];
-			$this->login = $row['login'];
-			$this->password = $row['password'];
-			$this->salt = $row['salt'];
-			$this->email = $row['email'];
-			$this->mode = $row['mode'];
-			$this->lastdt = $row['lastdt'];
-			$this->active = $row['active'];
-			$this->telephonenumber = $row['telephonenumber'];
-			$this->jpegphoto = $row['jpegphoto'];
-			$this->homephone = $row['homephone'];
-			$this->fio = $row['fio'];
-			$this->tab_num = $row['code'];
-			$this->post = $row['post'];
-			return true;
+		try {
+			$row = DB::prepare($sql)->execute(array(':login' => $login, ':pass' => $pass))->fetch();
+			if ($row) {
+				$this->id = $row['sid'];
+				$this->randomid = $row['randomid'];
+				$this->orgid = $row['orgid'];
+				$this->login = $row['login'];
+				$this->password = $row['password'];
+				$this->salt = $row['salt'];
+				$this->email = $row['email'];
+				$this->mode = $row['mode'];
+				$this->lastdt = $row['lastdt'];
+				$this->active = $row['active'];
+				$this->telephonenumber = $row['telephonenumber'];
+				$this->jpegphoto = $row['jpegphoto'];
+				$this->homephone = $row['homephone'];
+				$this->fio = $row['fio'];
+				$this->tab_num = $row['code'];
+				$this->post = $row['post'];
+				return true;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.GetByLoginPass', 0, $ex);
 		}
 		return false;
 	}
@@ -187,25 +207,29 @@ FROM   users
                ON users_profile.usersid = users.id
 WHERE  users.id = :id
 TXT;
-		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
-		if ($row) {
-			$this->id = $row['sid'];
-			$this->randomid = $row['randomid'];
-			$this->orgid = $row['orgid'];
-			$this->login = $row['login'];
-			$this->password = $row['password'];
-			$this->salt = $row['salt'];
-			$this->email = $row['email'];
-			$this->mode = $row['mode'];
-			$this->lastdt = $row['lastdt'];
-			$this->active = $row['active'];
-			$this->telephonenumber = $row['telephonenumber'];
-			$this->jpegphoto = $row['jpegphoto'];
-			$this->homephone = $row['homephone'];
-			$this->fio = $row['fio'];
-			$this->tab_num = $row['code'];
-			$this->post = $row['post'];
-			return true;
+		try {
+			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			if ($row) {
+				$this->id = $row['sid'];
+				$this->randomid = $row['randomid'];
+				$this->orgid = $row['orgid'];
+				$this->login = $row['login'];
+				$this->password = $row['password'];
+				$this->salt = $row['salt'];
+				$this->email = $row['email'];
+				$this->mode = $row['mode'];
+				$this->lastdt = $row['lastdt'];
+				$this->active = $row['active'];
+				$this->telephonenumber = $row['telephonenumber'];
+				$this->jpegphoto = $row['jpegphoto'];
+				$this->homephone = $row['homephone'];
+				$this->fio = $row['fio'];
+				$this->tab_num = $row['code'];
+				$this->post = $row['post'];
+				return true;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.GetById', 0, $ex);
 		}
 		return false;
 	}
@@ -223,25 +247,29 @@ FROM   users
                ON users_profile.usersid = users.id
 WHERE  users.randomid = :randomid
 TXT;
-		$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
-		if ($row) {
-			$this->id = $row['sid'];
-			$this->randomid = $row['randomid'];
-			$this->orgid = $row['orgid'];
-			$this->login = $row['login'];
-			$this->password = $row['password'];
-			$this->salt = $row['salt'];
-			$this->email = $row['email'];
-			$this->mode = $row['mode'];
-			$this->lastdt = $row['lastdt'];
-			$this->active = $row['active'];
-			$this->telephonenumber = $row['telephonenumber'];
-			$this->jpegphoto = $row['jpegphoto'];
-			$this->homephone = $row['homephone'];
-			$this->fio = $row['fio'];
-			$this->tab_num = $row['code'];
-			$this->post = $row['post'];
-			return true;
+		try {
+			$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
+			if ($row) {
+				$this->id = $row['sid'];
+				$this->randomid = $row['randomid'];
+				$this->orgid = $row['orgid'];
+				$this->login = $row['login'];
+				$this->password = $row['password'];
+				$this->salt = $row['salt'];
+				$this->email = $row['email'];
+				$this->mode = $row['mode'];
+				$this->lastdt = $row['lastdt'];
+				$this->active = $row['active'];
+				$this->telephonenumber = $row['telephonenumber'];
+				$this->jpegphoto = $row['jpegphoto'];
+				$this->homephone = $row['homephone'];
+				$this->fio = $row['fio'];
+				$this->tab_num = $row['code'];
+				$this->post = $row['post'];
+				return true;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.GetByRandomId', 0, $ex);
 		}
 		return false;
 	}
@@ -253,19 +281,23 @@ TXT;
 	 */
 	function GetByRandomIdNoProfile($randomid) {
 		$sql = 'SELECT * FROM users WHERE randomid = :randomid';
-		$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
-		if ($row) {
-			$this->id = $row['id'];
-			$this->randomid = $row['randomid'];
-			$this->orgid = $row['orgid'];
-			$this->login = $row['login'];
-			$this->password = $row['password'];
-			$this->salt = $row['salt'];
-			$this->email = $row['email'];
-			$this->mode = $row['mode'];
-			$this->lastdt = $row['lastdt'];
-			$this->active = $row['active'];
-			return true;
+		try {
+			$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
+			if ($row) {
+				$this->id = $row['id'];
+				$this->randomid = $row['randomid'];
+				$this->orgid = $row['orgid'];
+				$this->login = $row['login'];
+				$this->password = $row['password'];
+				$this->salt = $row['salt'];
+				$this->email = $row['email'];
+				$this->mode = $row['mode'];
+				$this->lastdt = $row['lastdt'];
+				$this->active = $row['active'];
+				return true;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.GetByRandomIdNoProfile', 0, $ex);
 		}
 		return false;
 	}
@@ -295,15 +327,19 @@ VALUES      (NULL, :randomid, :orgid, :login, :password, :salt, :email,
              :mode, NOW(),
              1)
 TXT;
-		DB::prepare($sql)->execute(array(
-			':randomid' => $this->randomid,
-			':orgid' => $this->orgid,
-			':login' => $this->login,
-			':password' => $this->password,
-			':salt' => $this->salt,
-			':email' => $this->email,
-			':mode' => $this->mode
-		));
+		try {
+			DB::prepare($sql)->execute(array(
+				':randomid' => $this->randomid,
+				':orgid' => $this->orgid,
+				':login' => $this->login,
+				':password' => $this->password,
+				':salt' => $this->salt,
+				':email' => $this->email,
+				':mode' => $this->mode
+			));
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.Add', 0, $ex);
+		}
 
 		$zx = new Tusers;
 
@@ -311,18 +347,24 @@ TXT;
 			// добавляю профиль
 			$sql = <<<TXT
 INSERT INTO users_profile
-            (id, usersid, fio, code, telephonenumber, homephone, jpegphoto, post, faza, enddate, res1)
-VALUES      (NULL, :userid, :fio, :code, :telephonenumber, :homephone, :jpegphoto, :post, '', NOW(), '')
+            (id, usersid, fio, code, telephonenumber, homephone, jpegphoto, post, faza, enddate,
+            res1, res2, res3, res4)
+VALUES      (NULL, :userid, :fio, :code, :telephonenumber, :homephone, :jpegphoto, :post, '', NOW(),
+            '', 0, 0, '0000-00-00 00:00:00')
 TXT;
-			DB::prepare($sql)->execute(array(
-				':userid' => $zx->id,
-				':fio' => $this->fio,
-				':code' => $this->tab_num,
-				':telephonenumber' => $this->telephonenumber,
-				':homephone' => $this->homephone,
-				':jpegphoto' => $this->jpegphoto,
-				':post' => $this->post
-			));
+			try {
+				DB::prepare($sql)->execute(array(
+					':userid' => $zx->id,
+					':fio' => $this->fio,
+					':code' => $this->tab_num,
+					':telephonenumber' => $this->telephonenumber,
+					':homephone' => $this->homephone,
+					':jpegphoto' => $this->jpegphoto,
+					':post' => $this->post
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Ошибка выполнения Tusers.Add', 0, $ex);
+			}
 		} else {
 			die('Не найден пользователь по randomid Tusers.Add');
 		}
@@ -341,24 +383,28 @@ FROM   users_profile
                ON users_profile.usersid = users.id
 WHERE  users_profile.code = :code
 TXT;
-		DB::prepare($sql)->execute(array(':code' => $code))->fetch();
-		if ($row) {
-			$this->id = $row['usersid'];
-			$this->randomid = $row['randomid'];
-			$this->orgid = $row['orgid'];
-			$this->login = $row['login'];
-			$this->password = $row['password'];
-			$this->salt = $row['salt'];
-			$this->email = $row['email'];
-			$this->mode = $row['mode'];
-			$this->lastdt = $row['lastdt'];
-			$this->active = $row['active'];
-			$this->telephonenumber = $row['telephonenumber'];
-			$this->jpegphoto = $row['jpegphoto'];
-			$this->homephone = $row['homephone'];
-			$this->fio = $row['fio'];
-			$this->post = $row['post'];
-			return true;
+		try {
+			DB::prepare($sql)->execute(array(':code' => $code))->fetch();
+			if ($row) {
+				$this->id = $row['usersid'];
+				$this->randomid = $row['randomid'];
+				$this->orgid = $row['orgid'];
+				$this->login = $row['login'];
+				$this->password = $row['password'];
+				$this->salt = $row['salt'];
+				$this->email = $row['email'];
+				$this->mode = $row['mode'];
+				$this->lastdt = $row['lastdt'];
+				$this->active = $row['active'];
+				$this->telephonenumber = $row['telephonenumber'];
+				$this->jpegphoto = $row['jpegphoto'];
+				$this->homephone = $row['homephone'];
+				$this->fio = $row['fio'];
+				$this->post = $row['post'];
+				return true;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Ошибка выполнения Tusers.GetByCode', 0, $ex);
 		}
 		return false;
 	}

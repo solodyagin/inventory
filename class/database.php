@@ -48,3 +48,7 @@ class myPDOStatement extends PDOStatement {
 	}
 
 }
+
+class DBException extends Exception {
+	
+}
