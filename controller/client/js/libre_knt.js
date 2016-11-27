@@ -142,7 +142,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 	}
 });
 $('#simple-btn').fileapi({
-	url: route + 'controller/server/common/uploadanyfiles.php',
+	url: route + 'controller/server/common/uploadanyfiles.php?fix=1',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,

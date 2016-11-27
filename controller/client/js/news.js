@@ -9,7 +9,7 @@
 
 // загружаем в таблицу #list2 список новостей
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/news/news.php',
+	url: route + 'controller/server/news/news.php?fix=1',
 	datatype: 'json',
 	colNames: ['Id', 'Дата', 'Заголовок', 'Закреплено', 'Действия'],
 	colModel: [
@@ -26,7 +26,7 @@ jQuery('#list2').jqGrid({
 	rowNum: 30,
 	viewrecords: true,
 	sortorder: 'desc',
-	editurl: route + 'controller/server/news/news.php',
+	editurl: route + 'controller/server/news/news.php?fix=1',
 	caption: 'Новости'
 });
 

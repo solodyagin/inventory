@@ -331,7 +331,7 @@ function LoadTable() {
 		title: 'Экспорт XML',
 		buttonicon: 'none',
 		onClickButton: function () {
-			newWin2 = window.open(route + 'controller/server/equipment/export_xml.php', 'printWindow4');
+			newWin2 = window.open(route + 'controller/server/equipment/export_xml.php?fix=1', 'printWindow4');
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('setFrozenColumns');

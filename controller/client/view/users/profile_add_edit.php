@@ -99,7 +99,7 @@ if ($user->mode == 1):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: route + 'controller/server/common/uploadfile.php',
+				url: route + 'controller/server/common/uploadfile.php?fix=1',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ''},

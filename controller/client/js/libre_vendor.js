@@ -8,7 +8,7 @@
  */
 
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/tmc/libre_vendor.php',
+	url: route + 'controller/server/tmc/libre_vendor.php?fix=1',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Имя', 'Комментарий', 'Действия'],
 	colModel: [
@@ -24,7 +24,7 @@ jQuery('#list2').jqGrid({
 	scroll: 1,
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/tmc/libre_vendor.php',
+	editurl: route + 'controller/server/tmc/libre_vendor.php?fix=1',
 	caption: 'Справочник производителей'
 });
 var addOptions = {

@@ -83,7 +83,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 	onClickButton: function () {
 		$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Добавление пользователя'});
 		$('#add_edit').dialog('open');
-		$('#add_edit').load(route + 'controller/client/view/users/user_add.php');
+		$('#add_edit').load(route + 'controller/client/view/users/user_add.php?fix=1');
 	}
 });
 jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {

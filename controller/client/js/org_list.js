@@ -35,7 +35,7 @@ jQuery('#o_list').jqGrid('setGridHeight', $(window).innerHeight() / 2);
 jQuery('#o_list').jqGrid('navGrid', '#o_pager', {edit: false, add: true, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
 
 $('#simple-btn').fileapi({
-	url: route + 'controller/server/common/uploadimageorg.php',
+	url: route + 'controller/server/common/uploadimageorg.php?fix=1',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,

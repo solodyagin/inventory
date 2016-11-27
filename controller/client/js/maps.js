@@ -9,7 +9,7 @@
 
 // получаем список ТМЦ на всем заводе
 function GetArrayEq(orgid) {
-	$.get(route + 'controller/server/map/getjsonlisteq.php', {orgid: orgid}, function (e) {
+	$.get(route + 'controller/server/map/getjsonlisteq.php?fix=1', {orgid: orgid}, function (e) {
 		zx = JSON.parse(e);
 	});
 }
@@ -85,7 +85,7 @@ function loadmap(imgmap) {
 					slpom = 'null';
 				}
 
-				$.get(route + 'controller/server/map/getjsonlisteq.php', // сначала получаем список
+				$.get(route + 'controller/server/map/getjsonlisteq.php?fix=1', // сначала получаем список
 						{orgid: defaultorgid, selpom: slpom},
 						function (e) {
 							zx = JSON.parse(e); // парсим JSON в массив
@@ -101,7 +101,7 @@ function loadmap(imgmap) {
 						.add('click', function () {
 							myCollection.each(function (ob) {
 								cr = ob.geometry.getBounds();
-								$.get(route + 'controller/server/map/savemap.php', {eqid: ob.properties.get('balloonContentFooter'), coor: cr},
+								$.get(route + 'controller/server/map/savemap.php?fix=1', {eqid: ob.properties.get('balloonContentFooter'), coor: cr},
 										function (data) {
 											//alert('Успешно сохранено!');
 										});
@@ -156,7 +156,7 @@ function loadmap(imgmap) {
 					} else {
 						slpom = 'null';
 					}
-					$.get(route + 'controller/server/map/getjsonlisteq.php', // сначала получаем список
+					$.get(route + 'controller/server/map/getjsonlisteq.php?fix=1', // сначала получаем список
 							{orgid: defaultorgid, selpom: slpom},
 							function (e) {
 								zx = JSON.parse(e); // парсим JSON в массив
@@ -171,7 +171,7 @@ function loadmap(imgmap) {
 						slpom = 'null';
 					}
 
-					$.get(route + 'controller/server/map/getjsonlisteq.php', // сначала получаем список
+					$.get(route + 'controller/server/map/getjsonlisteq.php?fix=1', // сначала получаем список
 							{orgid: defaultorgid, selpom: slpom},
 							function (e) {
 								zx = JSON.parse(e); // парсим JSON в массив
@@ -187,7 +187,7 @@ function loadmap(imgmap) {
 						slpom = 'null';
 					}
 
-					$.get(route + 'controller/server/map/getjsonlisteq.php', // сначала получаем список
+					$.get(route + 'controller/server/map/getjsonlisteq.php?fix=1', // сначала получаем список
 							{orgid: defaultorgid, selpom: slpom},
 							function (e) {
 								zx = JSON.parse(e); // парсим JSON в массив
@@ -199,7 +199,7 @@ function loadmap(imgmap) {
 				$('#splaces').click(function () {
 					if ($('#grpom').prop('checked')) {
 						slpom = $('#splaces :selected').val();
-						$.get(route + 'controller/server/map/getjsonlisteq.php', // сначала получаем список
+						$.get(route + 'controller/server/map/getjsonlisteq.php?fix=1', // сначала получаем список
 								{orgid: defaultorgid, selpom: slpom},
 								function (e) {
 									zx = JSON.parse(e); // парсим JSON в массив
@@ -217,7 +217,7 @@ function loadmap(imgmap) {
 
 // получаем изображение картинки по orgid. Если нету - возврат noimage.jpg
 function GetMapByOrgId(orgid) {
-	$.get(route + 'controller/server/map/getmapimagefilename.php', {id: orgid}, function (e) {
+	$.get(route + 'controller/server/map/getmapimagefilename.php?fix=1', {id: orgid}, function (e) {
 		if (e != 'null') {
 			imgmap = jQuery.trim(e);
 			loadmap(imgmap);

@@ -260,7 +260,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: route + 'controller/server/common/uploadfile.php',
+				url: route + 'controller/server/common/uploadfile.php?fix=1',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ''},
@@ -377,7 +377,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 		});
 		// правка Мазур
 		$('#bshtr').click(function Calculate() {
-			$.get(route + 'controller/server/common/getean13.php', function (data) {
+			$.get(route + 'controller/server/common/getean13.php?fix=1', function (data) {
 				$('#shtrihkod').val(data);
 			});
 			return false;
