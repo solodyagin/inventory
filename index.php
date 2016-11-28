@@ -30,7 +30,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 /* Загружаем классы */
 include_once(WUO_ROOT . '/class/singleton.php');
-include_once(WUO_ROOT . '/class/database.php'); // Класс работы с БД
+include_once(WUO_ROOT . '/class/database.php'); // Новый класс работы с БД
 include_once(WUO_ROOT . '/class/sql.php'); // Класс работы с БД
 include_once(WUO_ROOT . '/class/config.php'); // Класс настроек
 include_once(WUO_ROOT . '/class/users.php'); // Класс работы с пользователями

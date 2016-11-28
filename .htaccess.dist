@@ -1,4 +1,4 @@
-php_value post_max_size 520M
+#php_value post_max_size 520M
 php_value default_charset utf-8
 
 ## Uncomment these rules if you want to have nice URLs using

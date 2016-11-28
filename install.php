@@ -17,7 +17,7 @@ if (file_exists(WUO_ROOT . '/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл config.php');
 }
 
-$action = (isset($_GET['action'])) ? $_GET['action'] : '';
+$action = filter_input(INPUT_GET, 'action');
 if ($action == 'install') {
 	include_once(WUO_ROOT . '/inc/install.php');
 	die();
@@ -29,10 +29,10 @@ if ($action == 'install') {
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="Учет ТМЦ в организации">
+		<meta name="description" content="Учет оргтехники в организации">
 		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>Учет ТМЦ в организации</title>
+		<title>Учет оргтехники в организации</title>
 		<meta name="keywords" content="учет тмц">
 		<link href="favicon.ico" type="image/ico" rel="icon">
 		<link href="favicon.ico" type="image/ico" rel="shortcut icon">
@@ -45,7 +45,7 @@ if ($action == 'install') {
 	<body>
 		<script>
 			$(function () {
-				var field = new Array('dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass'); // поля обязательные
+				var field = new Array('dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass');
 				$('form').submit(function () {
 					var error = 0;
 					$('form').find(':input').each(function () {
