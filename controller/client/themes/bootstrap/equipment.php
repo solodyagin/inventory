@@ -29,8 +29,8 @@ if (($user->mode != 1) && (!$user->TestRoles('1,3,4,5,6'))):
 
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-xs-12 col-md-12 col-sm-12">
-				<select class="chosen-select" class="form-control" name="orgs" id="orgs">
+			<div class="col-md-3 col-sm-3">
+				<select class="chosen-select form-control" name="orgs" id="orgs">
 					<?php
 					$morgs = GetArrayOrgs(); // список активных организаций
 					for ($i = 0; $i < count($morgs); $i++) {
@@ -40,7 +40,11 @@ if (($user->mode != 1) && (!$user->TestRoles('1,3,4,5,6'))):
 						echo "<option value=\"$idorg\" $sl>$nameorg</option>";
 					}
 					?>
-				</select>
+				</select>				
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-md-12 col-sm-12">
 				<table id="tbl_equpment"></table>
 				<div id="pg_nav"></div>
 				<div id="pg_add_edit"></div>

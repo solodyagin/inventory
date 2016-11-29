@@ -4,7 +4,6 @@
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
  * http://грибовы.рф
  */
 
@@ -45,15 +44,15 @@ if ($action == 'install') {
 	<body>
 		<script>
 			$(function () {
-				var field = new Array('dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass');
+				var fields = new Array('dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass');
 				$('form').submit(function () {
 					var error = 0;
 					$('form').find(':input').each(function () {
-						for (var i = 0; i < field.length; i++) {
-							if ($(this).attr('name') == field[i]) {
+						for (var i = 0; i < fields.length; i++) {
+							if ($(this).attr('name') == fields[i]) {
 								if (!$(this).val()) {
-									$(this).parent().addClass('has-error');
 									error = 1;
+									$(this).parent().addClass('has-error');
 								} else {
 									$(this).parent().removeClass('has-error');
 								}
