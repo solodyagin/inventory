@@ -5,7 +5,6 @@
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
  * http://грибовы.рф
  */
 
@@ -176,9 +175,9 @@ function GetStiker() {
  * @return array
  * @throws Exception
  */
-function GetArrayOrgs() { // 
+function GetArrayOrgs() {
 	$mOrgs = array();
-	$sql = 'SELECT * FROM org WHERE active = 1 ORDER BY id ASC';
+	$sql = 'SELECT * FROM org WHERE active = 1 ORDER BY name';
 	try {
 		$cnt = 0;
 		$arr = DB::prepare($sql)->execute()->fetchAll();

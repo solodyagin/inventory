@@ -4,8 +4,7 @@
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -24,16 +23,18 @@ include_once(WUO_ROOT . '/class/equipment.php');
 $tmptmc = new Tequipment;
 $tmptmc->GetById($id);
 $dtpost = MySQLDateTimeToDateTime($tmptmc->datepost);
+
 $orgid = $tmptmc->orgid;
 echo "<script>orgid1='{$tmptmc->orgid}';</script>";
+
 $placesid = $tmptmc->placesid;
 echo "<script>placesid1='{$tmptmc->placesid}';</script>";
+
 $userid = $tmptmc->usersid;
 echo "<script>userid1='{$tmptmc->usersid}';</script>";
 ?>
 <script>
 	$(document).ready(function () {
-		// навесим на форму 'myForm' обработчик отлавливающий сабмит формы и передадим функцию callback.
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
 				$('#messenger').html(msg);

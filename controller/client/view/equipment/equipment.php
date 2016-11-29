@@ -4,8 +4,7 @@
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -16,14 +15,14 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 <script>
 	var examples = [];
 	$(function () {
-		var field = new Array('dtpost', 'sorgid', 'splaces', 'suserid', 'sgroupname', 'svendid', 'snomeid');//поля обязательные
-		$('form').submit(function () {// обрабатываем отправку формы
-			var error = 0; // индекс ошибки
-			$('form').find(':input').each(function () {// проверяем каждое поле в форме
-				for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
-					if ($(this).attr('name') == field[i]) { //проверяем поле формы на пустоту
-						if (!$(this).val()) {// если в поле пустое
-							error = 1;// определяем индекс ошибки
+		var fields = ['dtpost', 'sorgid', 'splaces', 'suserid', 'sgroupname', 'svendid', 'snomeid'];
+		$('form').submit(function () {
+			var error = 0;
+			$('form').find(':input').each(function () {
+				for (var i = 0; i < fields.length; i++) {
+					if ($(this).attr('name') == fields[i]) {
+						if (!$(this).val()) {
+							error = 1;
 							$(this).parent().addClass('has-error');
 						} else {
 							$(this).parent().removeClass('has-error');
@@ -32,16 +31,15 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 				}
 			});
 			if (error == 1) {
-				$('#messenger').addClass('alert alert-error');
+				$('#messenger').addClass('alert alert-danger');
 				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
-				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
+				return false;
 			}
-			return true;			
+			return true;
 		});
 	});
 	$(document).ready(function () {
-		// навесим на форму 'myForm' обработчик отлавливающий сабмит формы и передадим функцию callback.
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
 				$('#messenger').html(msg);
@@ -68,53 +66,75 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 	echo "<script>step='$step';</script>";
 
 	if ($step == 'edit') {
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM equipment WHERE id='$id';");
-		while ($row = mysqli_fetch_array($result)) {
-			$dtpost = MySQLDateTimeToDateTimeNoTime($row['datepost']);
-			echo "<script>dtpost='$dtpost';</script>";
-			$dtendgar = MySQLDateTimeToDateTimeNoTime($row['dtendgar']);
-			echo "<script>dtendgar='$dtendgar';</script>";
-			$orgid = $row['orgid'];
-			echo "<script>orgid='$orgid';</script>";
-			$placesid = $row['placesid'];
-			echo "<script>placesid='$placesid';</script>";
-			$userid = $row['usersid'];
-			echo "<script>userid='$userid';</script>";
-			$nomeid = $row['nomeid'];
-			echo "<script>nomeid='$nomeid';</script>";
-			$buhname = $row['buhname'];
-			$cost = $row['cost'];
-			$currentcost = $row['currentcost'];
-			$sernum = $row['sernum'];
-			$invnum = $row['invnum'];
-			$shtrihkod = $row['shtrihkod'];
-			$os = $row['os'];
-			$mode = $row['mode'];
-			$mapyet = $row['mapyet'];
-			$comment = $row['comment'];
-			$photo = $row['photo'];
-			$ip = $row['ip'];
-			$kntid = $row['kntid'];
+		$sql = 'SELECT * FROM equipment WHERE id = :id';
+		try {
+			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			if ($row) {
+				$dtpost = MySQLDateTimeToDateTimeNoTime($row['datepost']);
+				echo "<script>dtpost='$dtpost';</script>";
+
+				$dtendgar = MySQLDateTimeToDateTimeNoTime($row['dtendgar']);
+				echo "<script>dtendgar='$dtendgar';</script>";
+
+				$orgid = $row['orgid'];
+				echo "<script>orgid='$orgid';</script>";
+
+				$placesid = $row['placesid'];
+				echo "<script>placesid='$placesid';</script>";
+
+				$userid = $row['usersid'];
+				echo "<script>userid='$userid';</script>";
+
+				$nomeid = $row['nomeid'];
+				echo "<script>nomeid='$nomeid';</script>";
+
+				$buhname = $row['buhname'];
+				$cost = $row['cost'];
+				$currentcost = $row['currentcost'];
+				$sernum = $row['sernum'];
+				$invnum = $row['invnum'];
+				$shtrihkod = $row['shtrihkod'];
+				$os = $row['os'];
+				$mode = $row['mode'];
+				$mapyet = $row['mapyet'];
+				$comment = $row['comment'];
+				$photo = $row['photo'];
+				$ip = $row['ip'];
+				$kntid = $row['kntid'];
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу выбрать объект имущества', 0, $ex);
 		}
 
-		$result = $sqlcn->ExecuteSQL("SELECT * FROM nome WHERE id='$nomeid';");
-		while ($row = mysqli_fetch_array($result)) {
-			$vendorid = $row['vendorid'];
-			echo "<script>vendorid='$vendorid';</script>";
-			$groupid = $row['groupid'];
-			echo "<script>grouid='$groupid';</script>";
+		$sql = 'SELECT * FROM nome WHERE id = :nomeid';
+		try {
+			$row = DB::prepare($sql)->execute(array(':nomeid' => $nomeid))->fetch();
+			if ($row) {
+				$vendorid = $row['vendorid'];
+				echo "<script>vendorid='$vendorid';</script>";
+
+				$groupid = $row['groupid'];
+				echo "<script>grouid='$groupid';</script>";
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу выбрать номенклатуру', 0, $ex);
 		}
 	} else {
 		$dtpost = '';
 		echo "<script>dtpost='$dtpost';</script>";
+
 		$orgid = $cfg->defaultorgid;
 		echo "<script>orgid=defaultorgid;</script>";
+
 		$placesid = 1;
 		echo "<script>placesid='$placesid';</script>";
+
 		$userid = $user->id;
 		echo "<script>userid='$userid';</script>";
+
 		$nomeid = 1;
 		echo "<script>nomeid='$nomeid';</script>";
+
 		$buhname = '';
 		$cost = 0;
 		$currentcost = 0;
@@ -129,6 +149,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 		$ip = '';
 		$groupid = 1;
 		$kntid = '';
+
 		$dtendgar = '';
 		echo "<script>dtendgar='$dtendgar';</script>";
 	}
@@ -145,10 +166,11 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 							<div id="sorg">
 								<select class="chosen-select" name="sorgid" id="sorgid">
 									<?php
-									$result = $sqlcn->ExecuteSQL("SELECT * FROM org WHERE active=1 ORDER BY name;");
-									while ($row = mysqli_fetch_array($result)) {
-										$sl = ($row['id'] == $orgid) ? 'selected' : '';
-										echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
+									$morgs = GetArrayOrgs();
+									for ($i = 0; $i < count($morgs); $i++) {
+										$nid = $morgs[$i]['id'];
+										$sl = ($nid == $orgid) ? 'selected' : '';
+										echo "<option value=\"$nid\" $sl>{$morgs[$i]['name']}</option>";
 									}
 									?>
 								</select>
@@ -174,12 +196,15 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 						<div id="sgroups">
 							<select class="chosen-select" name="sgroupname" id="sgroupname">
 								<?php
-								$SQL = "SELECT * FROM group_nome WHERE active=1 ORDER BY name";
-								$result = $sqlcn->ExecuteSQL($SQL)
-										or die('Не могу выбрать список групп!' . mysqli_error($sqlcn->idsqlconnection));
-								while ($row = mysqli_fetch_array($result)) {
-									$sl = ($row['id'] == $groupid) ? 'selected' : '';
-									echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
+								$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
+								try {
+									$arr = DB::prepare($sql)->execute()->fetchAll();
+									foreach ($arr as $row) {
+										$sl = ($row['id'] == $groupid) ? 'selected' : '';
+										echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
+									}
+								} catch (PDOException $ex) {
+									throw new DBException('Не могу выбрать список групп', 0, $ex);
 								}
 								?>
 							</select>
@@ -312,38 +337,42 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 
 		if (step != 'edit') {
 			$('#dtpost').datepicker('setDate', '0');
-		} else {
-			$('#dtpost').datepicker('setDate', dtpost);
-		}
-		if (step != 'edit') {
 			$('#dtendgar').datepicker('setDate', '0');
 		} else {
+			$('#dtpost').datepicker('setDate', dtpost);
 			$('#dtendgar').datepicker('setDate', dtendgar);
 		}
+
 		$('#sernum').focus();
+
 		$('#pg_add_edit').dialog({
 			close: function () {
 				$('#dtpost').datepicker('destroy');
 			}
 		});
+
 		function UpdateChosen() {
 			for (var selector in config) {
 				$(selector).chosen({width: '100%'});
 				$(selector).chosen(config[selector]);
 			}
 		}
+
 		function GetListPlaces(orgid, placesid) {
 			$('#splaces').load(route + 'controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 			UpdateChosen();
 		}
+
 		function GetListUsers(orgid, userid) {
 			$('#susers').load(route + 'controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
 			UpdateChosen();
 		}
+
 		function GetListGroups(groupid) {
 			$('#sgroups').load(route + 'controller/server/common/getlistgroupname.php?groupid=' + groupid);
 			UpdateChosen();
 		}
+
 		function GetListNome(groupid, vendorid, nmd) {
 			$.ajax({
 				url: route + 'controller/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
@@ -353,6 +382,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 				}
 			});
 		}
+
 		function GetListVendors(groupid, vendorid) {
 			$.ajax({
 				url: route + 'controller/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
@@ -366,15 +396,18 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 				}
 			});
 		}
+
 		// Заполняем инвентарник и штрихкод
 		function getRandomNum(lbound, ubound) {
 			return (Math.floor(Math.random() * (ubound - lbound)) + lbound);
 		}
+
 		$('#binv').click(function () {
 			var today = new Date();
 			$('#invnum').val(today.getDay() + today.getMonth() + today.getFullYear() + today.getUTCHours() + today.getMinutes() + today.getSeconds());
 			return false;
 		});
+
 		// правка Мазур
 		$('#bshtr').click(function Calculate() {
 			$.get(route + 'controller/server/common/getean13.php', function (data) {
@@ -390,6 +423,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 			GetListPlaces($('#sorgid :selected').val(), ''); // перегружаем список помещений организации
 			GetListUsers($('#sorgid :selected').val(), ''); // перегружаем пользователей организации
 		});
+
 		// выбираем производителя по группе
 		$('#sgroupname').on('change', function (evt, params) {
 			console.log('--обработка выбора группы номенклатуры');
@@ -399,10 +433,13 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 
 		// загружаем места
 		GetListPlaces($('#sorgid :selected').val(), placesid);
+
 		// загружаем пользователей
 		GetListUsers($('#sorgid :selected').val(), userid);
+
 		// загружаем производителя
 		GetListVendors($('#sgroupname :selected').val(), vendorid);
+
 		// номенклатура
 		GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
 	</script>
@@ -487,7 +524,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 						.prop('innerHTML')
 						.replace(/ disabled=""/g, '')
 						.replace(/&amp;lt;%/g, '<% ')
-.replace(/%&amp;gt;/g, ' %>');
+						.replace(/%&amp;gt;/g, ' %>');
 			}
 			// Init examples
 			FileAPI.each(examples, function (fn) {
