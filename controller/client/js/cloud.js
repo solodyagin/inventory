@@ -37,7 +37,7 @@ function ViewFileList(keyme) {
 }
 
 $('#simple-btn').fileapi({
-	url: route + 'controller/server/cloud/uploadfiles.php?',
+	url: route + 'controller/server/cloud/uploadfiles.php?fix=1',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,
@@ -60,7 +60,7 @@ function GetTree() {
 		autoCollapse: false,
 		minExpandLevel: 3,
 		initAjax: {
-			url: route + 'controller/server/cloud/gettree.php?'
+			url: route + 'controller/server/cloud/gettree.php?fix=1'
 		},
 		onActivate: function (node) {
 			selectedkey = node.data.key;

@@ -90,7 +90,7 @@ function exportExcel(list, tmc) {
 }
 
 jQuery('#workmen').jqGrid({
-	url: route + 'controller/server/tmc/workmen.php',
+	url: route + 'controller/server/tmc/workmen.php?fix=1',
 	datatype: 'json',
 	colNames: ['Статус', 'Организация', 'Помещение', 'Группа', 'Id', 'Инв.№', 'ТМЦ', 'Ответственный', 'За месяц', 'За год'],
 	colModel: [
@@ -210,7 +210,7 @@ jQuery('#workmen').jqGrid({
 	rowNum: 1000,
 	scroll: 1,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/tmc/workmen.php',
+	editurl: route + 'controller/server/tmc/workmen.php?fix=1',
 	caption: 'Сервисное обслуживание ТМЦ'
 });
 jQuery('#workmen').jqGrid('navGrid', '#workmen_footer', {edit: false, add: false, del: false, search: false});

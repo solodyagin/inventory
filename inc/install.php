@@ -12,6 +12,12 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
+// Запускаем установщик при условии, что файл настроек отсутствует
+if (file_exists(WUO_ROOT . '/config.php')) {
+	header('Content-Type: text/html; charset=utf-8');
+	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл config.php');
+}
+
 include_once(WUO_ROOT . '/inc/functions.php'); // Класс работы с БД
 
 $dbhost = PostDef('dbhost');

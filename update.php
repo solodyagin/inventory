@@ -24,14 +24,16 @@ define('WUO_ROOT', dirname(__FILE__));
 </head>
 <body>
 <?php
-include_once(WUO_ROOT.'/config.php'); // загружаем первоначальные настройки
+include_once(WUO_ROOT . '/config.php'); // загружаем первоначальные настройки
 // загружаем классы
-include_once(WUO_ROOT.'/class/sql.php'); // загружаем классы работы с БД
-include_once(WUO_ROOT.'/class/config.php'); // загружаем классы настроек
+include_once(WUO_ROOT . '/class/singleton.php');
+include_once(WUO_ROOT . '/class/database.php'); // Новый класс работы с БД
+include_once(WUO_ROOT . '/class/sql.php'); // загружаем классы работы с БД
+include_once(WUO_ROOT . '/class/config.php'); // загружаем классы настроек
 // загружаем все что нужно для работы движка
-include_once(WUO_ROOT.'/inc/connect.php'); // соединяемся с БД
-include_once(WUO_ROOT.'/inc/config.php'); // подгружаем настройки из БД, получаем заполненый класс $cfg
-include_once(WUO_ROOT.'/inc/functions.php'); // загружаем функции
+include_once(WUO_ROOT . '/inc/connect.php'); // соединяемся с БД
+include_once(WUO_ROOT . '/inc/config.php'); // подгружаем настройки из БД, получаем заполненый класс $cfg
+include_once(WUO_ROOT . '/inc/functions.php'); // загружаем функции
 
 /**
  * Обёртка для запроса к базе

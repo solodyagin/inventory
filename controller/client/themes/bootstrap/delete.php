@@ -33,7 +33,7 @@ if (($user->mode != 1) && (!$user->TestRoles('1'))):
 	</div>
 	<script>
 		$('#bdel').click(function () {
-			$('#infoblock').load(route + 'controller/server/delete/delete.php');
+			$('#infoblock').load(route + 'controller/server/delete/delete.php?fix=1');
 			return false;
 		});
 	</script>

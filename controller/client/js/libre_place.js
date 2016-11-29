@@ -73,7 +73,7 @@ function GetSubGrid() {
 	jQuery('#list10_d').jqGrid({
 		height: 100,
 		autowidth: true,
-		url: route + 'controller/server/places/libre_place_sub.php',
+		url: route + 'controller/server/places/libre_place_sub.php?fix=1',
 		datatype: 'json',
 		colNames: ['Id', 'Сотрудник', 'Действия'],
 		colModel: [

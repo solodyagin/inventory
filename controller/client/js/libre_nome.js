@@ -8,7 +8,7 @@
  */
 
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/tmc/libre_nome.php',
+	url: route + 'controller/server/tmc/libre_nome.php?fix=1',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Группа', 'Производитель', 'Наименование', ''],
 	colModel: [
@@ -33,7 +33,7 @@ jQuery('#list2').jqGrid({
 	rowNum: 1000,
 	scroll: 1,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/tmc/libre_nome.php',
+	editurl: route + 'controller/server/tmc/libre_nome.php?fix=1',
 	caption: 'Справочник номенклатуры'
 });
 jQuery('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);

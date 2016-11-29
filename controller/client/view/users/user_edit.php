@@ -69,7 +69,7 @@ if ($user->mode == 1):
 		<div class="row">
 			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/users/libre_users_form.php?step=edit&id=<?php echo $id; ?>" method="post" name="form1" target="_self">
 				<div class="form-group">
-					<label for="orgid">Организация</label>
+					<label for="orgid">Организация:</label>
 					<select class="chosen-select form-control" name="orgid" id="orgid">
 						<?php
 						$morgs = GetArrayOrgs();
@@ -80,7 +80,7 @@ if ($user->mode == 1):
 						}
 						?>
 					</select>
-					<label for="mode">Организация</label>
+					<label for="mode">Роль:</label>
 					<select name="mode" id="mode" class="chosen-select form-control">
 						<option value="0" <?php echo ($mode == 0) ? 'selected' : ''; ?>>Пользователь</option>
 						<option value="1" <?php echo ($mode == 1) ? 'selected' : ''; ?>>Администратор</option>
