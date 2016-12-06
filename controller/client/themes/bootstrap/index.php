@@ -1,23 +1,19 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Печатная форма?
-if (isset($_GET['printable'])) {
-	$printable = $_GET['printable'];
-} else {
-	$printable = false;
-}
+$printable = (isset($_GET['printable'])) ? $_GET['printable'] : false;
 
 // Есть альтернативный заголовок?
 if (isset($alterhead)) {

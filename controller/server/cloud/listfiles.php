@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -40,7 +40,7 @@ if ($oper == '') {
 			$count = $row['cnt'];
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выбрать количество записей!', 0, $ex);
+		throw new DBException('Не могу выбрать количество записей', 0, $ex);
 	}
 
 	if ($count > 0) {
@@ -48,11 +48,11 @@ if ($oper == '') {
 		if ($page > $total_pages) {
 			$page = $total_pages;
 		}
-		$start = $limit * $page - $limit;		
+		$start = $limit * $page - $limit;
 		if ($start < 0) {
 			jsonExit($responce);
 		}
-		
+
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
@@ -92,7 +92,7 @@ TXT;
 				$i++;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список файлов!', 0, $ex);
+			throw new DBException('Не могу выбрать список файлов', 0, $ex);
 		}
 	}
 	jsonExit($responce);
@@ -106,7 +106,7 @@ if ($oper == 'edit') {
 	try {
 		DB::prepare($sql)->execute(array(':title' => $title, ':id' => $id));
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выполнить запрос!', 0, $ex);
+		throw new DBException('Не могу выполнить запрос', 0, $ex);
 	}
 	exit;
 }
@@ -119,7 +119,7 @@ if ($oper == 'del') {
 	try {
 		DB::prepare($sql)->execute(array(':id' => $id));
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выполнить запрос!', 0, $ex);
+		throw new DBException('Не могу выполнить запрос', 0, $ex);
 	}
 	exit;
 }

@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -21,44 +21,46 @@ $vendorid = '';
 $groupid = '';
 
 if ($step == 'edit') {
-	$sql = "SELECT * FROM nome WHERE id = '$id'";
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Неверный запрос : ' . mysqli_error($sqlcn->idsqlconnection));
-	while ($row = mysqli_fetch_array($result)) {
-		$groupid = $row['groupid'];
-		$vendorid = $row['vendorid'];
-		$name = $row['name'];
+	$sql = 'SELECT * FROM nome WHERE id = :id';
+	try {
+		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+		if ($row) {
+			$groupid = $row['groupid'];
+			$vendorid = $row['vendorid'];
+			$name = $row['name'];
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать номенклатуру', 0, $ex);
 	}
 }
 ?>
 <script>
 	$(function () {
-		var field = new Array('namenome');//поля обязательные
-		$('form').submit(function () {// обрабатываем отправку формы
-			var error = 0; // индекс ошибки
-			$('form').find(':input').each(function () {// проверяем каждое поле в форме
-				for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
-					if ($(this).attr('name') == field[i]) { //проверяем поле формы на пустоту
-						if (!$(this).val()) {// если в поле пустое
-							$(this).css('border', 'red 1px solid');// устанавливаем рамку красного цвета
-							error = 1;// определяем индекс ошибки
+		var fields = new Array('namenome');
+		$('form').submit(function () {
+			var error = 0;
+			$('form').find(':input').each(function () {
+				for (var i = 0; i < fields.length; i++) {
+					if ($(this).attr('name') == fields[i]) {
+						if (!$(this).val()) {
+							error = 1;
+							$(this).parent().addClass('has-error');
 						} else {
-							$(this).css('border', 'gray 1px solid');// устанавливаем рамку обычного цвета
+							$(this).parent().removeClass('has-error');
 						}
 					}
 				}
 			});
-			if (error == 0) { // если ошибок нет то отправляем данные
-				return true;
-			} else {
+			if (error == 1) {
+				$('#messenger').addClass('alert alert-danger');
 				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
-				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
+				return false;
 			}
+			return true;
 		});
 	});
 	$(document).ready(function () {
-		// навесим на форму 'myForm' обработчик отлавливающий сабмит формы и передадим функцию callback.
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
 				$('#messenger').html(msg);
@@ -77,11 +79,16 @@ if ($step == 'edit') {
 		<div class="col-sm-9">
 			<select class="chosen-select form-control" name="groupid" id="groupid">
 				<?php
-				$result = $sqlcn->ExecuteSQL("SELECT * FROM group_nome WHERE active = 1 ORDER BY name");
-				while ($row = mysqli_fetch_array($result)) {
-					$vl = $row['id'];
-					$sl = ($row['id'] == $groupid) ? 'selected' : '';
-					echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
+				$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
+				try {
+					$row = DB::prepare($sql)->execute()->fetch();
+					if ($row) {
+						$vl = $row['id'];
+						$sl = ($row['id'] == $groupid) ? 'selected' : '';
+						echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
+					}
+				} catch (PDOException $ex) {
+					throw new DBException('Не могу выбрать группу номенклатуры', 0, $ex);
 				}
 				?>
 			</select>
@@ -92,11 +99,16 @@ if ($step == 'edit') {
 		<div class="col-sm-9">
 			<select class="chosen-select form-control" name="vendorid" id="vendorid">
 				<?php
-				$result = $sqlcn->ExecuteSQL("SELECT * FROM vendor WHERE active = 1 ORDER BY name");
-				while ($row = mysqli_fetch_array($result)) {
-					$vl = $row['id'];
-					$sl = ($row['id'] == $vendorid) ? 'selected' : '';
-					echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
+				$sql = 'SELECT * FROM vendor WHERE active = 1 ORDER BY name';
+				try {
+					$row = DB::prepare($sql)->execute()->fetch();
+					if ($row) {
+						$vl = $row['id'];
+						$sl = ($row['id'] == $vendorid) ? 'selected' : '';
+						echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
+					}
+				} catch (PDOException $ex) {
+					throw new DBException('Не могу выбрать производителя', 0, $ex);
 				}
 				?>
 			</select>

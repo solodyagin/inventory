@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -15,21 +15,24 @@ $eqid = GetDef('eqid');
 $step = GetDef('step');
 
 if ($step == 'edit') {
-	$sql = "SELECT * FROM repair WHERE id = '$eqid'";
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не получилось выбрать список ремонтов! ' . mysqli_error($sqlcn->idsqlconnection));
-	while ($row = mysqli_fetch_array($result)) {
-		$kntid = $row['kntid'];
-		$cost = $row['cost'];
-		$dtpost = MySQLDateTimeToDateTimeNoTime($row['dt']);
-		echo "<script>dtpost='$dtpost';</script>";
-		$dt = MySQLDateTimeToDateTimeNoTime($row['dtend']);
-		echo "<script>dt='$dt';step='edit';</script>";
-		$comment = $row['comment'];
-		$status = $row['status'];
-		$userfrom = $row['userfrom'];
-		$userto = $row['userto'];
-		$doc = $row['doc'];
+	$sql = 'SELECT * FROM repair WHERE id = :eqid';
+	try {
+		$row = DB::prepare($sql)->execute(array(':eqid' => $eqid))->fetch();
+		if ($row) {
+			$kntid = $row['kntid'];
+			$cost = $row['cost'];
+			$dtpost = MySQLDateTimeToDateTimeNoTime($row['dt']);
+			echo "<script>dtpost='$dtpost';</script>";
+			$dt = MySQLDateTimeToDateTimeNoTime($row['dtend']);
+			echo "<script>dt='$dt';step='edit';</script>";
+			$comment = $row['comment'];
+			$status = $row['status'];
+			$userfrom = $row['userfrom'];
+			$userto = $row['userto'];
+			$doc = $row['doc'];
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не получилось выбрать список ремонтов', 0, $ex);
 	}
 } else {
 	$kntid = '-1';
@@ -47,34 +50,31 @@ if ($step == 'edit') {
 ?>
 <script>
 	$(function () {
-		var field = new Array('dtpost', 'dt', 'kntid');//поля обязательные
-		$('form').submit(function () {// обрабатываем отправку формы
-			var error = 0; // индекс ошибки
-			$('form').find(':input').each(function () {// проверяем каждое поле в форме
-				for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
-					if ($(this).attr('name') == field[i]) { //проверяем поле формы на пустоту
-						if (!$(this).val()) {// если в поле пустое
-							$(this).css('border', 'red 1px solid');// устанавливаем рамку красного цвета
-							error = 1;// определяем индекс ошибки
+		var fields = new Array('dtpost', 'dt', 'kntid');
+		$('form').submit(function () {
+			var error = 0;
+			$('form').find(':input').each(function () {
+				for (var i = 0; i < fields.length; i++) {
+					if ($(this).attr('name') == fields[i]) {
+						if (!$(this).val()) {
+							error = 1;
+							$(this).parent().addClass('has-error');
 						} else {
-							$(this).css('border', 'gray 1px solid');// устанавливаем рамку обычного цвета
+							$(this).parent().removeClass('has-error');
 						}
 					}
 				}
 			});
-			if (error == 0) { // если ошибок нет то отправляем данные
-				return true;
-			} else {
-				var err_text = 'Не все обязательные поля заполнены!';
-				$('#messenger').addClass('alert alert-error');
-				$('#messenger').html(err_text);
+			if (error == 1) {
+				$('#messenger').addClass('alert alert-danger');
+				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
-				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
+				return false;
 			}
+			return true;
 		});
 	});
 	$(document).ready(function () {
-		// навесим на форму 'myForm' обработчик отлавливающий сабмит формы и передадим функцию callback.
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
 				$('#messenger').html(msg);
@@ -91,7 +91,7 @@ if ($step == 'edit') {
 	<div class="row-fluid">
 		<div class="col-xs-12 col-md-12 col-sm-12">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/equipment/service.php?step=<?php echo "$step"; ?>&eqid=<?php echo "$eqid" ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/equipment/service.php?step=<?php echo $step; ?>&eqid=<?php echo $eqid; ?>" method="post" name="form1" target="_self">
 				<label>Кто ремонтирует:</label>
 				<div id="sorg1">
 					<select class="chosen-select" name="kntid" id="kntid">
@@ -128,11 +128,14 @@ FROM   users
 WHERE  users.active = 1
 ORDER  BY users.login
 TXT;
-								$result = $sqlcn->ExecuteSQL($sql)
-										or die('Не могу выбрать список пользователей! ' . mysqli_error($sqlcn->idsqlconnection));
-								while ($row = mysqli_fetch_array($result)) {
-									$sl = ($row['id'] == $userfrom) ? 'selected' : '';
-									echo "<option value=\"{$row['id']}\" $sl>{$row['fio']}</option>";
+								try {
+									$arr = DB::prepare($sql)->execute()->fetchAll();
+									foreach ($arr as $row) {
+										$sl = ($row['id'] == $userfrom) ? 'selected' : '';
+										echo "<option value=\"{$row['id']}\" $sl>{$row['fio']}</option>";
+									}
+								} catch (PDOException $ex) {
+									throw new DBException('Не могу выбрать список пользователей', 0, $ex);
 								}
 								?>
 							</select>
@@ -150,11 +153,14 @@ FROM   users
 WHERE  users.active = 1
 ORDER  BY users.login
 TXT;
-								$result = $sqlcn->ExecuteSQL($sql)
-										or die('Не могу выбрать список пользователей! ' . mysqli_error($sqlcn->idsqlconnection));
-								while ($row = mysqli_fetch_array($result)) {
-									$sl = ($row['id'] == $userto) ? 'selected' : '';
-									echo "<option value=\"{$row['id']}\" $sl>{$row['fio']}</option>";
+								try {
+									$arr = DB::prepare($sql)->execute()->fetchAll();
+									foreach ($arr as $row) {
+										$sl = ($row['id'] == $userto) ? 'selected' : '';
+										echo "<option value=\"{$row['id']}\" $sl>{$row['fio']}</option>";
+									}
+								} catch (PDOException $ex) {
+									throw new DBException('Не могу выбрать список пользователей', 0, $ex);
 								}
 								?>
 							</select>

@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -18,7 +18,6 @@ $userid = GetDef('userid');
 <script>
 	var examples = [];
 	$(document).ready(function () {
-		// навесим на форму 'myForm' обработчик отлавливающий сабмит формы и передадим функцию callback.
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
 				$('#messenger').html(msg);
@@ -234,8 +233,7 @@ if ($user->mode == 1):
 						}).join('\n'))
 						.prop('innerHTML')
 						.replace(/ disabled=""/g, '')
-						.replace(/&amp;lt;%/g, '<% ')
-.replace(/%&amp;gt;/g, ' %>');
+						.replace(/&amp;lt;%/g, '<% ').replace(/%&amp;gt;/g, ' %>');
 			}
 
 			// Init examples
