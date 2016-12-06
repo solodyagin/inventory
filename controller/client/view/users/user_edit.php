@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -25,35 +25,32 @@ if ($user->mode == 1):
 	?>
 	<script>
 		$(function () {
-			var field = new Array('login', 'email'); // поля обязательные
-			$('form').submit(function () { // обрабатываем отправку формы
-				var error = 0; // индекс ошибки
-				$('form').find(':input').each(function () { // проверяем каждое поле в форме
-					for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
-						if ($(this).attr('name') == field[i]) { // проверяем поле формы на пустоту
-							if (!$(this).val()) { // если в поле пустое
-								$(this).css('border', 'red 1px solid'); // устанавливаем рамку красного цвета
-								error = 1; // определяем индекс ошибки
+			var fields = ['login', 'email'];
+			$('form').submit(function () {
+				var error = 0;
+				$('form').find(':input').each(function () {
+					for (var i = 0; i < fields.length; i++) {
+						if ($(this).attr('name') == fields[i]) {
+							if (!$(this).val()) {
+								error = 1;
+								$(this).parent().addClass('has-error');
 							} else {
-								$(this).css('border', 'gray 1px solid'); // устанавливаем рамку обычного цвета
+								$(this).parent().removeClass('has-error');
 							}
 						}
 					}
 				});
-				if (error == 0) { // если ошибок нет то отправляем данные
-					return true;
-				} else {
-					var err_text = 'Не все обязательные поля заполнены!';
-					$('#messenger').addClass('alert alert-error');
-					$('#messenger').html(err_text);
+				if (error == 1) {
+					$('#messenger').addClass('alert alert-danger');
+					$('#messenger').html('Не все обязательные поля заполнены!');
 					$('#messenger').fadeIn('slow');
-					return false; // если в форме встретились ошибки , не  позволяем отослать данные на сервер.
+					return false;
 				}
+				return true;
 			});
 		});
 
 		$(document).ready(function () {
-			// навесим на форму 'myForm' обработчик отлавливающий сабмит формы и передадим функцию callback.
 			$('#myForm').ajaxForm(function (msg) {
 				if (msg != 'ok') {
 					$('#messenger').html(msg);
@@ -74,9 +71,9 @@ if ($user->mode == 1):
 						<?php
 						$morgs = GetArrayOrgs();
 						for ($i = 0; $i < count($morgs); $i++) {
-							$idorg = $morgs[$i]['id'];
-							$sl = ($idorg == $cfg->defaultorgid) ? 'selected' : '';
-							echo "<option value=\"$idorg\" $sl>{$morgs[$i]['name']}</option>";
+							$id = $morgs[$i]['id'];
+							$sl = ($id == $cfg->defaultorgid) ? 'selected' : '';
+							echo "<option value=\"$id\" $sl>{$morgs[$i]['name']}</option>";
 						}
 						?>
 					</select>

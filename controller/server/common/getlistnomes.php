@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -16,12 +16,19 @@ $id = GetDef('groupid', '1');
 $vid = GetDef('vendorid', '1');
 $nomeid = GetDef('nomeid');
 
-$sql = "SELECT id, name FROM nome WHERE groupid = '$id' AND vendorid = '$vid'";
-$result = $sqlcn->ExecuteSQL($sql)
-		or die('Не могу выбрать список номенклатуры! ' . mysqli_error($sqlcn->idsqlconnection));
 echo '<select class="chosen-select" name="snomeid" id="snomeid">';
-while ($row = mysqli_fetch_array($result)) {
-	$sl = ($row['id'] == $nomeid) ? 'selected' : '';
-	echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
+
+$sql = 'SELECT id, name FROM nome WHERE groupid = :id AND vendorid = :vid';
+try {
+	$arr = DB::prepare($sql)->execute(array(':id' => $id, ':vid' => $vid))->fetchAll();
+	foreach ($arr as $row) {
+		$rid = $row['id'];
+		$rname = $row['name'];
+		$sl = ($rid == $nomeid) ? 'selected' : '';
+		echo "<option value=\"$rid\" $sl>$rname</option>";
+	}
+} catch (PDOException $ex) {
+	throw new DBException('Не могу выбрать список номенклатуры', 0, $ex);
 }
+
 echo '</select>';

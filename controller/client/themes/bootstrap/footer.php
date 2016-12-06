@@ -1,19 +1,18 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $time_end = microtime(true);
-$time = $time_end - $time_start;
-$time = round($time, 2);
+$time = round($time_end - $time_start, 2);
 ?>
 <footer class="navbar">
 	<div class="row-fluid container-fluid">

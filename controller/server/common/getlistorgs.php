@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -16,15 +16,18 @@ $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
 if ($user->mode == 1) {
-	$sql = "SELECT * FROM org WHERE active = 1 ORDER BY BINARY(name)";
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die("Не могу выбрать список организаций!" . mysqli_error($sqlcn->idsqlconnection));
 	echo '<select name="sogrsname" id="sorgsname">';
 	if ($addnone == 'true') {
 		echo '<option value="-1">не выбрано</option>';
 	}
-	while ($row = mysqli_fetch_array($result)) {
-		echo "<option value=\"{$row['id']}\">{$row['name']}</option>";
+	$sql = "SELECT * FROM org WHERE active = 1 ORDER BY BINARY(name)";
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		foreach ($arr as $row) {
+			echo "<option value=\"{$row['id']}\">{$row['name']}</option>";
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список организаций', 0, $ex);
 	}
 	echo '</select>';
 } else {

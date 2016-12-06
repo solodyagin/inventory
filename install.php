@@ -1,10 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 /* Объявляем глобальные переменные */
@@ -44,7 +45,7 @@ if ($action == 'install') {
 	<body>
 		<script>
 			$(function () {
-				var fields = new Array('dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass');
+				var fields = ['dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass'];
 				$('form').submit(function () {
 					var error = 0;
 					$('form').find(':input').each(function () {

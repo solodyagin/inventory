@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -21,5 +21,5 @@ $sql = 'DELETE FROM cloud_dirs WHERE id = :folderkey';
 try {
 	DB::prepare($sql)->execute(array(':folderkey' => $folderkey));
 } catch (PDOException $ex) {
-	throw new DBException('Не могу удалить папку!', 0, $ex);
+	throw new DBException('Не могу удалить папку', 0, $ex);
 }

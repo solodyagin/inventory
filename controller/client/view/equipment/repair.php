@@ -1,10 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -15,7 +16,7 @@ $step = GetDef('step');
 ?>
 <script>
 	$(function () {
-		var fields = new Array('dtpost', 'dt', 'kntid');
+		var fields = ['dtpost', 'dt', 'kntid'];
 		$('form').submit(function () {
 			var error = 0;
 			$('form').find(':input').each(function () {
@@ -30,7 +31,7 @@ $step = GetDef('step');
 					}
 				}
 			});
-			if (error == 0) {
+			if (error == 1) {
 				$('#messenger').addClass('alert alert-danger');
 				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');

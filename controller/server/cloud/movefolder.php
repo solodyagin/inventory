@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -22,5 +22,5 @@ $sql = 'UPDATE cloud_dirs SET parent = :nodekey WHERE id = :srnodekey';
 try {
 	DB::prepare($sql)->execute(array(':nodekey' => $nodekey, ':srnodekey' => $srnodekey));
 } catch (PDOException $ex) {
-	throw new DBException('Не могу обновить дерево папок!', 0, $ex);
+	throw new DBException('Не могу обновить дерево папок', 0, $ex);
 }

@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -74,7 +74,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 				'.chosen-select-width': {width: '95%'}
 			}
 
-			$(function(){
+			$(function () {
 				$.localise('ui-multiselect', {/*language: 'en',*/ path: 'controller/client/themes/<?php echo $cfg->theme; ?>/js/locale/'});
 			});
 		</script>
@@ -103,4 +103,5 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 				$('#blob').popover({title: 'Быстрые ссылки', delay: {'show': 500, 'hide': 100}, html: true, content: '<?php echo $mm; ?>'});
 			</script>
 			<?php
+		
 		 endif;

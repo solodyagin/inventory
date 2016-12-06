@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -26,7 +26,7 @@ try {
 		$filename = WUO_ROOT . '/files/' . $row['filename'];
 	}
 } catch (PDOException $ex) {
-	throw new DBException('Ошибка получения файла из базы!', 0, $ex);
+	throw new DBException('Ошибка получения файла из базы', 0, $ex);
 }
 
 (!empty($filename) && file_exists($filename) && is_file($filename)) or die('Файл не найден');

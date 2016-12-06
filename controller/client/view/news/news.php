@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -44,14 +44,14 @@ if ($step == 'edit') {
 	});
 
 	$(function () {
-		var field = new Array('dtpost', 'title', 'txt'); // поля обязательные
-		$('form').submit(function () {// обрабатываем отправку формы
-			var error = 0; // индекс ошибки
-			$('form').find(':input').each(function () {// проверяем каждое поле в форме
-				for (var i = 0; i < field.length; i++) { // если поле присутствует в списке обязательных
-					if ($(this).attr('name') == field[i]) { // проверяем поле формы на пустоту
-						if (!$(this).val()) { // если в поле пустое
-							error = 1;// определяем индекс ошибки
+		var fields = ['dtpost', 'title', 'txt'];
+		$('form').submit(function () {
+			var error = 0;
+			$('form').find(':input').each(function () {
+				for (var i = 0; i < fields.length; i++) {
+					if ($(this).attr('name') == fields[i]) {
+						if (!$(this).val()) {
+							error = 1;
 							$(this).parent().addClass('has-error');
 						} else {
 							$(this).parent().removeClass('has-error');
@@ -63,7 +63,7 @@ if ($step == 'edit') {
 				$('#messenger').addClass('alert alert-danger');
 				$('#messenger').html('Не все обязательные поля заполнены!');
 				$('#messenger').fadeIn('slow');
-				return false; //если в форме встретились ошибки , не  позволяем отослать данные на сервер.
+				return false;
 			}
 			return true;
 		});

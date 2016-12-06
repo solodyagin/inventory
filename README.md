@@ -23,10 +23,6 @@
 
 Домашняя страница проекта: <a href="http://xn--90acbu5aj5f.xn--p1ai/?page_id=1202" target="_blank">http://грибовы.рф/?page_id=1202</a>
 
-DEMO: [demo.tenrok.ru](http://demo.tenrok.ru/index.php)  
-Логин: `admin`  
-Пароль: `admin`  
-
 Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn--p1ai/wiki/doku.php/start)
 
 ### Требования
