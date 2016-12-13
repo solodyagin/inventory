@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -32,10 +32,17 @@ if ($res) {
 		$sql = <<<TXT
 INSERT INTO files_contract
             (id,idcontract,filename,userfreandlyfilename)
-VALUES      (NULL,'$contractid','$userfile_name','$orig_file')
+VALUES      (NULL, :contractid, :userfile_name, :orig_file)
 TXT;
-		$sqlcn->ExecuteSQL($sql)
-				or die('Не могу добавить файл! ' . mysqli_error($sqlcn->idsqlconnection));
+		try {
+			DB::prepare($sql)->execute(array(
+				':contractid' => $contractid,
+				':userfile_name' => $userfile_name,
+				':orig_file' => $orig_file
+			));
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу добавить файл', 0, $ex);
+		}
 	}
 } else {
 	$rs = array('msg' => 'error');

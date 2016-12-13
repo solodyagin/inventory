@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -18,7 +18,7 @@ function cuttingimg($zoom, $fn, $sz) {
 	$info = getimagesize(WUO_ROOT . '/photos/maps/0-0-0-' . $fn);  // получаем в массив информацию об изображении
 	$w = $info[0];
 	$h = $info[1]; // ширина и высота исходного изображения
-	$sx = round($w / $sz, 0);  // длинна куска изображения
+	$sx = round($w / $sz, 0);  // длина куска изображения
 	$sy = round($h / $sz, 0);  // высота куска изображения
 	$px = 0;
 	$py = 0; // координаты шага "реза"
@@ -53,9 +53,15 @@ if ($ext_file == '.PNG') {
 	if ($res) {
 		$rs = array('fname' => "0-0-0-$userfile_name", 'msg' => '');
 		if ($geteqid != '') {
-			$sql = "UPDATE org SET picmap = '$userfile_name' WHERE id = '$geteqid'";
-			$result = $sqlcn->ExecuteSQL($sql)
-					or die('Не могу обновить фото! ' . mysqli_error($sqlcn->idsqlconnection));
+			$sql = 'UPDATE org SET picmap = :userfile_name WHERE id = :geteqid';
+			try {
+				DB::prepare($sql)->execute(array(
+					':userfile_name' => $userfile_name,
+					':geteqid' => $geteqid
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Не могу обновить фото', 0, $ex);
+			}
 			cuttingimg(1, $userfile_name, 2);
 			cuttingimg(2, $userfile_name, 4);
 			cuttingimg(3, $userfile_name, 8);

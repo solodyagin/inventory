@@ -94,7 +94,7 @@ function ListEqByPlaces(list, pager) {
 	jQuery(list).jqGrid({
 		url: route + 'controller/server/equipment/eq_list.php?curuserid=' + curuserid,
 		datatype: 'json',
-		colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан'],
+		colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан'],
 		colModel: [
 			{name: 'id', index: 'id', width: 20},
 			{name: 'plname', index: 'plname', width: 55, hidden: true, viewable: false},
@@ -137,7 +137,7 @@ function ListEqByMat(list, pager) {
 	jQuery(list).jqGrid({
 		url: route + 'controller/server/equipment/eq_list_mat.php?curuserid=' + curuserid,
 		datatype: 'json',
-		colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Цена', 'Тек.стоим', 'Бух.имя'],
+		colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан', 'ОС', 'Цена', 'Тек.стоим', 'Бух.имя'],
 		colModel: [
 			{name: 'id', index: 'id', width: 20, frozen: true},
 			{name: 'plname', index: 'plname', width: 55, hidden: true, viewable: false, frozen: true},

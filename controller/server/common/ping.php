@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -39,23 +39,26 @@ FROM   places
                                                          FROM   equipment
                                                          WHERE  equipment.active = 1
                                                                 AND equipment.ip <> ''
-                                                                AND equipment.orgid = '$orgid') AS eq
+                                                                AND equipment.orgid = :orgid) AS eq
                                                      ON eq.nomeid = nome.id) AS eq2
                                   ON eq2.groupid = group_nome.id) AS eq3
                ON places.id = eq3.placesid
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Не получилось выполнить запрос на получение списка номенклатуры! ' . mysqli_error($sqlcn->idsqlconnection));
-		while ($row = mysqli_fetch_array($result)) {
-			exec("ping $row[ip] -c 1 -w 1 && exit", $output, $retval);
-			$res = ($retval != 0) ? 'glyphicon-remove' : 'glyphicon-ok';
-			echo '<tr>';
-			echo "<td><i class=\"glyphicon $res\"></i></td>";
-			echo "<td>{$row['ip']}</td>";
-			echo "<td>{$row['nomename']}</td>";
-			echo "<td>{$row['grname']}</td>";
-			echo "<td>{$row['pname']}</td>";
-			echo '</tr>';
+		try {
+			$arr = DB::prepare($sql)->execute(array(':orgid' => $orgid))->fetchAll();
+			foreach ($arr as $row) {
+				exec("ping $row[ip] -c 1 -w 1 && exit", $output, $retval);
+				$res = ($retval != 0) ? 'glyphicon-remove' : 'glyphicon-ok';
+				echo '<tr>';
+				echo "<td><i class=\"glyphicon $res\"></i></td>";
+				echo "<td>{$row['ip']}</td>";
+				echo "<td>{$row['nomename']}</td>";
+				echo "<td>{$row['grname']}</td>";
+				echo "<td>{$row['pname']}</td>";
+				echo '</tr>';
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не получилось выполнить запрос на получение списка номенклатуры', 0, $ex);
 		}
 		?>
 	</tbody>

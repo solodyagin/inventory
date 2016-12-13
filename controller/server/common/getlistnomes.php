@@ -12,15 +12,18 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$id = GetDef('groupid', '1');
-$vid = GetDef('vendorid', '1');
+$groupid = GetDef('groupid', '1');
+$vendorid = GetDef('vendorid', '1');
 $nomeid = GetDef('nomeid');
 
 echo '<select class="chosen-select" name="snomeid" id="snomeid">';
 
-$sql = 'SELECT id, name FROM nome WHERE groupid = :id AND vendorid = :vid';
+$sql = 'SELECT id, name FROM nome WHERE groupid = :groupid AND vendorid = :vendorid';
 try {
-	$arr = DB::prepare($sql)->execute(array(':id' => $id, ':vid' => $vid))->fetchAll();
+	$arr = DB::prepare($sql)->execute(array(
+				':groupid' => $groupid,
+				':vendorid' => $vendorid
+			))->fetchAll();
 	foreach ($arr as $row) {
 		$rid = $row['id'];
 		$rname = $row['name'];

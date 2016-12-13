@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$id = GetDef('groupid', '1');
+$groupid = GetDef('groupid', '1');
 $vendorid = GetDef('vendorid', '1');
 $addnone = GetDef('addnone');
 
@@ -25,11 +25,11 @@ SELECT vendorid,vendor.name,COUNT(nome.id)
 FROM   nome
        INNER JOIN vendor
                ON vendor.id = vendorid
-WHERE  groupid = :id
+WHERE  groupid = :groupid
 GROUP  BY vendorid
 TXT;
 try {
-	$arr = DB::prepare($sql)->execute(array(':id' => $id))->fetchAll();
+	$arr = DB::prepare($sql)->execute(array(':groupid' => $groupid))->fetchAll();
 	foreach ($arr as $row) {
 		$sl = ($row['vendorid'] == $vendorid) ? 'selected' : '';
 		echo "<option value=\"{$row['vendorid']}\" $sl>{$row['name']}</option>";

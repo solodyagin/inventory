@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -132,7 +132,7 @@ LEFT JOIN  knt
 ON         knt.id = equipment.kntid $where
 TXT;
 	try {
-		$row = DB::prepare($sql)->execute(array())->fetch();
+		$row = DB::prepare($sql)->execute()->fetch();
 		if ($row) {
 			$count = $row['cnt'];
 		}
@@ -267,7 +267,7 @@ if ($oper == 'edit') {
 	$tmcgo = ($tmcgo == 'Yes') ? 1 : 0;
 	$mode = ($mode == 'Yes') ? 1 : 0;
 	$mapyet = ($mapyet == 'Yes') ? 1 : 0;
-	$buhname = mysqli_real_escape_string($sqlcn->idsqlconnection, $buhname);
+
 	$sql = <<<TXT
 UPDATE equipment
 SET    buhname = :buhname, sernum = :sernum, invnum = :invnum, shtrihkod = :shtrihkod, cost = :cost,

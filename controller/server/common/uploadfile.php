@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -28,9 +28,15 @@ $res = move_uploaded_file($sr, $dest);
 if ($res) {
 	$rs = array('msg' => $userfile_name);
 	if ($geteqid != '') {
-		$sql = "UPDATE equipment SET photo = '$userfile_name' WHERE id = '$geteqid'";
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Не могу обновить фото! ' . mysqli_error($sqlcn->idsqlconnection));
+		$sql = 'UPDATE equipment SET photo = :userfile_name WHERE id = :geteqid';
+		try {
+			DB::prepare($sql)->execute(array(
+				':userfile_name' => $userfile_name,
+				':geteqid' => '$geteqid'
+			));
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу обновить фото', 0, $ex);
+		}
 	}
 } else {
 	$rs = array('msg' => 'error');
