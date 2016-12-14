@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -19,36 +19,60 @@ $sord = GetDef('sord');
 $oper = PostDef('oper');
 $id = PostDef('id');
 $idcontract = GetDef('idcontract');
-$where = "WHERE idcontract = '$idcontract'";
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM files_contract $where");
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
-	if ($page > $total_pages) {
-		$page = $total_pages;
-	}
-	$start = $limit * $page - $limit;
-	$sql = "SELECT * FROM files_contract $where ORDER BY $sidx $sord LIMIT $start, $limit";
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список договоров! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	// Готовим ответ
 	$responce = new stdClass();
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['id'];
-		$filename = $row['filename'];
-		$userfreandlyfilename = $row['userfreandlyfilename'];
-		if ($userfreandlyfilename == '') {
-			$userfreandlyfilename = 'Посмотреть';
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
+	$count = 0;
+
+	$sql = 'SELECT COUNT(*) AS cnt FROM files_contract WHERE idcontract = :idcontract';
+	try {
+		$row = DB::prepare($sql)->execute(array(':idcontract' => $idcontract))->fetch();
+		if ($row) {
+			$count = $row['cnt'];
 		}
-		$responce->rows[$i]['cell'] = array($row['id'], "<a target=\"_blank\" href=\"files/$filename\">$userfreandlyfilename</a>");
-		$i++;
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список договоров (1)', 0, $ex);
+	}
+
+	if ($count > 0) {
+		$total_pages = ceil($count / $limit);
+		if ($page > $total_pages) {
+			$page = $total_pages;
+		}
+		$start = $limit * $page - $limit;
+		if ($start < 0) {
+			jsonExit($responce);
+		}
+
+		$responce->page = $page;
+		$responce->total = $total_pages;
+		$responce->records = $count;
+
+		$sql = "SELECT * FROM files_contract WHERE idcontract = :idcontract ORDER BY $sidx $sord LIMIT $start, $limit";
+		try {
+			$arr = DB::prepare($sql)->execute(array(':idcontract' => $idcontract))->fetchAll();
+			$i = 0;
+			foreach ($arr as $row) {
+				$responce->rows[$i]['id'] = $row['id'];
+				$filename = $row['filename'];
+				$userfreandlyfilename = $row['userfreandlyfilename'];
+				if ($userfreandlyfilename == '') {
+					$userfreandlyfilename = 'Посмотреть';
+				}
+				$responce->rows[$i]['cell'] = array($row['id'], "<a target=\"_blank\" href=\"files/$filename\">$userfreandlyfilename</a>");
+				$i++;
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу выбрать список договоров (2)', 0, $ex);
+		}
 	}
 	jsonExit($responce);
 }
@@ -56,8 +80,12 @@ if ($oper == '') {
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
-	$sql = "DELETE FROM files_contract WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не смог удалить файл! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'DELETE FROM files_contract WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не смог удалить файл', 0, $ex);
+	}
 	exit;
 }

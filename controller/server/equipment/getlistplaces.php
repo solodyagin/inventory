@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -32,11 +32,11 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 				if ($flag != 0) {
 					echo '</optgroup>';
 				}
-				echo '<optgroup label="' . $opgroup . '">';
+				echo "<optgroup label=\"$opgroup\">";
 				$flag = 1;
 			}
 			$sl = ($row['id'] == $placesid) ? 'selected' : '';
-			echo '<option value="' . $row['id'] . '" ' . $sl . '>' . $row['name'] . '</option>';
+			echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
 			$oldopgroup = $opgroup;
 		}
 	} catch (PDOException $ex) {

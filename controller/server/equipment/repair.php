@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -40,15 +40,32 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 		if (count($err) == 0) {
 			$sql = <<<TXT
 INSERT INTO repair
-            (id,dt,kntid,eqid,cost,comment,dtend,status)
-VALUES      (NULL,'$dtpost','$kntid','$eqid','$cst','$comment','$dt','1')
+            (id, dt, kntid, eqid, cost, comment, dtend, status)
+VALUES      (NULL, :dt, :kntid, :eqid, :cost, :comment, :dtend, '1')
 TXT;
-			$sqlcn->ExecuteSQL($sql)
-					or die('Не смог добавить ремонт!: ' . mysqli_error($sqlcn->idsqlconnection));
+			try {
+				DB::prepare($sql)->execute(array(
+					':dt' => $dtpost,
+					':kntid' => $kntid,
+					':eqid' => $eqid,
+					':cost' => $cst,
+					':comment' => $comment,
+					':dtend' => $dt
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Не смог добавить ремонт', 0, $ex);
+			}
+
 			if ($status != 0) {
-				$sql = "UPDATE equipment SET repair = '$status' WHERE id = '$eqid'";
-				$sqlcn->ExecuteSQL($sql)
-						or die('Не смог обновить запись о ремонте!: ' . mysqli_error($sqlcn->idsqlconnection));
+				$sql = 'UPDATE equipment SET repair = :repair WHERE id = :id';
+				try {
+					DB::prepare($sql)->execute(array(
+						':repair' => $status,
+						':id' => $eqid
+					));
+				} catch (PDOException $ex) {
+					throw new DBException('Не смог обновить запись о ремонте', 0, $ex);
+				}
 			}
 		}
 	}
@@ -61,15 +78,40 @@ TXT;
 		$oper = PostDef('oper');
 		$id = GetDef('id');
 		$where = ($id != '') ? "WHERE reqid = '$id'" : '';
-		$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM repair");
-		$row = mysqli_fetch_array($result);
-		$count = $row['cnt'];
-		$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
-		if ($page > $total_pages) {
-			$page = $total_pages;
+
+		// Готовим ответ
+		$responce = new stdClass();
+		$responce->page = 0;
+		$responce->total = 0;
+		$responce->records = 0;
+
+		$count = 0;
+
+		$sql = 'SELECT COUNT(*) AS cnt FROM repair';
+		try {
+			$row = DB::prepare($sql)->execute()->fetch();
+			if ($row) {
+				$count = $row['cnt'];
+			}
+		} catch (PDOException $ex) {
+			throw new DBException('', 0, $ex);
 		}
-		$start = $limit * $page - $limit;
-		$sql = <<<TXT
+
+		if ($count > 0) {
+			$total_pages = ceil($count / $limit);
+			if ($page > $total_pages) {
+				$page = $total_pages;
+			}
+			$start = $limit * $page - $limit;
+			if ($start < 0) {
+				jsonExit($responce);
+			}
+
+			$responce->page = $page;
+			$responce->total = $total_pages;
+			$responce->records = $count;
+
+			$sql = <<<TXT
 SELECT     rp2.reqid   AS reqid,
            rp2.rstatus AS rstatus,
            rp2.rpid    AS rpid,
@@ -116,19 +158,21 @@ $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-		$result = $sqlcn->ExecuteSQL($sql)
-				or die('Не могу выбрать список контрагентов! ' . mysqli_error($sqlcn->idsqlconnection));
-		$responce = new stdClass();
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
-		$i = 0;
-		while ($row = mysqli_fetch_array($result)) {
-			$dtz = $row['dt'];
-			$responce->rows[$i]['id'] = $row['rpid'];
-			$rstatus = ($row['rstatus'] == '1') ? 'Ремонт' : 'Сделано';
-			$responce->rows[$i]['cell'] = array($row['rpid'], $row['namekont'], $row['namenome'], MySQLDateToDate($row['dt']), MySQLDateToDate($row['dtend']), $row['cost'], $row['comment'], $rstatus);
-			$i++;
+			try {
+				$arr = DB::prepare($sql)->execute()->fetchAll();
+				$i = 0;
+				foreach ($arr as $row) {
+					$dtz = $row['dt'];
+					$responce->rows[$i]['id'] = $row['rpid'];
+					$rstatus = ($row['rstatus'] == '1') ? 'Ремонт' : 'Сделано';
+					$responce->rows[$i]['cell'] = array($row['rpid'], $row['namekont'], $row['namenome'],
+						MySQLDateToDate($row['dt']), MySQLDateToDate($row['dtend']), $row['cost'],
+						$row['comment'], $rstatus);
+					$i++;
+				}
+			} catch (PDOException $ex) {
+				throw new DBException('Не могу выбрать список контрагентов', 0, $ex);
+			}
 		}
 		jsonExit($responce);
 	}
@@ -140,24 +184,50 @@ TXT;
 			$cost = PostDef('cost');
 			$comment = PostDef('comment');
 			$rstatus = PostDef('rstatus');
-			$sql = "UPDATE repair SET dt='$dt',dtend='$dtend',cost='$cost',comment='$comment',status='$rstatus' WHERE id='$eqid'";
-			$sqlcn->ExecuteSQL($sql)
-					or die('Не смог обновить статус ремонта! ' . mysqli_error($sqlcn->idsqlconnection));
+			$sql = <<<TXT
+UPDATE repair
+SET dt = :dt, dtend = :dtend, cost = :cost, comment = :comment, status = :status
+WHERE id = :id'
+TXT;
+			try {
+				DB::prepare($sql)->execute(array(
+					':dt' => $dt,
+					':dtend' => $dtend,
+					':cost' => $cost,
+					':comment' => $comment,
+					':status' => $rstatus,
+					':id' => $eqid
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Не смог обновить статус ремонта', 0, $ex);
+			}
 			ReUpdateRepairEq();
 			exit;
 		}
 
 		if ($oper == 'del') {
-			$sql = "SELECT * FROM repair WHERE id = '$eqid'";
-			$result = $sqlcn->ExecuteSQL($sql)
-					or die('Не получилось выбрать список ремонтов! ' . mysqli_error($sqlcn->idsqlconnection));
-			while ($row = mysqli_fetch_array($result)) {
-				$status = $row['status'];
-			}
-			if ($status != '1') {
-				$sql = "DELETE FROM repair WHERE id = '$eqid'";
-				$sqlcn->ExecuteSQL($sql)
-						or die('Не смог обновить статус ремонта! ' . mysqli_error($sqlcn->idsqlconnection));
+//			$sql = 'SELECT * FROM repair WHERE id = :id';
+//			try {
+//				$row = DB::prepare($sql)->execute(array(':id' => $eqid))->fetch();
+//				if ($row) {
+//					$status = $row['status'];
+//				}
+//			} catch (PDOException $ex) {
+//				throw new DBException('Не получилось выбрать список ремонтов', 0, $ex);
+//			}
+//			if ($status != '1') {
+//				$sql = 'DELETE FROM repair WHERE id = :id';
+//				try {
+//					DB::prepare($sql)->execute(array(':id' => $eqid));
+//				} catch (PDOException $ex) {
+//					throw new DBException('Не смог обновить статус ремонта', 0, $ex);
+//				}
+//			}
+			$sql = 'DELETE FROM `repair` WHERE id = :id AND `status` <> 1';
+			try {
+				DB::prepare($sql)->execute(array(':id' => $eqid));
+			} catch (PDOException $ex) {
+				throw new DBException('Не смог обновить статус ремонта', 0, $ex);
 			}
 			ReUpdateRepairEq();
 			exit;
@@ -169,7 +239,7 @@ if ($step != 'list') {
 	if (count($err) == 0) {
 		echo 'ok';
 	} else {
-		echo '<script>$("#messenger").addClass("alert alert-error");</script>';
+		echo '<script>$("#messenger").addClass("alert alert-danger");</script>';
 		for ($i = 0; $i <= count($err); $i++) {
 			echo "$err[$i]<br>";
 		}

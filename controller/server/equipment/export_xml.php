@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -38,26 +38,30 @@ FROM   equipment
                ON users.id = equipment.usersid
 WHERE  equipment.active = 1
 TXT;
-$result = $sqlcn->ExecuteSQL($sql)
-		or die('Не получилось выбрать список оргтехники!' . mysqli_error($sqlcn->idsqlconnection));
-while ($row = mysqli_fetch_array($result)) {
-	$orgtehnika = $orguse->appendChild($dom->createElement('orgtehnika'));
-	$orgid = $orgtehnika->appendChild($dom->createElement('orgid'));
-	$orgid->appendChild($dom->createTextNode("$row[eqorgid]"));
-	$namehouses = $orgtehnika->appendChild($dom->createElement("namehouses"));
-	$namehouses->appendChild($dom->createTextNode("$row[placesname]"));
-	$nomename = $orgtehnika->appendChild($dom->createElement('nomename'));
-	$nomename->appendChild($dom->createTextNode("$row[nomenamez]"));
-	$buhname = $orgtehnika->appendChild($dom->createElement('buhname'));
-	$buhname->appendChild($dom->createTextNode("$row[buhname]"));
-	$invnum = $orgtehnika->appendChild($dom->createElement('invnum'));
-	$invnum->appendChild($dom->createTextNode("$row[invnum]"));
-	$shtrihkod = $orgtehnika->appendChild($dom->createElement('shtrihkod'));
-	$shtrihkod->appendChild($dom->createTextNode("$row[shtrihkod]"));
-	$spisano = $orgtehnika->appendChild($dom->createElement('spisano'));
-	$spisano->appendChild($dom->createTextNode("$row[eqmode]"));
-	$os = $orgtehnika->appendChild($dom->createElement('os'));
-	$os->appendChild($dom->createTextNode("$row[os]"));
+
+try {
+	$arr = DB::prepare($sql)->execute()->fetchAll();
+	foreach ($arr as $row) {
+		$orgtehnika = $orguse->appendChild($dom->createElement('orgtehnika'));
+		$orgid = $orgtehnika->appendChild($dom->createElement('orgid'));
+		$orgid->appendChild($dom->createTextNode("$row[eqorgid]"));
+		$namehouses = $orgtehnika->appendChild($dom->createElement('namehouses'));
+		$namehouses->appendChild($dom->createTextNode("$row[placesname]"));
+		$nomename = $orgtehnika->appendChild($dom->createElement('nomename'));
+		$nomename->appendChild($dom->createTextNode("$row[nomenamez]"));
+		$buhname = $orgtehnika->appendChild($dom->createElement('buhname'));
+		$buhname->appendChild($dom->createTextNode("$row[buhname]"));
+		$invnum = $orgtehnika->appendChild($dom->createElement('invnum'));
+		$invnum->appendChild($dom->createTextNode("$row[invnum]"));
+		$shtrihkod = $orgtehnika->appendChild($dom->createElement('shtrihkod'));
+		$shtrihkod->appendChild($dom->createTextNode("$row[shtrihkod]"));
+		$spisano = $orgtehnika->appendChild($dom->createElement('spisano'));
+		$spisano->appendChild($dom->createTextNode("$row[eqmode]"));
+		$os = $orgtehnika->appendChild($dom->createElement('os'));
+		$os->appendChild($dom->createTextNode("$row[os]"));
+	}
+} catch (PDOException $ex) {
+	throw new DBException('Не получилось выбрать список оргтехники', 0, $ex);
 }
 
 $dom->formatOutput = true; // установка атрибута formatOutput
