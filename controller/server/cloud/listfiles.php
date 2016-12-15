@@ -31,69 +31,66 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = 'SELECT COUNT(*) AS cnt FROM cloud_files WHERE cloud_dirs_id = :cloud_dirs_id';
 	try {
 		$row = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать количество записей', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = <<<TXT
+	$sql = <<<TXT
 SELECT   *
 FROM     cloud_files
 WHERE    cloud_dirs_id = :cloud_dirs_id
 ORDER BY $sidx $sord
 LIMIT    $start, $limit
 TXT;
-		try {
-			$i = 0;
-			$arr = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetchAll();
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				switch (pathinfo($row['filename'], PATHINFO_EXTENSION)) {
-					case 'jpeg':
-					case 'jpg':
-					case 'png':
-						$ico = '<i class="fa fa-file-image-o" aria-hidden="true"></i>';
-						break;
-					case 'xls':
-					case 'ods':
-						$ico = '<i class="fa a-file-excel-o" aria-hidden="true"></i>';
-						break;
-					case 'doc':
-					case 'odt':
-						$ico = '<i class="fa fa-file-word-o" aria-hidden="true"></i>';
-						break;
-					default:
-						$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
-				}
-				$ico = '<a target="_blank" href="index.php?route=/controller/server/cloud/download.php?id=' . $row['id'] . '">' . $ico . '</a>';
-				$title = $row['title'];
-				$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
-				$i++;
+	try {
+		$i = 0;
+		$arr = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetchAll();
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			switch (pathinfo($row['filename'], PATHINFO_EXTENSION)) {
+				case 'jpeg':
+				case 'jpg':
+				case 'png':
+					$ico = '<i class="fa fa-file-image-o" aria-hidden="true"></i>';
+					break;
+				case 'xls':
+				case 'ods':
+					$ico = '<i class="fa a-file-excel-o" aria-hidden="true"></i>';
+					break;
+				case 'doc':
+				case 'odt':
+					$ico = '<i class="fa fa-file-word-o" aria-hidden="true"></i>';
+					break;
+				default:
+					$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
 			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список файлов', 0, $ex);
+			$ico = '<a target="_blank" href="index.php?route=/controller/server/cloud/download.php?id=' . $row['id'] . '">' . $ico . '</a>';
+			$title = $row['title'];
+			$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список файлов', 0, $ex);
 	}
 	jsonExit($responce);
 }

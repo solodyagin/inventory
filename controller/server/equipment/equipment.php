@@ -35,51 +35,45 @@ $mode = PostDef('mode');
 $mapyet = PostDef('eqmapyet');
 $orgid = $cfg->defaultorgid;
 
-/////////////////////////////
-// вычисляем фильтр
-/////////////////////////////
-// получаем наложенные поисковые фильтры
-$filters = GetDef('filters');
-$flt = json_decode($filters, true);
-$cnt = count($flt['rules']);
-$where = '';
-for ($i = 0; $i < $cnt; $i++) {
-	$field = $flt['rules'][$i]['field'];
-	if ($field == 'org.name') {
-		$field = 'org.id';
-	}
-	$data = $flt['rules'][$i]['data'];
-	if ($data != '-1') {
-		if (($field == 'placesid') or ( $field == 'getvendorandgroup.grnomeid')) {
-			$where = $where . "($field = '$data')";
-		} else {
-			$where = $where . "($field LIKE '%$data%')";
-		}
-	} else {
-		$where = $where . "($field LIKE '%%')";
-	}
-	if ($i < ($cnt - 1)) {
-		$where = $where . ' AND ';
-	}
-}
-if ($where == '') {
-	$where = "WHERE equipment.orgid='$sorgider'";
-} else {
-	$where = "WHERE $where AND equipment.orgid='$sorgider'";
-}
-/////////////////////////////
-
 if ($oper == '') {
 	// Проверка: может ли пользователь просматривать?
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+
+	// получаем наложенные поисковые фильтры
+	$filters = GetDef('filters');
+	$flt = json_decode($filters, true);
+	$cnt = count($flt['rules']);
+	$where = '';
+	for ($i = 0; $i < $cnt; $i++) {
+		$field = $flt['rules'][$i]['field'];
+		if ($field == 'org.name') {
+			$field = 'org.id';
+		}
+		$data = $flt['rules'][$i]['data'];
+		if ($data != '-1') {
+			if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
+				$where = $where . "($field = '$data')";
+			} else {
+				$where = $where . "($field LIKE '%$data%')";
+			}
+		} else {
+			$where = $where . "($field LIKE '%%')";
+		}
+		if ($i < ($cnt - 1)) {
+			$where = $where . ' AND ';
+		}
+	}
+	if ($where == '') {
+		$where = "WHERE equipment.orgid='$sorgider'";
+	} else {
+		$where = "WHERE $where AND equipment.orgid='$sorgider'";
+	}
 
 	// Готовим ответ
 	$responce = new stdClass();
 	$responce->page = 0;
 	$responce->total = 0;
 	$responce->records = 0;
-
-	$count = 0;
 
 	$sql = <<<TXT
 SELECT     COUNT(*) AS cnt,
@@ -133,28 +127,28 @@ ON         knt.id = equipment.kntid $where
 TXT;
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не получилось выбрать список оргтехники!', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = <<<TXT
+	$sql = <<<TXT
 SELECT     equipment.dtendgar,
            tmcgo,
            knt.name AS kntname,
@@ -206,38 +200,37 @@ ON         knt.id = equipment.kntid $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-		try {
-			$arr = DB::prepare($sql)->execute()->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['eqid'];
-				if ($row['eqactive'] == '1') {
-					$active = '<i class="fa fa-check-circle" aria-hidden="true"></i>';
-				} else {
-					$active = '<i class="fa fa-ban" aria-hidden="true"></i>';
-				}
-				if ($row['eqrepair'] == '1') {
-					$active = $active . '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>';
-				}
-				$os = ($row['os'] == '0') ? 'No' : 'Yes';
-				$eqmode = ($row['eqmode'] == '0') ? 'No' : 'Yes';
-				$eqmapyet = ($row['eqmapyet'] == '0') ? 'No' : 'Yes';
-				$dtpost = MySQLDateTimeToDateTime($row['datepost']);
-				$dtendgar = MySQLDateToDate($row['dtendgar']);
-				$tmcgo = ($row['tmcgo'] == '0') ? 'No' : 'Yes';
-				$responce->rows[$i]['cell'] = array(
-					$active, $row['eqid'], $row['ip'], $row['placesname'],
-					$row['nomename'], $row['grnome'], $tmcgo, $row['vname'],
-					$row['buhname'], $row['sernum'], $row['invnum'], $row['shtrihkod'],
-					$row['orgname'], $row['fio'], $dtpost, $row['cost'],
-					$row['currentcost'], $os, $eqmode, $row['eqmapyet'],
-					$row['eqcomment'], $row['eqrepair'], $dtendgar, $row['kntname']
-				);
-				$i++;
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['eqid'];
+			if ($row['eqactive'] == '1') {
+				$active = '<i class="fa fa-check-circle" aria-hidden="true"></i>';
+			} else {
+				$active = '<i class="fa fa-ban" aria-hidden="true"></i>';
 			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не получилось выбрать список оргтехники!', 0, $ex);
+			if ($row['eqrepair'] == '1') {
+				$active = $active . '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>';
+			}
+			$os = ($row['os'] == '0') ? 'No' : 'Yes';
+			$eqmode = ($row['eqmode'] == '0') ? 'No' : 'Yes';
+			$eqmapyet = ($row['eqmapyet'] == '0') ? 'No' : 'Yes';
+			$dtpost = MySQLDateTimeToDateTime($row['datepost']);
+			$dtendgar = MySQLDateToDate($row['dtendgar']);
+			$tmcgo = ($row['tmcgo'] == '0') ? 'No' : 'Yes';
+			$responce->rows[$i]['cell'] = array(
+				$active, $row['eqid'], $row['ip'], $row['placesname'],
+				$row['nomename'], $row['grnome'], $tmcgo, $row['vname'],
+				$row['buhname'], $row['sernum'], $row['invnum'], $row['shtrihkod'],
+				$row['orgname'], $row['fio'], $dtpost, $row['cost'],
+				$row['currentcost'], $os, $eqmode, $row['eqmapyet'],
+				$row['eqcomment'], $row['eqrepair'], $dtendgar, $row['kntname']
+			);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не получилось выбрать список оргтехники!', 0, $ex);
 	}
 	jsonExit($responce);
 }

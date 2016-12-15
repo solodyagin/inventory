@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -28,6 +28,7 @@ $mode = PostDef('mode');
 if ($oper == '') {
 	// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
 	(($user->mode == 1) || $user->TestRoles('1,3')) or die('Недостаточно прав');
+
 	$flt = json_decode($filters, true);
 	$cnt = count($flt['rules']);
 	$where = '';
@@ -45,6 +46,13 @@ if ($oper == '') {
 	if ($where != '') {
 		$where = 'WHERE ' . $where;
 	}
+
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
 	$sql = <<<TXT
 SELECT     COUNT(*) AS cnt,
            org.id   AS orgid,
@@ -61,14 +69,29 @@ INNER JOIN org
 ON         users.orgid = org.id
 $where
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql);
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
+	try {
+		$row = DB::prepare($sql)->execute()->fetch();
+		$count = ($row) ? $row['cnt'] : 0;
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список пользователей (1)', 0, $ex);
+	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
+
+	$total_pages = ceil($count / $limit);
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
+
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
+
 	$sql = <<<TXT
 SELECT     org.id AS orgid,
            users.id,
@@ -86,28 +109,21 @@ $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список пользователей! ' . mysqli_error($sqlcn->idsqlconnection));
-	$responce = new stdClass();
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['id'];
-		$mode = ($row['mode'] == '1') ? 'Да' : 'Нет';
-		if ($row['active'] == '1') {
+	try {
+		$arr = DB::prepare($sql)->execute(array())->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$mode = ($row['mode'] == '1') ? 'Да' : 'Нет';
+			$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 			$responce->rows[$i]['cell'] = array(
-				'<i class="fa fa-check-circle" aria-hidden="true"></i>',
+				"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
 				$row['id'], $row['orgname'], $row['login'], 'скрыто', $row['email'], $mode
 			);
-		} else {
-			$responce->rows[$i]['cell'] = array(
-				'<i class="fa fa-ban" aria-hidden="true"></i>',
-				$row['id'], $row['orgname'], $row['login'], 'скрыто', $row['email'], $mode
-			);
+			$i++;
 		}
-		$i++;
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список пользователей (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }
@@ -115,28 +131,48 @@ TXT;
 if ($oper == 'edit') {
 	// Только с полными правами можно редактировать пользователя!
 	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
+
 	$imode = ($mode == 'Да') ? '1' : '0';
 	$ps = ($pass != 'скрыто') ? "`password`=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
-	$sql = "UPDATE users SET mode = '$imode', login = '$login', $ps email = '$email' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу обновить данные по пользователю! ' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = "UPDATE users SET mode = :mode, login = :login, $ps email = :email WHERE id = :id";
+	try {
+		DB::prepare($sql)->execute(array(
+			':mode' => $imode,
+			':login' => $login,
+			':email' => $email,
+			':id' => $id
+		));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу обновить данные по пользователю', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'add') {
 	// Только с полными правами можно добавлять пользователя!
 	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
-	$sql = "INSERT INTO knt (id, name, comment, active) VALUES (null, '$name', '$comment', 1)";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу добавить пользователя! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'INSERT INTO knt (id, name, comment, active) VALUES (null, :name, :comment, 1)';
+	try {
+		DB::prepare($sql)->execute(array(
+			':name' => $name,
+			':comment' => $comment
+		));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу добавить пользователя', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'del') {
 	// Только с полными правами можно удалять пользователя!
 	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
-	$sql = "UPDATE users SET active = NOT active WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу обновить данные по пользователю! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'UPDATE users SET active = NOT active WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу пометить на удаление пользователя', 0, $ex);
+	}
 	exit;
 }

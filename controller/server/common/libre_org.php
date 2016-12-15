@@ -30,49 +30,46 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = 'SELECT COUNT(*) AS cnt FROM org';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать список организаций', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = "SELECT id, name, active, picmap FROM org ORDER BY $sidx $sord LIMIT $start, $limit";
-		try {
-			$arr = DB::prepare($sql)->execute()->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
-				$responce->rows[$i]['cell'] = array(
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-					$row['id'],
-					$row['name']
-				);
-				$i++;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список организаций', 0, $ex);
+	$sql = "SELECT id, name, active, picmap FROM org ORDER BY $sidx $sord LIMIT $start, $limit";
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
+			$responce->rows[$i]['cell'] = array(
+				"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+				$row['id'],
+				$row['name']
+			);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список организаций', 0, $ex);
 	}
 	jsonExit($responce);
 }

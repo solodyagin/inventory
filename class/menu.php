@@ -61,7 +61,7 @@ class Tmenu {
 	function GetFromFiles($pp) {
 		global $cfg, $user;
 		$mfiles = GetArrayFilesInDir($pp);
-		foreach ($mfiles as &$fname) {
+		foreach ($mfiles as $fname) {
 			if (is_file("$pp/$fname")) {
 				include_once("$pp/$fname");
 			}

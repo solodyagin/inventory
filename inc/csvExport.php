@@ -1,8 +1,13 @@
 <?php
 
-// Данный код создан и распространяется по лицензии GPL v3
-// Изначальный автор данного кода - Грибов Павел
-// http://грибовы.рф
+/*
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчики:
+ *   Грибов Павел,
+ *   Сергей Солодягин (solodyagin@gmail.com)
+ * Сайт: http://грибовы.рф
+ */
 
 header('Content-type: application/vnd.ms-excel');
 header('Content-Disposition: attachment; filename=file.xls');

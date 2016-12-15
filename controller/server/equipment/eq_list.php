@@ -27,8 +27,6 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = <<<TXT
 SELECT COUNT(*) AS cnt,name AS grname,res2.*
 FROM   group_nome
@@ -57,28 +55,28 @@ FROM   group_nome
 TXT;
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю (1)', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = <<<TXT
+	$sql = <<<TXT
 SELECT     name AS grname,
            res2.*
 FROM       group_nome
@@ -120,19 +118,18 @@ INNER JOIN
                       LIMIT      $start, $limit ) AS res2
 ON         group_nome.id = res2.grpid
 TXT;
-		try {
-			$arr = DB::prepare($sql)->execute()->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['eqid'];
-				$responce->rows[$i]['cell'] = array($row['eqid'], $row['plname'],
-					$row['namenome'], $row['grname'], $row['invnum'], $row['sernum'],
-					$row['shtrihkod'], $row['mode']);
-				$i++;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю (2)', 0, $ex);
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['eqid'];
+			$responce->rows[$i]['cell'] = array($row['eqid'], $row['plname'],
+				$row['namenome'], $row['grname'], $row['invnum'], $row['sernum'],
+				$row['shtrihkod'], $row['mode']);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }

@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -31,14 +31,32 @@ if ($namenome == '') {
 
 if (count($err) == 0) {
 	if ($step == 'edit') {
-		$sql = "UPDATE nome SET groupid = '$groupid', vendorid = '$vendorid', name = '$namenome' WHERE id = '$id'";
-		$sqlcn->ExecuteSQL($sql)
-				or die('Не смог обновить номенклатуру!: ' . mysqli_error($sqlcn->idsqlconnection));
+		$sql = 'UPDATE nome SET groupid = :groupid, vendorid = :vendorid, name = :name WHERE id = :id';
+		try {
+			DB::prepare($sql)->execute(array(
+				':groupid' => $groupid,
+				':vendorid' => $vendorid,
+				':name' => $namenome,
+				':id' => $id
+			));
+		} catch (PDOException $ex) {
+			throw new DBException('Не смог обновить номенклатуру', 0, $ex);
+		}
 	}
 	if ($step == 'add') {
-		$sql = "INSERT INTO nome (id, groupid, vendorid, name, active) VALUES (NULL, '$groupid', '$vendorid', '$namenome', '1')";
-		$sqlcn->ExecuteSQL($sql)
-				or die('Не смог добавить номенклатуру!: ' . mysqli_error($sqlcn->idsqlconnection));
+		$sql = <<<TXT
+INSERT INTO nome (id, groupid, vendorid, name, active)
+VALUES (NULL, :groupid, :vendorid, :name, '1')
+TXT;
+		try {
+			DB::prepare($sql)->execute(array(
+				':groupid' => $groupid,
+				':vendorid' => $vendorid,
+				':name' => $namenome
+			));
+		} catch (PDOException $ex) {
+			throw new DBException('Не смог добавить номенклатуру', 0, $ex);
+		}
 	}
 }
 echo 'ok';

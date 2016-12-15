@@ -1,11 +1,11 @@
 <?php
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -17,39 +17,45 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	</head>
 	<body>
-<?php
-$idmass = explode(',', GetDef('mass'));
-echo '<table border="1">';
-$rw = 0;
-for ($i = 0; $i < count($idmass); $i++) {
-	$idm = $idmass[$i];
-	$sql = "SELECT equipment.shtrihkod,equipment.buhname,nome.name as nomename,equipment.invnum FROM equipment INNER JOIN nome ON nome.id=equipment.nomeid WHERE equipment.id='$idm'";
-	$result = $sqlcn->ExecuteSQL($sql)
-		or die('Не могу выбрать!' . mysqli_error($sqlcn->idsqlconnection));
-	if ($rw == 0) {
-		echo '<tr>';
-	}
-	echo '<td>';
-	while ($row = mysqli_fetch_array($result)) {
-		$shtrihkod = $row['shtrihkod'];
-		$buhname = $row['buhname'];
-		$nomename = $row['nomename'];
-		$invnum = $row['invnum'];
-		echo "<font size=1>Бух:$buhname<br>";
-		echo "ИТ:$nomename</font><br>";
-		echo "<img src='ean13.php?shtrihkod=$shtrihkod'><br>";
-		echo "№$invnum<br>";
-	}
-	echo '</td>';
-	if ($rw == 3) {
-		echo '</tr>';
-	}
-	$rw++;
-	if ($rw == 4) {
-		$rw = 0;
-	}
-}
-echo '</table>';
-?>
+		<table border="1">		
+			<?php
+			$idmass = explode(',', GetDef('mass'));
+
+			$rw = 0;
+
+			for ($i = 0; $i < count($idmass); $i++) {
+				$idm = $idmass[$i];
+				if ($rw == 0) {
+					echo '<tr>';
+				}
+				echo '<td>';
+				$sql = <<<TXT
+SELECT equipment.shtrihkod, equipment.buhname, nome.name AS nomename, equipment.invnum
+FROM equipment
+	INNER JOIN nome ON nome.id = equipment.nomeid
+WHERE equipment.id = :idm
+TXT;
+				try {
+					$row = DB::prepare($sql)->execute(array(':idm' => $idm))->fetch();
+					if ($row) {
+						echo "<font size=\"1\">Бух:{$row['buhname']}<br>";
+						echo "ИТ:{$row['nomename']}</font><br>";
+						echo "<img src=\"ean13.php?shtrihkod={$row['shtrihkod']}\"><br>";
+						echo "№{$row['invnum']}<br>";
+					}
+				} catch (PDOException $ex) {
+					throw new DBException('Не могу выбрать', 0, $ex);
+				}
+				echo '</td>';
+				if ($rw == 3) {
+					echo '</tr>';
+				}
+				$rw++;
+				if ($rw == 4) {
+					$rw = 0;
+				}
+			}
+			?>
+		</table>
 	</body>
 </html>

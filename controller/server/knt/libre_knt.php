@@ -57,65 +57,62 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = "SELECT COUNT(*) AS cnt FROM knt $where";
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать список контрагентов (1)', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = <<<TXT
+	$sql = <<<TXT
 SELECT   id,name,INN,KPP,bayer,supplier,dog,ERPCode,comment,active
 FROM     knt
 $where
 ORDER BY $sidx $sord
 LIMIT    $start, $limit
 TXT;
-		try {
-			$arr = DB::prepare($sql)->execute(array())->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				$bayer = ($row['bayer'] == '0') ? 'No' : 'Yes';
-				$supplier = ($row['supplier'] == '0') ? 'No' : 'Yes';
-				$dog = ($row['dog'] == '0') ? 'No' : 'Yes';
-				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
-				$responce->rows[$i]['cell'] = array(
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-					$row['id'],
-					$row['name'],
-					$row['INN'],
-					$row['KPP'],
-					$bayer,
-					$supplier,
-					$dog,
-					$row['ERPCode'],
-					$row['comment']
-				);
-				$i++;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список контрагентов', 0, $ex);
+	try {
+		$arr = DB::prepare($sql)->execute(array())->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$bayer = ($row['bayer'] == '0') ? 'No' : 'Yes';
+			$supplier = ($row['supplier'] == '0') ? 'No' : 'Yes';
+			$dog = ($row['dog'] == '0') ? 'No' : 'Yes';
+			$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
+			$responce->rows[$i]['cell'] = array(
+				"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+				$row['id'],
+				$row['name'],
+				$row['INN'],
+				$row['KPP'],
+				$bayer,
+				$supplier,
+				$dog,
+				$row['ERPCode'],
+				$row['comment']
+			);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список контрагентов', 0, $ex);
 	}
 	jsonExit($responce);
 }

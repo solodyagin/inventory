@@ -24,8 +24,6 @@ if ($oper == '') {
 	$responce = new stdClass();
 
 	// получаем группу номенклатуры
-	$groupid = '';
-
 	$sql = <<<TXT
 SELECT equipment.id,nome.id AS nomeid,nome.groupid AS groupid
 FROM   equipment
@@ -37,9 +35,7 @@ TXT;
 
 	try {
 		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
-		if ($row) {
-			$groupid = $row['groupid'];
-		}
+		$groupid = ($row) ? $row['groupid'] : '';
 	} catch (PDOException $ex) {
 		throw new DBException('Не получилось найти группу', 0, $ex);
 	}

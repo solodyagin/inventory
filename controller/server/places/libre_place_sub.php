@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -26,14 +26,38 @@ $comment = PostDef('comment');
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-	$result = $sqlcn->ExecuteSQL("SELECT COUNT(*) AS cnt FROM places_users WHERE placesid = '$placesid'");
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
+
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
+	$sql = 'SELECT COUNT(*) AS cnt FROM places_users WHERE placesid = :placesid';
+	try {
+		$row = DB::prepare($sql)->execute(array(':placesid' => $placesid))->fetch();
+		$count = ($row) ? $row['cnt'] : 0;
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список помещений/пользователей (1)', 0, $ex);
+	}
+
+	if ($count == 0) {
+		jsonExit($responce);
+	}
+
+	$total_pages = ceil($count / $limit);
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
+
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
+
 	$sql = <<<TXT
 SELECT     places_users.id AS plid,
            placesid,
@@ -42,21 +66,20 @@ SELECT     places_users.id AS plid,
 FROM       places_users
 INNER JOIN users_profile
 ON         users_profile.usersid = userid
-WHERE      placesid = '$placesid'
+WHERE      placesid = :placesid
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать список помещений/пользователей! ' . mysqli_error($sqlcn->idsqlconnection));
-	$responce = new stdClass();
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['plid'];
-		$responce->rows[$i]['cell'] = array($row['plid'], $row['name']);
-		$i++;
+	try {
+		$arr = DB::prepare($sql)->execute(array(':placesid' => $placesid))->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['plid'];
+			$responce->rows[$i]['cell'] = array($row['plid'], $row['name']);
+			$i++;
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список помещений/пользователей (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }
@@ -64,29 +87,41 @@ TXT;
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
 	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
+
 	if (($placesid == '') || ($name == '')) {
 		die();
 	}
-	$sql = "INSERT INTO places_users (id, placesid, userid) VALUES (null, '$placesid', '$name')";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу добавить помещение/пользователя! ' . mysqli_error($sqlcn->idsqlconnection));
+	$sql = 'INSERT INTO places_users (id, placesid, userid) VALUES (null, :placesid, :userid)';
+	try {
+		DB::prepare($sql)->execute(array(':placesid' => $placesid, ':userid' => $name));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу добавить помещение/пользователя', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
-	$sql = "UPDATE places_users SET userid = '$name' WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу обновить данные по помещениям/пользователям! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'UPDATE places_users SET userid = :userid WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':userid' => $name, ':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу обновить данные по помещениям/пользователям', 0, $ex);
+	}
 	exit;
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
 	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
-	$sql = "DELETE FROM places_users WHERE id = '$id'";
-	$sqlcn->ExecuteSQL($sql)
-			or die('Не могу удалить помещение/пользователя! ' . mysqli_error($sqlcn->idsqlconnection));
+
+	$sql = 'DELETE FROM places_users WHERE id = :id';
+	try {
+		DB::prepare($sql)->execute(array(':id' => $id));
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу удалить помещение/пользователя', 0, $ex);
+	}
 	exit;
 }

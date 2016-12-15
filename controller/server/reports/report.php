@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -50,6 +50,12 @@ if ($tpo == '2') {
 }
 
 if ($oper == '') {
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
 	$sql = <<<TXT
 SELECT     COUNT(*)    AS cnt,
            places.name AS plname,
@@ -77,17 +83,30 @@ INNER JOIN
                                         WHERE  equipment.active = 1 $where) AS eq
                       ON         nome.id = eq.nid) AS res
 ON         places.id = res.plid
-
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю!(1) ' . mysqli_error($sqlcn->idsqlconnection));
-	$row = mysqli_fetch_array($result);
-	$count = $row['cnt'];
-	$total_pages = ($count > 0) ? ceil($count / $limit) : 0;
+	try {
+		$row = DB::prepare($sql)->execute(array(':orgid' => $orgid))->fetch();
+		$count = ($row) ? $row['cnt'] : 0;
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу сформировать список по оргтехнике/помещениям/пользователю!(1)', 0, $ex);
+	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
+
+	$total_pages = ceil($count / $limit);
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
+
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
+
 	$sql = <<<TXT
 SELECT     name AS grname,
            res2.*
@@ -123,19 +142,20 @@ INNER JOIN
 ON         group_nome.id = res2.grpid
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
-
 TXT;
-	$result = $sqlcn->ExecuteSQL($sql)
-			or die('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю! (2)' . mysqli_error($sqlcn->idsqlconnection));
-	$responce = new stdClass();
-	$responce->page = $page;
-	$responce->total = $total_pages;
-	$responce->records = $count;
-	$i = 0;
-	while ($row = mysqli_fetch_array($result)) {
-		$responce->rows[$i]['id'] = $row['eqid'];
-		$responce->rows[$i]['cell'] = array($row['eqid'], $row['plname'], $row['namenome'], $row['grname'], $row['invnum'], $row['sernum'], $row['shtrihkod'], $row['mode'], $row['os'], $row['bn'], $row['cs'], $row['curc']);
-		$i++;
+	try {
+		$arr = DB::prepare($sql)->execute(array())->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['eqid'];
+			$responce->rows[$i]['cell'] = array($row['eqid'], $row['plname'],
+				$row['namenome'], $row['grname'], $row['invnum'], $row['sernum'],
+				$row['shtrihkod'], $row['mode'], $row['os'], $row['bn'], $row['cs'], $row['curc']
+			);
+			$i++;
+		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу сформировать список по оргтехнике/помещениям/пользователю! (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }

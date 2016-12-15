@@ -39,8 +39,6 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = <<<TXT
 SELECT     COUNT(*) AS cnt,
            repair.dt,
@@ -57,28 +55,28 @@ $where
 TXT;
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать список ремонтов (1)', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = <<<TXT
+	$sql = <<<TXT
 SELECT     repair.id,
            repair.userfrom,
            repair.userto,
@@ -97,48 +95,47 @@ $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-		try {
-			$arr = DB::prepare($sql)->execute()->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				$dt = MySQLDateToDate($row['dt']);
-				$dtend = MySQLDateToDate($row['dtend']);
-				switch ($row['status']) {
-					case '0':
-						$st = 'Работает';
-						break;
-					case '1':
-						$st = 'В сервисе';
-						break;
-					case '2':
-						$st = 'Есть заявка';
-						break;
-					case '3':
-						$st = 'Списать';
-						break;
-				}
-				$zz = new Tusers();
-				if ($row['userto'] != '-1') {
-					$zz->GetById($row['userto']);
-					$row['userto'] = $zz->fio;
-				} else {
-					$row['userto'] = 'не задано';
-				}
-				if ($row['userfrom'] != '-1') {
-					$zz->GetById($row['userfrom']);
-					$row['userfrom'] = $zz->fio;
-				} else {
-					$row['userfrom'] = 'не задано';
-				}
-				$responce->rows[$i]['cell'] = array($row['id'], $dt, $dtend, $row['name'],
-					$row['cost'], $row['comment'], $st, $row['userfrom'],
-					$row['userto'], $row['doc']);
-				$i++;
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$dt = MySQLDateToDate($row['dt']);
+			$dtend = MySQLDateToDate($row['dtend']);
+			switch ($row['status']) {
+				case '0':
+					$st = 'Работает';
+					break;
+				case '1':
+					$st = 'В сервисе';
+					break;
+				case '2':
+					$st = 'Есть заявка';
+					break;
+				case '3':
+					$st = 'Списать';
+					break;
 			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список ремонтов (2)', 0, $ex);
+			$zz = new Tusers();
+			if ($row['userto'] != '-1') {
+				$zz->GetById($row['userto']);
+				$row['userto'] = $zz->fio;
+			} else {
+				$row['userto'] = 'не задано';
+			}
+			if ($row['userfrom'] != '-1') {
+				$zz->GetById($row['userfrom']);
+				$row['userfrom'] = $zz->fio;
+			} else {
+				$row['userfrom'] = 'не задано';
+			}
+			$responce->rows[$i]['cell'] = array($row['id'], $dt, $dtend, $row['name'],
+				$row['cost'], $row['comment'], $st, $row['userfrom'],
+				$row['userto'], $row['doc']);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список ремонтов (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }

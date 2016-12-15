@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -19,9 +19,6 @@ $sord = GetDef('sord');
 $oper = PostDef('oper');
 $id = PostDef('id');
 $title = PostDef('title');
-if (!empty($title)) {
-	$title = ClearMySqlString($sqlcn->idsqlconnection, $title);
-}
 $stiker = PostDef('stiker');
 
 if ($oper == '') {
@@ -34,41 +31,41 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = 'SELECT COUNT(*) AS cnt FROM news';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выбрать список новостей!', 0, $ex);
+		throw new DBException('Не могу выбрать список новостей (1)', 0, $ex);
+	}
+	if ($count == 0) {
+		jsonExit($responce);
 	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$start = $limit * $page - $limit;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = "SELECT * FROM news ORDER BY $sidx $sord LIMIT $start, $limit";
-		try {
-			$arr = DB::prepare($sql)->execute()->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				$responce->rows[$i]['cell'] = array($row['id'], $row['dt'], $row['title'], $row['stiker']);
-				$i++;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список новостей!', 0, $ex);
+	$sql = "SELECT * FROM news ORDER BY $sidx $sord LIMIT $start, $limit";
+	try {
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$responce->rows[$i]['cell'] = array($row['id'], $row['dt'], $row['title'], $row['stiker']);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список новостей (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }
@@ -85,7 +82,7 @@ if ($oper == 'edit') {
 			':id' => $id
 		));
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу обновить заголовок новости!', 0, $ex);
+		throw new DBException('Не могу обновить заголовок новости', 0, $ex);
 	}
 	exit;
 }
@@ -98,7 +95,7 @@ if ($oper == 'del') {
 	try {
 		DB::prepare($sql)->execute(array(':id' => $id));
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу удалить новость!', 0, $ex);
+		throw new DBException('Не могу удалить новость', 0, $ex);
 	}
 	exit;
 }

@@ -36,57 +36,54 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$count = 0;
-
 	$sql = 'SELECT COUNT(*) AS cnt FROM contract WHERE kntid = :kntid';
 	try {
 		$row = DB::prepare($sql)->execute(array(':kntid' => $idknt))->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать список договоров (1)', 0, $ex);
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = "SELECT * FROM contract WHERE kntid = :kntid ORDER BY $sidx $sord LIMIT $start, $limit";
-		try {
-			$arr = DB::prepare($sql)->execute(array(':kntid' => $idknt))->fetchAll();
-			$i = 0;
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				$work = ($row['work'] == 0) ? 'No' : 'Yes';
-				$dateend = $row['dateend'] . ' 00:00:00';
-				$datestart = $row['datestart'] . ' 00:00:00';
-				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
-				$responce->rows[$i]['cell'] = array(
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-					$row['id'],
-					$row['num'],
-					$row['name'],
-					MySQLDateTimeToDateTime($datestart),
-					MySQLDateTimeToDateTime($dateend),
-					$work,
-					$row['comment']
-				);
-				$i++;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список договоров (2)', 0, $ex);
+	$sql = "SELECT * FROM contract WHERE kntid = :kntid ORDER BY $sidx $sord LIMIT $start, $limit";
+	try {
+		$arr = DB::prepare($sql)->execute(array(':kntid' => $idknt))->fetchAll();
+		$i = 0;
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$work = ($row['work'] == 0) ? 'No' : 'Yes';
+			$dateend = $row['dateend'] . ' 00:00:00';
+			$datestart = $row['datestart'] . ' 00:00:00';
+			$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
+			$responce->rows[$i]['cell'] = array(
+				"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+				$row['id'],
+				$row['num'],
+				$row['name'],
+				MySQLDateTimeToDateTime($datestart),
+				MySQLDateTimeToDateTime($dateend),
+				$work,
+				$row['comment']
+			);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список договоров (2)', 0, $ex);
 	}
 	jsonExit($responce);
 }

@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -72,9 +72,22 @@ if (($user->mode == 1) || $user->TestRoles('1')) {
 		if (count($err) == 0) {
 			$id = GetDef('id');
 			$ps = ($pass != '') ? " password=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
-			$sql = "UPDATE users SET orgid = '$orgid', login = '$login', $ps email = '$email', mode = '$mode' WHERE id = '$id'";
-			$sqlcn->ExecuteSQL($sql)
-					or die('Не смог изменить пользователя!: ' . mysqli_error($sqlcn->idsqlconnection));
+			$sql = <<<TXT
+UPDATE users
+SET orgid = :orgid, login = :login, $ps email = :email, mode = :mode
+WHERE id = :id
+TXT;
+			try {
+				DB::prepare($sql)->execute(array(
+					':orgid' => $orgid,
+					':login' => $login,
+					':email' => $email,
+					':mode' => $mode,
+					':id' => $id
+				));
+			} catch (PDOException $ex) {
+				throw new DBException('Не могу обновить данные по пользователю', 0, $ex);
+			}
 		}
 	}
 } else {
@@ -84,7 +97,7 @@ if (($user->mode == 1) || $user->TestRoles('1')) {
 if (count($err) == 0) {
 	echo 'ok';
 } else {
-	echo '<script>$("#messenger").addClass("alert alert-error");</script>';
+	echo '<script>$("#messenger").addClass("alert alert-danger");</script>';
 	for ($i = 0; $i < count($err); $i++) {
 		echo "$err[$i]<br>";
 	}

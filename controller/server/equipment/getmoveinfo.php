@@ -29,6 +29,12 @@ if ($eqid == '') {
 }
 
 if ($oper == '') {
+	// Готовим ответ
+	$responce = new stdClass();
+	$responce->page = 0;
+	$responce->total = 0;
+	$responce->records = 0;
+
 	$sql = <<<TXT
 SELECT     COUNT(*) AS cnt,
            mv.id,
@@ -66,39 +72,30 @@ INNER JOIN users_profile
 ON         users_profile.usersid = useridto
 $where
 TXT;
-
-	// Готовим ответ
-	$responce = new stdClass();
-	$responce->page = 0;
-	$responce->total = 0;
-	$responce->records = 0;
-
-	$count = 0;
-
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
-		if ($row) {
-			$count = $row['cnt'];
-		}
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException($ex->getMessage());
 	}
+	if ($count == 0) {
+		jsonExit($responce);
+	}
 
-	if ($count > 0) {
-		$total_pages = ceil($count / $limit);
-		if ($page > $total_pages) {
-			$page = $total_pages;
-		}
-		$start = $limit * $page - $limit;
-		if ($start < 0) {
-			jsonExit($responce);
-		}
+	$total_pages = ceil($count / $limit);
+	if ($page > $total_pages) {
+		$page = $total_pages;
+	}
+	$start = $limit * $page - $limit;
+	if ($start < 0) {
+		jsonExit($responce);
+	}
 
-		$responce->page = $page;
-		$responce->total = $total_pages;
-		$responce->records = $count;		
+	$responce->page = $page;
+	$responce->total = $total_pages;
+	$responce->records = $count;
 
-		$sql = <<<TXT
+	$sql = <<<TXT
 SELECT     mv.id,
            mv.eqid,
            nome.name,
@@ -143,19 +140,18 @@ $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
-		try {
-			$i = 0;
-			$arr = DB::prepare($sql)->execute()->fetchAll();
-			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
-				$responce->rows[$i]['cell'] = array($row['id'], $row['dt'],
-					$row['orgname1'], $row['place1'], $row['user1'], $row['orgname2'],
-					$row['place2'], $row['user2'], $row['name'], $row['comment']);
-				$i++;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать список перемещений', 0, $ex);
+	try {
+		$i = 0;
+		$arr = DB::prepare($sql)->execute()->fetchAll();
+		foreach ($arr as $row) {
+			$responce->rows[$i]['id'] = $row['id'];
+			$responce->rows[$i]['cell'] = array($row['id'], $row['dt'],
+				$row['orgname1'], $row['place1'], $row['user1'], $row['orgname2'],
+				$row['place2'], $row['user2'], $row['name'], $row['comment']);
+			$i++;
 		}
+	} catch (PDOException $ex) {
+		throw new DBException('Не могу выбрать список перемещений', 0, $ex);
 	}
 	jsonExit($responce);
 }

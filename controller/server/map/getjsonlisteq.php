@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Данный код создан и распространяется по лицензии GPL v3
+ * WebUseOrg3 - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
  *   Сергей Солодягин (solodyagin@gmail.com)
- *   (добавляйте себя если что-то делали)
- * http://грибовы.рф
+ * Сайт: http://грибовы.рф
  */
 
 // Запрещаем прямой вызов скрипта.
@@ -66,20 +66,26 @@ INNER JOIN places
 ON         places.id = equipment.placesid
 INNER JOIN users
 ON         users.id = equipment.usersid
-WHERE      equipment.orgid = $orgid
+WHERE      equipment.orgid = :orgid
 AND        mapyet = 1 $spom
 TXT;
-$result = $sqlcn->ExecuteSQL($sql)
-		or die('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю! ' . mysqli_error($sqlcn->idsqlconnection));
+
 $responce = new stdClass();
-$i = 0;
-while ($row = mysqli_fetch_array($result)) {
-	$responce->rows[$i]['poz'] = $i;
-	$responce->rows[$i]['cell'] = array(
-		$row['active'], $row['eqid'], $row['placesname'], $row['nomename'], $row['mapx'], $row['mapy'],
-		$row['grnome'], $row['vname'], $row['buhname'], $row['sernum'], $row['invnum'],
-		$row['shtrihkod'], $row['orgname'], $row['userslogin'], $row['dtpost'], $row['cost'],
-		$row['currentcost'], $row['os'], $row['eqmode'], $row['eqcomment'], $row['eqrepair'], $row['mapmoved'], $row['photo']);
-	$i++;
+
+try {
+	$arr = DB::prepare($sql)->execute(array(':orgid' => $orgid))->fetchAll();
+	$i = 0;
+	foreach ($arr as $row) {
+		$responce->rows[$i]['poz'] = $i;
+		$responce->rows[$i]['cell'] = array(
+			$row['active'], $row['eqid'], $row['placesname'], $row['nomename'], $row['mapx'], $row['mapy'],
+			$row['grnome'], $row['vname'], $row['buhname'], $row['sernum'], $row['invnum'],
+			$row['shtrihkod'], $row['orgname'], $row['userslogin'], $row['dtpost'], $row['cost'],
+			$row['currentcost'], $row['os'], $row['eqmode'], $row['eqcomment'], $row['eqrepair'], $row['mapmoved'], $row['photo']);
+		$i++;
+	}
+} catch (PDOException $ex) {
+	throw new DBException('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю', 0, $ex);
 }
+
 jsonExit($responce);
