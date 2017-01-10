@@ -81,8 +81,8 @@ if ($step == 'edit') {
 				<?php
 				$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
 				try {
-					$row = DB::prepare($sql)->execute()->fetch();
-					if ($row) {
+					$arr = DB::prepare($sql)->execute()->fetchAll();
+					foreach ($arr as $row) {
 						$vl = $row['id'];
 						$sl = ($row['id'] == $groupid) ? 'selected' : '';
 						echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
@@ -101,8 +101,8 @@ if ($step == 'edit') {
 				<?php
 				$sql = 'SELECT * FROM vendor WHERE active = 1 ORDER BY name';
 				try {
-					$row = DB::prepare($sql)->execute()->fetch();
-					if ($row) {
+					$arr = DB::prepare($sql)->execute()->fetchAll();
+					foreach ($arr as $row) {
 						$vl = $row['id'];
 						$sl = ($row['id'] == $vendorid) ? 'selected' : '';
 						echo "<option value=\"$vl\" $sl>{$row['name']}</option>";

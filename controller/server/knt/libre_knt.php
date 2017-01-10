@@ -24,6 +24,9 @@ $KPP = PostDef('KPP');
 $bayer = PostDef('bayer');
 $supplier = PostDef('supplier');
 $ERPCode = PostDef('ERPCode');
+if (empty($ERPCode)) {
+	$ERPCode = '0';
+}
 $dog = PostDef('dog');
 $comment = PostDef('comment');
 
@@ -126,8 +129,8 @@ if ($oper == 'add') {
 	$dog = ($dog == 'Yes') ? '1' : '0';
 	$sql = <<<TXT
 INSERT INTO knt
-            (id,name,INN,KPP,bayer,supplier,dog,ERPCode,comment,active)
-VALUES      (NULL, :name, :INN, :KPP, :bayer, :supplier, :dog, :ERPCode, :comment, 1)
+            (id,name,fullname,INN,KPP,bayer,supplier,dog,ERPCode,comment,active)
+VALUES      (NULL, :name, '', :INN, :KPP, :bayer, :supplier, :dog, :ERPCode, :comment, 1)
 TXT;
 	try {
 		DB::prepare($sql)->execute(array(
