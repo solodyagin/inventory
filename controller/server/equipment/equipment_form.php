@@ -109,9 +109,9 @@ if ((($user->mode == 1) || $user->TestRoles('1,4,5,6')) && ($step != '')) {
 			$sql = <<<TXT
 INSERT INTO equipment
             (id,orgid,placesid,usersid,nomeid,buhname,datepost,cost,currentcost,sernum,invnum,shtrihkod,os,mode,comment,
-             active,ip,mapyet,photo,kntid,dtendgar)
+             active,ip,mapyet,photo,kntid,dtendgar,repair,mapx,mapy,mapmoved)
 VALUES      (NULL,:sorgid,:splaces,:suserid,:snomeid,:buhname,:dtpost,:cost,:currentcost,:sernum,
-             :invnum,:shtrihkod,:os,:mode,:comment,'1',:ip,:mapyet,:picphoto,:kntid,:dtendgar)
+             :invnum,:shtrihkod,:os,:mode,:comment,'1',:ip,:mapyet,:picphoto,:kntid,:dtendgar,0,'','',0)
 TXT;
 			try {
 				DB::prepare($sql)->execute(array(
@@ -151,9 +151,22 @@ TXT;
 			$id = GetDef('id');
 			$sql = <<<TXT
 UPDATE equipment
-SET    usersid = :suserid,nomeid = :snomeid,buhname = :buhname,datepost = :dtpost,cost = :cost,
-       currentcost = :currentcost,sernum = :sernum,invnum = :invnum,shtrihkod = :shtrihkod,os = :os,mode =
-       :mode,comment = :comment,photo = :picphoto,ip = :ip,mapyet = :mapyet,kntid = :kntid,
+SET    usersid = :usersid,
+       nomeid = :nomeid,
+       buhname = :buhname,
+       datepost = :datepost,
+       cost = :cost,
+       currentcost = :currentcost,
+       sernum = :sernum,
+       invnum = :invnum,
+       shtrihkod = :shtrihkod,
+       os = :os,
+       mode = :mode,
+       comment = :comment,
+       photo = :photo,
+       ip = :ip,
+       mapyet = :mapyet,
+       kntid = :kntid,
        dtendgar = :dtendgar
 WHERE  id = :id
 TXT;
