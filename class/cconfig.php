@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tcconfig {
+class CConfig {
 
 	/** Получение значения хранимого параметра по имени параметра
 	 * 
@@ -31,7 +31,7 @@ class Tcconfig {
 				DB::prepare($sql)->execute(array(':nameparam' => $nameparam));
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tcconfig.GetByParam', 0, $ex);
+			throw new DBException('Ошибка выполнения CConfig.GetByParam', 0, $ex);
 		}
 		return $resz;
 	}
@@ -52,7 +52,7 @@ class Tcconfig {
 			}
 			DB::prepare($sql)->execute(array(':nameparam' => $nameparam, ':valueparam' => $valueparam));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tcconfig.SetByParam', 0, $ex);
+			throw new DBException('Ошибка выполнения CConfig.SetByParam', 0, $ex);
 		}
 	}
 

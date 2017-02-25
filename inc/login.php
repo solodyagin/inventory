@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$user = new Tusers;
+$user = new User();
 
 // Если есть печеньки, то получаем сессионный идентификатор
 $user->randomid = (isset($_COOKIE['user_randomid_w3'])) ? $_COOKIE['user_randomid_w3'] : '';

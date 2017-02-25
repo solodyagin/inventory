@@ -15,7 +15,7 @@ $id = GetDef('id');
 
 // Если пользователь - "Администратор"
 if ($user->mode == 1):
-	$tmpuser = new Tusers;
+	$tmpuser = new User();
 	$tmpuser->GetById($id);
 	$orgid = $tmpuser->orgid;
 	$login = $tmpuser->login;

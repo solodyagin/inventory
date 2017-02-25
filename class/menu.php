@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tmenu {
+class Menu {
 
 	var $arr_menu = array(); // Массив где хранится меню
 	var $count = 0;

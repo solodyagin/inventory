@@ -55,7 +55,7 @@ if (($user->mode == 1) || $user->TestRoles('1')) {
 	// Добавляем пользователя
 	if ($step == 'add') {
 		if (count($err) == 0) {
-			$tmpuser = new Tusers;
+			$tmpuser = new User();
 			$tmpuser->active = 1;
 			$tmpuser->fio = $login;
 			$tmpuser->tab_num = '';

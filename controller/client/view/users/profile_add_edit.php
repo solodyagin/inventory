@@ -31,7 +31,7 @@ $userid = GetDef('userid');
 </script>
 <?php
 if ($user->mode == 1):
-	$tmpuser = new Tusers();
+	$tmpuser = new User();
 	$tmpuser->GetById($userid);
 	$id = $tmpuser->id;
 	$fio = $tmpuser->fio;

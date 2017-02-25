@@ -52,7 +52,11 @@ class DB {
 class myPDOStatement extends PDOStatement {
 
 	function execute($data = array()) {
-		parent::execute($data);
+		if (count($data) > 0) {
+			parent::execute($data);
+		} else {
+			parent::execute();
+		}
 		return $this;
 	}
 

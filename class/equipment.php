@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tequipment {
+class Equipment {
 
 	var $id; // уникальный идентификатор
 	var $orgid; // какой организации принадлежит
@@ -100,7 +100,7 @@ TXT;
 				$this->tmcname = $row['nomename'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tequipment.GetById', 0, $ex);
+			throw new DBException('Ошибка выполнения Equipment.GetById', 0, $ex);
 		}
 	}
 

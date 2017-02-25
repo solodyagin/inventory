@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Temployees {
+class Employees {
 
 	var $id; // идентификатор 
 	var $usersid; // связь с пользователем
@@ -40,7 +40,7 @@ TXT;
 				':post' => $this->post
 			));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Temployees.Add', 0, $ex);
+			throw new DBException('Ошибка выполнения Employees.Add', 0, $ex);
 		}
 	}
 
@@ -62,7 +62,7 @@ TXT;
 				':post' => $this->post
 			));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Temployees.Update', 0, $ex);
+			throw new DBException('Ошибка выполнения Employees.Update', 0, $ex);
 		}
 	}
 
@@ -82,7 +82,7 @@ TXT;
 				$this->post = $row['post'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Temployees.GetByERPCode', 0, $ex);
+			throw new DBException('Ошибка выполнения Employees.GetByERPCode', 0, $ex);
 		}
 	}
 
@@ -99,7 +99,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Temployees.EmployeesYetByERPCode', 0, $ex);
+			throw new DBException('Ошибка выполнения Employees.EmployeesYetByERPCode', 0, $ex);
 		}
 		return false;
 	}

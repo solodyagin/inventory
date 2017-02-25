@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tusers {
+class User {
 
 	var $id; // идентификатор пользователя
 	var $randomid; // случайный идентификатор (время от времени может менятся)
@@ -56,7 +56,7 @@ class Tusers {
 		try {
 			return (DB::prepare($sql)->execute(array(':id' => $this->id))->fetchColumn() > 0);
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.TestRoles', 0, $ex);
+			throw new DBException('Ошибка выполнения User.TestRoles', 0, $ex);
 		}
 	}
 
@@ -70,7 +70,7 @@ class Tusers {
 		try {
 			DB::prepare($sql)->execute(array(':lastdt' => $lastdt, ':id' => $id));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.UpdateLastdt', 0, $ex);
+			throw new DBException('Ошибка выполнения User.UpdateLastdt', 0, $ex);
 		}
 	}
 
@@ -111,7 +111,7 @@ TXT;
 				':userid' => $this->id
 			));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.Update', 0, $ex);
+			throw new DBException('Ошибка выполнения User.Update', 0, $ex);
 		}
 	}
 
@@ -149,7 +149,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.GetByLogin', 0, $ex);
+			throw new DBException('Ошибка выполнения User.GetByLogin', 0, $ex);
 		}
 		return false;
 	}
@@ -190,7 +190,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.GetByLoginPass', 0, $ex);
+			throw new DBException('Ошибка выполнения User.GetByLoginPass', 0, $ex);
 		}
 		return false;
 	}
@@ -229,7 +229,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.GetById', 0, $ex);
+			throw new DBException('Ошибка выполнения User.GetById', 0, $ex);
 		}
 		return false;
 	}
@@ -269,7 +269,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.GetByRandomId', 0, $ex);
+			throw new DBException('Ошибка выполнения User.GetByRandomId', 0, $ex);
 		}
 		return false;
 	}
@@ -297,7 +297,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.GetByRandomIdNoProfile', 0, $ex);
+			throw new DBException('Ошибка выполнения User.GetByRandomIdNoProfile', 0, $ex);
 		}
 		return false;
 	}
@@ -338,10 +338,10 @@ TXT;
 				':mode' => $this->mode
 			));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.Add', 0, $ex);
+			throw new DBException('Ошибка выполнения User.Add', 0, $ex);
 		}
 
-		$zx = new Tusers;
+		$zx = new User();
 
 		if ($zx->GetByRandomIdNoProfile($this->randomid)) {
 			// добавляю профиль
@@ -363,10 +363,10 @@ TXT;
 					':post' => $this->post
 				));
 			} catch (PDOException $ex) {
-				throw new DBException('Ошибка выполнения Tusers.Add', 0, $ex);
+				throw new DBException('Ошибка выполнения User.Add', 0, $ex);
 			}
 		} else {
-			die('Не найден пользователь по randomid Tusers.Add');
+			die('Не найден пользователь по randomid User.Add');
 		}
 	}
 
@@ -404,7 +404,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tusers.GetByCode', 0, $ex);
+			throw new DBException('Ошибка выполнения User.GetByCode', 0, $ex);
 		}
 		return false;
 	}

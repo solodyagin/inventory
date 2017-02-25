@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Torgs {
+class Org {
 
 	var $id; // идентификатор организации
 	var $name; // наименование организации
@@ -35,7 +35,7 @@ class Torgs {
 				$this->active = $row['active'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Torgs.GetById', 0, $ex);
+			throw new DBException('Ошибка выполнения Org.GetById', 0, $ex);
 		}
 	}
 

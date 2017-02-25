@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tmod {
+class Mod {
 
 	var $id;  // уникальный идентификатор
 	var $name;   // наименование модуля
@@ -45,7 +45,7 @@ class Tmod {
 				DB::prepare($sql)->execute(array(':modcopy' => "modulecopy_$name", ':copy' => $copy));
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tmod.Register', 0, $ex);
+			throw new DBException('Ошибка выполнения Mod.Register', 0, $ex);
 		}
 	}
 
@@ -64,7 +64,7 @@ class Tmod {
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modcopy';
 			DB::prepare($sql)->execute(array(':modcopy' => "modulecopy_$name"));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tmod.UnRegister', 0, $ex);
+			throw new DBException('Ошибка выполнения Mod.UnRegister', 0, $ex);
 		}
 	}
 
@@ -77,7 +77,7 @@ class Tmod {
 			$sql = "UPDATE config_common SET valueparam = '1' WHERE nameparam = :modname";
 			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tmod.Activate', 0, $ex);
+			throw new DBException('Ошибка выполнения Mod.Activate', 0, $ex);
 		}
 	}
 
@@ -90,7 +90,7 @@ class Tmod {
 			$sql = "UPDATE config_common SET valueparam = '0' WHERE nameparam = :modname";
 			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tmod.DeActivate', 0, $ex);
+			throw new DBException('Ошибка выполнения Mod.DeActivate', 0, $ex);
 		}
 	}
 
@@ -108,7 +108,7 @@ class Tmod {
 				$active = $row['valueparam'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tmod.IsActive', 0, $ex);
+			throw new DBException('Ошибка выполнения Mod.IsActive', 0, $ex);
 		}
 		return $active;
 	}

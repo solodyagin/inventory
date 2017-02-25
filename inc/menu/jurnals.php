@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$md = new Tmod; // обьявляем переменную для работы с классом модуля
+$md = new Mod(); // обьявляем переменную для работы с классом модуля
 $this->Add('main', '<i class="fa fa-hashtag fa-fw"> </i>Журналы', 'Журналы', 3, 'doc', '');
 if ($md->IsActive('news') == 1) {
 	$this->Add('doc', '<i class="fa fa-newspaper-o fa-fw"> </i>Новости', 'Новости', 3, 'doc/news', 'news');

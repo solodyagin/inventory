@@ -219,7 +219,7 @@ function GetArrayKnt() {
 }
 
 function mailq($to, $subject, $content, $attach = false) {
-	$cfg = Tconfig::getInstance();
+	$cfg = Config::getInstance();
 	sendMailAttachment($to, $cfg->smtpusername, $subject, $content);
 	//echo "!$cfg->emailadmin;	// от кого будем посылать почту<br>";
 	//echo "!$cfg->smtphost;		// сервер SMTP<br>";

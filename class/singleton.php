@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Singleton {
+trait Singleton {
 
 	private static $_instances = array();
 

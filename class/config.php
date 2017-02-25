@@ -12,7 +12,9 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-class Tconfig extends Singleton {
+class Config {
+
+	use Singleton;
 
 	var $sitename;   // название сайта
 	var $ad;   // использовать для аутенфикации Active Directory 0-нет 1-да
@@ -70,7 +72,7 @@ class Tconfig extends Singleton {
 				}
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Tconfig.GetConfigFromBase', 0, $ex);
+			throw new DBException('Ошибка выполнения Config.GetConfigFromBase', 0, $ex);
 		}
 	}
 

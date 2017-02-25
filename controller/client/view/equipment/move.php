@@ -19,9 +19,9 @@ echo "<script>orgid={$user->orgid};</script>";
 echo "<script>placesid='';</script>";
 echo "<script>userid={$user->id};</script>";
 
-include_once(WUO_ROOT . '/class/equipment.php');
+//include_once(WUO_ROOT . '/class/equipment.php');
 
-$tmptmc = new Tequipment;
+$tmptmc = new Equipment();
 $tmptmc->GetById($id);
 $dtpost = MySQLDateTimeToDateTime($tmptmc->datepost);
 
