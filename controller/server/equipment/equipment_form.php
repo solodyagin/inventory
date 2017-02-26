@@ -13,7 +13,6 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 include_once(WUO_ROOT . '/vendor/class.phpmailer.php');
-//include_once(WUO_ROOT . '/class/equipment.php');
 
 function SendEmailByPlaces($plid, $title, $txt) {
 	$sql = <<<TXT

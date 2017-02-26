@@ -30,11 +30,11 @@ function GetDef($name, $def = '') {
 	global $PARAMS;
 	if (isset($_GET[$name])) {
 		return $_GET[$name];
-	} else if (isset($PARAMS[$name])) {
-		return $PARAMS[$name];
-	} else {
-		return $def;
 	}
+	if (isset($PARAMS[$name])) {
+		return $PARAMS[$name];
+	}
+	return $def;
 }
 
 /**
@@ -99,7 +99,7 @@ function check_LDAP_user($username, $password, $ladpserver, $domain1, $domain2) 
  * @param integer $n
  * @return string
  */
-function GetRandomId($n) { // результат - случайная строка из цифр длинной n
+function GetRandomId($n = 60) { // результат - случайная строка из цифр длинной n
 	$id = '';
 	for ($i = 1; $i <= $n; $i++) {
 		$id .= chr(rand(48, 56));

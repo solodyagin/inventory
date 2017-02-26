@@ -71,7 +71,10 @@ TXT;
 	}
 
 	if ($step == 'list') {
-		$page = GetDef('page', '1');
+		$page = GetDef('page', 1);
+		if ($page == 0) {
+			$page = 1;
+		}
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');

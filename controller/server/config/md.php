@@ -12,7 +12,10 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$page = GetDef('page', '1');
+$page = GetDef('page', 1);
+if ($page == 0) {
+	$page = 1;
+}
 $limit = GetDef('rows');
 $sidx = GetDef('sidx', '1');
 $sord = GetDef('sord');

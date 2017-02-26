@@ -31,14 +31,14 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 	<?php
 
 	function PutMenu($par) {
-		global $gmenu, $cfg, $content_page;
+		global $gmenu, $content_page;
 		echo '<ul>';
 		$list = $gmenu->GetList($par);
 		foreach ($list as $key => $pmenu) {
 			$nm = $pmenu['name'];
 			$path = $pmenu['path'];
 			$uid = $pmenu['uid'];
-			$url = ($path == '') ? 'javascript:void(0)' : "index.php?content_page=$path";
+			$url = ($path == '') ? 'javascript:;' : "index.php?content_page=$path";
 			$sel = ($content_page == $path) ? ' class="Selected"' : '';
 			echo "<li$sel>";
 			echo "<a href=\"$url\">$nm</a>";

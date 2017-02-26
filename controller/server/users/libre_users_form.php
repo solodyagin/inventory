@@ -58,7 +58,6 @@ if (($user->mode == 1) || $user->TestRoles('1')) {
 			$tmpuser = new User();
 			$tmpuser->active = 1;
 			$tmpuser->fio = $login;
-			$tmpuser->tab_num = '';
 			$tmpuser->post = '';
 			$tmpuser->telephonenumber = '';
 			$tmpuser->homephone = '';

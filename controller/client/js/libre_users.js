@@ -116,20 +116,6 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 		}
 	}
 });
-jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
-	caption: '<i class="fa fa-credit-card" aria-hidden="true"></i>',
-	title: 'Бейджик',
-	buttonicon: 'none',
-	onClickButton: function () {
-		var gsr = jQuery('#list2').jqGrid('getGridParam', 'selrow');
-		if (gsr) {
-			var s = jQuery('#list2').jqGrid('getGridParam', 'selarrrow');
-			newWin = window.open(route + 'inc/stikerprint.php?mass=' + s, 'printWindow');
-		} else {
-			$().toastmessage('showWarningToast', 'Сначала выберите строку!');
-		}
-	}
-});
 
 function GetSubGrid() {
 	var addOptions = {

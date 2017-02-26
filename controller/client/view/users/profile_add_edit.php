@@ -39,7 +39,6 @@ if ($user->mode == 1):
 	if ($photo == '') {
 		$photo = 'noimage.jpg';
 	}
-	$code = $tmpuser->tab_num;
 	$post = $tmpuser->post;
 	$phone1 = $tmpuser->telephonenumber;
 	$phone2 = $tmpuser->homephone;
@@ -54,8 +53,6 @@ if ($user->mode == 1):
 						<div class="form-group">
 							<label for="fio">ФИО</label>
 							<input class="form-control" placeholder="ФИО" name="fio" id="fio" value="<?php echo $fio; ?>">
-							<label for="code">Табельный</label>
-							<input class="form-control" placeholder="Табельный номер" name="code" id="code" value="<?php echo $code; ?>">
 							<label for="post">Должность</label>
 							<input class="form-control" placeholder="Должность" name="post" id="post" value="<?php echo $post; ?>">
 							<label for="phone1">Сотовый:</label>

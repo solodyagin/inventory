@@ -12,7 +12,10 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$page = GetDef('page', '1');
+$page = GetDef('page', 1);
+if ($page == 0) {
+	$page = 1;
+}
 $limit = GetDef('rows');
 $sidx = GetDef('sidx', '1');
 $sord = GetDef('sord');
@@ -85,7 +88,7 @@ INNER JOIN
 ON         places.id = res.plid
 TXT;
 	try {
-		$row = DB::prepare($sql)->execute(array(':orgid' => $orgid))->fetch();
+		$row = DB::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу сформировать список по оргтехнике/помещениям/пользователю!(1)', 0, $ex);
@@ -144,7 +147,7 @@ ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
 	try {
-		$arr = DB::prepare($sql)->execute(array())->fetchAll();
+		$arr = DB::prepare($sql)->execute()->fetchAll();
 		$i = 0;
 		foreach ($arr as $row) {
 			$responce->rows[$i]['id'] = $row['eqid'];
