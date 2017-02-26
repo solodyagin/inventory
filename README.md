@@ -1,4 +1,4 @@
-# Учёт оргтехники в организации v3.X 2011-2016 Lite
+# Учёт оргтехники в организации v3.X 2011-2017 Lite
 
 Система предназначена для учёта оргтехники в небольших организациях и будет полезна в основном инженерам IT отдела.
 
@@ -14,21 +14,15 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
 2. PHP 5
   - extension=php_gd2.dll
   - extension=php_ldap.dll
-  - extension=php_mysqli.dll
   - extension=php_pdo_mysql.dll
   - extension=php_xmlrpc.dll
 3. MySQL или MariaDB
 
 ### Установка
 
-1. Запустить инсталлятор _http://адрессайта/install.php_
-2. Переименовать файл `config.php.dist` в `config.php` и отредактировать.
-3. Поправить права на папки `files`, `photo`, `maps` на 0777
-4. Удалить инсталлятор  _http://адрессайта/install.php_
-
-Если используете пакет "Денвер", то необходимо в `httpd.conf` изменить кодироку по умолчанию: 
-`AddDefaultCharset utf-8`  
-Так-же при отображении "кракозябров", возможно стоит поменять кодировку в файле `config.php`. Например `$mysql_char = 'utf8-bin';` или `$mysql_char = 'utf8_general_ci';`
+1. Запустить инсталлятор _http://адрессайта/install/index.php_
+2. Поправить права на папки `files`, `photo`, `maps` на 0777
+3. Удалить каталог _install_
 
 ### Обновление
 
