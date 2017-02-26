@@ -16,7 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 // Проверка: включен ли модуль "cloud"?
-$mod = new Tmod;
+$mod = new Mod();
 $active = ($mod->IsActive('cloud') == 1);
 unset($mod);
 if (!$active):

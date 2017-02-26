@@ -12,7 +12,10 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$page = GetDef('page', '1');
+$page = GetDef('page', 1);
+if ($page == 0) {
+	$page = 1;
+}
 $limit = GetDef('rows');
 $sidx = GetDef('sidx', '1');
 $sord = GetDef('sord');
@@ -116,7 +119,7 @@ TXT;
 					$st = 'Списать';
 					break;
 			}
-			$zz = new Tusers();
+			$zz = new User();
 			if ($row['userto'] != '-1') {
 				$zz->GetById($row['userto']);
 				$row['userto'] = $zz->fio;

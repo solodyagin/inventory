@@ -16,7 +16,10 @@ defined('WUO_ROOT') or die('Доступ запрещён');
  * Роли: http://грибовы.рф/wiki/doku.php/основы:доступ:роли
  */
 
-$page = GetDef('page', '1');
+$page = GetDef('page', 1);
+if ($page == 0) {
+	$page = 1;
+}
 $limit = GetDef('rows');
 $sidx = GetDef('sidx', '1');
 $sord = GetDef('sord');

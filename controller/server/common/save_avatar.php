@@ -14,7 +14,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 $photo = GetDef('photo');
 
-$us = new Tusers();
+$us = new User();
 $us->GetById($user->id);
 $us->jpegphoto = $photo;
 $us->Update();
