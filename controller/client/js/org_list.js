@@ -8,7 +8,7 @@
  */
 
 jQuery('#o_list').jqGrid({
-	url: route + 'controller/server/common/libre_org.php?org_status=list',
+	url: '/route/controller/server/common/libre_org.php?org_status=list',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Имя организации', 'Действия'],
 	colModel: [
@@ -18,7 +18,7 @@ jQuery('#o_list').jqGrid({
 		{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 	],
 	onSelectRow: function (ids) {
-		$('#pg_add_edit').load(route + 'controller/server/common/getphotoorg.php?eqid=' + ids);
+		$('#pg_add_edit').load('/route/controller/server/common/getphotoorg.php?eqid=' + ids);
 		$('#simple-btn').css('visibility', 'visible');
 		$('#simple-btn').fileapi('data', {geteqid: ids});
 	},
@@ -28,14 +28,14 @@ jQuery('#o_list').jqGrid({
 	scroll: 1,
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/common/libre_org.php?org_status=edit',
+	editurl: '/route/controller/server/common/libre_org.php?org_status=edit',
 	caption: 'Справочник организаций'
 });
 jQuery('#o_list').jqGrid('setGridHeight', $(window).innerHeight() / 2);
 jQuery('#o_list').jqGrid('navGrid', '#o_pager', {edit: false, add: true, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
 
 $('#simple-btn').fileapi({
-	url: route + 'controller/server/common/uploadimageorg.php?fix=1',
+	url: '/route/controller/server/common/uploadimageorg.php',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,

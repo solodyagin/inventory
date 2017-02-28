@@ -39,9 +39,9 @@ try {
 	);
 	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass, $opt);
 
-	$text = file_get_contents(WUO_ROOT . '/install/structure.sql');
+	$text = file_get_contents(WUO_ROOT . '/install/mysql.scheme.sql');
 	if (!$text) {
-		die('<div class="alert alert-danger">Ошибка открытия файла: structure.sql</div>');
+		die('<div class="alert alert-danger">Ошибка открытия файла: mysql.scheme.sql</div>');
 	}
 
 	$imported = $dbh->exec($text);
@@ -82,7 +82,6 @@ SQL;
 
 $data = '<?php
 $debug = false; // Режим отладки - РЕКОМЕНДУЮ поставить false !!!
-$userewrite = 0; // Использовать модуль mod_rewrite для ЧПУ
 $mysql_char = "utf8"; // Кодировка базы
 $mysql_host = "' . $dbhost . '"; // Хост БД
 $mysql_user = "' . $dbuser . '"; // Пользователь БД

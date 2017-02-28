@@ -9,7 +9,7 @@
 
 // загружаем в таблицу #list2 список новостей
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/news/news.php?fix=1',
+	url: '/route/controller/server/news/news.php',
 	datatype: 'json',
 	colNames: ['Id', 'Дата', 'Заголовок', 'Закреплено', 'Действия'],
 	colModel: [
@@ -26,7 +26,7 @@ jQuery('#list2').jqGrid({
 	rowNum: 30,
 	viewrecords: true,
 	sortorder: 'desc',
-	editurl: route + 'controller/server/news/news.php?fix=1',
+	editurl: '/route/controller/server/news/news.php',
 	caption: 'Новости'
 });
 
@@ -47,7 +47,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 			modal: false,
 			title: 'Добавление новости',
 			open: function () {
-				$(this).load(route + 'controller/client/view/news/news.php?step=add');
+				$(this).load('/route/controller/client/view/news/news.php?step=add');
 			}
 		});
 		$('#pg_add_edit').dialog('open');
@@ -70,7 +70,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 				modal: false,
 				title: 'Редактирование новости',
 				open: function () {
-					$(this).load(route + 'controller/client/view/news/news.php?step=edit&id=' + gsr);
+					$(this).load('/route/controller/client/view/news/news.php?step=edit&id=' + gsr);
 				}
 			});
 			$('#pg_add_edit').dialog('open');

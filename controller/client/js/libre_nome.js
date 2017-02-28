@@ -8,7 +8,7 @@
  */
 
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/tmc/libre_nome.php?fix=1',
+	url: '/route/controller/server/tmc/libre_nome.php',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Группа', 'Производитель', 'Наименование', ''],
 	colModel: [
@@ -33,7 +33,7 @@ jQuery('#list2').jqGrid({
 	rowNum: 1000,
 	scroll: 1,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/tmc/libre_nome.php?fix=1',
+	editurl: '/route/controller/server/tmc/libre_nome.php',
 	caption: 'Справочник номенклатуры'
 });
 jQuery('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);
@@ -51,7 +51,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 			height: 280,
 			width: 640,
 			open: function () {
-				$(this).load(route + 'controller/client/view/tmc/nome_add_edit.php?step=add');
+				$(this).load('/route/controller/client/view/tmc/nome_add_edit.php?step=add');
 			}
 		});
 		$('#add_edit').dialog('open');
@@ -71,7 +71,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 				height: 280,
 				width: 640,
 				open: function () {
-					$(this).load(route + 'controller/client/view/tmc/nome_add_edit.php?step=edit&id=' + gsr);
+					$(this).load('/route/controller/client/view/tmc/nome_add_edit.php?step=edit&id=' + gsr);
 				}
 			});
 			$('#add_edit').dialog('open');

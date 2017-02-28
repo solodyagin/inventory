@@ -26,7 +26,7 @@ $cloud_dirs_id = GetDef('cloud_dirs_id');
 
 if ($oper == '') {
 	// Проверка: может ли пользователь просматривать?
-	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 	// Готовим ответ
 	$responce = new stdClass();
@@ -87,7 +87,7 @@ TXT;
 				default:
 					$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
 			}
-			$ico = '<a target="_blank" href="index.php?route=/controller/server/cloud/download.php?id=' . $row['id'] . '">' . $ico . '</a>';
+			$ico = '<a target="_blank" href="/route/controller/server/cloud/download.php?id=' . $row['id'] . '">' . $ico . '</a>';
 			$title = $row['title'];
 			$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
 			$i++;
@@ -100,7 +100,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверка: может ли пользователь редактировать?
-	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
+	($user->isAdmin() || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 
 	$sql = 'UPDATE cloud_files SET title = :title WHERE id = :id';
 	try {
@@ -113,7 +113,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверка: может ли пользователь удалять?
-	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
+	($user->isAdmin() || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
 
 	$sql = 'DELETE FROM cloud_files WHERE id = :id';
 	try {

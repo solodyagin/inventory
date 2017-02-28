@@ -28,34 +28,7 @@ $time_start = microtime(true); // Засекаем время начала вы�
 
 header('Content-Type: text/html; charset=utf-8');
 
-// Функция автоматической загрузки классов
-function __autoload($class) {
-	$filename = WUO_ROOT . '/classes/' . strtolower($class) . '.php';
-	if (!file_exists($filename)) {
-		return false;
-	}
-	require_once $filename;
-}
-
-/**
- * Задаём обработчик исключений
- * @global boolean $debug
- * @param Exception $ex
- * @throws Exception
- */
-function exception_handler($ex) {
-	global $debug;
-	switch (get_class($ex)) {
-		case 'DBException':
-			$pr = $ex->getPrevious();
-			die(($pr && $debug) ? $ex->getMessage() . ': ' . $pr->getMessage() : $ex->getMessage());
-			break;
-		default:
-			throw $ex;
-	}
-}
-
-set_exception_handler('exception_handler');
+include_once(WUO_ROOT . '/bootstrap.php');
 
 /* Загружаем все что нужно для работы движка */
 include_once(WUO_ROOT . '/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg
@@ -63,18 +36,11 @@ include_once(WUO_ROOT . '/inc/functions.php'); // Загружаем функц�
 include_once(WUO_ROOT . '/inc/login.php'); // Создаём пользователя $user
 
 /* Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим */
-if (isset($_GET['route'])) {
-	$uri = $_SERVER['REQUEST_URI'];
+$uri = $_SERVER['REQUEST_URI'];
 
+if (strpos($uri, '/route') === 0) {
 	// Удаляем лишнее
-	if (strpos($uri, '/route') === 0) {
-		$uri = substr($uri, 6);
-	} else {
-		$pos = strpos($uri, '?route=');
-		if ($pos) {
-			$uri = substr($uri, $pos + 7);
-		}
-	}
+	$uri = substr($uri, 6);
 
 	// Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
 	list($route, $p) = array_pad(explode('?', $uri, 2), 2, null);
@@ -101,7 +67,7 @@ if (isset($_GET['route'])) {
 }
 
 /* Загружаем сторонние классы */
-include_once(WUO_ROOT . '/vendor/class.phpmailer.php'); // Класс управления почтой
+include_once(WUO_ROOT . '/libs/class.phpmailer.php'); // Класс управления почтой
 
 /* Запускаем сторонние скрипты */
 include_once(WUO_ROOT . '/inc/autorun.php');
@@ -110,24 +76,27 @@ include_once(WUO_ROOT . '/inc/autorun.php');
 $gmenu = new Menu();
 $gmenu->GetFromFiles(WUO_ROOT . '/inc/menu');
 
-$content_page = (isset($_GET['content_page'])) ? $_GET['content_page'] : 'home';
+//$content_page = (isset($_GET['content_page'])) ? $_GET['content_page'] : 'home';
 
 // Загружаем и выполняем сначала /modules/$content_page.php, затем /controller/client/themes/$cfg->theme/$content_page.php
 // Если таких файлов нет, то выполняем /controller/client/themes/$cfg->theme/home.php
-if (!is_file(WUO_ROOT . "/controller/client/themes/$cfg->theme/$content_page.php")) {
-	$content_page = 'home';
-	$err[] = 'Вы попытались открыть несуществующий раздел!';
-}
+//if (!is_file(WUO_ROOT . "/controller/client/themes/$cfg->theme/$content_page.php")) {
+//	$content_page = 'home';
+//	$err[] = 'Вы попытались открыть несуществующий раздел!';
+//}
 
 // Если есть модуль, то загружаем.
-if (is_file(WUO_ROOT . "/modules/$content_page.php")) {
-	include_once(WUO_ROOT . "/modules/$content_page.php");
-}
+//if (is_file(WUO_ROOT . "/modules/$content_page.php")) {
+//	include_once(WUO_ROOT . "/modules/$content_page.php");
+//}
 
 // Загружаем главный файл темы, который разруливает что отображать на экране
-include_once(WUO_ROOT . "/controller/client/themes/$cfg->theme/index.php");
+//include_once(WUO_ROOT . "/controller/client/themes/$cfg->theme/index.php");
 
 // Запускаем сторонние скрипты
-include_once(WUO_ROOT . '/inc/footerrun.php');
+//include_once(WUO_ROOT . '/inc/footerrun.php');
 
-unset($gmenu);
+//unset($gmenu);
+
+
+Router::start();

@@ -10,7 +10,7 @@
 jQuery.extend(jQuery.jgrid.defaults, {ajaxSelectOptions: {cache: false}});
 
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/knt/libre_knt.php?org_status=list',
+	url: '/route/controller/server/knt/libre_knt.php?org_status=list',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Имя', 'Инн', 'Кпп', 'Пок', 'Прод', 'К.договор', 'ERPCode', 'Комментарий', 'Действия'],
 	colModel: [
@@ -34,10 +34,10 @@ jQuery('#list2').jqGrid({
 	scroll: 1,
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/knt/libre_knt.php?org_status=edit',
+	editurl: '/route/controller/server/knt/libre_knt.php?org_status=edit',
 	caption: 'Справочник контрагентов',
 	onSelectRow: function (ids) {
-		$('#info_contract').load(route + 'controller/server/knt/info_contract.php?kntid=' + ids);
+		$('#info_contract').load('/route/controller/server/knt/info_contract.php?kntid=' + ids);
 	}
 }).trigger('reloadGrid');
 

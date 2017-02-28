@@ -10,9 +10,11 @@
 
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
+
+$cfg = Config::getInstance();
 ?>
-<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/upload.css">
-<link href="js/jcrop/jquery.Jcrop.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/templates/<?= $cfg->theme; ?>/css/upload.css">
+<link href="/js/jcrop/jquery.Jcrop.min.css" rel="stylesheet">
 <script>
 	var examples = [];
 	$(function () {
@@ -57,7 +59,9 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 $step = GetDef('step', 'add');
 $id = GetDef('id');
 
-if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
+$user = User::getInstance();
+
+if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 	echo "<script>orgid='';</script>";
 	echo "<script>placesid='';</script>";
 	echo "<script>userid='';</script>";
@@ -158,12 +162,12 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 	<div class="container-fluid">
 		<div class="row">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/equipment/equipment_form.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
 				<div class="row-fluid">
 					<div class="col-xs-4 col-md-4 col-sm-4">
 						<div class="form-group">
 							<label>Когда/Куда/Кому:</label><br>
-							<input class="form-control" name="dtpost" id="dtpost" value="<?php echo $dtpost; ?>">
+							<input class="form-control" name="dtpost" id="dtpost" value="<?= $dtpost; ?>">
 							<div id="sorg">
 								<select class="chosen-select" name="sorgid" id="sorgid">
 									<?php
@@ -178,8 +182,8 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 							</div>
 							<div id="splaces">идет загрузка..</div>
 							<div id="susers">идет загрузка..</div>
-							<input title="Серийный номер" class="form-control" placeholder="Серийный номер" name="sernum" value="<?php echo $sernum; ?>">
-							<input title="Статический IP" class="form-control" placeholder="Статический IP" name="ip" id="ip" value="<?php echo $ip; ?>">
+							<input title="Серийный номер" class="form-control" placeholder="Серийный номер" name="sernum" value="<?= $sernum; ?>">
+							<input title="Статический IP" class="form-control" placeholder="Статический IP" name="ip" id="ip" value="<?= $ip; ?>">
 						</div>
 					</div>
 					<div class="col-xs-4 col-md-4 col-sm-4">
@@ -212,38 +216,38 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 						</div>
 						<div id="svendors">идет загрузка..</div>
 						<div id="snomes">идет загрузка..</div>
-						<input title="Инвентарный номер" class="form-control" placeholder="Инвентарный номер" id="invnum" name="invnum" value="<?php echo $invnum; ?>">
+						<input title="Инвентарный номер" class="form-control" placeholder="Инвентарный номер" id="invnum" name="invnum" value="<?= $invnum; ?>">
 						<button class="form-control btn btn-primary" name="binv" id="binv">Создать</button>
 						<div class="checkbox">
 							<label>
 								<?php $ch = ($os == '1') ? 'checked' : ''; ?>
-								<input type="checkbox" name="os" value="1" <?php echo $ch; ?>> Основные ср-ва
+								<input type="checkbox" name="os" value="1" <?= $ch; ?>> Основные ср-ва
 							</label>
 						</div>
 					</div>
 					<div class="col-xs-4 col-md-4 col-sm-4">
 						<label>Гарантия до:</label><br>
-						<input  class="form-control"  name="dtendgar" id="dtendgar" value="<?php echo $dtendgar; ?>">
+						<input  class="form-control"  name="dtendgar" id="dtendgar" value="<?= $dtendgar; ?>">
 						<?php
 						$buhname = htmlspecialchars($buhname);
 						?>
-						<input title="Имя по бухгалтерии" class="form-control" placeholder="Имя по бухгалтерии" name="buhname" value="<?php echo $buhname; ?>">
-						<input title="Стоимость покупки" class="form-control" name="cost" value="<?php echo $cost; ?>" placeholder="Начальная стоимость" >
-						<input title="Текущая стоимость" class="form-control" name="currentcost" value="<?php echo $currentcost; ?>" placeholder="Текущая стоимость">
-						<input title="Штрихкод" class="form-control" placeholder="Штрихкод" name="shtrihkod" id="shtrihkod" value="<?php echo $shtrihkod; ?>">
+						<input title="Имя по бухгалтерии" class="form-control" placeholder="Имя по бухгалтерии" name="buhname" value="<?= $buhname; ?>">
+						<input title="Стоимость покупки" class="form-control" name="cost" value="<?= $cost; ?>" placeholder="Начальная стоимость" >
+						<input title="Текущая стоимость" class="form-control" name="currentcost" value="<?= $currentcost; ?>" placeholder="Текущая стоимость">
+						<input title="Штрихкод" class="form-control" placeholder="Штрихкод" name="shtrihkod" id="shtrihkod" value="<?= $shtrihkod; ?>">
 						<button class="form-control btn btn-primary" name="bshtr" id="bshtr">Создать</button>
 						<div class="checkbox">
 							<label>
 								<?php
 								$ch = ($mode == '1') ? 'checked' : '';
 								?>
-								<input type="checkbox" name="mode" value="1" <?php echo $ch; ?>> Списано
+								<input type="checkbox" name="mode" value="1" <?= $ch; ?>> Списано
 							</label>
 							<label>
 								<?php
 								$ch = ($mapyet == '1') ? 'checked' : '';
 								?>
-								<input type="checkbox" name="mapyet" value="1" <?php echo $ch; ?>> Есть на карте
+								<input type="checkbox" name="mapyet" value="1" <?= $ch; ?>> Есть на карте
 							</label>
 						</div>
 					</div>
@@ -252,7 +256,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 					<div class="col-xs-4 col-md-4 col-sm-4">
 						<div id="userpic" class="userpic">
 							<div class="js-preview userpic__preview thumbnail">
-								<img src="photos/<?php echo $photo; ?>">
+								<img src="photos/<?= $photo; ?>">
 							</div>
 							<div class="btn btn-success js-fileapi-wrapper">
 								<div class="js-browse">
@@ -265,10 +269,10 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 								</div>
 							</div>
 						</div>
-						<input name="picname" id="picname" type="hidden" value="<?php echo $photo; ?>">
+						<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
 					</div>
 					<div class="col-xs-8 col-md-8 col-sm-8">
-						<textarea class="form-control" name="comment" rows="8"><?php echo $comment; ?></textarea>
+						<textarea class="form-control" name="comment" rows="8"><?= $comment; ?></textarea>
 						<div align="center">
 							<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">
 						</div>
@@ -286,7 +290,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: route + 'controller/server/common/uploadfile.php?fix=1',
+				url: '/route/controller/server/common/uploadfile.php',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ''},
@@ -360,23 +364,23 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 		}
 
 		function GetListPlaces(orgid, placesid) {
-			$('#splaces').load(route + 'controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
+			$('#splaces').load('/route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 			UpdateChosen();
 		}
 
 		function GetListUsers(orgid, userid) {
-			$('#susers').load(route + 'controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
+			$('#susers').load('/route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
 			UpdateChosen();
 		}
 
 		function GetListGroups(groupid) {
-			$('#sgroups').load(route + 'controller/server/common/getlistgroupname.php?groupid=' + groupid);
+			$('#sgroups').load('/route/controller/server/common/getlistgroupname.php?groupid=' + groupid);
 			UpdateChosen();
 		}
 
 		function GetListNome(groupid, vendorid, nmd) {
 			$.ajax({
-				url: route + 'controller/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
+				url: '/route/controller/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
 				success: function (answ) {
 					$('#snomes').html(answ);
 					UpdateChosen();
@@ -386,7 +390,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 
 		function GetListVendors(groupid, vendorid) {
 			$.ajax({
-				url: route + 'controller/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
+				url: '/route/controller/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
 				success: function (answ) {
 					$('#svendors').html(answ);
 					GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
@@ -411,7 +415,7 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 
 		// правка Мазур
 		$('#bshtr').click(function Calculate() {
-			$.get(route + 'controller/server/common/getean13.php?fix=1', function (data) {
+			$.get('/route/controller/server/common/getean13.php', function (data) {
 				$('#shtrihkod').val(data);
 			});
 			return false;
@@ -451,11 +455,11 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')):
 			staticPath: './FileAPI/'
 		};
 	</script>
-	<script src="js/FileAPI/FileAPI.min.js"></script>
-	<script src="js/FileAPI/FileAPI.exif.js"></script>
-	<script src="js/jquery.fileapi.min.js"></script>
-	<script src="js/jcrop/jquery.Jcrop.min.js"></script>
-	<script src="js/statics/jquery.modal.js"></script>
+	<script src="/js/FileAPI/FileAPI.min.js"></script>
+	<script src="/js/FileAPI/FileAPI.exif.js"></script>
+	<script src="/js/jquery.fileapi.min.js"></script>
+	<script src="/js/jcrop/jquery.Jcrop.min.js"></script>
+	<script src="/js/statics/jquery.modal.js"></script>
 	<script>
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);

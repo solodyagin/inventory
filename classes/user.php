@@ -13,6 +13,8 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 class User {
+	
+	use Singleton;
 
 	var $id; // идентификатор пользователя
 	var $randomid; // случайный идентификатор (время от времени может менятся)
@@ -365,6 +367,10 @@ TXT;
 		} else {
 			die('Не найден пользователь по randomid User.Add');
 		}
+	}
+	
+	function isAdmin(){
+		return ($this->mode == 1);
 	}
 
 }

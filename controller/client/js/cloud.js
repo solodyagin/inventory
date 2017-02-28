@@ -10,7 +10,7 @@
 function ViewFileList(keyme) {
 	$.jgrid.gridUnload('#cloud_files');
 	jQuery('#cloud_files').jqGrid({
-		url: route + 'controller/server/cloud/listfiles.php?cloud_dirs_id=' + keyme,
+		url: '/route/controller/server/cloud/listfiles.php?cloud_dirs_id=' + keyme,
 		datatype: 'json',
 		colNames: ['Id', 'Скачать', 'Наименование документа', 'Дата', 'Размер', 'Действия'],
 		colModel: [
@@ -31,13 +31,13 @@ function ViewFileList(keyme) {
 		viewrecords: true,
 		height: 200,
 		sortorder: 'desc',
-		editurl: route + 'controller/server/cloud/listfiles.php?cloud_dirs_id=' + keyme,
+		editurl: '/route/controller/server/cloud/listfiles.php?cloud_dirs_id=' + keyme,
 		caption: 'Файлы для просмотра'
 	});
 }
 
 $('#simple-btn').fileapi({
-	url: route + 'controller/server/cloud/uploadfiles.php?fix=1',
+	url: '/route/controller/server/cloud/uploadfiles.php',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,
@@ -60,7 +60,7 @@ function GetTree() {
 		autoCollapse: false,
 		minExpandLevel: 3,
 		initAjax: {
-			url: route + 'controller/server/cloud/gettree.php?fix=1'
+			url: '/route/controller/server/cloud/gettree.php'
 		},
 		onActivate: function (node) {
 			selectedkey = node.data.key;
@@ -120,7 +120,7 @@ function GetTree() {
 				 */
 				logMsg('tree.onDrop(%o, %o, %s)', node, sourceNode, hitMode);
 				sourceNode.move(node, hitMode);
-				$.get(route + 'controller/server/cloud/movefolder.php?nodekey=' + node.data.key + '&srnodekey=' + sourceNode.data.key, function (data) {
+				$.get('/route/controller/server/cloud/movefolder.php?nodekey=' + node.data.key + '&srnodekey=' + sourceNode.data.key, function (data) {
 					if (data != '') {
 						$().toastmessage('showWarningToast', data);
 					}
@@ -145,7 +145,7 @@ $('#newfolder').click(function () {
 		$().toastmessage('showWarningToast', 'Введите имя папки!');
 	} else {
 		$('#tree').dynatree('destroy');
-		$.get(route + 'controller/server/cloud/addfolder.php?foldername=' + $('#foldername').val(), function (data) {
+		$.get('/cloud/addfolder?foldername=' + $('#foldername').val(), function (data) {
 			if (data != '') {
 				$().toastmessage('showWarningToast', data);
 			}
@@ -160,7 +160,7 @@ $('#delfolder').click(function () {
 	} else {
 		if (confirm('Вы подтверждаете удаление?')) {
 			$('#tree').dynatree('destroy');
-			$.get(route + 'controller/server/cloud/delfolder.php?folderkey=' + selectedkey, function (data) {
+			$.get('/cloud/delfolder?folderkey=' + selectedkey, function (data) {
 				if (data != '') {
 					$().toastmessage('showWarningToast', data);
 				}

@@ -9,7 +9,7 @@
 
 // Получаем список ТМЦ в выбранной организации, в выбранном помещении
 function GetListTmc(placesid) {
-	url = route + 'controller/server/map/getlisttmc.php?placesid=' + placesid + '&addnone=false';
+	url = '/route/controller/server/map/getlisttmc.php?placesid=' + placesid + '&addnone=false';
 	$.get(url, function (data) {
 		$('#sel_tmc').html(data);
 		UpdateChosen();
