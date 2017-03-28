@@ -8,7 +8,7 @@
  */
 
 jQuery('#tbl_move').jqGrid({
-	url: route + 'controller/server/equipment/getmoveinfo.php?eqid=',
+	url: '/route/controller/server/equipment/getmoveinfo.php?eqid=',
 	datatype: 'json',
 	colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Человек', 'Организация', 'Помещение', 'Человек', 'ТМЦ', 'Комментарий'],
 	colModel: [
@@ -32,7 +32,7 @@ jQuery('#tbl_move').jqGrid({
 	viewrecords: true,
 	height: 200,
 	sortorder: 'desc',
-	editurl: route + 'controller/server/equipment/getmoveinfo.php?eqid=',
+	editurl: '/route/controller/server/equipment/getmoveinfo.php?eqid=',
 	caption: 'История перемещений'
 });
 

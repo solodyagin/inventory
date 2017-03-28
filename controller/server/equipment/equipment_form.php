@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-include_once(WUO_ROOT . '/vendor/class.phpmailer.php');
+include_once(WUO_ROOT . '/libs/class.phpmailer.php');
 
 function SendEmailByPlaces($plid, $title, $txt) {
 	$sql = <<<TXT
@@ -238,7 +238,7 @@ TXT;
 				throw new DBException('Не смог добавить перемещение', 0, $ex);
 			}
 			if ($cfg->sendemail == 1) {
-				$touser = new User();
+				$touser = new BaseUser();
 				$touser->GetById($suserid);
 				$url = $cfg->urlsite;
 				$tmcname = $etmc->tmcname;
@@ -246,7 +246,7 @@ TXT;
 				smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);   // отсылаем уведомление кому пришло
 				SendEmailByPlaces($etmc->placesid, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
 				SendEmailByPlaces($splaces, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
-				$touser = new User();
+				$touser = new BaseUser();
 				$touser->GetById($etmc->usersid);
 				$txt = "Внимание! С вашей отвественности снята единица ТМЦ ($tmcname). <a href=$url/index.php?content_page=eq_list&usid=$etmc->usersid>Подробности здесь.</a>";
 				smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);

@@ -20,7 +20,7 @@ $photo = PostDef('picname');
 $phone1 = PostDef('phone1');
 $phone2 = PostDef('phone2');
 
-$tmpuser = new User();
+$tmpuser = new BaseUser();
 $tmpuser->GetById($userid);
 $tmpuser->fio = $fio;
 $tmpuser->jpegphoto = $photo;

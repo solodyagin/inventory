@@ -34,7 +34,7 @@ if ($step == 'edit') {
 	$id = '';
 }
 ?>
-<script src="js/tinymce/jquery.tinymce.min.js"></script>
+<script src="/js/tinymce/jquery.tinymce.min.js"></script>
 <script>
 	$('#pg_add_edit').dialog({
 		close: function () {
@@ -79,7 +79,7 @@ if ($step == 'edit') {
 			$('.textarea').tinymce().hide();
 		}
 		$('textarea').tinymce({
-			script_url: 'js/tinymce/tinymce.min.js',
+			script_url: '/js/tinymce/tinymce.min.js',
 			theme: 'modern',
 			mode: 'none',
 			'theme_advanced_buttons3_add': 'code',
@@ -94,22 +94,22 @@ if ($step == 'edit') {
 <?php if ($step != 'edit'): ?>
 		$('#dtpost').datepicker('setDate', '0');
 <?php else: ?>
-		$('#dtpost').datepicker('setDate', "<?php echo $dtpost; ?>");
+		$('#dtpost').datepicker('setDate', "<?= $dtpost; ?>");
 <?php endif; ?>
 </script>
-<form enctype="multipart/form-data" action="?content_page=news&step=<?php echo "$step&newsid=$id"; ?>" method="post" name="form1" target="_self">
+<form enctype="multipart/form-data" action="/news/<?= $step; ?>?newsid=<?= $id; ?>" method="post" name="form1" target="_self">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-				<input name="dtpost" id="dtpost" class="form-control" value="<?php echo $dtpost; ?>">
+				<input name="dtpost" id="dtpost" class="form-control" value="<?= $dtpost; ?>">
 			</div>
 		</div>
 		<div class="row-fluid">
-			<input name="title" id="title" class="form-control" value="<?php echo $title; ?>" placeholder="Заголовок">
+			<input name="title" id="title" class="form-control" value="<?= $title; ?>" placeholder="Заголовок">
 		</div>
 		<div class="row-fluid">
 			<textarea id="txt" name="txt" rows="13" placeholder="Введите новость">
-				<?php echo $txt; ?>
+				<?= $txt; ?>
 			</textarea>
 		</div>
 		<div class="row">

@@ -16,9 +16,11 @@ $num = GetDef('num', '0');
 
 $rz = 0;
 
-$sql = "SELECT * FROM news ORDER BY dt DESC limit $num, 4";
+$sql = "SELECT * FROM news ORDER BY dt DESC LIMIT :num, 4";
 try {
-	$arr = DB::prepare($sql)->execute()->fetchAll();
+	$stmt = DB::prepare($sql);
+	$stmt->bindValue(':num', (int) $num, PDO::PARAM_INT);
+	$arr = $stmt->execute()->fetchAll();
 	foreach ($arr as $row) {
 		$dt = MySQLDateTimeToDateTimeNoTime($row['dt']);
 		$title = $row['title'];
@@ -26,7 +28,7 @@ try {
 		$pieces = explode('<!-- pagebreak -->', $row['body']);
 		echo "<p>$pieces[0]</p>";
 		if (isset($pieces[1])) {
-			echo '<div align="right"><a class="btn btn-primary btn-small" href="?content_page=news_read&id=' . $row[id] . '">Читать дальше</a></div>';
+			echo '<div align="right"><a class="btn btn-primary btn-xs" href="/news/read?id=' . $row['id'] . '">Читать дальше</a></div>';
 		}
 		$rz++;
 	}

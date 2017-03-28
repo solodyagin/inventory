@@ -13,9 +13,11 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 $id = GetDef('id');
 
+$user = User::getInstance();
+
 // Если пользователь - "Администратор"
-if ($user->mode == 1):
-	$tmpuser = new User();
+if ($user->isAdmin()):
+	$tmpuser = new BaseUser();
 	$tmpuser->GetById($id);
 	$orgid = $tmpuser->orgid;
 	$login = $tmpuser->login;
@@ -64,7 +66,7 @@ if ($user->mode == 1):
 	</script>
 	<div class="container-fluid">
 		<div class="row">
-			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/users/libre_users_form.php?step=edit&id=<?php echo $id; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/users/libre_users_form.php?step=edit&id=<?= $id; ?>" method="post" name="form1" target="_self">
 				<div class="form-group">
 					<label for="orgid">Организация:</label>
 					<select class="chosen-select form-control" name="orgid" id="orgid">
@@ -79,14 +81,14 @@ if ($user->mode == 1):
 					</select>
 					<label for="mode">Роль:</label>
 					<select name="mode" id="mode" class="chosen-select form-control">
-						<option value="0" <?php echo ($mode == 0) ? 'selected' : ''; ?>>Пользователь</option>
-						<option value="1" <?php echo ($mode == 1) ? 'selected' : ''; ?>>Администратор</option>
+						<option value="0" <?= ($mode == 0) ? 'selected' : ''; ?>>Пользователь</option>
+						<option value="1" <?= ($mode == 1) ? 'selected' : ''; ?>>Администратор</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<input class="form-control" placeholder="Логин" name="login" id="login" value="<?php echo $login; ?>">
+					<input class="form-control" placeholder="Логин" name="login" id="login" value="<?= $login; ?>">
 					<input class="form-control" placeholder="Пароль" name="pass" id="pass" type="password" value="">
-					<input class="form-control" placeholder="Email" name="email" id="email" size="16" value="<?php echo $email; ?>">
+					<input class="form-control" placeholder="Email" name="email" id="email" size="16" value="<?= $email; ?>">
 				</div>
 				<div align="center">
 					<input class="btn btn-default" type="submit" name="Submit" value="Сохранить">

@@ -73,7 +73,7 @@ if ($step == 'edit') {
 	});
 </script>
 <div id="messenger"></div>
-<form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/tmc/add_edit_tmc.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
+<form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/tmc/add_edit_tmc.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
 	<div class="form-group">
 		<label for="groupid" class="col-sm-3 control-label">Группа</label>
 		<div class="col-sm-9">

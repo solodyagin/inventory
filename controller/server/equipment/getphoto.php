@@ -29,9 +29,9 @@ try {
     <a href="#" class="thumbnail">
 		<?php
 		if ($photo != '') {
-			echo '<img src="photos/' . $photo . '">';
+			echo '<img src="/photos/' . $photo . '">';
 		} else {
-			echo '<img src="controller/client/themes/' . $cfg->theme . '/img/noimage.jpg">';
+			echo '<img src="/templates/' . $cfg->theme . '/img/noimage.jpg">';
 		}
 		?>
 	</a>

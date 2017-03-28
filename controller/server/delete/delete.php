@@ -13,12 +13,12 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-$mfiles = GetArrayFilesInDir(WUO_ROOT . '/modules/deleterules');
+$mfiles = GetArrayFilesInDir(WUO_ROOT . '/inc/deleterules');
 
 foreach ($mfiles as $fname) {
 	if (strripos($fname, '.xml') != false) {
 		echo "- обрабатываю правила $fname<br>";
-		$xml = simplexml_load_file(WUO_ROOT . "/modules/deleterules/$fname");
+		$xml = simplexml_load_file(WUO_ROOT . "/inc/deleterules/$fname");
 		foreach ($xml->entertable as $data) {
 			$entertable_name = $data['name'];
 			$entertable_comment = $data['comment'];

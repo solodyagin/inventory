@@ -8,7 +8,7 @@
  */
 
 jQuery('#list2').jqGrid({
-	url: route + 'controller/server/config/md.php?fix=1',
+	url: '/route/controller/server/config/md.php',
 	datatype: 'json',
 	colNames: ['Id', 'Имя', 'Комментарий', 'Автор', 'Включено', 'Действия'],
 	colModel: [
@@ -25,7 +25,7 @@ jQuery('#list2').jqGrid({
 	rowNum: 30,
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: route + 'controller/server/config/md.php?fix=1',
+	editurl: '/route/controller/server/config/md.php',
 	caption: 'Модули системы'
 });
 // загружаем навигационную панель

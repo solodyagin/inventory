@@ -56,7 +56,7 @@ $step = GetDef('step');
 <div class="container-fluid">
 	<div class="row">
 		<div id="messenger"></div>
-		<form id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/equipment/repair.php?step=add&eqid=<?php echo $eqid; ?>" method="post" name="form1" target="_self">
+		<form id="myForm" enctype="multipart/form-data" action="/route/controller/server/equipment/repair.php?step=add&eqid=<?php echo $eqid; ?>" method="post" name="form1" target="_self">
 			<label>Кто ремонтирует:</label>
 			<div id="sorg1">
 				<select class="chosen-select" name="kntid" id="kntid">

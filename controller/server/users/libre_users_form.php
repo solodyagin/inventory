@@ -55,7 +55,7 @@ if (($user->mode == 1) || $user->TestRoles('1')) {
 	// Добавляем пользователя
 	if ($step == 'add') {
 		if (count($err) == 0) {
-			$tmpuser = new User();
+			$tmpuser = new BaseUser();
 			$tmpuser->active = 1;
 			$tmpuser->fio = $login;
 			$tmpuser->post = '';

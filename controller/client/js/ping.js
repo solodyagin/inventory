@@ -8,6 +8,6 @@
  */
 
 $('#test_ping').click(function () {
-	$('#ping_add').html('<img src="controller/client/themes/' + theme + '/img/loading.gif">');
-	$('#ping_add').load(route + 'controller/server/common/ping.php?orgid=' + defaultorgid);
+	$('#ping_add').html('<img src="/templates/' + theme + '/img/loading.gif">');
+	$('#ping_add').load('/route/controller/server/common/ping.php?orgid=' + defaultorgid);
 });
