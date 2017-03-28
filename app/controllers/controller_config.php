@@ -14,12 +14,12 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Controller_Config extends Controller {
 
-	function index_get() {
+	function index() {
 		$cfg = Config::getInstance();
 		$this->view->generate('view_config', $cfg->theme);
 	}
 
-	function save_post() {
+	function save() {
 		global $ok, $err;
 
 		$user = User::getInstance();

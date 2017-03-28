@@ -13,8 +13,8 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 $userid = GetDef('userid');
 ?>
-<link rel="stylesheet" href="controller/client/themes/<?php echo $cfg->theme; ?>/css/upload.css">
-<link rel="stylesheet" href="js/jcrop/jquery.Jcrop.min.css">
+<link rel="stylesheet" href="/templates/<?= $cfg->theme; ?>/css/upload.css">
+<link rel="stylesheet" href="/js/jcrop/jquery.Jcrop.min.css">
 <script>
 	var examples = [];
 	$(document).ready(function () {
@@ -30,8 +30,9 @@ $userid = GetDef('userid');
 	});
 </script>
 <?php
-if ($user->mode == 1):
-	$tmpuser = new User();
+$user = User::getInstance();
+if ($user->isAdmin()):
+	$tmpuser = new BaseUser();
 	$tmpuser->GetById($userid);
 	$id = $tmpuser->id;
 	$fio = $tmpuser->fio;
@@ -47,7 +48,7 @@ if ($user->mode == 1):
 	<div class="container-fluid">
 		<div class="row">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/users/libre_profile_users_form.php?<?php echo "userid=$userid"; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/users/libre_profile_users_form.php?<?= "userid=$userid"; ?>" method="post" name="form1" target="_self">
 				<div class="row-fluid">
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<div class="form-group">
@@ -64,7 +65,7 @@ if ($user->mode == 1):
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<div id="userpic" class="userpic">
 							<div class="js-preview userpic__preview thumbnail">
-								<img src="photos/<?php echo $photo; ?>">
+								<img src="/photos/<?php echo $photo; ?>">
 							</div>
 							<div class="btn btn-success js-fileapi-wrapper">
 								<div class="js-browse">
@@ -95,7 +96,7 @@ if ($user->mode == 1):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: route + 'controller/server/common/uploadfile.php?fix=1',
+				url: '/route/controller/server/common/uploadfile.php',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ''},
@@ -148,11 +149,11 @@ if ($user->mode == 1):
 			staticPath: './FileAPI/'
 		};
 	</script>
-	<script src="js/FileAPI/FileAPI.min.js"></script>
-	<script src="js/FileAPI/FileAPI.exif.js"></script>
-	<script src="js/jquery.fileapi.min.js"></script>
-	<script src="js/jcrop/jquery.Jcrop.min.js"></script>
-	<script src="js/statics/jquery.modal.js"></script>
+	<script src="/js/FileAPI/FileAPI.min.js"></script>
+	<script src="/js/FileAPI/FileAPI.exif.js"></script>
+	<script src="/js/jquery.fileapi.min.js"></script>
+	<script src="/js/jcrop/jquery.Jcrop.min.js"></script>
+	<script src="/js/statics/jquery.modal.js"></script>
 	<script>
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);

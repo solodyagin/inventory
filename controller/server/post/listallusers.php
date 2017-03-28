@@ -24,7 +24,7 @@ try {
 	$arr = DB::prepare($sql)->execute(array(':orgid' => $orgid))->fetchAll();
 	foreach ($arr as $row) {
 		$z = $row['id'];
-		$zx = new User();
+		$zx = new BaseUser();
 		$zx->GetById($z);
 		$sl = ($z == $userid) ? 'selected' : '';
 		echo "<option value=\"$z\" $sl>$zx->fio({$row['login']})</option>";

@@ -14,7 +14,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Controller_Account extends Controller {
 
-	function login_post() {
+	function login() {
 		global $err;
 
 		$user = User::getInstance();
@@ -46,9 +46,8 @@ class Controller_Account extends Controller {
 		Router::redirect('home');
 	}
 
-	function logout_get() {
+	function logout() {
 		$user = User::getInstance();
-
 		$user->id = '';
 		$user->randomid = '';
 		setcookie('user_randomid_w3', '', 1, '/');

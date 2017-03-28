@@ -18,7 +18,7 @@ class Controller {
 		$this->view = new View();
 	}
 
-	function index_get() {
+	function index() {
 		$view_name = 'view_' . strtolower(str_replace('Controller_', '', get_class($this)));
 		$this->view->generate($view_name, '');
 	}

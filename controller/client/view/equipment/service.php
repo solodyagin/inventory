@@ -91,7 +91,7 @@ if ($step == 'edit') {
 	<div class="row-fluid">
 		<div class="col-xs-12 col-md-12 col-sm-12">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="index.php?route=/controller/server/equipment/service.php?step=<?php echo $step; ?>&eqid=<?php echo $eqid; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/equipment/service.php?step=<?php echo $step; ?>&eqid=<?php echo $eqid; ?>" method="post" name="form1" target="_self">
 				<label>Кто ремонтирует:</label>
 				<div id="sorg1">
 					<select class="chosen-select" name="kntid" id="kntid">

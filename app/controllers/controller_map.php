@@ -14,7 +14,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Controller_Map extends Controller {
 
-	function index_get() {
+	function index() {
 		$cfg = Config::getInstance();
 		$this->view->generate('view_map', $cfg->theme);
 	}

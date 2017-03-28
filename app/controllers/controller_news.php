@@ -14,12 +14,12 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 
 class Controller_News extends Controller {
 
-	function index_get() {
+	function index() {
 		$cfg = Config::getInstance();
 		$this->view->generate('view_news', $cfg->theme);
 	}
 
-	function add_post() {
+	function add() {
 		global $err;
 		$user = User::getInstance();
 		if ($user->isAdmin()) {
@@ -48,10 +48,10 @@ class Controller_News extends Controller {
 				}
 			}
 		}
-		$this->index_get();
+		$this->index();
 	}
 
-	function edit_post() {
+	function edit() {
 		global $err;
 		$user = User::getInstance();
 		if ($user->isAdmin()) {
@@ -84,10 +84,10 @@ class Controller_News extends Controller {
 				}
 			}
 		}
-		$this->index_get();
+		$this->index();
 	}
 
-	function read_get() {
+	function read() {
 		$newsid = (isset($_GET['id'])) ? $_GET['id'] : '1';
 
 		$data = array('news_dt' => '', 'news_title' => '', 'news_body' => '');

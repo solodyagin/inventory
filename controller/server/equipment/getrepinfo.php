@@ -119,7 +119,7 @@ TXT;
 					$st = 'Списать';
 					break;
 			}
-			$zz = new User();
+			$zz = new BaseUser();
 			if ($row['userto'] != '-1') {
 				$zz->GetById($row['userto']);
 				$row['userto'] = $zz->fio;
