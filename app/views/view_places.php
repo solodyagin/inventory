@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1')):
@@ -37,9 +38,9 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 				<table id="list10_d"></table>
 				<div id="pager10_d"></div>
 				<div id="add_edit"></div>
-				<script src="controller/client/js/libre_place.js"></script>
 			</div>
 		</div>
 	</div>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/places.js"></script>
 
 <?php endif;

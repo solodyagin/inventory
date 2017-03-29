@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
@@ -38,6 +39,6 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 			</div>
 		</div>
 	</div>
-	<script src="controller/client/js/libre_nome.js"></script>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/nome.js"></script>
 
 <?php endif;

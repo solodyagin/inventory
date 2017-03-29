@@ -55,6 +55,6 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			</div>
 		</div>
 	</div>
-	<script src="controller/client/js/org_list.js"></script>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/orglist.js"></script>
 
 <?php endif;

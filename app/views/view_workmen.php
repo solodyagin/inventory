@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
@@ -50,6 +51,6 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 	<form method="post" action="inc/csvExport.php">
 		<input type="hidden" name="csvBuffer" id="csvBuffer" value="">
 	</form>
-	<script src="controller/client/js/workmen.js"></script>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/workmen.js"></script>
 
 <?php endif;

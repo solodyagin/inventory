@@ -56,6 +56,6 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			</div>
 		</div>
 	</div>
-	<script src="controller/client/js/eq_list.js"></script>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/eqlist.js"></script>
 
 <?php endif;

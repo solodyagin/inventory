@@ -37,7 +37,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,6')):
 
 	<div class="alert alert-danger">
 		У вас нет доступа в раздел "Хранилище документов"!<br><br>
-		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>: 
+		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
 		"Полный доступ", "Просмотр", "Добавление", "Удаление"
 	</div>
 
@@ -85,6 +85,6 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,6')):
 			</div>
 		</div>
 	</div>
-	<script src="controller/client/js/cloud.js"></script>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/cloud.js"></script>
 
 <?php endif;

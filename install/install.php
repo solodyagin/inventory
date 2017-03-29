@@ -81,17 +81,13 @@ SQL;
 }
 
 $data = '<?php
-$debug = false; // Режим отладки - РЕКОМЕНДУЮ поставить false !!!
+$debug = false; // Режим отладки
 $mysql_char = "utf8"; // Кодировка базы
 $mysql_host = "' . $dbhost . '"; // Хост БД
 $mysql_user = "' . $dbuser . '"; // Пользователь БД
 $mysql_pass = "' . $dbpass . '"; // Пароль пользователя БД
 $mysql_base = "' . $dbname . '"; // Имя базы
-// Если активен режим отладки, то показываем все ошибки и предупреждения
-if ($debug) {
-	ini_set("display_errors", 1);
-	error_reporting(E_ALL);
-}';
+';
 
 $file = WUO_ROOT . '/config.php';
 file_put_contents($file, $data, LOCK_EX) or die('<div class="alert alert-danger">Ошибка записи в файл: config.php</div>');

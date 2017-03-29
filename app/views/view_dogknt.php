@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
@@ -32,11 +33,11 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<table id="list2"></table>
-			<div id="pager2"></div>            
+			<div id="pager2"></div>
 			<div id="info_contract">
 			</div>
 		</div>
 	</div>
-	<script src="controller/client/js/contract_control.js"></script>    
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/dogknt.js"></script>
 
 <?php endif;

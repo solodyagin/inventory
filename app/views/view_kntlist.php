@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1')):
@@ -63,7 +64,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 				<div id="status"></div>
 			</div>
 		</div>
-		<script src="controller/client/js/libre_knt.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/assets/js/kntlist.js"></script>
 	</div>
 
 <?php endif;

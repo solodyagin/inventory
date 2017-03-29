@@ -52,11 +52,9 @@ class Router {
 			case 'error404':
 				header('HTTP/1.1 404 Not Found');
 				header('Status: 404 Not Found');
-				header('Location: /error404');
 				break;
-			default:
-				header("Location: /{$to}");
 		}
+		header("Location: /{$to}");
 		exit;
 	}
 

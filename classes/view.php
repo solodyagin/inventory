@@ -24,7 +24,7 @@ class View {
 				require_once $file;
 				$view = ob_get_clean();
 			} else {
-				require_once($file);
+				require_once $file;
 			}
 		}
 
@@ -32,7 +32,7 @@ class View {
 		if (!empty($template_view)) {
 			$file = WUO_ROOT . "/templates/{$template_view}/index.php";
 			if (file_exists($file)) {
-				require_once($file);
+				require_once $file;
 			}
 		}
 	}

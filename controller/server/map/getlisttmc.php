@@ -40,4 +40,3 @@ try {
 
 echo '</select>';
 ?>
-<script src="controller/client/js/mapeq.js"></script>

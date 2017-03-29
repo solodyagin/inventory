@@ -10,6 +10,8 @@
 
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
+
+$cfg = Config::getInstance();
 ?>
 <label for="orgs">Организация:</label>
 <select class="chosen-select form-control" name="orgs" id="orgs">
@@ -43,7 +45,7 @@ defined('WUO_ROOT') or die('Доступ запрещён');
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);
 		}
-		$('#fontsize').val("<?php echo $cfg->fontsize; ?>").trigger('chosen:updated');
+		$('#fontsize').val("<?= $cfg->fontsize; ?>").trigger('chosen:updated');
 	});
 </script>
-<script src="controller/client/js/memenu.js"></script>
+<script src="templates/<?= $cfg->theme; ?>/assets/js/memenu.js"></script>

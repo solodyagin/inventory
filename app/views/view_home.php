@@ -30,7 +30,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<h4 class="panel-title">Пользователь</h4>
 				</div>
 				<div class="panel-body">
-					<?php include_once(WUO_ROOT . "/templates/{$cfg->theme}/login.php"); // форма входа или профиль ?>
+					<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/login.php"; // форма входа или профиль ?>
 				</div>
 			</div>
 			<div class="panel panel-default">
@@ -38,7 +38,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<h4 class="panel-title">Личное меню</h4>
 				</div>
 				<div class="panel-body">
-					<?php include_once(WUO_ROOT . "/templates/{$cfg->theme}/memenu.php"); // личное меню ?>
+					<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/memenu.php"; // личное меню ?>
 				</div>
 			</div>
 		</div>
@@ -50,14 +50,14 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 						<h4 class="panel-title">Новости, обьявления</h4>
 					</div>
 					<div class="panel-body">
-						<div class="well" id="newslist"></div>    
+						<div class="well" id="newslist"></div>
 						<ul class="pager">
 							<li class="previous"><a href="javascript:;" id="newsprev" name="newsprev"><i class="fa fa-arrow-left fa-fw"></i> Назад</a></li>
 							<li class="next"><a href="javascript:;" id="newsnext" name="newsnext">Вперед <i class="fa fa-arrow-right fa-fw"></i></a></li>
 						</ul>
-						<script src="controller/client/js/news_main.js"></script>
 					</div>
 				</div>
+				<script src="templates/<?= $cfg->theme; ?>/assets/js/news_main.js"></script>
 				<!-- [/Новости] -->
 			<?php endif; ?>
 			<?php if ($mhome->IsActive('whoonline') == 1): ?>
@@ -67,7 +67,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 						<h4 class="panel-title">Кто онлайн</h4>
 					</div>
 					<div class="panel-body">
-						<?php include_once(WUO_ROOT . "/templates/{$cfg->theme}/whoonline.php"); ?>
+						<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/whoonline.php"; ?>
 					</div>
 				</div>
 				<!-- [/Кто онлайн] -->
@@ -82,10 +82,10 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<!-- [Закреплённые новости] -->
 					<div class="panel panel-info">
 						<div class="panel-heading">
-							<h4 class="panel-title"><?php echo $stiker['title']; ?></h4>
+							<h4 class="panel-title"><?= $stiker['title']; ?></h4>
 						</div>
 						<div class="panel-body">
-							<?php echo $stiker['body']; ?>
+							<?= $stiker['body']; ?>
 						</div>
 					</div>
 					<!-- [/Закреплённые новости] -->
@@ -100,9 +100,9 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<div class="panel-body">
 						<table id="tbl_move"></table>
 						<div id="mv_nav"></div>
-						<script src="controller/client/js/lastmoved.js"></script>
 					</div>
 				</div>
+				<script src="templates/<?= $cfg->theme; ?>/assets/js/lastmoved.js"></script>
 				<!-- [/Последние перемещения ТМЦ] -->
 			<?php endif; ?>
 			<?php if (($mhome->IsActive('commits-widget') == 1) && $user->isAdmin()): ?>

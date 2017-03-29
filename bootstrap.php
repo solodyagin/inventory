@@ -12,7 +12,11 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO_ROOT') or die('Доступ запрещён');
 
-// Функция автоматической загрузки классов
+/**
+ * Функция автоматической загрузки классов
+ * @param type $class
+ * @return boolean
+ */
 function __autoload($class) {
 	$arr = explode('_', $class);
 	if (empty($arr[1])) {
@@ -39,11 +43,8 @@ function __autoload($class) {
 
 /**
  * Задаём обработчик исключений
- * @global boolean $debug
- * @param Exception $ex
- * @throws Exception
  */
-function exception_handler($ex) {
+set_exception_handler(function ($ex) {
 	global $debug;
 	switch (get_class($ex)) {
 		case 'DBException':
@@ -53,6 +54,4 @@ function exception_handler($ex) {
 		default:
 			throw $ex;
 	}
-}
-
-set_exception_handler('exception_handler');
+});

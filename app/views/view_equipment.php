@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
@@ -42,7 +43,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 						echo "<option value=\"$idorg\" $sl>$nameorg</option>";
 					}
 					?>
-				</select>				
+				</select>
 			</div>
 		</div>
 		<div class="row">
@@ -64,6 +65,6 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			</div>
 		</div>
 	</div>
-	<script src="controller/client/js/equipment.js"></script>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/equipment.js"></script>
 
 <?php endif;

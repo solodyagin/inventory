@@ -16,6 +16,7 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $user = User::getInstance();
+$cfg = Config::getInstance();
 
 // Проверка: если не администратор и нет полных прав, то
 if (!$user->isAdmin() && !$user->TestRoles('1')):
@@ -34,9 +35,9 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			<div class="col-xs-12 col-md-12 col-sm-12">
 				<table id="list2"></table>
 				<div id="pager2"></div>
-				<script src="controller/client/js/mdconfig.js"></script>
 			</div>
 		</div>
 	</div>
+	<script src="templates/<?= $cfg->theme; ?>/assets/js/modules.js"></script>
 
 <?php endif;

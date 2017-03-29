@@ -35,7 +35,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			<div class="alert alert-info">
 				Версия программы: WebUseOrg3 Lite v<?= $cfg->version; ?><br>
 				Актуальные версии ПО: <a href="https://github.com/solodyagin/webuseorg3-lite/releases" target="_blank">github.com</a><br>
-				Документация: <a href="http://www.грибовы.рф/?page_id=1202" target="_blank">здесь</a>
+				Документация: <a href="http://грибовы.рф/?page_id=1202" target="_blank">здесь</a>
 			</div>
 			<form class="form-horizontal" role="form" action="/config/save" method="post" name="form1" target="_self">
 				<div class="panel panel-default">

@@ -12,9 +12,11 @@
 defined('WUO_ROOT') or die('Доступ запрещён');
 
 $id = GetDef('id');
+
+$cfg = Config::getInstance();
 ?>
 <table id="list_rep"></table>
 <div id="pager_rep"></div>
 <div id="comment_rep"></div>
 <script>repid = "<?php echo $id; ?>";</script>
-<script src="controller/client/js/repair.js"></script>
+<script src="templates/<?= $cfg->theme; ?>/assets/js/repair.js"></script>

@@ -28,6 +28,7 @@ $time_start = microtime(true); // Засекаем время начала вы�
 
 header('Content-Type: text/html; charset=utf-8');
 
+/* Загружаем движок */
 include_once(WUO_ROOT . '/bootstrap.php');
 
 /* Загружаем все что нужно для работы движка */
@@ -76,27 +77,11 @@ include_once(WUO_ROOT . '/inc/autorun.php');
 $gmenu = new Menu();
 $gmenu->GetFromFiles(WUO_ROOT . '/inc/menu');
 
-//$content_page = (isset($_GET['content_page'])) ? $_GET['content_page'] : 'home';
+// Если активен режим отладки, то показываем все ошибки и предупреждения
+if ($debug) {
+	ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+}
 
-// Загружаем и выполняем сначала /modules/$content_page.php, затем /controller/client/themes/$cfg->theme/$content_page.php
-// Если таких файлов нет, то выполняем /controller/client/themes/$cfg->theme/home.php
-//if (!is_file(WUO_ROOT . "/controller/client/themes/$cfg->theme/$content_page.php")) {
-//	$content_page = 'home';
-//	$err[] = 'Вы попытались открыть несуществующий раздел!';
-//}
-
-// Если есть модуль, то загружаем.
-//if (is_file(WUO_ROOT . "/modules/$content_page.php")) {
-//	include_once(WUO_ROOT . "/modules/$content_page.php");
-//}
-
-// Загружаем главный файл темы, который разруливает что отображать на экране
-//include_once(WUO_ROOT . "/controller/client/themes/$cfg->theme/index.php");
-
-// Запускаем сторонние скрипты
-//include_once(WUO_ROOT . '/inc/footerrun.php');
-
-//unset($gmenu);
-
-
+/* Запускаем маршрутизатор */
 Router::start();
