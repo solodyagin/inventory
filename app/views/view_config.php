@@ -33,7 +33,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="alert alert-info">
-				Версия программы: WebUseOrg3 Lite v<?= $cfg->version; ?><br>
+				Версия программы: WebUseOrg3 Lite v<?= WUO_VERSION; ?><br>
 				Актуальные версии ПО: <a href="https://github.com/solodyagin/webuseorg3-lite/releases" target="_blank">github.com</a><br>
 				Документация: <a href="http://грибовы.рф/?page_id=1202" target="_blank">здесь</a>
 			</div>
