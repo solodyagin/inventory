@@ -37,9 +37,6 @@ if ($oper == '') {
 	$where = '';
 	for ($i = 0; $i < $cnt; $i++) {
 		$field = $flt['rules'][$i]['field'];
-		if ($field == 'org.id') {
-			$field = 'org.name';
-		}
 		$data = $flt['rules'][$i]['data'];
 		$where .= "($field LIKE '%$data%')";
 		if ($i < ($cnt - 1)) {
@@ -57,19 +54,20 @@ if ($oper == '') {
 	$responce->records = 0;
 
 	$sql = <<<TXT
-SELECT     COUNT(*) AS cnt,
-           org.id   AS orgid,
-           users.id,
-           users.orgid,
-           users.login,
-           users.password,
-           users.email,
-           users.mode,
-           users.active,
-           org.name AS orgname
-FROM       users
-INNER JOIN org
-ON         users.orgid = org.id
+SELECT	COUNT(*) `cnt`,
+		u.`id`,
+		o.`name` `orgname`,
+		p.`fio`,
+		u.`login`,
+		u.`password`,
+		u.`email`,
+		u.`mode`,
+		u.`active`
+FROM	`users` u
+	INNER JOIN `org` o
+		ON o.`id` = u.`orgid`
+	INNER JOIN `users_profile` p
+		ON p.`usersid` = u.`id`
 $where
 TXT;
 	try {
@@ -96,24 +94,25 @@ TXT;
 	$responce->records = $count;
 
 	$sql = <<<TXT
-SELECT     org.id AS orgid,
-           users.id,
-           users.orgid,
-           users.login,
-           users.password,
-           users.email,
-           users.mode,
-           users.active,
-           org.name AS orgname
-FROM       users
-INNER JOIN org
-ON         users.orgid = org.id
+SELECT	u.`id`,
+		o.`name` `orgname`,
+		p.`fio`,
+		u.`login`,
+		u.`password`,
+		u.`email`,
+		u.`mode`,
+		u.`active`
+FROM	`users` u
+	INNER JOIN `org` o
+		ON o.`id` = u.`orgid`
+	INNER JOIN `users_profile` p
+		ON p.`usersid` = u.`id`
 $where
-ORDER BY   $sidx $sord
-LIMIT      $start, $limit
+ORDER BY	$sidx $sord
+LIMIT		$start, $limit
 TXT;
 	try {
-		$arr = DB::prepare($sql)->execute(array())->fetchAll();
+		$arr = DB::prepare($sql)->execute()->fetchAll();
 		$i = 0;
 		foreach ($arr as $row) {
 			$responce->rows[$i]['id'] = $row['id'];
@@ -121,7 +120,7 @@ TXT;
 			$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 			$responce->rows[$i]['cell'] = array(
 				"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-				$row['id'], $row['orgname'], $row['login'], 'скрыто', $row['email'], $mode
+				$row['id'], $row['orgname'], $row['fio'], $row['login'], 'скрыто', $row['email'], $mode
 			);
 			$i++;
 		}
@@ -150,7 +149,7 @@ if ($oper == 'edit') {
 	}
 	exit;
 }
-
+/*
 if ($oper == 'add') {
 	// Только с полными правами можно добавлять пользователя!
 	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
@@ -166,7 +165,7 @@ if ($oper == 'add') {
 	}
 	exit;
 }
-
+*/
 if ($oper == 'del') {
 	// Только с полными правами можно удалять пользователя!
 	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');

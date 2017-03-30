@@ -10,11 +10,12 @@
 jQuery('#list2').jqGrid({
 	url: '/route/controller/server/users/libre_users.php?org_status=list',
 	datatype: 'json',
-	colNames: [' ', 'Id', 'Организация', 'Логин', 'Пароль', 'E-mail', 'Администратор', ''],
+	colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'Пароль', 'E-mail', 'Администратор', 'Act'],
 	colModel: [
 		{name: 'active', index: 'active', width: 10, search: false},
-		{name: 'users.id', index: 'users.id', width: 55, hidden: true},
-		{name: 'org.id', index: 'org.id', width: 100},
+		{name: 'usersid', index: 'u.id', width: 55, hidden: true},
+		{name: 'orgname', index: 'o.name', width: 60},
+		{name: 'fio', index: 'fio', width: 60},
 		{name: 'login', index: 'login', width: 45, editable: true},
 		{name: 'pass', index: 'pass', width: 45, editable: true, edittype: 'password', search: false},
 		{name: 'email', index: 'email', width: 45, editable: true},

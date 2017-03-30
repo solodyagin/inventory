@@ -19,6 +19,10 @@ class Controller_Cloud extends Controller {
 		$this->view->generate('view_cloud', $cfg->theme);
 	}
 
+	/**
+	 * TODO: Добавить метод Model_Cloud->addFolder()
+	 * @throws DBException
+	 */
 	function addfolder() {
 		$user = User::getInstance();
 
@@ -37,6 +41,10 @@ class Controller_Cloud extends Controller {
 		}
 	}
 
+	/**
+	 * TODO: Добавить метод Model_Cloud->delFolder()
+	 * @throws DBException
+	 */
 	function delfolder() {
 		$user = User::getInstance();
 
@@ -75,6 +83,10 @@ class Controller_Cloud extends Controller {
 		}
 	}
 
+	/**
+	 * TODO: Добавить метод Model_Cloud->getTree()
+	 * @throws DBException
+	 */
 	function gettree() {
 		$user = User::getInstance();
 
