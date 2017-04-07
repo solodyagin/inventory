@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -8,6 +8,6 @@
  */
 
 $('#test_ping').click(function () {
-	$('#ping_add').html('<img src="/templates/' + theme + '/img/loading.gif">');
-	$('#ping_add').load('/route/controller/server/common/ping.php?orgid=' + defaultorgid);
+	$('#ping_add').html('<img src="templates/' + theme + '/img/loading.gif">');
+	$('#ping_add').load('route/controller/server/common/ping.php?orgid=' + defaultorgid);
 });

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 class Controller_Cloud extends Controller {
 
@@ -29,7 +29,7 @@ class Controller_Cloud extends Controller {
 		// Проверка: может ли пользователь добавлять?
 		($user->isAdmin() || $user->TestRoles('1,4')) or die('У вас не хватает прав на добавление!');
 
-		$foldername = (isset(Router::$args['foldername'])) ? Router::$args['foldername'] : '';
+		$foldername = (isset(Router::$params['foldername'])) ? Router::$params['foldername'] : '';
 
 		if (!empty($foldername)) {
 			$sql = 'INSERT INTO cloud_dirs (parent, name) VALUES (0, :foldername)';
@@ -51,8 +51,8 @@ class Controller_Cloud extends Controller {
 		// Проверка: может ли пользователь удалять?
 		($user->isAdmin() || $user->TestRoles('1,6')) or die('У вас не хватает прав на удаление!');
 
-		$folderkey = (isset(Router::$args['folderkey'])) ? Router::$args['folderkey'] : '';
-		if (!empty($foldername)) {
+		$folderkey = (isset(Router::$params['folderkey'])) ? Router::$params['folderkey'] : '';
+		if (!empty($folderkey)) {
 			$sql = 'DELETE FROM cloud_dirs WHERE id = :folderkey';
 			try {
 				DB::prepare($sql)->execute(array(':folderkey' => $folderkey));
@@ -122,7 +122,7 @@ class Controller_Cloud extends Controller {
 
 		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
-		$id = (isset(Router::$args['id'])) ? Router::$args['id'] : '';
+		$id = (isset(Router::$params['id'])) ? Router::$params['id'] : '';
 		is_numeric($id) or die('Переданы неправильные параметры');
 
 		$filename = '';
@@ -276,7 +276,7 @@ TXT;
 						default:
 							$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
 					}
-					$ico = '<a target="_blank" href="/cloud/download?id=' . $row['id'] . '">' . $ico . '</a>';
+					$ico = '<a target="_blank" href="cloud/download?id=' . $row['id'] . '">' . $ico . '</a>';
 					$title = $row['title'];
 					$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
 					$i++;

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 // Запускаем установщик при условии, что файл настроек отсутствует
 if (file_exists(WUO_ROOT . '/config.php')) {
@@ -87,6 +87,7 @@ $mysql_host = "' . $dbhost . '"; // Хост БД
 $mysql_user = "' . $dbuser . '"; // Пользователь БД
 $mysql_pass = "' . $dbpass . '"; // Пароль пользователя БД
 $mysql_base = "' . $dbname . '"; // Имя базы
+$rewrite_base = "/";
 ';
 
 $file = WUO_ROOT . '/config.php';

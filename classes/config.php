@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 class Config {
 
@@ -34,7 +34,7 @@ class Config {
 	public $navbar = array(); // навигационная последовательность
 	public $quickmenu = array(); // "быстрое меню"
 	public $style = 'Bootstrap';   //стиль грида по умолчанию
-	public $fontsize = '12px';   //стиль грида по умолчанию 
+	public $fontsize = '12px';   //стиль грида по умолчанию
 
 	function GetConfigFromBase() {
 		try {

@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -13,7 +13,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $user = User::getInstance();
 $cfg = Config::getInstance();
@@ -37,7 +37,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 				Актуальные версии ПО: <a href="https://github.com/solodyagin/webuseorg3-lite/releases" target="_blank">github.com</a><br>
 				Документация: <a href="http://грибовы.рф/?page_id=1202" target="_blank">здесь</a>
 			</div>
-			<form class="form-horizontal" role="form" action="/config/save" method="post" name="form1" target="_self">
+			<form class="form-horizontal" role="form" action="config/save" method="post" name="form1" target="_self">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">Общие настройки</h3>

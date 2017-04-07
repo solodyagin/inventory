@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -47,7 +47,7 @@ function parseGET(url) {
 }
 
 function LoadMoveInfoTable(ids) {
-	var sUrl = '/route/controller/server/equipment/getmoveinfo.php?eqid=' + ids;
+	var sUrl = 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids;
 	jQuery('#tbl_move').jqGrid('setGridParam', {url: sUrl});
 	jQuery('#tbl_move').jqGrid({
 		url: sUrl,
@@ -70,7 +70,7 @@ function LoadMoveInfoTable(ids) {
 		scroll: 1,
 		viewrecords: true,
 		height: 'auto',
-		sortorder: 'desc',
+		sortorder: 'asc',
 		caption: 'История перемещений'
 	}).trigger('reloadGrid');
 	jQuery('#tbl_move').jqGrid('destroyGroupHeader');
@@ -92,7 +92,7 @@ function ListEqByPlaces(list, pager) {
 		curuserid = defaultuserid;
 	}
 	jQuery(list).jqGrid({
-		url: '/route/controller/server/equipment/eq_list.php?curuserid=' + curuserid,
+		url: 'route/controller/server/equipment/eq_list.php?curuserid=' + curuserid,
 		datatype: 'json',
 		colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан'],
 		colModel: [
@@ -106,7 +106,7 @@ function ListEqByPlaces(list, pager) {
 			{name: 'mode', index: 'mode', width: 55, formatter: 'checkbox', edittype: 'checkbox'}
 		],
 		onSelectRow: function (ids) {
-			$('#photoid').load('/route/controller/server/equipment/getphoto.php?eqid=' + ids);
+			$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
 			$('#geteqid').val(ids);
 			LoadMoveInfoTable(ids);
 		},
@@ -135,7 +135,7 @@ function ListEqByMat(list, pager) {
 		curuserid = tmp;
 	}
 	jQuery(list).jqGrid({
-		url: '/route/controller/server/equipment/eq_list_mat.php?curuserid=' + curuserid,
+		url: 'route/controller/server/equipment/eq_list_mat.php?curuserid=' + curuserid,
 		datatype: 'json',
 		colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан', 'ОС', 'Цена', 'Тек.стоим', 'Бух.имя'],
 		colModel: [
@@ -153,7 +153,7 @@ function ListEqByMat(list, pager) {
 			{name: 'bn', index: 'bn', width: 100}
 		],
 		onSelectRow: function (ids) {
-			$('#photoid').load('/route/controller/server/equipment/getphoto.php?eqid=' + ids);
+			$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
 			$('#geteqid').val(ids);
 			LoadMoveInfoTable(ids);
 		},

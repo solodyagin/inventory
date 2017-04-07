@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,7 +9,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $eqid = GetDef('eqid');
 $step = GetDef('step');
@@ -91,7 +91,7 @@ if ($step == 'edit') {
 	<div class="row-fluid">
 		<div class="col-xs-12 col-md-12 col-sm-12">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/equipment/service.php?step=<?php echo $step; ?>&eqid=<?php echo $eqid; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/equipment/service.php?step=<?= $step; ?>&eqid=<?= $eqid; ?>" method="post" name="form1" target="_self">
 				<label>Кто ремонтирует:</label>
 				<div id="sorg1">
 					<select class="chosen-select" name="kntid" id="kntid">
@@ -108,11 +108,11 @@ if ($step == 'edit') {
 				<div class="row-fluid">
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<label>Начало ремонта:</label>
-						<input class="form-control" name="dtpost" id="dtpost" value="<?php echo $dtpost; ?>">
+						<input class="form-control" name="dtpost" id="dtpost" value="<?= $dtpost; ?>">
 						<label>Конец ремонта:</label>
-						<input class="form-control" name="dt" id="dt" value="<?php echo $dt; ?>">
+						<input class="form-control" name="dt" id="dt" value="<?= $dt; ?>">
 						<label>Стоимость ремонта:</label>
-						<input class="form-control" name="cst" id="cst" value="<?php echo $cost; ?>">
+						<input class="form-control" name="cst" id="cst" value="<?= $cost; ?>">
 					</div>
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<label>Отправитель:</label>
@@ -167,17 +167,17 @@ TXT;
 						</div>
 						<label>Статус:</label>
 						<select class="form-control" name="status" id="status">
-							<option value='1' <?php echo ($status == '1') ? 'selected' : ''; ?>>В сервисе</option>
-							<option value='0' <?php echo ($status == '0') ? 'selected' : ''; ?>>Работает</option>
-							<option value='2' <?php echo ($status == '2') ? 'selected' : ''; ?>>Есть заявка</option>
-							<option value='3' <?php echo ($status == '3') ? 'selected' : ''; ?>>Списать</option>
+							<option value='1' <?= ($status == '1') ? 'selected' : ''; ?>>В сервисе</option>
+							<option value='0' <?= ($status == '0') ? 'selected' : ''; ?>>Работает</option>
+							<option value='2' <?= ($status == '2') ? 'selected' : ''; ?>>Есть заявка</option>
+							<option value='3' <?= ($status == '3') ? 'selected' : ''; ?>>Списать</option>
 						</select>
 					</div>
 				</div>
 				<label>Документы:</label>
-				<input class="form-control" name="doc" id="doc" size="14" class="span6" value="<?php echo $doc; ?>">
+				<input class="form-control" name="doc" id="doc" size="14" class="span6" value="<?= $doc; ?>">
 				<label>Комментарии:</label>
-				<textarea class="form-control" name="comment"><?php echo $comment; ?></textarea>
+				<textarea class="form-control" name="comment"><?= $comment; ?></textarea>
 				<div align="center">
 					<input class="form-control" type="submit" name="Submit" value="Сохранить">
 				</div>

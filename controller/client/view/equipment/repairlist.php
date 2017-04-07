@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,14 +9,13 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $id = GetDef('id');
-
 $cfg = Config::getInstance();
 ?>
 <table id="list_rep"></table>
 <div id="pager_rep"></div>
 <div id="comment_rep"></div>
-<script>repid = "<?php echo $id; ?>";</script>
+<script>repid = "<?= $id; ?>";</script>
 <script src="templates/<?= $cfg->theme; ?>/assets/js/repair.js"></script>

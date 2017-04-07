@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -19,24 +19,24 @@ $('#orgs').change(function () {
 
 function LoadTable() {
 	jQuery('#tbl_equpment').jqGrid({
-		url: '/route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
+		url: 'route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
 		datatype: 'json',
 		colNames: [' ', 'Id', 'IP', 'Помещение', 'Номенклатура', 'Группа', 'В пути',
 			'Производитель', 'Имя по бухгалтерии', 'Сер.№', 'Инв.№',
 			'Штрихкод', 'Организация', 'Мат.отв.', 'Оприходовано', 'Стоимость',
 			'Тек. стоимость', 'ОС', 'Списано', 'Карта', 'Комментарий', 'Ремонт',
-			'Гар.срок', 'Поставщик', 'Инструменты'],
+			'Гар.срок', 'Поставщик', 'Действия'],
 		colModel: [
 			{name: 'active', index: 'active', width: 20, search: false, frozen: true},
 			{name: 'equipment.id', index: 'equipment.id', width: 55, search: false, frozen: true, hidden: true},
 			{name: 'ip', index: 'ip', width: 100, hidden: true},
 			{name: 'placesid', index: 'placesid', width: 155, stype: 'select', frozen: true,
-				searchoptions: {dataUrl: '/route/controller/server/equipment/getlistplaces.php?addnone=true'}},
+				searchoptions: {dataUrl: 'route/controller/server/equipment/getlistplaces.php?addnone=true'}},
 			{name: 'nomename', index: 'getvendorandgroup.nomename', width: 135, frozen: true},
 			{name: 'getvendorandgroup.groupname', index: 'getvendorandgroup.grnomeid', width: 100, stype: 'select',
-				searchoptions: {dataUrl: '/route/controller/server/equipment/getlistgroupname.php?addnone=true'}},
+				searchoptions: {dataUrl: 'route/controller/server/equipment/getlistgroupname.php?addnone=true'}},
 			{name: 'tmcgo', index: 'tmcgo', width: 80, search: true, stype: 'select',
-				searchoptions: {dataUrl: '/route/controller/server/equipment/getlisttmcgo.php?addnone=true'},
+				searchoptions: {dataUrl: 'route/controller/server/equipment/getlisttmcgo.php?addnone=true'},
 				formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: 'Yes:No'}, editable: true, hiddem: true
 			},
 			{name: 'getvendorandgroup.vendorname', index: 'getvendorandgroup.vendorname', width: 100},
@@ -65,10 +65,10 @@ function LoadTable() {
 				formatoptions: {keys: true}, search: false}
 		],
 		onSelectRow: function (ids) {
-			$('#photoid').load('/route/controller/server/equipment/getphoto.php?eqid=' + ids);
-			jQuery('#tbl_move').jqGrid('setGridParam', {url: '/route/controller/server/equipment/getmoveinfo.php?eqid=' + ids});
+			$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
+			jQuery('#tbl_move').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids});
 			jQuery('#tbl_move').jqGrid({
-				url: '/route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
+				url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
 				datatype: 'json',
 				colNames: ['Id', 'Дата', 'Организация', 'Помещение',
 					'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', '',
@@ -94,8 +94,8 @@ function LoadTable() {
 				shrinkToFit: true,
 				viewrecords: true,
 				height: 200,
-				sortorder: 'desc',
-				editurl: '/route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
+				sortorder: 'asc',
+				editurl: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
 				caption: 'История перемещений'
 			}).trigger('reloadGrid');
 			jQuery('#tbl_move').jqGrid('destroyGroupHeader');
@@ -107,9 +107,9 @@ function LoadTable() {
 				]
 			});
 			$.jgrid.gridUnload('#tbl_rep');
-			jQuery('#tbl_rep').jqGrid('setGridParam', {url: '/route/controller/server/equipment/getrepinfo.php?eqid=' + ids});
+			jQuery('#tbl_rep').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids});
 			jQuery('#tbl_rep').jqGrid({
-				url: '/route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
+				url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
 				datatype: 'json',
 				colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', ''],
 				colModel: [
@@ -152,8 +152,8 @@ function LoadTable() {
 				scroll: 1,
 				viewrecords: true,
 				height: 200,
-				sortorder: 'desc',
-				editurl: '/route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
+				sortorder: 'asc',
+				editurl: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
 				caption: 'История ремонтов'
 			}).trigger('reloadGrid');
 			jQuery('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
@@ -167,7 +167,7 @@ function LoadTable() {
 						jQuery('#tbl_equpment').jqGrid('getRowData', id);
 						$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 						$('#pg_add_edit').dialog('open');
-						$('#pg_add_edit').load('/route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
+						$('#pg_add_edit').load('route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
 					} else {
 						$().toastmessage('showWarningToast', 'Выберите ТМЦ для ремонта!');
 					}
@@ -188,7 +188,7 @@ function LoadTable() {
 			$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id +
 					'" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
 			jQuery('#' + subgrid_table_id).jqGrid({
-				url: '/route/controller/server/equipment/paramlist.php?eqid=' + row_id,
+				url: 'route/controller/server/equipment/paramlist.php?eqid=' + row_id,
 				datatype: 'json',
 				colNames: ['Id', 'Наименование', 'Параметр', ''],
 				colModel: [
@@ -198,7 +198,7 @@ function LoadTable() {
 					{name: 'myac', width: 80, fixed: true, sortable: false, resize: false,
 						formatter: 'actions', formatoptions: {keys: true}}
 				],
-				editurl: '/route/controller/server/equipment/paramlist.php?eqid=' + row_id,
+				editurl: 'route/controller/server/equipment/paramlist.php?eqid=' + row_id,
 				pager: pager_id,
 				sortname: 'name',
 				sortorder: 'asc',
@@ -221,7 +221,7 @@ function LoadTable() {
 		rowNum: 40,
 		viewrecords: true,
 		sortorder: 'asc',
-		editurl: '/route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
+		editurl: 'route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
 		caption: 'Оргтехника'
 	});
 	jQuery('#tbl_equpment').jqGrid('setGridHeight', $(window).innerHeight() - 285);
@@ -254,7 +254,7 @@ function LoadTable() {
 		onClickButton: function () {
 			$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
 			$('#pg_add_edit').dialog('open');
-			$('#pg_add_edit').load('/route/controller/client/view/equipment/equipment.php?step=add&id=');
+			$('#pg_add_edit').load('route/controller/client/view/equipment/equipment.php?step=add&id=');
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
@@ -266,7 +266,7 @@ function LoadTable() {
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('/route/controller/client/view/equipment/equipment.php?step=edit&id=' + gsr);
+				$('#pg_add_edit').load('route/controller/client/view/equipment/equipment.php?step=edit&id=' + gsr);
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
@@ -281,7 +281,7 @@ function LoadTable() {
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 440, width: 620, modal: true, title: 'Перемещение имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('/route/controller/client/view/equipment/move.php?step=move&id=' + gsr);
+				$('#pg_add_edit').load('route/controller/client/view/equipment/move.php?step=move&id=' + gsr);
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
@@ -297,7 +297,7 @@ function LoadTable() {
 				jQuery('#tbl_equpment').jqGrid('getRowData', id);
 				$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('/route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
+				$('#pg_add_edit').load('route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
@@ -312,7 +312,7 @@ function LoadTable() {
 			if (gsr) {
 				var s;
 				s = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selarrrow');
-				newWin = window.open('/route/inc/ean13print.php?mass=' + s, 'printWindow');
+				newWin = window.open('route/inc/ean13print.php?mass=' + s, 'printWindow');
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
@@ -323,7 +323,7 @@ function LoadTable() {
 		title: 'Отчеты',
 		buttonicon: 'none',
 		onClickButton: function () {
-			newWin2 = window.open('/report', 'printWindow2');
+			newWin2 = window.open('report', 'printWindow2');
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
@@ -331,18 +331,18 @@ function LoadTable() {
 		title: 'Экспорт XML',
 		buttonicon: 'none',
 		onClickButton: function () {
-			newWin2 = window.open('/route/controller/server/equipment/export_xml.php', 'printWindow4');
+			newWin2 = window.open('route/controller/server/equipment/export_xml.php', 'printWindow4');
 		}
 	});
 	jQuery('#tbl_equpment').jqGrid('setFrozenColumns');
 }
 
 function GetListUsers(orgid, userid) {
-	$('#susers').load('/route/controller/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
+	$('#susers').load('route/controller/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
 }
 
 function GetListPlaces(orgid, placesid) {
-	$('#splaces').load('/route/controller/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
+	$('#splaces').load('route/controller/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 }
 
 $(document).ready(function () {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $crd = date('Y-m-d H:i:s');
 $sql = <<<TXT
@@ -25,7 +25,7 @@ try {
 		$res = $row['res'];
 		$fio = $row['fio'];
 		$jpegphoto = $row['jpegphoto'];
-		if ($res < 10000) {		
+		if ($res < 10000) {
 			if (!file_exists(WUO_ROOT . "/photos/$jpegphoto")) {
 				$jpegphoto = 'noimage.jpg';
 			}

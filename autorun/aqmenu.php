@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,9 +10,12 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
-$cfg->quickmenu[] = '<div><i class="fa fa-home fa-fw"></i> <a href="/">Главная</a></div>';
+$cfg->quickmenu[] = <<<TXT
+<div><i class="fa fa-home fa-fw"></i> <a href="$rewrite_base">Главная</a></div>
+TXT;
+
 $cfg->quickmenu[] = '<hr style="border-top:1px dotted #ccc;margin:2px 0">';
 $cfg->quickmenu[] = '<div><i class="fa fa-question fa-fw"></i> <a href="http://xn--90acbu5aj5f.xn--p1ai/wiki/" target="_blank">Справка</a></div>';
 $cfg->quickmenu[] = '<hr style="border-top:1px dotted #ccc;margin:2px 0">';

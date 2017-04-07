@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,7 +9,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $id = GetDef('id');
 $step = GetDef('step');
@@ -44,12 +44,12 @@ echo "<script>userid1='{$tmptmc->usersid}';</script>";
 			}
 		});
 	});
-</script>    
+</script>
 <div class="container-fluid">
-	<div class="row">            
-		<div id="messenger"></div>    
-		<form id="myForm" enctype="multipart/form-data" action="/route/controller/server/equipment/equipment_form.php?step=move&id=<?php echo $id ?>" method="post" name="form1" target="_self">
-			<div class="row-fluid"> 
+	<div class="row">
+		<div id="messenger"></div>
+		<form id="myForm" enctype="multipart/form-data" action="route/controller/server/equipment/equipment_form.php?step=move&id=<?php echo $id ?>" method="post" name="form1" target="_self">
+			<div class="row-fluid">
 				<div class="col-xs-12 col-md-12 col-sm-12">
 					<div class="form-group">
 						<label>Организация (куда):</label>
@@ -68,27 +68,27 @@ echo "<script>userid1='{$tmptmc->usersid}';</script>";
 						<label>Помещение:</label>
 						<div name="splaces" id="splaces">идет загрузка...</div>
 						<label>Сотрудник:</label>
-						<div name="susers" id="susers">идет загрузка...</div>      
+						<div name="susers" id="susers">идет загрузка...</div>
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" id="tmcgo" name="tmcgo">ТМЦ в "пути"
 							</label>
-						</div>    
+						</div>
 					</div>
-				</div>    
-			</div>    
+				</div>
+			</div>
 			<div class="row-fluid">
 				<div class="col-xs-12 col-md-12 col-sm-12">
 					<div class="form-group">
 						<label>Комментарий: </label>
-						<textarea class="form-control" name="comment"><?php echo $comment; ?></textarea>                
+						<textarea class="form-control" name="comment"><?php echo $comment; ?></textarea>
 						<input class="form-control btn btn-primary" type="submit" name="Submit" value="Сохранить">
 					</div>
-				</div>  
-			</div> 
+				</div>
+			</div>
 		</form>
 	</div>
-</div>    
+</div>
 <script>
 	function UpdateChosen() {
 		for (var selector in config) {
@@ -97,13 +97,13 @@ echo "<script>userid1='{$tmptmc->usersid}';</script>";
 		}
 	}
 	function GetListUsers(orgid, userid) {
-		$.get('/route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
+		$.get('route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
 			$('#susers').html(data);
 			UpdateChosen();
 		});
 	}
 	function GetListPlaces(orgid, placesid) {
-		$.get('/route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid, function (data) {
+		$.get('route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid, function (data) {
 			$('#splaces').html(data);
 			UpdateChosen();
 		});
@@ -118,4 +118,4 @@ echo "<script>userid1='{$tmptmc->usersid}';</script>";
 	GetListUsers(orgid, userid);
 	GetListPlaces(orgid, placesid);
 	UpdateChosen();
-</script>    
+</script>

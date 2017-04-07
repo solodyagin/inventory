@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,14 +9,14 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $user = User::getInstance();
 $cfg = Config::getInstance();
 
 if ($user->id == ''):
 	?>
-	<form role="form" action="/account/login" method="post" name="form1" target="_self">
+	<form role="form" action="account/login" method="post" name="form1" target="_self">
 		<div class="form-group">
 			<input type="text" class="form-control" id="enter_user_login" name="enter_user_login" placeholder="Логин">
 			<input type="password" class="form-control" id="enter_user_pass" name="enter_user_pass" placeholder="Пароль">
@@ -24,8 +24,8 @@ if ($user->id == ''):
 		<button type="submit" class="btn btn-primary">Войти</button>
 	</form>
 <?php else: ?>
-	<link rel="stylesheet" href="/templates/<?= $cfg->theme; ?>/css/upload.css">
-	<link rel="stylesheet" href="/js/jcrop/jquery.Jcrop.min.css">
+	<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/upload.css">
+	<link rel="stylesheet" href="js/jcrop/jquery.Jcrop.min.css">
 	<script>var examples = [];</script>
 	<div class="container-fluid">
 		<?php
@@ -38,7 +38,7 @@ if ($user->id == ''):
 			<div class="col-xs-6 col-md-6 col-sm-6">
 				<div id="userpic" class="userpic">
 					<div class="js-preview userpic__preview thumbnail">
-						<img width="100%" src="/photos/<?= $jpegphoto; ?>">
+						<img width="100%" src="photos/<?= $jpegphoto; ?>">
 					</div>
 					<div class="btn btn-success js-fileapi-wrapper">
 						<div class="js-browse">
@@ -74,7 +74,7 @@ if ($user->id == ''):
 				<div class="js-upload btn btn_browse btn_browse_small">Загрузить</div>
 			</div>
 		</div>
-		<form class="form-horizontal" action="/account/logout" method="get" name="form1" target="_self">
+		<form class="form-horizontal" action="account/logout" method="get" name="form1" target="_self">
 			<div class="form-group">
 				<div class="controls">
 					<button type="submit" class="btn btn-default">Выйти из <?= $user->login; ?></button>
@@ -85,7 +85,7 @@ if ($user->id == ''):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: '/route/controller/server/common/uploadfile.php',
+				url: 'route/controller/server/common/uploadfile.php',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ""},
@@ -104,7 +104,7 @@ if ($user->id == ''):
 					} else {
 						$('#picname').val(uiEvt.result.msg);
 						//сохраняем аватарку
-						$.get('/route/controller/server/common/save_avatar.php?photo=' + uiEvt.result.msg, function (data) {
+						$.get('route/controller/server/common/save_avatar.php?photo=' + uiEvt.result.msg, function (data) {
 						});
 					}
 				},
@@ -141,11 +141,11 @@ if ($user->id == ''):
 			staticPath: './FileAPI/'
 		};
 	</script>
-	<script src="/js/FileAPI/FileAPI.min.js"></script>
-	<script src="/js/FileAPI/FileAPI.exif.js"></script>
-	<script src="/js/jquery.fileapi.min.js"></script>
-	<script src="/js/jcrop/jquery.Jcrop.min.js"></script>
-	<script src="/js/statics/jquery.modal.js"></script>
+	<script src="js/FileAPI/FileAPI.min.js"></script>
+	<script src="js/FileAPI/FileAPI.exif.js"></script>
+	<script src="js/jquery.fileapi.min.js"></script>
+	<script src="js/jcrop/jquery.Jcrop.min.js"></script>
+	<script src="js/statics/jquery.modal.js"></script>
 	<script>
 		jQuery(function ($) {
 			var $blind = $('.splash__blind');
