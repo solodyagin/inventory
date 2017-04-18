@@ -34,12 +34,10 @@ header('Content-Type: text/html; charset=utf-8');
 /* Загружаем движок */
 include_once(WUO_ROOT . '/bootstrap.php');
 
-/* Загружаем все что нужно для работы движка */
-include_once(WUO_ROOT . '/inc/config.php'); // Подгружаем настройки из БД, получаем заполненый класс $cfg
-include_once(WUO_ROOT . '/inc/functions.php'); // Загружаем функции
-include_once(WUO_ROOT . '/inc/login.php'); // Создаём пользователя $user
-
-/* Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим */
+/**
+ * Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим
+ * TODO: Является анахронизмом, надо выпилить.
+ */
 $uri = $_SERVER['REQUEST_URI'];
 if (strpos($uri, $rewrite_base) === 0) {
 	$uri = substr($uri, strlen($rewrite_base));
@@ -69,7 +67,7 @@ if (strpos($uri, 'route') === 0) {
 	} else {
 		die("На сервере отсутствует указанный путь '$route'");
 	}
-	exit;
+	exit();
 }
 
 /* Загружаем сторонние классы */

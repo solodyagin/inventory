@@ -121,13 +121,13 @@ TXT;
 			}
 			$zz = new BaseUser();
 			if ($row['userto'] != '-1') {
-				$zz->GetById($row['userto']);
+				$zz->getById($row['userto']);
 				$row['userto'] = $zz->fio;
 			} else {
 				$row['userto'] = 'не задано';
 			}
 			if ($row['userfrom'] != '-1') {
-				$zz->GetById($row['userfrom']);
+				$zz->getById($row['userfrom']);
 				$row['userfrom'] = $zz->fio;
 			} else {
 				$row['userfrom'] = 'не задано';

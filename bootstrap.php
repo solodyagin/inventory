@@ -55,3 +55,16 @@ set_exception_handler(function ($ex) {
 			throw $ex;
 	}
 });
+
+/*
+ * Получаем настройки из базы
+ */
+$cfg = Config::getInstance();
+$cfg->GetConfigFromBase();
+
+/* Загружаем все что нужно для работы движка */
+include_once(WUO_ROOT . '/inc/functions.php'); // Загружаем функции
+
+/* Аутентифицируем пользователя по кукам */
+$user = User::getInstance();
+$user->loginByCookie();

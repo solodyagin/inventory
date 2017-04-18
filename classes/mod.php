@@ -98,17 +98,17 @@ class Mod {
 	}
 
 	/**
-	 * проверяем включен модуль или нет?
+	 * Проверяем включен модуль или нет?
 	 * @param string $name
-	 * @return integer
+	 * @return boolean
 	 */
 	function IsActive($name) {
-		$active = 0;
+		$active = false;
 		try {
 			$sql = 'SELECT * FROM config_common WHERE nameparam = :modname';
 			$row = DB::prepare($sql)->execute(array(':modname' => "modulename_$name"))->fetch();
 			if ($row) {
-				$active = $row['valueparam'];
+				$active = ($row['valueparam'] == '1');
 			}
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения Mod.IsActive', 0, $ex);

@@ -15,6 +15,6 @@ defined('WUO') or die('Доступ запрещён');
 $photo = GetDef('photo');
 
 $us = new BaseUser();
-$us->GetById($user->id);
+$us->getById($user->id);
 $us->jpegphoto = $photo;
 $us->Update();

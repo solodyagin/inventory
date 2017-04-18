@@ -33,7 +33,7 @@ $userid = GetDef('userid');
 $user = User::getInstance();
 if ($user->isAdmin()):
 	$tmpuser = new BaseUser();
-	$tmpuser->GetById($userid);
+	$tmpuser->getById($userid);
 	$id = $tmpuser->id;
 	$fio = $tmpuser->fio;
 	$photo = $tmpuser->jpegphoto;

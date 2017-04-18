@@ -18,7 +18,7 @@ $user = User::getInstance();
 // Если пользователь - "Администратор"
 if ($user->isAdmin()):
 	$tmpuser = new BaseUser();
-	$tmpuser->GetById($id);
+	$tmpuser->getById($id);
 	$orgid = $tmpuser->orgid;
 	$login = $tmpuser->login;
 	$email = $tmpuser->email;

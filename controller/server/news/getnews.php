@@ -28,7 +28,7 @@ try {
 		$pieces = explode('<!-- pagebreak -->', $row['body']);
 		echo "<p>$pieces[0]</p>";
 		if (isset($pieces[1])) {
-			echo '<div align="right"><a class="btn btn-primary btn-xs" href="news/read?id=' . $row['id'] . '">Читать дальше</a></div>';
+			echo '<div align="right"><a href="news/read?id=' . $row['id'] . '">Читать дальше</a></div>';
 		}
 		$rz++;
 	}

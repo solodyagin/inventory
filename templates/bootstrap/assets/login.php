@@ -35,7 +35,7 @@ if ($user->id == ''):
 		}
 		?>
 		<div class="row">
-			<div class="col-xs-6 col-md-6 col-sm-6">
+			<div class="col-xs-12 col-md-12 col-sm-12">
 				<div id="userpic" class="userpic">
 					<div class="js-preview userpic__preview thumbnail">
 						<img width="100%" src="photos/<?= $jpegphoto; ?>">
@@ -53,17 +53,19 @@ if ($user->id == ''):
 						</div>
 					</div>
 				</div>
-				<p align="center"><?= $user->fio; ?></p>
 				<input name="picname" id="picname" type="hidden" value="<?= $jpegphoto; ?>">
 			</div>
-			<div class="col-xs-6 col-md-6 col-sm-6">
-				<ul>
-					<li><?= $user->login; ?></li>
-					<li><?= "<a href='mailto:$user->email'>$user->email</a>"; ?></li>
-					<li><?= $user->telephonenumber; ?></li>
-					<li><?= $user->homephone; ?></li>
-					<li><?= ($user->isAdmin()) ? 'Администратор' : 'Пользователь'; ?></li>
-				</ul>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-md-12 col-sm-12">
+				<p>
+					<b>ФИО:</b> <?= $user->fio; ?><br>
+					<b>Учётная запись:</b> <?= $user->login; ?><br>
+					<b>Почта:</b> <a href="mailto:<?= $user->email; ?>"><?= $user->email; ?></a><br>
+					<b>Моб.тел.:</b> <?= $user->telephonenumber; ?><br>
+					<b>Раб.тел.:</b> <?= $user->homephone; ?><br>
+					<b>Роль:</b> <?= ($user->isAdmin()) ? 'Администратор' : 'Пользователь'; ?>
+				</p>
 			</div>
 		</div>
 		<div id="popup" class="popup" style="display: none;">

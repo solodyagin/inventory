@@ -22,7 +22,7 @@ $base_href = $rewrite_base;
 <html lang="ru-RU">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="Учет ТМЦ в организации">
 		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -54,6 +54,7 @@ $base_href = $rewrite_base;
 		<script src="js/jquery.toastmessage-min.js"></script>
 		<script src="js/jquery.form.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/bootstrap.min.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/common.js"></script>
 		<script>
 			defaultorgid = <?= $cfg->defaultorgid; ?>;
 			theme = '<?= $cfg->theme; ?>';

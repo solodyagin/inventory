@@ -25,7 +25,7 @@ try {
 	foreach ($arr as $row) {
 		$z = $row['id'];
 		$zx = new BaseUser();
-		$zx->GetById($z);
+		$zx->getById($z);
 		$sl = ($z == $userid) ? 'selected' : '';
 		echo "<option value=\"$z\" $sl>$zx->fio({$row['login']})</option>";
 		unset($zx);

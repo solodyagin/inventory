@@ -21,7 +21,7 @@ $phone1 = PostDef('phone1');
 $phone2 = PostDef('phone2');
 
 $tmpuser = new BaseUser();
-$tmpuser->GetById($userid);
+$tmpuser->getById($userid);
 $tmpuser->fio = $fio;
 $tmpuser->jpegphoto = $photo;
 $tmpuser->post = $post;

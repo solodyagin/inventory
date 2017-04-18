@@ -14,7 +14,7 @@ defined('WUO') or die('Доступ запрещён');
 
 $md = new Mod(); // обьявляем переменную для работы с классом модуля
 $md->Register('cloud', 'Хранилище документов', 'Грибов Павел');
-if ($md->IsActive('cloud') == 1) {
+if ($md->IsActive('cloud')) {
 	$this->Add('main', '<i class="fa fa-cloud fa-fw"></i> Хранилище документов', 'Хранилище документов', 2, 'cloud', 'cloud');
 }
 unset($mm);

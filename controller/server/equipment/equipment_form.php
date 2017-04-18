@@ -239,15 +239,14 @@ TXT;
 			}
 			if ($cfg->sendemail == 1) {
 				$touser = new BaseUser();
-				$touser->GetById($suserid);
+				$touser->getById($suserid);
 				$url = $cfg->urlsite;
 				$tmcname = $etmc->tmcname;
 				$txt = "Внимание! На Вашу ответственность переведена новая единица ТМЦ ($tmcname). <a href=$url/index.php?content_page=eq_list&usid=$suserid>Подробности здесь.</a>";
 				smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);   // отсылаем уведомление кому пришло
 				SendEmailByPlaces($etmc->placesid, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
 				SendEmailByPlaces($splaces, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
-				$touser = new BaseUser();
-				$touser->GetById($etmc->usersid);
+				$touser->getById($etmc->usersid);
 				$txt = "Внимание! С вашей отвественности снята единица ТМЦ ($tmcname). <a href=$url/index.php?content_page=eq_list&usid=$etmc->usersid>Подробности здесь.</a>";
 				smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);
 			}
