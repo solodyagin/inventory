@@ -46,13 +46,12 @@ class Controller_Config extends Controller {
 		$cfg->emailreplyto = filter_input(INPUT_POST, 'form_emailreplyto');  // Куда слать ответы
 		$cfg->urlsite = filter_input(INPUT_POST, 'urlsite');  // А где сайт находится?
 		$cfg->sendemail = filter_input(INPUT_POST, 'form_sendemail', FILTER_VALIDATE_INT, $opt); // А вообще будем посылать почту?
-		$res = $cfg->SetConfigToBase();
-		if ($res == true) {
+		$res = $cfg->saveToDB();
+		if ($res) {
 			$ok[] = 'Успешно сохранено!';
 		} else {
 			$err[] = 'Что-то пошло не так!';
 		}
-		//$cfg->GetConfigFromBase();
 
 		// Подключаем шаблон
 		$this->view->generate('view_config', $cfg->theme);

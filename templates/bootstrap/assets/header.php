@@ -14,8 +14,7 @@ defined('WUO') or die('Доступ запрещён');
 $cfg = Config::getInstance();
 $user = User::getInstance();
 
-global $rewrite_base;
-$base_href = $rewrite_base;
+$base_href = $cfg->rewrite_base;
 ?>
 <!-- saved from url=(0014)about:internet -->
 <!DOCTYPE html>

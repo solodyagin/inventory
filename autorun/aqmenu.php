@@ -12,8 +12,10 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
+$cfg = Config::getInstance();
+
 $cfg->quickmenu[] = <<<TXT
-<div><i class="fa fa-home fa-fw"></i> <a href="$rewrite_base">Главная</a></div>
+<div><i class="fa fa-home fa-fw"></i> <a href="$cfg->rewrite_base">Главная</a></div>
 TXT;
 
 $cfg->quickmenu[] = '<hr style="border-top:1px dotted #ccc;margin:2px 0">';

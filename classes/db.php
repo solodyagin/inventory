@@ -17,16 +17,16 @@ class DB {
 	private static $instance = null;
 
 	public static function getInstance() {
-		global $mysql_host, $mysql_user, $mysql_pass, $mysql_base, $mysql_char;
 		if (self::$instance === null) {
+			$cfg = Config::getInstance();
 			$opt = array(
 				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 				PDO::ATTR_EMULATE_PREPARES => true,
 				PDO::ATTR_STATEMENT_CLASS => array('myPDOStatement'),
 			);
-			$dsn = "mysql:host={$mysql_host};dbname={$mysql_base};charset={$mysql_char}";
-			self::$instance = new PDO($dsn, $mysql_user, $mysql_pass, $opt);
+			$dsn = "mysql:host={$cfg->db_host};dbname={$cfg->db_name};charset={$cfg->db_char}";
+			self::$instance = new PDO($dsn, $cfg->db_user, $cfg->db_pass, $opt);
 		}
 		return self::$instance;
 	}

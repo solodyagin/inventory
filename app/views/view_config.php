@@ -63,11 +63,11 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 					</div>
 					<div class="panel-body">
 						<div class="form-group">
-							<label for="form_cfg_theme" class="col-sm-2 control-label">Текущая тема:</label>
+							<label for="form_cfg_theme" class="col-sm-2 control-label">Текущий шаблон:</label>
 							<div class="col-sm-2">
 								<input type="text" class="form-control" name="form_cfg_theme" id="form_cfg_theme" readonly="readonly" value="<?= $cfg->theme; ?>">
 							</div>
-							<label for="form_cfg_theme_sl" class="col-sm-2 control-label">Выберите тему:</label>
+							<label for="form_cfg_theme_sl" class="col-sm-2 control-label">Выберите шаблон:</label>
 							<div class="col-sm-6">
 								<select class="form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
 									<?php
@@ -89,8 +89,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 					<div class="panel-body">
 						<div class="col-sm-12 checkbox">
 							<label>
-								<?php $ch = ($cfg->ad == '1') ? 'checked' : ''; ?>
-								<input type="checkbox" name="form_cfg_ad" value="1" <?= $ch; ?>>Разрешить вход
+								<input type="checkbox" name="form_cfg_ad" value="1" <?= ($cfg->ad == '1') ? 'checked' : ''; ?>>Разрешить вход
 							</label>
 						</div>
 						<div class="col-sm-4">

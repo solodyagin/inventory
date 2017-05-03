@@ -14,10 +14,11 @@ class Router {
 	public static $params = []; // Переданные в url GET-параметры
 
 	static function start() {
-		global $rewrite_base;
+		$cfg = Config::getInstance();
+
 		$uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
-		if (strpos($uri, $rewrite_base) === 0) {
-			$uri = substr($uri, strlen($rewrite_base));
+		if (strpos($uri, $cfg->rewrite_base) === 0) {
+			$uri = substr($uri, strlen($cfg->rewrite_base));
 		}
 		list($path, $args) = array_pad(explode('?', $uri, 2), 2, null);
 
@@ -52,14 +53,14 @@ class Router {
 	}
 
 	static function redirect($to) {
-		global $rewrite_base;
+		$cfg = Config::getInstance();
 		switch ($to) {
 			case 'error404':
 				header('HTTP/1.1 404 Not Found');
 				header('Status: 404 Not Found');
 				break;
 		}
-		header("Location: {$rewrite_base}{$to}");
+		header("Location: {$cfg->rewrite_base}{$to}");
 		exit();
 	}
 

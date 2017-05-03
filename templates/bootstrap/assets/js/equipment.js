@@ -288,9 +288,15 @@ function LoadTable() {
 		onClickButton: function () {
 			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
 			if (gsr) {
-				$('#pg_add_edit').dialog({autoOpen: false, height: 440, width: 620, modal: true, title: 'Перемещение имущества'});
-				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('route/controller/client/view/equipment/move.php?step=move&id=' + gsr);
+				$('#pg_add_edit').dialog({
+					height: 440,
+					width: 620,
+					modal: true,
+					title: 'Перемещение имущества',
+					open: function () {
+						$(this).load('route/controller/client/view/equipment/move.php?id=' + gsr);
+					}
+				});
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}

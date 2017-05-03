@@ -33,10 +33,10 @@ $cfg = Config::getInstance();
 					}
 				}
 			});
-			if (error == 1) {
-				$('#messenger').addClass('alert alert-danger');
-				$('#messenger').html('Не все обязательные поля заполнены!');
-				$('#messenger').fadeIn('slow');
+			if (error === 1) {
+				$('#messenger').addClass('alert alert-danger')
+						.html('Не все обязательные поля заполнены!')
+						.fadeIn('slow');
 				return false;
 			}
 			return true;
@@ -44,7 +44,7 @@ $cfg = Config::getInstance();
 	});
 	$(document).ready(function () {
 		$('#myForm').ajaxForm(function (msg) {
-			if (msg != 'ok') {
+			if (msg !== 'ok') {
 				$('#messenger').html(msg);
 			} else {
 				$('#dtpost').datepicker('destroy');
