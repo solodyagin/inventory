@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,33 +10,57 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 class Config {
 
 	use Singleton;
 
-	public $sitename;   // название сайта
-	public $ad;   // использовать для аутентификации Active Directory 0-нет 1-да
-	public $domain1;   // домен AD первого уровня (например khortitsa)
-	public $domain2;   // домен AD второго уровня (например com)
-	public $ldap;   // сервер ldap
-	public $theme;  // тема по умолчанию
-	public $emailadmin; // от кого будем посылать почту
-	public $smtphost;  // сервер SMTP
-	public $smtpauth;  // требуется аутентификация?
+	public $debug; // Режим отладки
+	public $db_host; // Хост БД
+	public $db_user; // Пользователь БД
+	public $db_pass; // Пароль пользователя БД
+	public $db_name; // Имя БД
+	public $db_char; // Кодировка БД
+	public $rewrite_base; // Размещение системы относительно корня сайта
+	public $sitename; // Название сайта
+	public $ad;   // Использовать для аутентификации Active Directory 0-нет, 1-да
+	public $domain1;   // Домен AD первого уровня (например khortitsa)
+	public $domain2;   // Домен AD второго уровня (например com)
+	public $ldap;   // Сервер ldap, включая протокол ldap:// или ldaps://
+	public $theme;  // Шаблон по умолчанию
+	public $emailadmin; // От кого будем посылать почту
+	public $smtphost;  // Сервер SMTP
+	public $smtpauth;  // Требуется аутентификация?
 	public $smtpport, $smtpusername, $smtppass;  // SMTP порт,пользователь,пароль пользователя для входа
-	public $emailreplyto; // куда слать ответы
-	public $sendemail;  // а вообще будем посылать почту?
-	public $version;  // версия платформы
-	public $defaultorgid;   // организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
-	public $urlsite;  // где находится сайт http://
-	public $navbar = array(); // навигационная последовательность
-	public $quickmenu = array(); // "быстрое меню"
-	public $style = 'Bootstrap';   //стиль грида по умолчанию
-	public $fontsize = '12px';   //стиль грида по умолчанию 
+	public $emailreplyto; // Куда слать ответы
+	public $sendemail;  // А вообще будем посылать почту?
+	public $version;  // Версия платформы
+	public $defaultorgid;   // Организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
+	public $urlsite;  // Где находится сайт http://
+	public $navbar = array(); // Навигационная последовательность
+	public $quickmenu = array(); // "Быстрое меню"
+	public $style = 'Bootstrap';   // Стиль грида по умолчанию
+	public $fontsize = '12px';   // Стиль грида по умолчанию
 
-	function GetConfigFromBase() {
+	/**
+	 *  Получает настройки из файла конфигурации
+	 */
+	function loadFromFile() {
+		$res = include_once(WUO_ROOT . '/config.php');
+		if ($res) {
+			$this->debug = $debug; // Режим отладки
+			$this->db_host = $mysql_host; // Хост БД
+			$this->db_user = $mysql_user; // Пользователь БД
+			$this->db_pass = $mysql_pass; // Пароль пользователя БД
+			$this->db_name = $mysql_base; // Имя базы
+			$this->db_char = $mysql_char; // Кодировка базы
+			$this->rewrite_base = $rewrite_base; // Размещение системы относительно корня сайта
+		}
+		return $res;
+	}
+
+	function loadFromDB() {
 		try {
 			$row = DB::prepare('SELECT * FROM config')->execute()->fetch();
 			if ($row) {
@@ -68,18 +92,28 @@ class Config {
 				}
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Config.GetConfigFromBase', 0, $ex);
+			throw new DBException('Ошибка выполнения Config.loadFromDB()', 0, $ex);
 		}
 	}
 
-	function SetConfigToBase() {
+	function saveToDB() {
 		$sql = <<<TXT
-UPDATE config
-SET ad = :ad, domain1 = :domain1, domain2 = :domain2, sitename = :sitename,
-    theme = :theme, ldap = :ldap, emailadmin = :emailadmin,
-    smtphost = :smtphost, smtpauth = :smtpauth, smtpport = :smtpport,
-    smtpusername = :smtpusername, smtppass = :smtppass, emailreplyto = :emailreplyto,
-    sendemail = :sendemail, urlsite = :urlsite
+UPDATE	config
+SET		ad = :ad,
+		domain1 = :domain1,
+		domain2 = :domain2,
+		sitename = :sitename,
+		theme = :theme,
+		ldap = :ldap,
+		emailadmin = :emailadmin,
+		smtphost = :smtphost,
+		smtpauth = :smtpauth,
+		smtpport = :smtpport,
+		smtpusername = :smtpusername,
+		smtppass = :smtppass,
+		emailreplyto = :emailreplyto,
+		sendemail = :sendemail,
+		urlsite = :urlsite
 TXT;
 		try {
 			DB::prepare($sql)->execute(array(

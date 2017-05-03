@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,7 +9,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $id = GetDef('id');
 
@@ -18,7 +18,7 @@ $user = User::getInstance();
 // Если пользователь - "Администратор"
 if ($user->isAdmin()):
 	$tmpuser = new BaseUser();
-	$tmpuser->GetById($id);
+	$tmpuser->getById($id);
 	$orgid = $tmpuser->orgid;
 	$login = $tmpuser->login;
 	$email = $tmpuser->email;
@@ -66,7 +66,7 @@ if ($user->isAdmin()):
 	</script>
 	<div class="container-fluid">
 		<div class="row">
-			<form role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/users/libre_users_form.php?step=edit&id=<?= $id; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/users/libre_users_form.php?step=edit&id=<?= $id; ?>" method="post" name="form1" target="_self">
 				<div class="form-group">
 					<label for="orgid">Организация:</label>
 					<select class="chosen-select form-control" name="orgid" id="orgid">

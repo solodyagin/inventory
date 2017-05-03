@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,7 +9,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $userid = GetDef('userid');
 $addnone = GetDef('addnone');
@@ -25,7 +25,7 @@ try {
 	foreach ($arr as $row) {
 		$z = $row['id'];
 		$zx = new BaseUser();
-		$zx->GetById($z);
+		$zx->getById($z);
 		$sl = ($z == $userid) ? 'selected' : '';
 		echo "<option value=\"$z\" $sl>$zx->fio({$row['login']})</option>";
 		unset($zx);

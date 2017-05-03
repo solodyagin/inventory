@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
 function ListEqByPlaces(oid, pid, plpid) {
 	if (!$('#gr').prop('checked')) {
 		jQuery('#list2').jqGrid({
-			url: '/route/controller/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
+			url: 'route/controller/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 			datatype: 'json',
 			colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 			colModel: [
@@ -39,7 +39,7 @@ function ListEqByPlaces(oid, pid, plpid) {
 		});
 	} else {
 		jQuery('#list2').jqGrid({
-			url: '/route/controller/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
+			url: 'route/controller/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 			datatype: 'json',
 			colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 			colModel: [
@@ -153,7 +153,7 @@ function UpdateChosen() {
 }
 
 function GetListPlaces(orgid, placesid) {
-	url = '/route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid + '&addnone=true';
+	url = 'route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid + '&addnone=true';
 	$.get(url, function (data) {
 		$('#sel_pom').html(data);
 		UpdateChosen();
@@ -161,7 +161,7 @@ function GetListPlaces(orgid, placesid) {
 }
 
 function GetListUsers(orgid, userid) {
-	url = '/route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid + '&addnone=true';
+	url = 'route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid + '&addnone=true';
 	$.get(url, function (data) {
 		$('#sel_plp').html(data);
 		UpdateChosen();

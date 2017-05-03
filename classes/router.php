@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -11,22 +11,27 @@
 
 class Router {
 
-	public static $args = []; // Переданные в url параметры
+	public static $params = []; // Переданные в url GET-параметры
 
 	static function start() {
+		$cfg = Config::getInstance();
+
 		$uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
+		if (strpos($uri, $cfg->rewrite_base) === 0) {
+			$uri = substr($uri, strlen($cfg->rewrite_base));
+		}
 		list($path, $args) = array_pad(explode('?', $uri, 2), 2, null);
 
 		// Получаем параметры
 		$query = parse_url($uri, PHP_URL_QUERY);
 		if (!empty($query)) {
-			parse_str($query, self::$args);
+			parse_str($query, self::$params);
 		}
 
 		$routes = explode('/', $path);
 
-		$controller_name = (!empty($routes[1])) ? ucfirst(strtolower($routes[1])) : 'Home';
-		$action_name = strtolower(((!empty($routes[2])) ? $routes[2] : 'index'));
+		$controller_name = (!empty($routes[0])) ? ucfirst(strtolower($routes[0])) : 'Home';
+		$action_name = strtolower(((!empty($routes[1])) ? $routes[1] : 'index'));
 
 		// Добавляем префикс
 		$controller_name = 'Controller_' . $controller_name;
@@ -48,14 +53,15 @@ class Router {
 	}
 
 	static function redirect($to) {
+		$cfg = Config::getInstance();
 		switch ($to) {
 			case 'error404':
 				header('HTTP/1.1 404 Not Found');
 				header('Status: 404 Not Found');
 				break;
 		}
-		header("Location: /{$to}");
-		exit;
+		header("Location: {$cfg->rewrite_base}{$to}");
+		exit();
 	}
 
 }

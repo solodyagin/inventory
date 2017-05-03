@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -16,7 +16,7 @@ var addOptions = {
 	closeOnEscape: true
 };
 jQuery('#list2').jqGrid({
-	url: '/route/controllercontroller/server/knt/libre_knt.php?org_status=list',
+	url: 'route/controllercontroller/server/knt/libre_knt.php?org_status=list',
 	datatype: 'json',
 	colNames: [' ', 'Id', 'Имя', 'Инн', 'Кпп', 'Пок', 'Прод', 'Контролировать', 'ERPCode', 'Комментарий', 'Действия'],
 	colModel: [
@@ -38,15 +38,15 @@ jQuery('#list2').jqGrid({
 	scroll: 1,
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: '/route/controllercontroller/server/knt/libre_knt.php?org_status=edit',
+	editurl: 'route/controllercontroller/server/knt/libre_knt.php?org_status=edit',
 	caption: 'Справочник контрагентов',
 	onSelectRow: function (ids) {
 		$('#list4').css('visibility', 'hidden');
 		$('#simple-btn').css('visibility', 'hidden');
-		jQuery('#list3').jqGrid('setGridParam', {url: '/route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids});
-		jQuery('#list3').jqGrid('setGridParam', {editurl: '/route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids});
+		jQuery('#list3').jqGrid('setGridParam', {url: 'route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids});
+		jQuery('#list3').jqGrid('setGridParam', {editurl: 'route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids});
 		jQuery('#list3').jqGrid({
-			url: '/route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids,
+			url: 'route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids,
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Номер', 'Название', 'Начало', 'Конец', 'Рабочий', 'Комментарий', 'Действия'],
 			colModel: [
@@ -88,16 +88,16 @@ jQuery('#list2').jqGrid({
 			scroll: 1,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: '/route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids,
+			editurl: 'route/controllercontroller/server/knt/getcontrakts.php?idknt=' + ids,
 			caption: 'Заключенные договора',
 			onSelectRow: function (ids) {
 				$('#list4').css('visibility', 'visible');
 				$('#simple-btn').css('visibility', 'visible');
 				$('#simple-btn').fileapi('data', {'contractid': ids});
-				jQuery('#list4').jqGrid('setGridParam', {url: '/route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids});
-				jQuery('#list4').jqGrid('setGridParam', {editurl: '/route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids});
+				jQuery('#list4').jqGrid('setGridParam', {url: 'route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids});
+				jQuery('#list4').jqGrid('setGridParam', {editurl: 'route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids});
 				jQuery('#list4').jqGrid({
-					url: '/route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids,
+					url: 'route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids,
 					datatype: 'json',
 					colNames: ['Id', 'Имя файла', 'Действия'],
 					colModel: [
@@ -112,7 +112,7 @@ jQuery('#list2').jqGrid({
 					scroll: 1,
 					viewrecords: true,
 					sortorder: 'asc',
-					editurl: '/route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids,
+					editurl: 'route/controllercontroller/server/knt/getfilescontrakts.php?idcontract=' + ids,
 					caption: 'Прикрепленные файлы'
 				}).trigger('reloadGrid');
 				jQuery('#list4').jqGrid('navGrid', '#pager4', {edit: false, add: false, del: false, search: false});
@@ -142,7 +142,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 	}
 });
 $('#simple-btn').fileapi({
-	url: '/route/controllercontroller/server/common/uploadanyfiles.php',
+	url: 'route/controllercontroller/server/common/uploadanyfiles.php',
 	data: {'geteqid': 0},
 	multiple: true,
 	maxSize: 20 * FileAPI.MB,

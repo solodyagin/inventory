@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,9 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
+
+$user = User::getInstance();
 
 $page = GetDef('page', 1);
 if ($page == 0) {
@@ -138,7 +140,7 @@ ON         places.id = placesidto
 INNER JOIN users_profile
 ON         users_profile.usersid = useridto
 INNER JOIN nome
-ON         nome.id = mv.nomeid 
+ON         nome.id = mv.nomeid
 $where
 ORDER BY   $sidx $sord
 LIMIT      $start, $limit
@@ -161,24 +163,24 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
 	$sql = 'UPDATE move SET comment = :comment WHERE id = :id';
 	try {
 		DB::prepare($sql)->execute(array(':comment' => $comment, ':id' => $id));
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу обновить комментарий', 0, $ex);
 	}
-	exit;
+	exit();
 }
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
 	$sql = 'DELETE FROM move WHERE id = :id';
 	try {
 		DB::prepare($sql)->execute(array(':id' => $id));
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу удалить запись о перемещении', 0, $ex);
 	}
-	exit;
+	exit();
 }

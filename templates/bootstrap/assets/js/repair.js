@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
 var lastsel3;
 
 jQuery('#list_rep').jqGrid({
-	url: '/route/controller/server/equipment/repair.php?step=list&id=' + repid + '&eqid=' + repid,
+	url: 'route/controller/server/equipment/repair.php?step=list&id=' + repid + '&eqid=' + repid,
 	datatype: 'json',
 	colNames: ['Id', 'Контрагент', 'ТМЦ', 'Дата начала', 'Дата конца', 'Стоимость', 'Комментарий', 'Статус'],
 	colModel: [
@@ -38,7 +38,7 @@ jQuery('#list_rep').jqGrid({
 	sortname: 'rpid',
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: '/route/controller/server/equipment/repair.php?step=edit',
+	editurl: 'route/controller/server/equipment/repair.php?step=edit',
 	caption: 'Реестр ремонтов'
 });
 

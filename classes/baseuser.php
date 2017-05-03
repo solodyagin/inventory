@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,26 +10,25 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 class BaseUser {
 
-	var $id; // идентификатор пользователя
-	var $randomid; // случайный идентификатор (время от времени может менятся)
-	var $orgid; // принадлежность к организации
-	var $login; // логин
-	var $password; // хешированный пароль
-	var $salt; // соль для хеширования пароля
-	var $email; // электронная почта
-	var $mode; // 0 - пользователь 1- админ
-	var $lastdt; // дата и время последнего посещения
-	var $active; // 1-не помечен на удаление
-	// далее выдергивается из профиля если оный есть по GetById
-	var $fio; // фамилия имя отчество
-	var $telephonenumber; // телефонный номер (сотовый)
-	var $homephone; // телефонный номер (альтернатива)
-	var $jpegphoto; // фотография из папки photos
-	var $post; // должность
+	public $id; // Идентификатор пользователя
+	public $randomid; // Случайный идентификатор (время от времени может меняться)
+	public $orgid; // Принадлежность к организации
+	public $login; // Логин
+	public $password; // Хешированный пароль
+	public $salt; // Соль для хеширования пароля
+	public $email; // Электронная почта
+	public $mode; // 0 - пользователь 1 - администратор
+	public $lastdt; // Дата и время последнего посещения
+	public $active; // 1 - не помечен на удаление
+	public $fio; // Фамилия, Имя, Отчество
+	public $telephonenumber; // Номер телефона (сотовый)
+	public $homephone; // Номер телефона (альтернатива)
+	public $jpegphoto; // Фотография из папки photos
+	public $post; // Должность
 
 	/**
 	 * Проверяем соответствие роли
@@ -122,19 +121,23 @@ TXT;
 	}
 
 	/**
-	 * Получить данные о пользователе по логину
-	 * @param type $login
+	 * Получает данные о пользователе из базы
+	 * @param string $where
+	 * @param array $params
+	 * @return boolean
 	 */
-	function GetByLogin($login) {
-		$sql = <<<TXT
-SELECT	p.*, u.*, u.`id` sid
+	function select($where, $params) {
+		try {
+			$row = DB::prepare(<<<SQL
+SELECT	p.*,
+		u.*,
+		u.`id` sid
 FROM	`users` u
 	LEFT JOIN `users_profile` p
 		ON p.`usersid` = u.`id`
-WHERE	u.`login` = :login
-TXT;
-		try {
-			$row = DB::prepare($sql)->execute(array(':login' => $login))->fetch();
+WHERE	{$where}
+SQL
+					)->execute($params)->fetch();
 			if ($row) {
 				$this->id = $row['sid'];
 				$this->randomid = $row['randomid'];
@@ -154,126 +157,36 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.GetByLogin', 0, $ex);
+			throw new DBException('Ошибка при получении данных пользователя', 0, $ex);
 		}
 		return false;
 	}
 
 	/**
-	 * Получить данные о пользователе по логину и паролю
-	 * @param type $login
-	 * @param type $pass
+	 * Получить данные о пользователе по логину
+	 * @param string $login
+	 * @return boolean
 	 */
-	function GetByLoginPass($login, $pass) {
-		$sql = <<<TXT
-SELECT	p.*, u.*, u.`id` sid
-FROM	`users` u
-	LEFT JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-WHERE	u.`login` = :login AND
-		u.`password` = SHA1(CONCAT(SHA1(:pass), u.`salt`))
-TXT;
-		try {
-			$row = DB::prepare($sql)->execute(array(':login' => $login, ':pass' => $pass))->fetch();
-			if ($row) {
-				$this->id = $row['sid'];
-				$this->randomid = $row['randomid'];
-				$this->orgid = $row['orgid'];
-				$this->login = $row['login'];
-				$this->password = $row['password'];
-				$this->salt = $row['salt'];
-				$this->email = $row['email'];
-				$this->mode = $row['mode'];
-				$this->lastdt = $row['lastdt'];
-				$this->active = $row['active'];
-				$this->telephonenumber = $row['telephonenumber'];
-				$this->jpegphoto = $row['jpegphoto'];
-				$this->homephone = $row['homephone'];
-				$this->fio = $row['fio'];
-				$this->post = $row['post'];
-				return true;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.GetByLoginPass', 0, $ex);
-		}
-		return false;
+	function getByLogin($login) {
+		return $this->select('u.`login` = :login', array(':login' => $login));
 	}
 
 	/**
 	 * Получить данные о пользователе по идентификатору
-	 * @param type $id
+	 * @param integer $id
+	 * @return boolean
 	 */
-	function GetById($id) {
-		$sql = <<<TXT
-SELECT	p.*, u.*, u.`id` sid
-FROM	`users` u
-	LEFT JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-WHERE	u.`id` = :id
-TXT;
-		try {
-			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
-			if ($row) {
-				$this->id = $row['sid'];
-				$this->randomid = $row['randomid'];
-				$this->orgid = $row['orgid'];
-				$this->login = $row['login'];
-				$this->password = $row['password'];
-				$this->salt = $row['salt'];
-				$this->email = $row['email'];
-				$this->mode = $row['mode'];
-				$this->lastdt = $row['lastdt'];
-				$this->active = $row['active'];
-				$this->telephonenumber = $row['telephonenumber'];
-				$this->jpegphoto = $row['jpegphoto'];
-				$this->homephone = $row['homephone'];
-				$this->fio = $row['fio'];
-				$this->post = $row['post'];
-				return true;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.GetById', 0, $ex);
-		}
-		return false;
+	function getById($id) {
+		return $this->select('u.`id` = :id', array(':id' => $id));
 	}
 
 	/**
 	 * Получить данные о пользователе по идентификатору randomid
-	 * @param type $randomid
+	 * @param string $randomid
 	 * @return boolean
 	 */
-	function GetByRandomId($randomid) {
-		$sql = <<<TXT
-SELECT	p.*, u.*, u.`id` sid
-FROM	`users` u
-	LEFT JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-WHERE	u.`randomid` = :randomid
-TXT;
-		try {
-			$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
-			if ($row) {
-				$this->id = $row['sid'];
-				$this->randomid = $row['randomid'];
-				$this->orgid = $row['orgid'];
-				$this->login = $row['login'];
-				$this->password = $row['password'];
-				$this->salt = $row['salt'];
-				$this->email = $row['email'];
-				$this->mode = $row['mode'];
-				$this->lastdt = $row['lastdt'];
-				$this->active = $row['active'];
-				$this->telephonenumber = $row['telephonenumber'];
-				$this->jpegphoto = $row['jpegphoto'];
-				$this->homephone = $row['homephone'];
-				$this->fio = $row['fio'];
-				$this->post = $row['post'];
-				return true;
-			}
-		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.GetByRandomId', 0, $ex);
-		}
-		return false;
+	function getByRandomId($randomid) {
+		return $this->select('u.`randomid` = :randomid', array(':randomid' => $randomid));
 	}
 
 	/**
@@ -281,7 +194,7 @@ TXT;
 	 * @param type $randomid
 	 * @return boolean
 	 */
-	function GetByRandomIdNoProfile($randomid) {
+	function getByRandomIdNoProfile($randomid) {
 		$sql = 'SELECT * FROM `users` WHERE `randomid` = :randomid';
 		try {
 			$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
@@ -299,7 +212,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.GetByRandomIdNoProfile', 0, $ex);
+			throw new DBException('Ошибка выполнения User.getByRandomIdNoProfile', 0, $ex);
 		}
 		return false;
 	}
@@ -343,7 +256,7 @@ TXT;
 
 		$zx = new BaseUser();
 
-		if ($zx->GetByRandomIdNoProfile($this->randomid)) {
+		if ($zx->getByRandomIdNoProfile($this->randomid)) {
 			// добавляю профиль
 			$sql = <<<TXT
 INSERT INTO `users_profile`
@@ -365,9 +278,10 @@ TXT;
 		} else {
 			die('Не найден пользователь по randomid User.Add');
 		}
+		unset($zx);
 	}
-	
-	function isAdmin(){
+
+	function isAdmin() {
 		return ($this->mode == 1);
 	}
 

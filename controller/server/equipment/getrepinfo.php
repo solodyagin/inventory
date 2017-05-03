@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $page = GetDef('page', 1);
 if ($page == 0) {
@@ -121,13 +121,13 @@ TXT;
 			}
 			$zz = new BaseUser();
 			if ($row['userto'] != '-1') {
-				$zz->GetById($row['userto']);
+				$zz->getById($row['userto']);
 				$row['userto'] = $zz->fio;
 			} else {
 				$row['userto'] = 'не задано';
 			}
 			if ($row['userfrom'] != '-1') {
-				$zz->GetById($row['userfrom']);
+				$zz->getById($row['userfrom']);
 				$row['userfrom'] = $zz->fio;
 			} else {
 				$row['userfrom'] = 'не задано';

@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -13,7 +13,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $user = User::getInstance();
 
@@ -35,7 +35,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 	</div>
 	<script>
 		$('#bdel').click(function () {
-			$('#infoblock').load('/route/controller/server/delete/delete.php');
+			$('#infoblock').load('route/controller/server/delete/delete.php');
 			return false;
 		});
 	</script>

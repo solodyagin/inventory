@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,7 +9,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 // Если пользователь - "Администратор"
 if ($user->mode == 1):
@@ -55,7 +55,7 @@ if ($user->mode == 1):
 	</script>
 	<div class="container-fluid">
 		<div class="row">
-			<form role="form" id="myForm" enctype="multipart/form-data" action="/route/controller/server/users/libre_users_form.php?step=add" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/users/libre_users_form.php?step=add" method="post" name="form1" target="_self">
 				<div class="form-group">
 					<label for="orgid">Организация</label>
 					<select class="chosen-select form-control" name="orgid" id="orgid">
