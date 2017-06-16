@@ -103,7 +103,7 @@ jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
 	}
 });
 jQuery('#list2').jqGrid('navButtonAdd', '#pager2', {
-	caption: '<i class="fa fa-users" aria-hidden="true"></i>',
+	caption: '<i class="fa fa-id-card-o" aria-hidden="true"></i>',
 	title: 'Профиль',
 	buttonicon: 'none',
 	onClickButton: function () {

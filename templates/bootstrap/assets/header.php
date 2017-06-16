@@ -77,7 +77,7 @@ $base_href = $cfg->rewrite_base;
 				'.chosen-select-no-single': {disable_search_threshold: 4},
 				'.chosen-select-no-results': {no_results_text: 'Ничего не найдено!'},
 				'.chosen-select-width': {width: '95%'}
-			}
+			};
 
 			$(function () {
 				$.localise('ui-multiselect', {/*language: 'en',*/ path: 'templates/<?= $cfg->theme; ?>/js/locale/'});
@@ -95,18 +95,22 @@ $base_href = $cfg->rewrite_base;
 				<a href="#menu"></a>
 			</div>
 			<div id="blob" data-placement="bottom" class="quickmenu" rel="popover">
-				<?php
-				$mm = '';
-				for ($i = 0; $i < count($cfg->quickmenu); $i++) {
-					$mm .= $cfg->quickmenu[$i];
-				}
-				?>
-				<strong><?= $cfg->sitename; ?></strong>
-				<span class="caret"></span>
+				<strong><?= $cfg->sitename; ?></strong><span class="caret"></span>
 			</div>
 			<script>
-				$('#blob').popover({title: 'Быстрые ссылки', delay: {'show': 500, 'hide': 100}, html: true, content: '<?= $mm; ?>'});
+	<?php
+	$mm = '';
+	for ($i = 0; $i < count($cfg->quickmenu); $i++) {
+		$mm .= $cfg->quickmenu[$i];
+	}
+	?>
+				$('#blob').popover({
+					title: 'Быстрые ссылки',
+					//delay: {'show': 500, 'hide': 100},
+					html: true,
+					content: '<?= $mm; ?>'
+				});
 			</script>
 			<?php
-
-		 endif;
+		endif;
+		?>

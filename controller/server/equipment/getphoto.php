@@ -23,14 +23,12 @@ try {
 	throw new DBException('Не могу выбрать список фото!', 0, $ex);
 }
 ?>
-<div class="thumbnails">
-    <a href="#" class="thumbnail">
-		<?php
-		if ($photo != '') {
-			echo '<img src="photos/' . $photo . '">';
-		} else {
-			echo '<img src="templates/' . $cfg->theme . '/img/noimage.jpg">';
-		}
-		?>
-	</a>
+<div class="thumbnail">
+	<?php
+	if ($photo != '') {
+		echo '<img src="photos/' . $photo . '">';
+	} else {
+		echo '<img src="templates/' . $cfg->theme . '/img/noimage.jpg">';
+	}
+	?>
 </div>
