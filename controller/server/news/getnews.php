@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $num = GetDef('num', '0');
 
@@ -28,7 +28,7 @@ try {
 		$pieces = explode('<!-- pagebreak -->', $row['body']);
 		echo "<p>$pieces[0]</p>";
 		if (isset($pieces[1])) {
-			echo '<div align="right"><a class="btn btn-primary btn-xs" href="/news/read?id=' . $row['id'] . '">Читать дальше</a></div>';
+			echo '<div align="right"><a href="news/read?id=' . $row['id'] . '">Читать дальше</a></div>';
 		}
 		$rz++;
 	}

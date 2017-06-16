@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 /**
  * Функция автоматической загрузки классов
@@ -41,17 +41,35 @@ function __autoload($class) {
 	require_once $filename;
 }
 
-/**
- * Задаём обработчик исключений
- */
+/* Получаем настройки из файла конфигурации */
+$cfg = Config::getInstance();
+$cfg->loadFromFile();
+
+// Если активен режим отладки, то показываем все ошибки и предупреждения
+if ($cfg->debug) {
+	ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+}
+
+/* Задаём обработчик исключений */
 set_exception_handler(function ($ex) {
-	global $debug;
+	$cfg = Config::getInstance();
 	switch (get_class($ex)) {
 		case 'DBException':
 			$pr = $ex->getPrevious();
-			die(($pr && $debug) ? $ex->getMessage() . ': ' . $pr->getMessage() : $ex->getMessage());
+			die(($pr && $cfg->debug) ? $ex->getMessage() . ': ' . $pr->getMessage() : $ex->getMessage());
 			break;
 		default:
 			throw $ex;
 	}
 });
+
+/* Получаем настройки из базы */
+$cfg->loadFromDB();
+
+/* Загружаем все что нужно для работы движка */
+include_once WUO_ROOT . '/inc/functions.php'; // Загружаем функции
+
+/* Аутентифицируем пользователя по кукам */
+$user = User::getInstance();
+$user->loginByCookie();

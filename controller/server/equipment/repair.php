@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $step = GetDef('step');
 $eqid = GetDef('eqid');
@@ -20,7 +20,9 @@ if ($id != '') {
 	$eqid = $id;
 }
 
-if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
+$user = User::getInstance();
+
+if ($user->isAdmin() || $user->TestRoles('1,4,5,6')) {
 	if ($step == 'add') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		if ($dtpost == '') {
@@ -40,8 +42,8 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 		if (count($err) == 0) {
 			$sql = <<<TXT
 INSERT INTO repair
-            (id, dt, kntid, eqid, cost, comment, dtend, status)
-VALUES      (NULL, :dt, :kntid, :eqid, :cost, :comment, :dtend, '1')
+		(dt, kntid, eqid, cost, comment, dtend, status, userfrom, userto, doc)
+VALUES	(:dt, :kntid, :eqid, :cost, :comment, :dtend, '1', 0, 0, '')
 TXT;
 			try {
 				DB::prepare($sql)->execute(array(
@@ -113,51 +115,48 @@ TXT;
 		$responce->records = $count;
 
 		$sql = <<<TXT
-SELECT     rp2.reqid   AS reqid,
-           rp2.rstatus AS rstatus,
-           rp2.rpid    AS rpid,
-           knt.id      AS kntid,
-           knt.name    AS namekont,
-           rp2.kntid,
-           rp2.dt,
-           rp2.cost,
-           rp2.comment,
-           rp2.dtend,
-           rp2.nomeid,
-           rp2.name AS namenome
-FROM       knt
-INNER JOIN
-           (
-                      SELECT     rp.reqid   AS reqid,
-                                 rp.rstatus AS rstatus,
-                                 rp.rpid    AS rpid,
-                                 nome.name,
-                                 rp.kntid,
-                                 rp.dt,
-                                 rp.cost,
-                                 rp.comment,
-                                 rp.dtend,
-                                 rp.nomeid
-                      FROM       nome
-                      INNER JOIN
-                                 (
-                                            SELECT     repair.eqid   AS reqid,
-                                                       repair.status AS rstatus,
-                                                       repair.id     AS rpid,
-                                                       repair.kntid,
-                                                       repair.dt,
-                                                       repair.cost,
-                                                       repair.comment,
-                                                       repair.dtend,
-                                                       equipment.nomeid
-                                            FROM       repair
-                                            INNER JOIN equipment
-                                            ON         repair.eqid = equipment.id) AS rp
-                      ON         rp.nomeid = nome.id) AS rp2
-ON         rp2.kntid = knt.id
+SELECT	rp2.reqid AS reqid,
+		rp2.rstatus AS rstatus,
+		rp2.rpid AS rpid,
+		knt.id AS kntid,
+		knt.name    AS namekont,
+		rp2.kntid,
+		rp2.dt,
+		rp2.cost,
+		rp2.comment,
+		rp2.dtend,
+		rp2.nomeid,
+		rp2.name AS namenome
+FROM	knt
+INNER JOIN (
+	SELECT	rp.reqid AS reqid,
+			rp.rstatus AS rstatus,
+			rp.rpid AS rpid,
+			nome.name,
+			rp.kntid,
+			rp.dt,
+			rp.cost,
+			rp.comment,
+			rp.dtend,
+			rp.nomeid
+	FROM	nome
+	INNER JOIN (
+		SELECT	repair.eqid AS reqid,
+				repair.status AS rstatus,
+				repair.id AS rpid,
+				repair.kntid,
+				repair.dt,
+				repair.cost,
+				repair.comment,
+				repair.dtend,
+				equipment.nomeid
+		FROM	repair
+		INNER JOIN equipment ON repair.eqid = equipment.id) AS rp
+	ON rp.nomeid = nome.id) AS rp2
+ON rp2.kntid = knt.id
 $where
-ORDER BY   $sidx $sord
-LIMIT      $start, $limit
+ORDER BY	$sidx $sord
+LIMIT		$start, $limit
 TXT;
 		try {
 			$arr = DB::prepare($sql)->execute()->fetchAll();

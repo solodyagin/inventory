@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 /**
  * Класс для работы с модулями
@@ -21,7 +21,7 @@ class Mod {
 	var $name;   // наименование модуля
 	var $comment; // краткое описание модуля
 	var $copy;   // какие-нибудь копирайты, например автор, ссылка на сайт автора и т.п.
-	var $active; // 1 - включен, 0 - выключен 
+	var $active; // 1 - включен, 0 - выключен
 
 	/**
 	 * Регистрируем модуль в системе
@@ -72,7 +72,7 @@ class Mod {
 	}
 
 	/**
-	 * Активирует модуль в системе 
+	 * Активирует модуль в системе
 	 * @param string $name
 	 */
 	function Activate($name) {
@@ -98,17 +98,17 @@ class Mod {
 	}
 
 	/**
-	 * проверяем включен модуль или нет?
+	 * Проверяем включен модуль или нет?
 	 * @param string $name
-	 * @return integer
+	 * @return boolean
 	 */
 	function IsActive($name) {
-		$active = 0;
+		$active = false;
 		try {
 			$sql = 'SELECT * FROM config_common WHERE nameparam = :modname';
 			$row = DB::prepare($sql)->execute(array(':modname' => "modulename_$name"))->fetch();
 			if ($row) {
-				$active = $row['valueparam'];
+				$active = ($row['valueparam'] == '1');
 			}
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения Mod.IsActive', 0, $ex);

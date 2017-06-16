@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -13,11 +13,11 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 // Проверка: включен ли модуль "cloud"?
 $mod = new Mod();
-$active = ($mod->IsActive('cloud') == 1);
+$active = $mod->IsActive('cloud');
 unset($mod);
 if (!$active):
 	?>

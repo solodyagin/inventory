@@ -1,6 +1,6 @@
 <?php
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -9,7 +9,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 $step = GetDef('step');
 $id = GetDef('id');
@@ -34,7 +34,7 @@ if ($step == 'edit') {
 	$id = '';
 }
 ?>
-<script src="/js/tinymce/jquery.tinymce.min.js"></script>
+<script src="js/tinymce/jquery.tinymce.min.js"></script>
 <script>
 	$('#pg_add_edit').dialog({
 		close: function () {
@@ -79,7 +79,7 @@ if ($step == 'edit') {
 			$('.textarea').tinymce().hide();
 		}
 		$('textarea').tinymce({
-			script_url: '/js/tinymce/tinymce.min.js',
+			script_url: 'js/tinymce/tinymce.min.js',
 			theme: 'modern',
 			mode: 'none',
 			'theme_advanced_buttons3_add': 'code',
@@ -97,7 +97,7 @@ if ($step == 'edit') {
 		$('#dtpost').datepicker('setDate', "<?= $dtpost; ?>");
 <?php endif; ?>
 </script>
-<form enctype="multipart/form-data" action="/news/<?= $step; ?>?newsid=<?= $id; ?>" method="post" name="form1" target="_self">
+<form enctype="multipart/form-data" action="news/<?= $step; ?>?newsid=<?= $id; ?>" method="post" name="form1" target="_self">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
@@ -114,7 +114,7 @@ if ($step == 'edit') {
 		</div>
 		<div class="row">
 			<div class="col-md-offset-10 col-md-2">
-				<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">	
+				<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">
 			</div>
 		</div>
 		<div class="row-fluid">

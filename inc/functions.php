@@ -1,7 +1,7 @@
 <?php
 
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -10,7 +10,7 @@
  */
 
 // Запрещаем прямой вызов скрипта.
-defined('WUO_ROOT') or die('Доступ запрещён');
+defined('WUO') or die('Доступ запрещён');
 
 /**
  * Массив переданных скрипту параметров при загрузке его через index.php
@@ -278,7 +278,7 @@ function smtpmail($to, $subject, $content, $attach = false) {
  * @return integer
  * @throws DBException
  */
-function DoubleLogin($login) { // 
+function DoubleLogin($login) { //
 	$cnt = 0;
 	$sql = 'SELECT COUNT(id) as cnt FROM users WHERE login = :login';
 	try {

@@ -1,5 +1,5 @@
 /*
- * WebUseOrg3 - учёт оргтехники в организации
+ * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
  * Разработчики:
  *   Грибов Павел,
@@ -8,7 +8,7 @@
  */
 
 jQuery('#list2').jqGrid({
-	url: '/route/controller/server/config/md.php',
+	url: 'modules/get',
 	datatype: 'json',
 	colNames: ['Id', 'Имя', 'Комментарий', 'Автор', 'Включено', 'Действия'],
 	colModel: [
@@ -25,9 +25,10 @@ jQuery('#list2').jqGrid({
 	rowNum: 30,
 	viewrecords: true,
 	sortorder: 'asc',
-	editurl: '/route/controller/server/config/md.php',
+	editurl: 'modules/change',
 	caption: 'Модули системы'
 });
+
 // загружаем навигационную панель
 jQuery('#list2').jqGrid('navGrid', '#pager2', {edit: false, add: false, del: false, search: false});
 jQuery('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);
