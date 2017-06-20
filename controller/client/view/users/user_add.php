@@ -11,8 +11,10 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
+$user = User::getInstance();
+
 // Если пользователь - "Администратор"
-if ($user->mode == 1):
+if ($user->isAdmin()):
 	?>
 	<script>
 		$(function () {
@@ -53,6 +55,20 @@ if ($user->mode == 1):
 			});
 		});
 	</script>
+	<style>
+		.input-group-btn{
+			font-size: inherit;
+		}
+	</style>
+	<script src="js/jquery.passgen.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#pass').val($.passGen());
+			$('#passgen').click(function () {
+				$('#pass').val($.passGen());
+			});
+		});
+	</script>
 	<div class="container-fluid">
 		<div class="row">
 			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/users/libre_users_form.php?step=add" method="post" name="form1" target="_self">
@@ -76,7 +92,12 @@ if ($user->mode == 1):
 				</div>
 				<div class="form-group">
 					<input class="form-control" placeholder="Логин" name="login" id="login" value="">
-					<input class="form-control" placeholder="Пароль" name="pass" id="pass"  type="password" value="">
+					<div class="input-group">
+						<input type="text" class="form-control" placeholder="Пароль" name="pass" id="pass" value="">
+						<span class="input-group-btn">
+							<button type="button" class="btn btn-default" id="passgen"><i class="fa fa-refresh"></i></button>
+						</span>
+					</div>
 					<input class="form-control" placeholder="Email" name="email" id="email" size="16" value="">
 				</div>
 				<div align="center">

@@ -41,7 +41,9 @@ $suserid = PostDef('suserid');
 // Выполняем только при наличии у пользователя соответствующей роли
 // http://грибовы.рф/wiki/doku.php/основы:доступ:роли
 
-if ((($user->mode == 1) || $user->TestRoles('1,4,5,6')) && ($step != '')) {
+$user = User::getInstance();
+
+if (($user->isAdmin() || $user->TestRoles('1,4,5,6')) && ($step != '')) {
 	if ($step != 'move') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		$dtendgar = DateToMySQLDateTime2(PostDef('dtendgar') . ' 00:00:00');
@@ -149,25 +151,25 @@ TXT;
 		if (count($err) == 0) {
 			$id = GetDef('id');
 			$sql = <<<TXT
-UPDATE equipment
-SET    usersid = :usersid,
-       nomeid = :nomeid,
-       buhname = :buhname,
-       datepost = :datepost,
-       cost = :cost,
-       currentcost = :currentcost,
-       sernum = :sernum,
-       invnum = :invnum,
-       shtrihkod = :shtrihkod,
-       os = :os,
-       mode = :mode,
-       comment = :comment,
-       photo = :photo,
-       ip = :ip,
-       mapyet = :mapyet,
-       kntid = :kntid,
-       dtendgar = :dtendgar
-WHERE  id = :id
+UPDATE	equipment
+SET		usersid = :usersid,
+		nomeid = :nomeid,
+		buhname = :buhname,
+		datepost = :datepost,
+		cost = :cost,
+		currentcost = :currentcost,
+		sernum = :sernum,
+		invnum = :invnum,
+		shtrihkod = :shtrihkod,
+		os = :os,
+		mode = :mode,
+		comment = :comment,
+		photo = :photo,
+		ip = :ip,
+		mapyet = :mapyet,
+		kntid = :kntid,
+		dtendgar = :dtendgar
+WHERE	id = :id
 TXT;
 			try {
 				DB::prepare($sql)->execute(array(
