@@ -9,7 +9,9 @@
  */
 
 /* Объявляем глобальные переменные */
+define('WUO', true);
 define('WUO_ROOT', dirname(dirname(__FILE__)));
+define('WUO_VERSION', '2017-04');
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -61,20 +63,20 @@ if ($action == 'install') {
 							}
 						}
 					});
-					if (error == 1) {
-						$('#messenger').addClass('alert alert-danger');
-						$('#messenger').html('Обязательные поля не заполнены!');
-						$('#messenger').fadeIn('slow');
+					if (error === 1) {
+						$('#messenger').addClass('alert alert-danger')
+								.html('Обязательные поля не заполнены!')
+								.fadeIn('slow');
 						return false;
 					}
 					return true;
 				});
 				$('#myform').ajaxForm(function (msg) {
-					if (msg == 'ok') {
+					if (msg !== 'ok') {
+						$('#messenger').html(msg);
+					} else {
 						$('#messenger').hide();
 						$('#prim').html('<div class="alert alert-info">Внимание!<br>Инсталляция прошла успешно.<br>Не забудьте удалить каталог install</div>');
-					} else {
-						$('#messenger').html(msg);
 					}
 				});
 			});

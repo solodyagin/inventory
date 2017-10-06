@@ -52,14 +52,16 @@ try {
 	// Создаём настройки
 	$sql = <<<SQL
 INSERT INTO `config` (`ad`, `theme`, `sitename`, `smtpauth`, `sendemail`, `version`)
-VALUES (0, 'bootstrap', 'Учёт оргтехники', 0, 0, '3.74')
+VALUES (0, 'bootstrap', 'Учёт оргтехники', 0, 0, :version)
 SQL;
-	$dbh->exec($sql);
+	$dbh->prepare($sql)->execute(array(
+		':version' => WUO_VERSION
+	));
 
 	// Создаём организацию
 	$dbh->prepare('INSERT INTO org (name, active) VALUES (:orgname, 1)')->execute(array(':orgname' => $orgname));
 
-	// Создаём пользователя
+	// Создаём администратора
 	$salt = generateSalt();
 	$password = sha1(sha1($pass) . $salt);
 	$sql = <<<SQL
@@ -76,6 +78,14 @@ SQL;
 		':password' => $password,
 		':salt' => $salt
 	));
+	
+	// Создаём профиль администратора
+	$sql = <<<SQL
+INSERT INTO users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
+VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')
+SQL;
+	$dbh->exec($sql);
+
 } catch (PDOException $ex) {
 	die('<div class="alert alert-danger">Ошибка БД: ' . $ex->getMessage() . '</div>');
 }
