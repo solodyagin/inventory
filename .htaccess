@@ -1,9 +1,9 @@
 php_value post_max_size 20M
 php_value default_charset utf-8
 
-<IfModule !rewrite_module>
-	LoadModule rewrite_module modules/mod_rewrite.so
-</IfModule>
+#<IfModule !rewrite_module>
+#	LoadModule rewrite_module modules/mod_rewrite.so
+#</IfModule>
 <IfModule rewrite_module>
 	RewriteEngine On
 	RewriteBase /
@@ -12,9 +12,9 @@ php_value default_charset utf-8
 	RewriteRule .* index.php [L]
 </IfModule>
 
-<IfModule !expires_module>
-	LoadModule expires_module modules/mod_expires.so
-</IfModule>
+#<IfModule !expires_module>
+#	LoadModule expires_module modules/mod_expires.so
+#</IfModule>
 <IfModule expires_module>
 	ExpiresActive On
 	ExpiresByType image/png "now plus 365 days"
