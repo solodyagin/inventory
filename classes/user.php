@@ -83,8 +83,8 @@ TXT;
 
 	function logout() {
 		$this->is_logged = false;
-		$user->id = '';
-		$user->randomid = '';
+		$this->id = '';
+		$this->randomid = '';
 		// Удаляем cookie
 		setcookie('user_randomid_w3', '', 1, '/');
 //		foreach ($_COOKIE as $key => $value) {

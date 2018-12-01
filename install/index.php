@@ -15,6 +15,12 @@ define('WUO_VERSION', '2017-04');
 
 header('Content-Type: text/html; charset=utf-8');
 
+# Проверяем версию PHP
+define('CMS_MINIMUM_PHP', '7.0.22');
+if (version_compare(PHP_VERSION, CMS_MINIMUM_PHP, '<')) {
+	die('Для запуска этой версии CMS хост должен использовать PHP ' . CMS_MINIMUM_PHP . ' или выше!');
+}
+
 // Запускаем установщик при условии, что файл настроек отсутствует
 if (file_exists(WUO_ROOT . '/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл config.php');

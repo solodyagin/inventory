@@ -65,8 +65,8 @@ SQL;
 	$salt = generateSalt();
 	$password = sha1(sha1($pass) . $salt);
 	$sql = <<<SQL
-INSERT INTO users (`randomid`, `orgid`, `login`, `password`, `salt`, `mode`, `lastdt`, `active`)
-VALUES (:randomid, 1, :login, :password, :salt, 1, NOW(), 1)
+INSERT INTO users (`randomid`, `orgid`, `login`, `password`, `salt`, `email`, `mode`, `lastdt`, `active`)
+VALUES (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, NOW(), 1)
 ON DUPLICATE KEY UPDATE
 	`randomid` = :randomid,
 	`password` = :password,
