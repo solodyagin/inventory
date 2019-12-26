@@ -79,7 +79,7 @@ if ($user->id == ''):
 		<form class="form-horizontal" action="account/logout" method="get" name="form1" target="_self">
 			<div class="form-group">
 				<div class="controls">
-					<button type="submit" class="btn btn-default">Выйти из <?= $user->login; ?></button>
+					<button type="submit" class="btn btn-default">Выйти из системы</button>
 				</div>
 			</div>
 		</form>

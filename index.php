@@ -9,76 +9,18 @@
  * Сайт: http://грибовы.рф
  */
 
-/* Объявляем глобальные переменные */
+# Объявляем глобальные переменные
 define('WUO', true);
 define('WUO_ROOT', dirname(__FILE__));
 define('WUO_VERSION', '2017-04');
-
-$err = array(); // Массив с сообщениями об ошибках для показа пользователю при генерации страницы
-$ok = array(); // Массив с информационными сообщениями для показа пользователю при генерации страницы
-
-/* Некоторые установки */
-date_default_timezone_set('Europe/Moscow'); // Временная зона по умолчанию
-
-/* Если нет файла конфигурации, то запускаем инсталлятор */
-if (!is_file(WUO_ROOT . '/config.php')) {
-	header('Location: install/index.php');
-	die();
-}
-
-$time_start = microtime(true); // Засекаем время начала выполнения скрипта
+define('WUO_MINIMUM_PHP', '7.0.22');
 
 header('Content-Type: text/html; charset=utf-8');
 
-/* Загружаем движок */
+# Проверяем версию PHP
+if (version_compare(PHP_VERSION, WUO_MINIMUM_PHP, '<')) {
+	die('Для запуска этой версии CMS хост должен использовать PHP ' . WUO_MINIMUM_PHP . ' или выше!');
+}
+
+# Загружаем движок
 include_once WUO_ROOT . '/bootstrap.php';
-
-/**
- * Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим
- * TODO: Является анахронизмом, надо выпилить.
- */
-$cfg = Config::getInstance();
-$uri = $_SERVER['REQUEST_URI'];
-if (strpos($uri, $cfg->rewrite_base) === 0) {
-	$uri = substr($uri, strlen($cfg->rewrite_base));
-}
-if (strpos($uri, 'route') === 0) {
-	// Удаляем лишнее
-	$uri = substr($uri, 5);
-
-	// Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
-	list($route, $p) = array_pad(explode('?', $uri, 2), 2, null);
-	if ($p) {
-		parse_str($p, $PARAMS);
-	}
-
-	// Разрешаем подключать php-скрипты только из каталогов /controller и /inc
-	if ((!preg_match('#^(/controller)|(/inc)#', $route)) || (strpos($route, '..') !== false)) {
-		die("Запрещён доступ к '$route'");
-	}
-
-	// Подключаем запрашиваемый скрипт
-	if (is_file(WUO_ROOT . $route)) {
-		// Разрешаем доступ только выполнившим вход пользователям
-		if ($user->id == '') {
-			die('Доступ ограничен');
-		}
-		include_once WUO_ROOT . $route;
-	} else {
-		die("На сервере отсутствует указанный путь '$route'");
-	}
-	exit();
-}
-
-/* Загружаем сторонние классы */
-include_once WUO_ROOT . '/libs/class.phpmailer.php'; // Класс управления почтой
-
-/* Запускаем сторонние скрипты */
-include_once WUO_ROOT . '/inc/autorun.php';
-
-/* Инициализируем заполнение меню */
-$gmenu = new Menu();
-$gmenu->GetFromFiles(WUO_ROOT . '/inc/menu');
-
-/* Запускаем маршрутизатор */
-Router::start();

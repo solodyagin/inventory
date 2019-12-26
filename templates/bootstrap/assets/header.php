@@ -30,8 +30,6 @@ $base_href = $cfg->rewrite_base;
 		<link rel="icon" href="favicon.ico" type="image/x-icon">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery-ui.min.css">
-		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery.mmenu.all.css">
-		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/mmenu.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.multiselect.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/bootstrap.min.css">
 		<?php if ($cfg->style == 'Bootstrap'): ?>
@@ -42,6 +40,7 @@ $base_href = $cfg->rewrite_base;
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/chosen.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery.toastmessage-min.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/font-awesome.min.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/common.css">
 		<script src="templates/<?= $cfg->theme; ?>/js/jquery-1.11.0.min.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/jquery-ui.min.js"></script>
 		<script src="js/jquery.mmenu.min.all.js"></script>
@@ -90,27 +89,3 @@ $base_href = $cfg->rewrite_base;
 		</style>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
-		<?php if (!$printable): ?>
-			<div class="header">
-				<a href="#menu"></a>
-			</div>
-			<div id="blob" data-placement="bottom" class="quickmenu" rel="popover">
-				<strong><?= $cfg->sitename; ?></strong><span class="caret"></span>
-			</div>
-			<script>
-	<?php
-	$mm = '';
-	for ($i = 0; $i < count($cfg->quickmenu); $i++) {
-		$mm .= $cfg->quickmenu[$i];
-	}
-	?>
-				$('#blob').popover({
-					title: 'Быстрые ссылки',
-					//delay: {'show': 500, 'hide': 100},
-					html: true,
-					content: '<?= $mm; ?>'
-				});
-			</script>
-			<?php
-		endif;
-		?>
