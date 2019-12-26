@@ -53,23 +53,7 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$sql = <<<TXT
-SELECT	COUNT(*) `cnt`,
-		u.`id`,
-		o.`name` `orgname`,
-		p.`fio`,
-		u.`login`,
-		u.`password`,
-		u.`email`,
-		u.`mode`,
-		u.`active`
-FROM	`users` u
-	INNER JOIN `org` o
-		ON o.`id` = u.`orgid`
-	INNER JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-$where
-TXT;
+	$sql = 'SELECT COUNT(*) `cnt` FROM `users`';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;

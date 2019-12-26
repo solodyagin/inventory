@@ -63,6 +63,7 @@ if ($step == 'edit') {
 	$(document).ready(function () {
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
+				$('#messenger').addClass('alert alert-danger');
 				$('#messenger').html(msg);
 			} else {
 				$('#add_edit').html('');
@@ -72,7 +73,6 @@ if ($step == 'edit') {
 		});
 	});
 </script>
-<div id="messenger"></div>
 <form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/tmc/add_edit_tmc.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
 	<div class="form-group">
 		<label for="groupid" class="col-sm-3 control-label">Группа</label>
@@ -126,6 +126,7 @@ if ($step == 'edit') {
 		</div>
 	</div>
 </form>
+<div id="messenger"></div>
 <script>
 	for (var selector in config) {
 		$(selector).chosen(config[selector]);

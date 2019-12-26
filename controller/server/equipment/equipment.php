@@ -80,56 +80,7 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$sql = <<<TXT
-SELECT     COUNT(*) AS cnt,
-           equipment.dtendgar,
-           knt.name,
-           getvendorandgroup.grnomeid,
-           equipment.id                 AS eqid,
-           equipment.ip                 AS ip,
-           equipment.orgid              AS eqorgid,
-           org.name                     AS orgname,
-           getvendorandgroup.vendorname AS vname,
-           getvendorandgroup.groupname  AS grnome,
-           places.name                  AS placesname,
-           users_profile.fio            AS fio,
-           getvendorandgroup.nomename   AS nomename,
-           buhname,
-           sernum,
-           invnum,
-           shtrihkod,
-           datepost,
-           cost,
-           currentcost,
-           os,
-           equipment.mode    AS eqmode,
-           equipment.mapyet  AS eqmapyet,
-           equipment.comment AS eqcomment,
-           equipment.active  AS eqactive,
-           equipment.repair  AS eqrepair
-FROM       equipment
-INNER JOIN
-           (
-                      SELECT     nome.groupid    AS grnomeid,
-                                 nome.id         AS nomeid,
-                                 vendor.name     AS vendorname,
-                                 group_nome.name AS groupname,
-                                 nome.name       AS nomename
-                      FROM       nome
-                      INNER JOIN group_nome
-                      ON         nome.groupid = group_nome.id
-                      INNER JOIN vendor
-                      ON         nome.vendorid = vendor.id ) AS getvendorandgroup
-ON         getvendorandgroup.nomeid = equipment.nomeid
-INNER JOIN org
-ON         org.id = equipment.orgid
-INNER JOIN places
-ON         places.id = equipment.placesid
-INNER JOIN users_profile
-ON         users_profile.usersid = equipment.usersid
-LEFT JOIN  knt
-ON         knt.id = equipment.kntid $where
-TXT;
+	$sql = 'SELECT COUNT(*) AS cnt FROM equipment';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;

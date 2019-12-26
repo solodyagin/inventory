@@ -9,7 +9,7 @@
  * Сайт: http://грибовы.рф
  */
 
-// Запрещаем прямой вызов скрипта.
+# Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
 $step = GetDef('step');
@@ -29,16 +29,28 @@ if ($namenome == '') {
 	$err[] = 'Не задано наименование!';
 }
 
+# Есть ли уже такая запись?
+$sql = 'SELECT COUNT(*) AS cnt FROM nome WHERE name = :name';
+try {
+	$row = DB::prepare($sql)->execute([':name' => $namenome])->fetch();
+	$count = ($row) ? $row['cnt'] : 0;
+} catch (PDOException $ex) {
+	throw new DBException('Не смог добавить номенклатуру (1)', 0, $ex);
+}
+if ($count > 0) {
+	$err[] = 'Запись уже существует!';
+}
+
 if (count($err) == 0) {
 	if ($step == 'edit') {
 		$sql = 'UPDATE nome SET groupid = :groupid, vendorid = :vendorid, name = :name WHERE id = :id';
 		try {
-			DB::prepare($sql)->execute(array(
+			DB::prepare($sql)->execute([
 				':groupid' => $groupid,
 				':vendorid' => $vendorid,
 				':name' => $namenome,
 				':id' => $id
-			));
+			]);
 		} catch (PDOException $ex) {
 			throw new DBException('Не смог обновить номенклатуру', 0, $ex);
 		}
@@ -49,14 +61,14 @@ INSERT INTO nome (id, groupid, vendorid, name, active)
 VALUES (NULL, :groupid, :vendorid, :name, '1')
 TXT;
 		try {
-			DB::prepare($sql)->execute(array(
+			DB::prepare($sql)->execute([
 				':groupid' => $groupid,
 				':vendorid' => $vendorid,
 				':name' => $namenome
-			));
+			]);
 		} catch (PDOException $ex) {
-			throw new DBException('Не смог добавить номенклатуру', 0, $ex);
+			throw new DBException('Не смог добавить номенклатуру (2)', 0, $ex);
 		}
 	}
 }
-echo 'ok';
+echo (count($err) == 0) ? 'ok' : implode('<br>', $err);

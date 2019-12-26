@@ -9,7 +9,7 @@
  * Сайт: http://грибовы.рф
  */
 
-// Запрещаем прямой вызов скрипта.
+# Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
 $page = GetDef('page', 1);
@@ -25,7 +25,7 @@ $nomename = PostDef('nomename');
 $filters = GetDef('filters');
 
 if ($oper == '') {
-	// Проверяем может ли пользователь просматривать?
+	# Проверяем может ли пользователь просматривать?
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 	$flt = json_decode($filters, true);
@@ -46,7 +46,7 @@ if ($oper == '') {
 		$where = 'WHERE ' . $where;
 	}
 
-	// Готовим ответ
+	# Готовим ответ
 	$responce = new stdClass();
 	$responce->page = 0;
 	$responce->total = 0;
@@ -129,14 +129,24 @@ if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
 	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
 
-	$sql = 'UPDATE nome SET name = :name WHERE id = :id';
+	# Есть ли уже такая запись?
+	$sql = 'SELECT COUNT(*) AS cnt FROM nome WHERE name = :name';
 	try {
-		DB::prepare($sql)->execute(array(
-			':name' => $nomename,
-			':id' => $id
-		));
+		$row = DB::prepare($sql)->execute([':name' => $nomename])->fetch();
+		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу обновить данные по номенклатуре', 0, $ex);
+		throw new DBException('Не могу обновить данные по номенклатуре (1)', 0, $ex);
+	}
+	if ($count == 0) {
+		$sql = 'UPDATE nome SET name = :name WHERE id = :id';
+		try {
+			DB::prepare($sql)->execute([
+				':name' => $nomename,
+				':id' => $id
+			]);
+		} catch (PDOException $ex) {
+			throw new DBException('Не могу обновить данные по номенклатуре (2)', 0, $ex);
+		}
 	}
 	exit;
 }

@@ -63,7 +63,7 @@ TXT;
 
 			// если параметра нет, то добавляем...
 			if ($cnt == 0) {
-				$sql = 'INSERT INTO eq_param (id, grpid, paramid, eqid) VALUES (NULL, :grpid, :paramid, :eqid)';
+				$sql = "INSERT INTO eq_param (id, grpid, paramid, eqid, param) VALUES (NULL, :grpid, :paramid, :eqid, '')";
 				try {
 					DB::prepare($sql)->execute(array(
 						':grpid' => $groupid,
