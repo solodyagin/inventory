@@ -18,7 +18,8 @@ $('#orgs').change(function () {
 });
 
 function LoadTable() {
-	jQuery('#tbl_equpment').jqGrid({
+	var table = $('#tbl_equpment');
+	table.jqGrid({
 		url: 'route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
 		datatype: 'json',
 		colNames: [' ', 'Id', 'IP', 'Помещение', 'Номенклатура', 'Группа', 'В пути',
@@ -65,15 +66,15 @@ function LoadTable() {
 				formatoptions: {keys: true}, search: false}
 		],
 		gridComplete: function () {
-			$('#tbl_equpment').loadCommonParam('tbleq');
+			table.loadCommonParam('tbleq');
 		},
 		resizeStop: function () {
-			$('#tbl_equpment').saveCommonParam('tbleq');
+			table.saveCommonParam('tbleq');
 		},
 		onSelectRow: function (ids) {
 			$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
-			jQuery('#tbl_move').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids});
-			jQuery('#tbl_move').jqGrid({
+			$('#tbl_move').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids});
+			$('#tbl_move').jqGrid({
 				url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
 				datatype: 'json',
 				colNames: ['Id', 'Дата', 'Организация', 'Помещение',
@@ -104,8 +105,8 @@ function LoadTable() {
 				editurl: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
 				caption: 'История перемещений'
 			}).trigger('reloadGrid');
-			jQuery('#tbl_move').jqGrid('destroyGroupHeader');
-			jQuery('#tbl_move').jqGrid('setGroupHeaders', {
+			$('#tbl_move').jqGrid('destroyGroupHeader');
+			$('#tbl_move').jqGrid('setGroupHeaders', {
 				useColSpanStyle: true,
 				groupHeaders: [
 					{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
@@ -113,8 +114,8 @@ function LoadTable() {
 				]
 			});
 			$.jgrid.gridUnload('#tbl_rep');
-			jQuery('#tbl_rep').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids});
-			jQuery('#tbl_rep').jqGrid({
+			$('#tbl_rep').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids});
+			$('#tbl_rep').jqGrid({
 				url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
 				datatype: 'json',
 				colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', ''],
@@ -148,7 +149,7 @@ function LoadTable() {
 					{name: 'myac', width: 60, fixed: true, sortable: false, resize: false, formatter: 'actions',
 						formatoptions: {keys: true,
 							afterSave: function () {
-								jQuery('#tbl_equpment').jqGrid().trigger('reloadGrid');
+								table.jqGrid().trigger('reloadGrid');
 							}
 						}}
 				],
@@ -162,15 +163,15 @@ function LoadTable() {
 				editurl: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
 				caption: 'История ремонтов'
 			}).trigger('reloadGrid');
-			jQuery('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
-			jQuery('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
+			$('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
+			$('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
 				caption: '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
 				title: 'Отдать в ремонт ТМЦ',
 				buttonicon: 'none',
 				onClickButton: function () {
-					var id = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
+					var id = table.jqGrid('getGridParam', 'selrow');
 					if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
-						jQuery('#tbl_equpment').jqGrid('getRowData', id);
+						table.jqGrid('getRowData', id);
 						$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 						$('#pg_add_edit').dialog('open');
 						$('#pg_add_edit').load('route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
@@ -191,9 +192,8 @@ function LoadTable() {
 			var subgrid_table_id, pager_id;
 			subgrid_table_id = subgrid_id + '_t';
 			pager_id = 'p_' + subgrid_table_id;
-			$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id +
-					'" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
-			jQuery('#' + subgrid_table_id).jqGrid({
+			$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id + '" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
+			$('#' + subgrid_table_id).jqGrid({
 				url: 'route/controller/server/equipment/paramlist.php?eqid=' + row_id,
 				datatype: 'json',
 				colNames: ['Id', 'Наименование', 'Параметр', ''],
@@ -216,7 +216,7 @@ function LoadTable() {
 			// this function is called before removing the data
 			var subgrid_table_id;
 			subgrid_table_id = subgrid_id + '_t';
-			jQuery('#' + subgrid_table_id).remove();
+			$('#' + subgrid_table_id).remove();
 		},
 		subGrid: true,
 		multiselect: true,
@@ -230,19 +230,19 @@ function LoadTable() {
 		editurl: 'route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
 		caption: 'Оргтехника'
 	});
-	jQuery('#tbl_equpment').jqGrid('setGridHeight', $(window).innerHeight() /*- 285*/ / 2);
-	jQuery('#tbl_equpment').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
-	jQuery('#tbl_equpment').jqGrid('bindKeys', '');
-	jQuery('#tbl_equpment').jqGrid('navGrid', '#pg_nav', {edit: false, add: false, del: false, search: false});
-	jQuery('#tbl_equpment').jqGrid('setFrozenColumns');
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('setGridHeight', $(window).innerHeight() /*- 285*/ / 2);
+	table.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
+	table.jqGrid('bindKeys', '');
+	table.jqGrid('navGrid', '#pg_nav', {edit: false, add: false, del: false, search: false});
+	table.jqGrid('setFrozenColumns');
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-tag" aria-hidden="true"></i>',
 		title: 'Выбор колонок',
 		buttonicon: 'none',
 		onClickButton: function () {
-			jQuery('#tbl_equpment').jqGrid('columnChooser', {
+			table.jqGrid('columnChooser', {
 				done: function () {
-					$('#tbl_equpment').saveCommonParam('tbleq');
+					table.saveCommonParam('tbleq');
 				},
 				width: 550,
 				dialog_opts: {
@@ -256,7 +256,7 @@ function LoadTable() {
 			});
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-plus-circle" aria-hidden="true"></i>',
 		title: 'Добавить ТМЦ',
 		buttonicon: 'none',
@@ -266,12 +266,12 @@ function LoadTable() {
 			$('#pg_add_edit').load('route/controller/client/view/equipment/equipment.php?step=add&id=');
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
 		title: 'Редактировать ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
-			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
+			var gsr = table.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
 				$('#pg_add_edit').dialog('open');
@@ -281,12 +281,12 @@ function LoadTable() {
 			}
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-arrows" aria-hidden="true"></i>',
 		title: 'Переместить ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
-			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
+			var gsr = table.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				$('#pg_add_edit').dialog({
 					height: 440,
@@ -302,14 +302,14 @@ function LoadTable() {
 			}
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
 		title: 'Отдать в ремонт ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
-			var id = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
+			var id = table.jqGrid('getGridParam', 'selrow');
 			if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
-				jQuery('#tbl_equpment').jqGrid('getRowData', id);
+				table.jqGrid('getRowData', id);
 				$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 				$('#pg_add_edit').dialog('open');
 				$('#pg_add_edit').load('route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
@@ -318,22 +318,22 @@ function LoadTable() {
 			}
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-table" aria-hidden="true"></i>',
 		title: 'Вывести штрихкоды ТМЦ',
 		buttonicon: 'none',
 		onClickButton: function () {
-			var gsr = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selrow');
+			var gsr = table.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				var s;
-				s = jQuery('#tbl_equpment').jqGrid('getGridParam', 'selarrrow');
+				s = table.jqGrid('getGridParam', 'selarrrow');
 				newWin = window.open('route/inc/ean13print.php?mass=' + s, 'printWindow');
 			} else {
 				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 			}
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-book" aria-hidden="true"></i>',
 		title: 'Отчеты',
 		buttonicon: 'none',
@@ -341,7 +341,7 @@ function LoadTable() {
 			newWin2 = window.open('report', 'printWindow2');
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('navButtonAdd', '#pg_nav', {
+	table.jqGrid('navButtonAdd', '#pg_nav', {
 		caption: '<i class="fa fa-floppy-o" aria-hidden="true"></i>',
 		title: 'Экспорт XML',
 		buttonicon: 'none',
@@ -349,7 +349,7 @@ function LoadTable() {
 			newWin2 = window.open('route/controller/server/equipment/export_xml.php', 'printWindow4');
 		}
 	});
-	jQuery('#tbl_equpment').jqGrid('setFrozenColumns');
+	table.jqGrid('setFrozenColumns');
 }
 
 function GetListUsers(orgid, userid) {
@@ -360,7 +360,7 @@ function GetListPlaces(orgid, placesid) {
 	$('#splaces').load('route/controller/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 }
 
-$(document).ready(function () {
+$(function () {
 	for (var selector in config) {
 		$(selector).chosen(config[selector]);
 	}

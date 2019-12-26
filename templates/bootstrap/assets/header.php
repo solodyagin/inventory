@@ -43,7 +43,6 @@ $base_href = $cfg->rewrite_base;
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/common.css">
 		<script src="templates/<?= $cfg->theme; ?>/js/jquery-1.11.0.min.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/jquery-ui.min.js"></script>
-		<script src="js/jquery.mmenu.min.all.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/plugins/localisation/jquery.localisation-min.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/ui.multiselect.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/i18n/grid.locale-ru.js"></script>
