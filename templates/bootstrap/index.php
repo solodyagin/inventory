@@ -1,5 +1,4 @@
 <?php
-
 /*
  * WebUseOrg3 Lite - учёт оргтехники в организации
  * Лицензия: GPL-3.0
@@ -9,28 +8,184 @@
  * Сайт: http://грибовы.рф
  */
 
-// Запрещаем прямой вызов скрипта.
+# Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
-// Печатная форма?
-$printable = (isset($_GET['printable'])) ? $_GET['printable'] : false;
+$cfg = Config::getInstance();
+$user = User::getInstance();
 
-// Есть альтернативный заголовок?
-if (isset($alterhead)) {
-	include_once $alterhead;
-} else {
-	include_once 'assets/header.php';  // заголовок страницы или из переменной alterhead или стандарный
-}
+$base_href = $cfg->rewrite_base;
+?>
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html>
+<html lang="ru-RU">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Учет ТМЦ в организации">
+		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title><?= $cfg->sitename; ?></title>
+		<base href="<?= $base_href; ?>">
+		<link rel="icon" href="favicon.ico" type="image/x-icon">
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery-ui.min.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.multiselect.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/bootstrap.min.css">
+		<?php if ($cfg->style == 'Bootstrap'): ?>
+			<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid-bootstrap.css">
+		<?php elseif ($cfg->style == 'Normal'): ?>
+			<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid.css">
+		<?php endif; ?>
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/chosen.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery.toastmessage-min.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/font-awesome.min.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/common.css">
+		<script src="templates/<?= $cfg->theme; ?>/js/jquery-1.11.0.min.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/jquery-ui.min.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/plugins/localisation/jquery.localisation-min.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/ui.multiselect.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/i18n/grid.locale-ru.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/jquery.jqGrid.min.js"></script>
+		<script src="js/chosen.jquery.min.js"></script>
+		<script src="js/jquery.toastmessage-min.js"></script>
+		<script src="js/jquery.form.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/bootstrap.min.js"></script>
+		<script src="templates/<?= $cfg->theme; ?>/js/common.js"></script>
+		<script>
+			defaultorgid = <?= $cfg->defaultorgid; ?>;
+			theme = '<?= $cfg->theme; ?>';
+			defaultuserid = <?= ($user->id != '') ? $user->id : '-1'; ?>;
 
-// Если не печатная форма, то показываем ВСЁ
-if (!$printable) {
-	include_once 'assets/menus.php' ;     // главное меню
-	include_once 'assets/navbar.php';     // "хлебные крошки"
-	include_once 'assets/messagebar.php'; // отображение сообщений пользователю (если есть)
-}
+			var bootstrapButton = $.fn.button.noConflict();
+			$.fn.bootstrapBtn = bootstrapButton;
 
-echo (isset($view)) ? $view : '';
+			$.jgrid.defaults.width = 780;
+			$.jgrid.defaults.responsive = true;
+<?php if ($cfg->style == 'Bootstrap'): ?>
+				$.jgrid.defaults.styleUI = 'Bootstrap';
+				$.jgrid.styleUI.Bootstrap.base.headerTable = 'table table-bordered table-condensed';
+				$.jgrid.styleUI.Bootstrap.base.rowTable = 'table table-bordered table-condensed';
+				$.jgrid.styleUI.Bootstrap.base.footerTable = 'table table-bordered table-condensed';
+				$.jgrid.styleUI.Bootstrap.base.pagerTable = 'table table-condensed';
+<?php endif; ?>
+			var config = {
+				'.chosen-select': {},
+				'.chosen-select-deselect': {allow_single_deselect: true},
+				'.chosen-select-no-single': {disable_search_threshold: 4},
+				'.chosen-select-no-results': {no_results_text: 'Ничего не найдено!'},
+				'.chosen-select-width': {width: '95%'}
+			};
 
-if (!$printable) {
-	include_once 'assets/footer.php';  // подвал страницы
-}
+			$(function () {
+				$.localise('ui-multiselect', {/*language: 'en',*/ path: 'templates/<?= $cfg->theme; ?>/js/locale/'});
+			});
+		</script>
+		<style>
+			.chosen-container .chosen-results {
+				max-height:100px;
+			}
+		</style>
+	</head>
+	<body style="font-size:<?= $cfg->fontsize; ?>;">
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">WebUseOrg3 Lite</a>
+				</div>
+				<div class="collapse navbar-collapse" id="navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<?php
+
+						function PutMenu($par) {
+							global $gmenu;
+							$list = $gmenu->GetList($par);
+							foreach ($list as $key => $pmenu) {
+								$nm = $pmenu['name'];
+								$path = $pmenu['path'];
+								$uid = $pmenu['uid'];
+								$url = ($path == '') ? 'javascript:;' : "$path";
+								if (count($gmenu->GetList($uid)) > 0) {
+									echo '<li class="dropdown">';
+									echo "<a href=\"$url\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">$nm <span class=\"caret\"></span></a>";
+									echo '<ul class="dropdown-menu">';
+									PutMenu($uid);
+									echo '</ul>';
+								} else {
+									echo '<li>';
+									echo "<a href=\"$url\">$nm</a>";
+								}
+								echo '</li>';
+							}
+						}
+
+						PutMenu('main');
+						unset($mm);
+						?>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<?php
+		# "Хлебные крошки"
+		if (count($cfg->navbar) > 0):
+			?>
+			<ul class="breadcrumb">
+				<?php
+				for ($i = 0; $i < count($cfg->navbar); $i++) {
+					$ntxt = $cfg->navbar[$i];
+					echo "<li>$ntxt <span class=\"divider\">/</span></li>";
+				}
+				?>
+			</ul>
+			<?php
+		endif;
+		?>
+
+		<?php
+		# Отображение сообщений пользователю (если есть)
+		global $err, $ok;
+
+		if (count($err) != 0) {
+			echo '<div class="alert alert-danger">';
+			echo '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+			for ($i = 0; $i < count($err); $i++) {
+				echo "<p>$err[$i]</p>";
+			}
+			echo '</div>';
+		}
+		if (count($ok) != 0) {
+			echo '<div class="alert alert-success">';
+			echo '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+			for ($i = 0; $i < count($ok); $i++) {
+				echo "<p>$ok[$i]</p>";
+			}
+			echo '</div>';
+		}
+		?>
+
+		<?php
+		echo (isset($view)) ? $view : '';
+		?>
+
+		<?php
+		# Подвал страницы
+		global $time_start;
+
+		$time_end = microtime(true);
+		$time = round($time_end - $time_start, 2);
+		?>
+		<footer class="footer">
+			<div class="container">
+				<p class="text-muted text-center">2011-<?= date('Y'); ?> &copy; <a href="http://грибовы.рф" target="_blank">Павел Грибов</a>. Собрано за <?= $time; ?> сек.</p>
+			</div>
+		</footer>
+	</body>
+</html>

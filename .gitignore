@@ -1,4 +1,7 @@
+/app/config.php
+/files/*
+!/files/.htaccess
 /nbproject
-/photos/*.jpg
-/photos/*.png
-/config.php
+/photos/**/*.jpg
+!/photos/noimage.jpg
+/photos/**/*.png

@@ -8,10 +8,10 @@
  * Сайт: http://грибовы.рф
  */
 
-/* Объявляем глобальные переменные */
+# Объявляем глобальные переменные
 define('WUO', true);
 define('WUO_ROOT', dirname(dirname(__FILE__)));
-define('WUO_VERSION', '2017-04');
+define('WUO_VERSION', '1912');
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -21,9 +21,9 @@ if (version_compare(PHP_VERSION, CMS_MINIMUM_PHP, '<')) {
 	die('Для запуска этой версии CMS хост должен использовать PHP ' . CMS_MINIMUM_PHP . ' или выше!');
 }
 
-// Запускаем установщик при условии, что файл настроек отсутствует
-if (file_exists(WUO_ROOT . '/config.php')) {
-	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл config.php');
+# Запускаем установщик при условии, что файл настроек отсутствует
+if (file_exists(WUO_ROOT . '/app/config.php')) {
+	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
 
 $action = filter_input(INPUT_GET, 'action');

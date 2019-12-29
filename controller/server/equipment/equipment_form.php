@@ -12,7 +12,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
-include_once(WUO_ROOT . '/libs/class.phpmailer.php');
+include_once(WUO_ROOT . '/vendor/phpmailer/class.phpmailer.php');
 
 function SendEmailByPlaces($plid, $title, $txt) {
 	$sql = <<<TXT

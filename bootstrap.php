@@ -16,7 +16,7 @@ $ok = [];  # Массив с информационными сообщениям
 date_default_timezone_set('Europe/Moscow'); # Временная зона по умолчанию
 
 # Если нет файла конфигурации, то запускаем инсталлятор
-if (!is_file(WUO_ROOT . '/config.php')) {
+if (!is_file(WUO_ROOT . '/app/config.php')) {
 	header('Location: install/index.php');
 	die();
 }
@@ -31,7 +31,7 @@ $time_start = microtime(true); # Засекаем время начала вып
 function __autoload($class) {
 	$arr = explode('_', $class);
 	if (empty($arr[1])) {
-		$folder = 'classes';
+		$folder = 'core';
 	} else {
 		switch (strtolower($arr[0])) {
 			case 'controller':
@@ -89,7 +89,6 @@ $user->loginByCookie();
  * Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим
  * TODO: Является анахронизмом, надо выпилить.
  */
-$cfg = Config::getInstance();
 $uri = $_SERVER['REQUEST_URI'];
 if (strpos($uri, $cfg->rewrite_base) === 0) {
 	$uri = substr($uri, strlen($cfg->rewrite_base));
@@ -123,7 +122,7 @@ if (strpos($uri, 'route') === 0) {
 }
 
 # Загружаем сторонние классы
-include_once WUO_ROOT . '/libs/class.phpmailer.php'; # Класс управления почтой
+include_once WUO_ROOT . '/vendor/phpmailer/class.phpmailer.php'; # Класс управления почтой
 
 # Запускаем сторонние скрипты
 include_once WUO_ROOT . '/inc/autorun.php';

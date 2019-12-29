@@ -12,13 +12,13 @@
  * Инструменты / Проверка доступности оргтехники
  */
 
-// Запрещаем прямой вызов скрипта.
+# Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
 $user = User::getInstance();
 $cfg = Config::getInstance();
 
-// Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+# Проверка: если пользователь - не администратор и не назначена одна из ролей, то
 if (!$user->isAdmin() && !$user->TestRoles('1')):
 	?>
 
@@ -34,6 +34,11 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 		<input id="test_ping" class="btn btn-primary" name="test_ping" value="Проверить">
 		<div id="ping_add"></div>
 	</div>
-	<script src="templates/<?= $cfg->theme; ?>/assets/js/ping.js"></script>
+	<script>
+		$('#test_ping').click(function () {
+			$('#ping_add').html('<img src="templates/' + theme + '/img/loading.gif">');
+			$('#ping_add').load('route/controller/server/common/ping.php?orgid=' + defaultorgid);
+		});
+	</script>
 
 <?php endif;

@@ -8,14 +8,14 @@
  * Сайт: http://грибовы.рф
  */
 
-// Запрещаем прямой вызов скрипта.
+# Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
 $user = User::getInstance();
 
-$morgs = GetArrayOrgs(); // список активных организаций
-$mhome = new Mod();   // обьявляем переменную для работы с классом модуля
+$morgs = GetArrayOrgs(); # список активных организаций
+$mhome = new Mod();   # обьявляем переменную для работы с классом модуля
 $mhome->Register('news', 'Модуль новостей', 'Грибов Павел');
 $mhome->Register('stiknews', 'Закрепленные новости', 'Грибов Павел');
 $mhome->Register('lastmoved', 'Последние перемещения ТМЦ', 'Грибов Павел');
@@ -31,7 +31,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<h4 class="panel-title">Пользователь</h4>
 				</div>
 				<div class="panel-body">
-					<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/login.php"; // форма входа или профиль ?>
+					<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/login.php"; # форма входа или профиль ?>
 				</div>
 			</div>
 			<!-- [/Панель входа] -->
@@ -41,7 +41,7 @@ $mhome->Register('commits-widget', 'Виджет разработки на githu
 					<h4 class="panel-title">Личное меню</h4>
 				</div>
 				<div class="panel-body">
-					<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/memenu.php"; // личное меню ?>
+					<?php include_once WUO_ROOT . "/templates/{$cfg->theme}/assets/memenu.php"; # личное меню ?>
 				</div>
 			</div>
 			<!-- [/Личное меню] -->

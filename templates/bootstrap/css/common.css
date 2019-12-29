@@ -1,3 +1,7 @@
 body {
 	padding-top: 70px;
 }
+
+.footer .container {
+	padding: 10px;
+}

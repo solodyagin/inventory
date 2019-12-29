@@ -9,12 +9,12 @@
  * Сайт: http://грибовы.рф
  */
 
-// Запрещаем прямой вызов скрипта.
+# Запрещаем прямой вызов скрипта.
 defined('WUO') or die('Доступ запрещён');
 
-// Запускаем установщик при условии, что файл настроек отсутствует
-if (file_exists(WUO_ROOT . '/config.php')) {
-	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл config.php');
+# Запускаем установщик при условии, что файл настроек отсутствует
+if (file_exists(WUO_ROOT . '/app/config.php')) {
+	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
 
 include_once(WUO_ROOT . '/inc/functions.php');
@@ -32,16 +32,16 @@ try {
 	$dbh->exec("CREATE DATABASE IF NOT EXISTS $dbname")
 			or die('<div class="alert alert-danger">Ошибка создания базы: ' . $dbh->errorInfo() . '</div>');
 
-	$opt = array(
+	$opt = [
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 		PDO::ATTR_EMULATE_PREPARES => true
-	);
+	];
 	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass, $opt);
 
 	$text = file_get_contents(WUO_ROOT . '/install/mysql.scheme.sql');
 	if (!$text) {
-		die('<div class="alert alert-danger">Ошибка открытия файла: mysql.scheme.sql</div>');
+		die('<div class="alert alert-danger">Ошибка открытия файла /install/mysql.scheme.sql</div>');
 	}
 
 	$imported = $dbh->exec($text);
@@ -49,19 +49,19 @@ try {
 		die(print_r($dbh->errorInfo(), true));
 	}
 
-	// Создаём настройки
+	# Создаём настройки в БД
 	$sql = <<<SQL
 INSERT INTO `config` (`ad`, `theme`, `sitename`, `smtpauth`, `sendemail`, `version`)
 VALUES (0, 'bootstrap', 'Учёт оргтехники', 0, 0, :version)
 SQL;
-	$dbh->prepare($sql)->execute(array(
+	$dbh->prepare($sql)->execute([
 		':version' => WUO_VERSION
-	));
+	]);
 
-	// Создаём организацию
-	$dbh->prepare('INSERT INTO org (name, active) VALUES (:orgname, 1)')->execute(array(':orgname' => $orgname));
+	# Создаём организацию
+	$dbh->prepare('INSERT INTO org (name, active) VALUES (:orgname, 1)')->execute([':orgname' => $orgname]);
 
-	// Создаём администратора
+	# Создаём администратора
 	$salt = generateSalt();
 	$password = sha1(sha1($pass) . $salt);
 	$sql = <<<SQL
@@ -72,14 +72,14 @@ ON DUPLICATE KEY UPDATE
 	`password` = :password,
 	`salt` = :salt
 SQL;
-	$dbh->prepare($sql)->execute(array(
+	$dbh->prepare($sql)->execute([
 		':randomid' => GetRandomId(),
 		':login' => $login,
 		':password' => $password,
 		':salt' => $salt
-	));
-	
-	// Создаём профиль администратора
+	]);
+
+	# Создаём профиль администратора
 	$sql = <<<SQL
 INSERT INTO users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
 VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')
@@ -100,7 +100,7 @@ $mysql_base = "' . $dbname . '"; // Имя базы
 $rewrite_base = "/";
 ';
 
-$file = WUO_ROOT . '/config.php';
-file_put_contents($file, $data, LOCK_EX) or die('<div class="alert alert-danger">Ошибка записи в файл: config.php</div>');
+$file = WUO_ROOT . '/app/config.php';
+file_put_contents($file, $data, LOCK_EX) or die('<div class="alert alert-danger">Ошибка записи в файл: /app/config.php</div>');
 
 echo 'ok';
