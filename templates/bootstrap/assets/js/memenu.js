@@ -1,10 +1,13 @@
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
+ */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
 $('#orgs').change(function () {
@@ -12,13 +15,6 @@ $('#orgs').change(function () {
 	exdate.setDate(exdate.getDate() + 365);
 	orgid = $('#orgs :selected').val();
 	document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
-});
-
-$('#stl').change(function () {
-	var exdate = new Date();
-	exdate.setDate(exdate.getDate() + 365);
-	stl = $('#stl :selected').val();
-	document.cookie = 'stl=' + stl + '; path=/; expires=' + exdate.toUTCString();
 });
 
 $('#fontsize').change(function () {

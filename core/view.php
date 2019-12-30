@@ -1,13 +1,18 @@
 <?php
-
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
+
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 class View {
 
@@ -16,8 +21,8 @@ class View {
 			extract($data);
 		}
 
-		// Подключаем файл вида
-		$file = WUO_ROOT . "/app/views/{$content_view}.php";
+		# Подключаем файл вида
+		$file = SITE_ROOT . "/app/views/{$content_view}.php";
 		if (file_exists($file)) {
 			if (!empty($template_view)) {
 				ob_start();
@@ -28,9 +33,9 @@ class View {
 			}
 		}
 
-		// Подключаем общий шаблон
+		# Подключаем общий шаблон
 		if (!empty($template_view)) {
-			$file = WUO_ROOT . "/templates/{$template_view}/index.php";
+			$file = SITE_ROOT . "/templates/{$template_view}/index.php";
 			if (file_exists($file)) {
 				require_once $file;
 			}

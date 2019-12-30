@@ -1,26 +1,29 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
+ */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
 # Объявляем глобальные переменные
-define('WUO', true);
-define('WUO_ROOT', dirname(__FILE__));
-define('WUO_VERSION', '1912');
-define('WUO_MINIMUM_PHP', '7.0.22');
+define('SITE_EXEC', true);
+define('SITE_ROOT', dirname(__FILE__));
+define('SITE_VERSION', '191230');
+define('SITE_MINIMUM_PHP', '7.0.22');
 
 header('Content-Type: text/html; charset=utf-8');
 
 # Проверяем версию PHP
-if (version_compare(PHP_VERSION, WUO_MINIMUM_PHP, '<')) {
-	die('Для запуска этой версии CMS ваш хост должен использовать PHP ' . WUO_MINIMUM_PHP . ' или выше!');
+if (version_compare(PHP_VERSION, SITE_MINIMUM_PHP, '<')) {
+	die('Для запуска этой версии Inventory ваш хост должен использовать PHP ' . SITE_MINIMUM_PHP . ' или выше!');
 }
 
 # Загружаем движок
-include_once WUO_ROOT . '/bootstrap.php';
+include_once SITE_ROOT . '/bootstrap.php';

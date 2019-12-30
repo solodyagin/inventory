@@ -1,15 +1,18 @@
 <?php
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
+ */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
 # Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
 $user = User::getInstance();
@@ -62,13 +65,12 @@ $base_href = $cfg->rewrite_base;
 
 			$.jgrid.defaults.width = 780;
 			$.jgrid.defaults.responsive = true;
-<?php if ($cfg->style == 'Bootstrap'): ?>
-				$.jgrid.defaults.styleUI = 'Bootstrap';
-				$.jgrid.styleUI.Bootstrap.base.headerTable = 'table table-bordered table-condensed';
-				$.jgrid.styleUI.Bootstrap.base.rowTable = 'table table-bordered table-condensed';
-				$.jgrid.styleUI.Bootstrap.base.footerTable = 'table table-bordered table-condensed';
-				$.jgrid.styleUI.Bootstrap.base.pagerTable = 'table table-condensed';
-<?php endif; ?>
+			$.jgrid.defaults.styleUI = 'Bootstrap';
+			$.jgrid.styleUI.Bootstrap.base.headerTable = 'table table-bordered table-condensed';
+			$.jgrid.styleUI.Bootstrap.base.rowTable = 'table table-bordered table-condensed';
+			$.jgrid.styleUI.Bootstrap.base.footerTable = 'table table-bordered table-condensed';
+			$.jgrid.styleUI.Bootstrap.base.pagerTable = 'table table-condensed';
+
 			var config = {
 				'.chosen-select': {},
 				'.chosen-select-deselect': {allow_single_deselect: true},
@@ -97,7 +99,7 @@ $base_href = $cfg->rewrite_base;
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">WebUseOrg3 Lite</a>
+					<a class="navbar-brand" href="/">Inventory</a>
 				</div>
 				<div class="collapse navbar-collapse" id="navbar-collapse-1">
 					<ul class="nav navbar-nav">
@@ -110,7 +112,7 @@ $base_href = $cfg->rewrite_base;
 								$nm = $pmenu['name'];
 								$path = $pmenu['path'];
 								$uid = $pmenu['uid'];
-								$url = ($path == '') ? 'javascript:;' : "$path";
+								$url = ($path == '') ? 'javascript:void(0);' : "$path";
 								if (count($gmenu->GetList($uid)) > 0) {
 									echo '<li class="dropdown">';
 									echo "<a href=\"$url\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">$nm <span class=\"caret\"></span></a>";

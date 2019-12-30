@@ -1,15 +1,18 @@
 <?php
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="ru-RU">

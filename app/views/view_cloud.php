@@ -1,19 +1,23 @@
 <?php
+
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
+
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
  * Хранилище документов
  */
-
-# Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
 
 # Проверка: включен ли модуль "cloud"?
 $mod = new Mod();
@@ -134,7 +138,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,6')):
 		});
 
 		function GetTree() {
-	// --- Initialize first Dynatree -------------------------------------------
+			// --- Initialize first Dynatree -------------------------------------------
 			$('#tree').dynatree({
 				autoCollapse: false,
 				minExpandLevel: 3,

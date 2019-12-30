@@ -1,13 +1,16 @@
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-jQuery('#tbl_move').jqGrid({
+$('#tbl_move').jqGrid({
 	url: 'route/controller/server/equipment/getmoveinfo.php?eqid=',
 	datatype: 'json',
 	colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'ТМЦ', 'Комментарий'],
@@ -32,8 +35,8 @@ jQuery('#tbl_move').jqGrid({
 	sortorder: 'desc'
 });
 
-jQuery('#tbl_move').jqGrid('destroyGroupHeader');
-jQuery('#tbl_move').jqGrid('setGroupHeaders', {
+$('#tbl_move').jqGrid('destroyGroupHeader');
+$('#tbl_move').jqGrid('setGroupHeaders', {
 	useColSpanStyle: true,
 	groupHeaders: [
 		{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},

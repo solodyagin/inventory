@@ -1,16 +1,19 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 class DB {
 
@@ -35,23 +38,14 @@ class DB {
 		return call_user_func_array(array(self::getInstance(), $method), $args);
 	}
 
-	final private function __construct() {
-		//*
-	}
-
-	final private function __clone() {
-		//*
-	}
-
-	final private function __wakeup() {
-		//*
-	}
-
+	final private function __construct() {}
+	final private function __clone() {}
+	final private function __wakeup() {}
 }
 
 class myPDOStatement extends PDOStatement {
 
-	function execute($data = array()) {
+	function execute($data = []) {
 		if (count($data) > 0) {
 			parent::execute($data);
 		} else {

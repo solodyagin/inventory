@@ -1,24 +1,26 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
-
-$mfiles = GetArrayFilesInDir(WUO_ROOT . '/inc/deleterules');
+$mfiles = GetArrayFilesInDir(SITE_ROOT . '/inc/deleterules');
 
 foreach ($mfiles as $fname) {
 	if (strripos($fname, '.xml') != false) {
 		echo "- обрабатываю правила $fname<br>";
-		$xml = simplexml_load_file(WUO_ROOT . "/inc/deleterules/$fname");
+		$xml = simplexml_load_file(SITE_ROOT . "/inc/deleterules/$fname");
 		foreach ($xml->entertable as $data) {
 			$entertable_name = $data['name'];
 			$entertable_comment = $data['comment'];

@@ -1,23 +1,26 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
+ */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
 # Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 # Запускаем установщик при условии, что файл настроек отсутствует
-if (file_exists(WUO_ROOT . '/app/config.php')) {
+if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
 
-include_once(WUO_ROOT . '/inc/functions.php');
+include_once(SITE_ROOT . '/inc/functions.php');
 
 $dbhost = PostDef('dbhost');
 $dbname = PostDef('dbname');
@@ -39,7 +42,7 @@ try {
 	];
 	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass, $opt);
 
-	$text = file_get_contents(WUO_ROOT . '/install/mysql.scheme.sql');
+	$text = file_get_contents(SITE_ROOT . '/install/mysql.scheme.sql');
 	if (!$text) {
 		die('<div class="alert alert-danger">Ошибка открытия файла /install/mysql.scheme.sql</div>');
 	}
@@ -52,10 +55,10 @@ try {
 	# Создаём настройки в БД
 	$sql = <<<SQL
 INSERT INTO `config` (`ad`, `theme`, `sitename`, `smtpauth`, `sendemail`, `version`)
-VALUES (0, 'bootstrap', 'Учёт оргтехники', 0, 0, :version)
+VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
 SQL;
 	$dbh->prepare($sql)->execute([
-		':version' => WUO_VERSION
+		':version' => SITE_VERSION
 	]);
 
 	# Создаём организацию
@@ -100,7 +103,7 @@ $mysql_base = "' . $dbname . '"; // Имя базы
 $rewrite_base = "/";
 ';
 
-$file = WUO_ROOT . '/app/config.php';
+$file = SITE_ROOT . '/app/config.php';
 file_put_contents($file, $data, LOCK_EX) or die('<div class="alert alert-danger">Ошибка записи в файл: /app/config.php</div>');
 
 echo 'ok';

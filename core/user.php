@@ -1,22 +1,25 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 class User extends BaseUser {
 
 	use Singleton;
 
-	// Пользователь вошёл ?
+	# Пользователь вошёл ?
 	private $is_logged = false;
 
 	/**
@@ -36,7 +39,7 @@ WHERE	u.`login` = :login AND
 		u.`password` = SHA1(CONCAT(SHA1(:pass), u.`salt`))
 TXT;
 		try {
-			$row = DB::prepare($sql)->execute(array(':login' => $login, ':pass' => $password))->fetch();
+			$row = DB::prepare($sql)->execute([':login' => $login, ':pass' => $password])->fetch();
 			if ($row) {
 				$this->is_logged = true;
 				$this->id = $row['sid'];
@@ -58,7 +61,7 @@ TXT;
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка при получении данных пользователя', 0, $ex);
 		}
-		// Устанавливаем Cookie
+		# Устанавливаем Cookie
 		if ($this->is_logged) {
 			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/');
 		}
@@ -73,10 +76,10 @@ TXT;
 		$this->randomid = filter_input(INPUT_COOKIE, 'user_randomid_w3');
 		$this->is_logged = !empty($this->randomid) && $this->getByRandomId($this->randomid);
 		if ($this->is_logged) {
-			$this->UpdateLastdt($this->id); // Обновляем дату последнего входа пользователя
-			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/'); // Устанавливаем Cookie
+			$this->UpdateLastdt($this->id); # Обновляем дату последнего входа пользователя
+			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/'); # Устанавливаем Cookie
 		} else {
-			setcookie('user_randomid_w3', '', 1, '/'); // Удаляем cookie
+			setcookie('user_randomid_w3', '', 1, '/'); # Удаляем cookie
 		}
 		return $this->is_logged;
 	}
@@ -85,7 +88,7 @@ TXT;
 		$this->is_logged = false;
 		$this->id = '';
 		$this->randomid = '';
-		// Удаляем cookie
+		# Удаляем cookie
 		setcookie('user_randomid_w3', '', 1, '/');
 //		foreach ($_COOKIE as $key => $value) {
 //			setcookie($key, '', 1, '/');

@@ -1,22 +1,28 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
+
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $err = []; # Массив с сообщениями об ошибках для показа пользователю при генерации страницы
-$ok = [];  # Массив с информационными сообщениями для показа пользователю при генерации страницы
+$ok = []; # Массив с информационными сообщениями для показа пользователю при генерации страницы
 
 # Некоторые установки
 date_default_timezone_set('Europe/Moscow'); # Временная зона по умолчанию
 
 # Если нет файла конфигурации, то запускаем инсталлятор
-if (!is_file(WUO_ROOT . '/app/config.php')) {
+if (!is_file(SITE_ROOT . '/app/config.php')) {
 	header('Location: install/index.php');
 	die();
 }
@@ -45,7 +51,7 @@ function __autoload($class) {
 				break;
 		}
 	}
-	$filename = WUO_ROOT . "/$folder/" . strtolower($class) . '.php';
+	$filename = SITE_ROOT . "/$folder/" . strtolower($class) . '.php';
 	if (!file_exists($filename)) {
 		return false;
 	}
@@ -79,7 +85,7 @@ set_exception_handler(function ($ex) {
 $cfg->loadFromDB();
 
 # Загружаем все что нужно для работы движка
-include_once WUO_ROOT . '/inc/functions.php'; # Загружаем функции
+include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
 
 # Аутентифицируем пользователя по кукам
 $user = User::getInstance();
@@ -94,27 +100,27 @@ if (strpos($uri, $cfg->rewrite_base) === 0) {
 	$uri = substr($uri, strlen($cfg->rewrite_base));
 }
 if (strpos($uri, 'route') === 0) {
-	// Удаляем лишнее
+	# Удаляем лишнее
 	$uri = substr($uri, 5);
 
-	// Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
+	# Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
 	list($route, $p) = array_pad(explode('?', $uri, 2), 2, null);
 	if ($p) {
 		parse_str($p, $PARAMS);
 	}
 
-	// Разрешаем подключать php-скрипты только из каталогов /controller и /inc
+	# Разрешаем подключать php-скрипты только из каталогов /controller и /inc
 	if ((!preg_match('#^(/controller)|(/inc)#', $route)) || (strpos($route, '..') !== false)) {
 		die("Запрещён доступ к '$route'");
 	}
 
-	// Подключаем запрашиваемый скрипт
-	if (is_file(WUO_ROOT . $route)) {
+	# Подключаем запрашиваемый скрипт
+	if (is_file(SITE_ROOT . $route)) {
 		// Разрешаем доступ только выполнившим вход пользователям
 		if ($user->id == '') {
 			die('Доступ ограничен');
 		}
-		include_once WUO_ROOT . $route;
+		include_once SITE_ROOT . $route;
 	} else {
 		die("На сервере отсутствует указанный путь '$route'");
 	}
@@ -122,14 +128,29 @@ if (strpos($uri, 'route') === 0) {
 }
 
 # Загружаем сторонние классы
-include_once WUO_ROOT . '/vendor/phpmailer/class.phpmailer.php'; # Класс управления почтой
+include_once SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php'; # Класс управления почтой
 
-# Запускаем сторонние скрипты
-include_once WUO_ROOT . '/inc/autorun.php';
+/*
+ * смотрим почту в очереди и отправляем одно письмо за раз
+ * после чего очередь сокращаем на 1 письмо
+ */
+try {
+	$row = DB::prepare('SELECT * FROM mailq LIMIT 1')->execute()->fetch();
+	if ($row) {
+		mailq($row['to'], $row['title'], $row['btxt']);
+		try {
+			DB::prepare('DELETE FROM mailq WHERE id = :id')->execute([':id' => $row['id']]);
+		} catch (PDOException $ex) {
+			$err[] = 'Не получилось удалить сообщение из очереди ' . $ex->getMessage();
+		}
+	}
+} catch (PDOException $ex) {
+	$err[] = 'Не получилось прочитать очередь сообщений ' . $ex->getMessage();
+}
 
 # Инициализируем заполнение меню
 $gmenu = new Menu();
-$gmenu->GetFromFiles(WUO_ROOT . '/inc/menu');
+$gmenu->GetFromFiles(SITE_ROOT . '/inc/menu');
 
 # Запускаем маршрутизатор
 Router::start();

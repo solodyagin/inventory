@@ -1,15 +1,18 @@
 <?php
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $user = User::getInstance();
 $cfg = Config::getInstance();
@@ -18,8 +21,8 @@ if ($user->id == ''):
 	?>
 	<form role="form" action="account/login" method="post" name="form1" target="_self">
 		<div class="form-group">
-			<input type="text" class="form-control" id="enter_user_login" name="enter_user_login" placeholder="Логин">
-			<input type="password" class="form-control" id="enter_user_pass" name="enter_user_pass" placeholder="Пароль">
+			<input type="text" class="form-control" id="login" name="login" placeholder="Логин">
+			<input type="password" class="form-control" id="password" name="password" placeholder="Пароль">
 		</div>
 		<button type="submit" class="btn btn-primary">Войти</button>
 	</form>
@@ -30,7 +33,7 @@ if ($user->id == ''):
 	<div class="container-fluid">
 		<?php
 		$jpegphoto = $user->jpegphoto;
-		if (!file_exists(WUO_ROOT . "/photos/$jpegphoto")) {
+		if (!file_exists(SITE_ROOT . "/photos/$jpegphoto")) {
 			$jpegphoto = 'noimage.jpg';
 		}
 		?>
@@ -198,11 +201,9 @@ if ($user->id == ''):
 						.filter('[data-tab="' + tab + '"]')
 						.addClass('active')
 						.end()
-						.end()
 						.find('[data-code]')
 						.hide()
-						.filter('[data-code="' + tab + '"]').show()
-						;
+						.filter('[data-code="' + tab + '"]').show();
 			});
 
 			function _getCode(node, all) {

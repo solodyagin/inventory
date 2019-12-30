@@ -1,19 +1,23 @@
 <?php
+
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
+
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
  * Настройка / Настройка системы
  */
-
-# Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
 
 $user = User::getInstance();
 $cfg = Config::getInstance();
@@ -30,14 +34,14 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 
 <?php else: ?>
 
-	<form action="config/save" method="post" name="form1" target="_self">
+	<form action="config/save" method="post" name="form1" target="_self" class="form-horizontal">
 		<div class="container-fluid">
 
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="alert alert-info">
-						Версия программы: WebUseOrg3 Lite v<?= WUO_VERSION; ?><br>
-						Актуальные версии ПО: <a href="https://github.com/solodyagin/webuseorg3-lite/releases" target="_blank">github.com</a><br>
+						Версия программы: Inventory v<?= SITE_VERSION; ?><br>
+						Актуальные версии ПО: <a href="https://github.com/solodyagin/inventory" target="_blank">github.com</a><br>
 						Документация: <a href="http://грибовы.рф/?page_id=1202" target="_blank">здесь</a>
 					</div>
 				</div>
@@ -78,7 +82,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 								<div class="col-sm-6">
 									<select class="form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
 										<?php
-										$arr_themes = GetArrayFilesInDir(WUO_ROOT . '/templates');
+										$arr_themes = GetArrayFilesInDir(SITE_ROOT . '/templates');
 										for ($i = 0; $i < count($arr_themes); $i++) {
 											$sl = ($arr_themes[$i] == $cfg->theme) ? 'selected' : '';
 											echo "<option value=\"$arr_themes[$i]\" $sl>$arr_themes[$i]</option>";

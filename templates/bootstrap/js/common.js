@@ -47,7 +47,7 @@ $(function () {
 			if (localStorage[stname] !== undefined) {
 				colarray = localStorage[stname];
 				if (colarray !== '') {
-					obj_for_load = JSON.parse(colarray);   // загружаем JSON в массив
+					obj_for_load = JSON.parse(colarray); // загружаем JSON в массив
 					for (i in obj_for_load) {
 						//console.log("name:",obj_for_load[i].name);
 						//console.log("width:",obj_for_load[i].width);
@@ -64,7 +64,6 @@ $(function () {
 			} else {
 				console.log('В локальном хранилище не найден ключ ' + stname);
 			}
-
 		}
 	});
 });

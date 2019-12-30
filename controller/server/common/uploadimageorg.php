@@ -1,21 +1,24 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 function cuttingimg($zoom, $fn, $sz) {
-	@mkdir(WUO_ROOT . '/photos/maps');
-	$img = imagecreatefrompng(WUO_ROOT . '/photos/maps/0-0-0-' . $fn);  // получаем идентификатор загруженного изрбражения которое будем резать
-	$info = getimagesize(WUO_ROOT . '/photos/maps/0-0-0-' . $fn);  // получаем в массив информацию об изображении
+	@mkdir(SITE_ROOT . '/photos/maps');
+	$img = imagecreatefrompng(SITE_ROOT . '/photos/maps/0-0-0-' . $fn);  // получаем идентификатор загруженного изрбражения которое будем резать
+	$info = getimagesize(SITE_ROOT . '/photos/maps/0-0-0-' . $fn);  // получаем в массив информацию об изображении
 	$w = $info[0];
 	$h = $info[1]; // ширина и высота исходного изображения
 	$sx = round($w / $sz, 0);  // длина куска изображения
@@ -26,7 +29,7 @@ function cuttingimg($zoom, $fn, $sz) {
 		for ($x = 0; $x <= $sz; $x++) {
 			$imgcropped = imagecreatetruecolor($sx, $sy);
 			imagecopy($imgcropped, $img, 0, 0, $px, $py, $sx, $sy);
-			imagepng($imgcropped, WUO_ROOT . '/photos/maps/' . $zoom . '-' . $y . '-' . $x . '-' . $fn);
+			imagepng($imgcropped, SITE_ROOT . '/photos/maps/' . $zoom . '-' . $y . '-' . $x . '-' . $fn);
 			$px = $px + $sx;
 		}
 		$px = 0;
@@ -35,7 +38,7 @@ function cuttingimg($zoom, $fn, $sz) {
 }
 
 $geteqid = PostDef('geteqid');
-$uploaddir = WUO_ROOT . '/photos/maps/';
+$uploaddir = SITE_ROOT . '/photos/maps/';
 
 $userfile_name = strtoupper(basename($_FILES['filedata']['name']));
 $len = strlen($userfile_name);

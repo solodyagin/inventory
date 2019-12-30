@@ -1,21 +1,24 @@
 <?php
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $id = GetDef('id');
 
 $user = User::getInstance();
 
-// Если пользователь - "Администратор"
+# Если пользователь - "Администратор"
 if ($user->isAdmin()):
 	$tmpuser = new BaseUser();
 	$tmpuser->getById($id);
@@ -43,9 +46,9 @@ if ($user->isAdmin()):
 					}
 				});
 				if (error == 1) {
-					$('#messenger').addClass('alert alert-danger');
-					$('#messenger').html('Не все обязательные поля заполнены!');
-					$('#messenger').fadeIn('slow');
+					$('#messenger').addClass('alert alert-danger')
+						.html('Не все обязательные поля заполнены!')
+						.fadeIn('slow');
 					return false;
 				}
 				return true;
@@ -59,7 +62,7 @@ if ($user->isAdmin()):
 				} else {
 					$('#add_edit').html('');
 					$('#add_edit').dialog('destroy');
-					jQuery('#list2').jqGrid().trigger('reloadGrid');
+					$('#list2').jqGrid().trigger('reloadGrid');
 				}
 			});
 		});

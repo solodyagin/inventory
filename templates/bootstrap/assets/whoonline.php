@@ -1,16 +1,19 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
+ */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
 # Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $crd = date('Y-m-d H:i:s');
 $sql = <<<TXT
@@ -28,10 +31,10 @@ try {
 		$fio = $row['fio'];
 		$jpegphoto = $row['jpegphoto'];
 		if ($res < 10000) {
-			if (!file_exists(WUO_ROOT . "/photos/$jpegphoto")) {
+			if (!file_exists(SITE_ROOT . "/photos/$jpegphoto")) {
 				$jpegphoto = 'noimage.jpg';
 			}
-echo <<<TXT
+			echo <<<TXT
 <div class="col-sm-1 col-md-1">
 	<div class="thumbnail">
 		<img src="photos/{$jpegphoto}" title="{$fio}">

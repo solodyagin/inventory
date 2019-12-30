@@ -1,16 +1,19 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Modules extends Controller {
 
@@ -21,7 +24,7 @@ class Controller_Modules extends Controller {
 
 	function get() {
 		$user = User::getInstance();
-		// Проверяем может ли пользователь просматривать?
+		# Проверяем может ли пользователь просматривать?
 		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 		$page = GetDef('page', 1);
@@ -32,7 +35,7 @@ class Controller_Modules extends Controller {
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
 
-		// Готовим ответ
+		# Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
@@ -102,24 +105,24 @@ TXT;
 		$oper = PostDef('oper');
 		switch ($oper) {
 			case 'edit':
-				// Проверяем может ли пользователь редактировать?
+				# Проверяем может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
 				$id = PostDef('id');
 				$active = PostDef('active');
 				$sql = 'UPDATE config_common SET valueparam = :active WHERE id = :id';
 				try {
-					DB::prepare($sql)->execute(array(':active' => $active, ':id' => $id));
+					DB::prepare($sql)->execute([':active' => $active, ':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по модулю', 0, $ex);
 				}
 				break;
 			case 'del':
-				// Проверяем может ли пользователь удалять?
+				# Проверяем может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
 				$id = PostDef('id');
 				$sql = 'SELECT * FROM config_common WHERE id = :id';
 				try {
-					$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+					$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 					if ($row) {
 						$modname = explode('_', $row['nameparam'])[1];
 						DB::prepare("DELETE FROM config_common WHERE nameparam LIKE 'module%_$modname'")->execute();

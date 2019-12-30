@@ -1,16 +1,19 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $page = GetDef('page', 1);
 if ($page == 0) {
@@ -53,17 +56,16 @@ if ($tpo == '2') {
 }
 
 if ($oper == '') {
-	// Готовим ответ
+	# Готовим ответ
 	$responce = new stdClass();
 	$responce->page = 0;
 	$responce->total = 0;
 	$responce->records = 0;
 
 	$sql = <<<TXT
-SELECT     COUNT(*)    AS cnt,
-           places.name AS plname,
-           res.*
-FROM       places
+SELECT places.name AS plname,
+       res.*
+FROM   places
 INNER JOIN
            (
                       SELECT     name AS namenome,
@@ -88,8 +90,8 @@ INNER JOIN
 ON         places.id = res.plid
 TXT;
 	try {
-		$row = DB::prepare($sql)->execute()->fetch();
-		$count = ($row) ? $row['cnt'] : 0;
+		$rows = DB::prepare($sql)->execute()->fetchAll();
+		$count = ($rows) ? count($rows) : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу сформировать список по оргтехнике/помещениям/пользователю!(1)', 0, $ex);
 	}

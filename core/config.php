@@ -1,16 +1,19 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
+ */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
 # Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Config {
 
@@ -46,7 +49,7 @@ class Config {
 	 *  Получает настройки из файла конфигурации
 	 */
 	function loadFromFile() {
-		$res = include_once(WUO_ROOT . '/app/config.php');
+		$res = include_once(SITE_ROOT . '/app/config.php');
 		if ($res) {
 			$this->debug = $debug; # Режим отладки
 			$this->db_host = $mysql_host; # Хост БД
@@ -79,7 +82,6 @@ class Config {
 				$this->sendemail = $row['sendemail'];  # а вообще будем посылать почту?
 				$this->version = $row['version'];
 				$this->urlsite = $row['urlsite'];
-				$this->style = (isset($_COOKIE['stl'])) ? $_COOKIE['stl'] : 'Bootstrap';
 				$this->fontsize = (isset($_COOKIE['fontsize'])) ? $_COOKIE['fontsize'] : '12px';
 			}
 			if (isset($_COOKIE['defaultorgid'])) {

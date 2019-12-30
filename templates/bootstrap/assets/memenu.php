@@ -1,15 +1,18 @@
 <?php
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
 ?>
@@ -27,17 +30,6 @@ $cfg = Config::getInstance();
 	</select>
 </div>
 <div class="form-group">
-	<label for="stl">Стиль:</label>
-	<select class="chosen-select form-control" name="stl" id="stl">
-		<?php
-		$sl = ($cfg->style == 'Bootstrap') ? 'selected' : '';
-		echo "<option value=\"Bootstrap\" $sl>Bootstrap</option>";
-		$sl = ($cfg->style == 'Normal') ? 'selected' : '';
-		echo "<option value=\"Normal\" $sl>Normal</option>";
-		?>
-	</select>
-</div>
-<div class="form-group">
 	<label for="fontsize">Размер шрифта:</label>
 	<select class="chosen-select form-control" name="fontsize" id="fontsize">
 		<option value="11px">11px</option>
@@ -47,7 +39,7 @@ $cfg = Config::getInstance();
 	</select>
 </div>
 <script>
-	$(document).ready(function () {
+	$(function () {
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);
 		}

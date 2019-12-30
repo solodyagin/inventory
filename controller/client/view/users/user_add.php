@@ -1,19 +1,22 @@
 <?php
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 $user = User::getInstance();
 
-// Если пользователь - "Администратор"
+# Если пользователь - "Администратор"
 if ($user->isAdmin()):
 	?>
 	<script>
@@ -34,23 +37,21 @@ if ($user->isAdmin()):
 					}
 				});
 				if (error == 1) {
-					$('#messenger').addClass('alert alert-danger');
-					$('#messenger').html('Не все обязательные поля заполнены!');
-					$('#messenger').fadeIn('slow');
+					$('#messenger').addClass('alert alert-danger')
+						.html('Не все обязательные поля заполнены!')
+						.fadeIn('slow');
 					return false;
 				}
 				return true;
 			});
-		});
 
-		$(document).ready(function () {
 			$('#myForm').ajaxForm(function (msg) {
 				if (msg != 'ok') {
 					$('#messenger').html(msg);
 				} else {
 					$('#add_edit').html('');
 					$('#add_edit').dialog('destroy');
-					jQuery('#list2').jqGrid().trigger('reloadGrid');
+					$('#list2').jqGrid().trigger('reloadGrid');
 				}
 			});
 		});
@@ -62,7 +63,7 @@ if ($user->isAdmin()):
 	</style>
 	<script src="js/jquery.passgen.min.js"></script>
 	<script>
-		$(document).ready(function () {
+		$(function () {
 			$('#pass').val($.passGen());
 			$('#passgen').click(function () {
 				$('#pass').val($.passGen());

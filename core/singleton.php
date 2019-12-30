@@ -1,20 +1,23 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 trait Singleton {
 
-	private static $_instances = array();
+	private static $_instances = [];
 
 	public static function getInstance() {
 		$class = get_called_class();
@@ -39,15 +42,12 @@ trait Singleton {
 	}
 
 	final private function __construct() {
-		//*
+		$this->init();
 	}
 
-	final private function __clone() {
-		//*
-	}
+	protected function init() {}
 
-	final private function __wakeup() {
-		//*
-	}
+	final private function __clone() {}
+	final private function __wakeup() {}
 
 }

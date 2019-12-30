@@ -1,16 +1,19 @@
 <?php
 
 /*
- * WebUseOrg3 Lite - учёт оргтехники в организации
+ * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
- * Разработчики:
- *   Грибов Павел,
- *   Сергей Солодягин (solodyagin@gmail.com)
+ * Разработчик: Грибов Павел
  * Сайт: http://грибовы.рф
  */
+/*
+ * Inventory - учёт оргтехники в организации
+ * Лицензия: GPL-3.0
+ * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
+ */
 
-// Запрещаем прямой вызов скрипта.
-defined('WUO') or die('Доступ запрещён');
+# Запрещаем прямой вызов скрипта.
+defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Cloud extends Controller {
 
@@ -26,7 +29,7 @@ class Controller_Cloud extends Controller {
 	function addfolder() {
 		$user = User::getInstance();
 
-		// Проверка: может ли пользователь добавлять?
+		# Проверка: может ли пользователь добавлять?
 		($user->isAdmin() || $user->TestRoles('1,4')) or die('У вас не хватает прав на добавление!');
 
 		$foldername = (isset(Router::$params['foldername'])) ? Router::$params['foldername'] : '';
@@ -34,7 +37,7 @@ class Controller_Cloud extends Controller {
 		if (!empty($foldername)) {
 			$sql = 'INSERT INTO cloud_dirs (parent, name) VALUES (0, :foldername)';
 			try {
-				DB::prepare($sql)->execute(array(':foldername' => $foldername));
+				DB::prepare($sql)->execute([':foldername' => $foldername]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не могу добавить папку', 0, $ex);
 			}
@@ -48,14 +51,14 @@ class Controller_Cloud extends Controller {
 	function delfolder() {
 		$user = User::getInstance();
 
-		// Проверка: может ли пользователь удалять?
+		# Проверка: может ли пользователь удалять?
 		($user->isAdmin() || $user->TestRoles('1,6')) or die('У вас не хватает прав на удаление!');
 
 		$folderkey = (isset(Router::$params['folderkey'])) ? Router::$params['folderkey'] : '';
 		if (!empty($folderkey)) {
 			$sql = 'DELETE FROM cloud_dirs WHERE id = :folderkey';
 			try {
-				DB::prepare($sql)->execute(array(':folderkey' => $folderkey));
+				DB::prepare($sql)->execute([':folderkey' => $folderkey]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не могу удалить папку', 0, $ex);
 			}
@@ -65,7 +68,7 @@ class Controller_Cloud extends Controller {
 	function GetTreeRecurse($key) {
 		$sql = 'SELECT * FROM cloud_dirs WHERE parent = :key';
 		try {
-			$arr = DB::prepare($sql)->execute(array(':key' => $key))->fetchAll();
+			$arr = DB::prepare($sql)->execute([':key' => $key])->fetchAll();
 			$pz = 0;
 			foreach ($arr as $row) {
 				$name = $row['name'];
@@ -94,7 +97,7 @@ class Controller_Cloud extends Controller {
 
 		echo '[';
 
-		// читаю корневые папки
+		# Получаем корневые папки
 		$sql = 'SELECT * FROM cloud_dirs WHERE parent = 0';
 		try {
 			$arr = DB::prepare($sql)->execute()->fetchAll();
@@ -129,9 +132,9 @@ class Controller_Cloud extends Controller {
 
 		$sql = 'SELECT * FROM cloud_files WHERE id = :id';
 		try {
-			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
-				$filename = WUO_ROOT . '/files/' . $row['filename'];
+				$filename = SITE_ROOT . '/files/' . $row['filename'];
 			}
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка получения файла из базы', 0, $ex);
@@ -139,13 +142,13 @@ class Controller_Cloud extends Controller {
 
 		(!empty($filename) && file_exists($filename) && is_file($filename)) or die('Файл не найден');
 
-		// Органичение скорости скачивания - 10.0 MB/s
+		# Органичение скорости скачивания - 10.0 MB/s
 		$download_rate = 10.0;
 
 		$size = filesize($filename);
 		$name = rawurldecode($row['title']);
 
-		// Decrease CPU usage extreme.
+		# Decrease CPU usage extreme.
 		@ob_end_clean();
 
 		header('Content-Type: application/octet-stream');
@@ -155,7 +158,7 @@ class Controller_Cloud extends Controller {
 		header('Cache-control: private');
 		header('Pragma: private');
 
-		// Multipart-download and resume-download.
+		# Multipart-download and resume-download.
 		if (isset($_SERVER['HTTP_RANGE'])) {
 			list($a, $range) = explode('=', $_SERVER['HTTP_RANGE']);
 			str_replace($range, '-', $range);
@@ -172,7 +175,7 @@ class Controller_Cloud extends Controller {
 
 		$chunksize = round($download_rate * 1048576);
 
-		// Flush content.
+		# Flush content.
 		flush();
 
 		if ($fp = @fopen($filename, 'rb')) {
@@ -183,10 +186,10 @@ class Controller_Cloud extends Controller {
 			while (!feof($fp) and ( connection_status() == 0)) {
 				echo fread($fp, $chunksize);
 
-				// Flush the content to the browser.
+				# Flush the content to the browser.
 				flush();
 
-				// Decrease download speed.
+				# Decrease download speed.
 				sleep(1);
 			}
 			flock($fp, LOCK_UN);
@@ -214,10 +217,10 @@ class Controller_Cloud extends Controller {
 		$cloud_dirs_id = GetDef('cloud_dirs_id');
 
 		if ($oper == '') {
-			// Проверка: может ли пользователь просматривать?
+			# Проверка: может ли пользователь просматривать?
 			($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
-			// Готовим ответ
+			# Готовим ответ
 			$responce = new stdClass();
 			$responce->page = 0;
 			$responce->total = 0;
@@ -288,7 +291,7 @@ TXT;
 		}
 
 		if ($oper == 'edit') {
-			// Проверка: может ли пользователь редактировать?
+			# Проверка: может ли пользователь редактировать?
 			($user->isAdmin() || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 
 			$sql = 'UPDATE cloud_files SET title = :title WHERE id = :id';
@@ -301,7 +304,7 @@ TXT;
 		}
 
 		if ($oper == 'del') {
-			// Проверка: может ли пользователь удалять?
+			# Проверка: может ли пользователь удалять?
 			($user->isAdmin() || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
 
 			$sql = 'DELETE FROM cloud_files WHERE id = :id';
@@ -317,7 +320,7 @@ TXT;
 	function movefolder() {
 		$user = User::getInstance();
 
-		// Проверяем может ли пользователь редактировать?
+		# Проверяем может ли пользователь редактировать?
 		($user->isAdmin() || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
 
 		$nodekey = GetDef('nodekey');
@@ -334,7 +337,7 @@ TXT;
 	function uploadfiles() {
 		$user = User::getInstance();
 
-		// Проверяем: может ли пользователь добавлять файлы?
+		# Проверяем: может ли пользователь добавлять файлы?
 		($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
 
 		$selectedkey = PostDef('selectedkey');
@@ -346,7 +349,7 @@ TXT;
 		if (!in_array($orig_file, $dis)) {
 			$userfile_name = GetRandomId(8) . '.' . pathinfo($orig_file, PATHINFO_EXTENSION);
 			$src = $_FILES['filedata']['tmp_name'];
-			$dst = WUO_ROOT . '/files/' . $userfile_name;
+			$dst = SITE_ROOT . '/files/' . $userfile_name;
 			$res = move_uploaded_file($src, $dst);
 			if ($res) {
 				$rs['msg'] = $userfile_name;
@@ -358,12 +361,12 @@ INSERT INTO cloud_files
 VALUES      (NULL, :selectedkey, :orig_file, :userfile_name, NOW(), :sz)
 TXT;
 					try {
-						DB::prepare($sql)->execute(array(
+						DB::prepare($sql)->execute([
 							':selectedkey' => $selectedkey,
 							':orig_file' => $orig_file,
 							':userfile_name' => $userfile_name,
 							':sz' => $sz
-						));
+						]);
 					} catch (PDOException $ex) {
 						throw new DBException('Не могу добавить файл', 0, $ex);
 					}
