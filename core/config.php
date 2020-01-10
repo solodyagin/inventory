@@ -42,7 +42,6 @@ class Config {
 	public $defaultorgid;   # Организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
 	public $urlsite;  # Где находится сайт http://
 	public $navbar = []; # Навигационная последовательность
-	public $style = 'Bootstrap';   # Стиль грида по умолчанию
 	public $fontsize = '12px';   # Стиль грида по умолчанию
 
 	/**

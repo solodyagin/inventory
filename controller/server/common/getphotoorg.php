@@ -20,7 +20,7 @@ $eqid = GetDef('eqid');
 $photo = '';
 $sql = 'SELECT * FROM org WHERE id = :eqid';
 try {
-	$row = DB::prepare($sql)->execute(array(':eqid' => $eqid))->fetch();
+	$row = DB::prepare($sql)->execute([':eqid' => $eqid])->fetch();
 	if ($row) {
 		$photo = $row['picmap'];
 	}
@@ -30,5 +30,5 @@ try {
 if ($photo != '') {
 	echo '<img src="photos/maps/0-0-0-' . $photo . '" width="100%">';
 } else {
-	echo '<img src="images/noimage.jpg" width="100%">';
+	echo '<img src="photos/noimage.jpg" width="100%">';
 }

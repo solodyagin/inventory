@@ -30,7 +30,7 @@ if ($oper == '') {
 
 	// получаем наложенные поисковые фильтры
 	$flt = json_decode($filters, true);
-	$cnt = count($flt['rules']);
+	$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
 	$where = '';
 	for ($i = 0; $i < $cnt; $i++) {
 		$field = $flt['rules'][$i]['field'];
@@ -70,29 +70,7 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$sql = <<<TXT
-SELECT     COUNT(*) AS cnt,
-           equipment.repair,
-           org.name          AS orgname,
-           equipment.id      AS idnome,
-           nome.groupid      AS groupid,
-           nome.name         AS nomename,
-           users_profile.fio AS fio,
-           places.name       AS placename,
-           group_nome.name   AS grname
-FROM       `equipment`
-INNER JOIN org
-ON         equipment.orgid = org.id
-INNER JOIN nome
-ON         equipment.nomeid = nome.id
-INNER JOIN users_profile
-ON         equipment.usersid = users_profile.usersid
-INNER JOIN places
-ON         equipment.placesid = places.id
-INNER JOIN group_nome
-ON         group_nome.id = groupid
-$where
-TXT;
+	$sql = 'SELECT COUNT(*) AS cnt FROM `equipment`';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;

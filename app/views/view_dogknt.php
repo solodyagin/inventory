@@ -35,6 +35,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 <?php else: ?>
 
 	<div class="container-fluid">
+		<h5>Контроль договоров</h5>
 		<div class="row-fluid">
 			<table id="list2"></table>
 			<div id="pager2"></div>

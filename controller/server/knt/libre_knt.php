@@ -38,7 +38,7 @@ $comment = PostDef('comment');
 
 $filters = GetDef('filters');
 $flt = json_decode($filters, true);
-$cnt = count($flt['rules']);
+$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
 $where = '';
 for ($i = 0; $i < $cnt; $i++) {
 	$field = $flt['rules'][$i]['field'];

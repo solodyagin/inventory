@@ -45,20 +45,7 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$sql = <<<TXT
-SELECT     COUNT(*) AS cnt,
-           repair.dt,
-           repair.dtend,
-           repair.kntid,
-           knt.name,
-           repair.cost,
-           repair.comment,
-           repair.status
-FROM       repair
-INNER JOIN knt
-ON         knt.id = repair.kntid
-$where
-TXT;
+	$sql = 'SELECT COUNT(*) AS cnt FROM repair';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;

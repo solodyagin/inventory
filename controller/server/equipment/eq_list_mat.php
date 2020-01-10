@@ -33,29 +33,7 @@ if ($oper == '') {
 	$responce->total = 0;
 	$responce->records = 0;
 
-	$sql = <<<TXT
-SELECT COUNT(*) AS cnt,name AS grname,res2.*
-FROM   group_nome
-       INNER JOIN (SELECT places.name AS plname,res.*
-                   FROM   places
-                          INNER JOIN (SELECT name AS namenome,nome.groupid AS grpid,eq.*
-                                      FROM   nome
-                                             INNER JOIN (SELECT equipment.id AS eqid,equipment.placesid AS plid,
-                                                                equipment.nomeid AS nid,
-                                                                equipment.buhname AS bn,
-                                                                                        equipment.cost AS cs,
-                                                                                        equipment.currentcost AS curc,
-                                                                equipment.invnum,
-                                                                equipment.sernum,
-                                                                             equipment.shtrihkod,
-                                                                                        equipment.mode,equipment.os
-                                                         FROM   equipment
-                                                         WHERE  equipment.active = 1
-                                                                AND equipment.usersid = '$curuserid') AS eq
-                                                     ON nome.id = eq.nid) AS res
-                                  ON places.id = res.plid) AS res2
-               ON group_nome.id = res2.grpid
-TXT;
+	$sql = 'SELECT COUNT(*) AS cnt FROM group_nome';
 	try {
 		$row = DB::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;

@@ -1,7 +1,8 @@
 /app/config.php
 /files/*
 !/files/.htaccess
+/logs/*
 /nbproject
 /photos/**/*.jpg
 !/photos/noimage.jpg
-/photos/**/*.png
+!.gitkeep

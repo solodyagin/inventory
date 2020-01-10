@@ -16,8 +16,6 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
 $user = User::getInstance();
-
-$base_href = $cfg->rewrite_base;
 ?>
 <!-- saved from url=(0014)about:internet -->
 <!DOCTYPE html>
@@ -29,17 +27,14 @@ $base_href = $cfg->rewrite_base;
 		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title><?= $cfg->sitename; ?></title>
-		<base href="<?= $base_href; ?>">
+		<base href="<?= $cfg->rewrite_base; ?>">
 		<link rel="icon" href="favicon.ico" type="image/x-icon">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery-ui.min.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.multiselect.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/bootstrap.min.css">
-		<?php if ($cfg->style == 'Bootstrap'): ?>
-			<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid-bootstrap.css">
-		<?php elseif ($cfg->style == 'Normal'): ?>
-			<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid.css">
-		<?php endif; ?>
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid-bootstrap.css">
+		<!--<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid.css">-->
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/chosen.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery.toastmessage-min.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/font-awesome.min.css">

@@ -12,16 +12,16 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $err = []; # Массив с сообщениями об ошибках для показа пользователю при генерации страницы
 $ok = []; # Массив с информационными сообщениями для показа пользователю при генерации страницы
 
-# Некоторые установки
+/* Некоторые установки */
 date_default_timezone_set('Europe/Moscow'); # Временная зона по умолчанию
 
-# Если нет файла конфигурации, то запускаем инсталлятор
+/* Если нет файла конфигурации, то запускаем инсталлятор */
 if (!is_file(SITE_ROOT . '/app/config.php')) {
 	header('Location: install/index.php');
 	die();
@@ -58,38 +58,58 @@ function __autoload($class) {
 	require_once $filename;
 }
 
-# Получаем настройки из файла конфигурации
+/* Получаем настройки из файла конфигурации */
 $cfg = Config::getInstance();
 $cfg->loadFromFile();
 
-# Если активен режим отладки, то показываем все ошибки и предупреждения
-if ($cfg->debug) {
-	ini_set('display_errors', 1);
-	error_reporting(E_ALL);
-}
-
-# Задаём обработчик исключений
-set_exception_handler(function ($ex) {
+/* Задаём обработчик исключений */
+error_reporting(E_ALL);
+set_error_handler(function ($level, $message, $file, $line) {
+	if (error_reporting() !== 0) { // to keep the @ operator working
+		throw new ErrorException($message, 0, $level, $file, $line);
+	}
+});
+set_exception_handler(function ($exception) {
+	$code = $exception->getCode();
+	if ($code != 404) {
+		$code = 500;
+	}
+	http_response_code($code);
+	$class = get_class($exception);
+	$message = $exception->getMessage();
+	if ($class == 'DBException') {
+		$message .= ': ' . $exception->getPrevious()->getMessage();
+	}
 	$cfg = Config::getInstance();
-	switch (get_class($ex)) {
-		case 'DBException':
-			$pr = $ex->getPrevious();
-			die(($pr && $cfg->debug) ? $ex->getMessage() . ': ' . $pr->getMessage() : $ex->getMessage());
-			break;
-		default:
-			throw $ex;
+	if ($cfg->debug) {
+		echo <<<TEXT
+<h1>Fatal error</h1>
+<p>Uncaught exception: "$class"</p>
+<p>Message: "$message"</p>
+<p>Stack trace:<pre>{$exception->getTraceAsString()}</pre></p>
+<p>Thrown in "{$exception->getFile()}" on line {$exception->getLine()}</p>
+TEXT;
+	} else {
+		ini_set('error_log', SITE_ROOT . '/logs/' . date('Y-m-d') . '.txt');
+		$log = <<<TEXT
+Uncaught exception: "$class" with message "$message"
+Stack trace: {$exception->getTraceAsString()}
+Thrown in "{$exception->getFile()}" on line {$exception->getLine()}
+TEXT;
+		error_log($log);
 	}
 });
 
-# Получаем настройки из базы
+/* Получаем настройки из базы */
 $cfg->loadFromDB();
 
-# Загружаем все что нужно для работы движка
+/* Загружаем все что нужно для работы движка */
 include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
 
-# Аутентифицируем пользователя по кукам
+/* Аутентифицируем пользователя по кукам */
 $user = User::getInstance();
 $user->loginByCookie();
+
 
 /**
  * Если указан маршрут, то подключаем указанный в маршруте скрипт и выходим
@@ -102,21 +122,18 @@ if (strpos($uri, $cfg->rewrite_base) === 0) {
 if (strpos($uri, 'route') === 0) {
 	# Удаляем лишнее
 	$uri = substr($uri, 5);
-
 	# Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
 	list($route, $p) = array_pad(explode('?', $uri, 2), 2, null);
 	if ($p) {
 		parse_str($p, $PARAMS);
 	}
-
 	# Разрешаем подключать php-скрипты только из каталогов /controller и /inc
 	if ((!preg_match('#^(/controller)|(/inc)#', $route)) || (strpos($route, '..') !== false)) {
 		die("Запрещён доступ к '$route'");
 	}
-
 	# Подключаем запрашиваемый скрипт
 	if (is_file(SITE_ROOT . $route)) {
-		// Разрешаем доступ только выполнившим вход пользователям
+		# Разрешаем доступ только выполнившим вход пользователям
 		if ($user->id == '') {
 			die('Доступ ограничен');
 		}
@@ -127,7 +144,8 @@ if (strpos($uri, 'route') === 0) {
 	exit();
 }
 
-# Загружаем сторонние классы
+
+/* Загружаем сторонние классы */
 include_once SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php'; # Класс управления почтой
 
 /*
@@ -148,9 +166,9 @@ try {
 	$err[] = 'Не получилось прочитать очередь сообщений ' . $ex->getMessage();
 }
 
-# Инициализируем заполнение меню
+/* Инициализируем заполнение меню */
 $gmenu = new Menu();
 $gmenu->GetFromFiles(SITE_ROOT . '/inc/menu');
 
-# Запускаем маршрутизатор
+/* Запускаем маршрутизатор */
 Router::start();
