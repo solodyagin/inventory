@@ -11,20 +11,20 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Объявляем глобальные переменные
+/* Объявляем глобальные переменные */
 define('SITE_EXEC', true);
 define('SITE_ROOT', dirname(dirname(__FILE__)));
-define('SITE_VERSION', '191230');
+define('SITE_VERSION', '200113');
 
 header('Content-Type: text/html; charset=utf-8');
 
-# Проверяем версию PHP
+/* Проверяем версию PHP */
 define('SITE_MINIMUM_PHP', '7.0.22');
 if (version_compare(PHP_VERSION, SITE_MINIMUM_PHP, '<')) {
 	die('Для запуска этой версии Inventory хост должен использовать PHP ' . SITE_MINIMUM_PHP . ' или выше!');
 }
 
-# Запускаем установщик при условии, что файл настроек отсутствует
+/* Запускаем установщик при условии, что файл настроек отсутствует */
 if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
@@ -62,7 +62,7 @@ if ($action == 'install') {
 					var error = 0;
 					$('form').find(':input').each(function () {
 						for (var i = 0; i < fields.length; i++) {
-							if ($(this).attr('name') == fields[i]) {
+							if ($(this).attr('name') === fields[i]) {
 								if (!$(this).val()) {
 									error = 1;
 									$(this).parent().addClass('has-error');
@@ -73,9 +73,7 @@ if ($action == 'install') {
 						}
 					});
 					if (error === 1) {
-						$('#messenger').addClass('alert alert-danger')
-								.html('Обязательные поля не заполнены!')
-								.fadeIn('slow');
+						$('#messenger').addClass('alert alert-danger').html('Обязательные поля не заполнены!').fadeIn('slow');
 						return false;
 					}
 					return true;

@@ -44,7 +44,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 	</div>
 	<script>
 		$('#list2').jqGrid({
-			url: 'route/controller/server/tmc/libre_nome.php',
+			url: 'route/deprecated/server/tmc/libre_nome.php',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Группа', 'Производитель', 'Наименование', ''],
 			colModel: [
@@ -69,7 +69,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 			rowNum: 1000,
 			scroll: 1,
 			sortorder: 'asc',
-			editurl: 'route/controller/server/tmc/libre_nome.php',
+			editurl: 'route/deprecated/server/tmc/libre_nome.php',
 			caption: 'Справочник номенклатуры'
 		});
 		$('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);
@@ -87,7 +87,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 					height: 280,
 					width: 640,
 					open: function () {
-						$(this).load('route/controller/client/view/tmc/nome_add_edit.php?step=add');
+						$(this).load('route/deprecated/client/view/tmc/nome_add_edit.php?step=add');
 					}
 				});
 				$('#add_edit').dialog('open');
@@ -107,7 +107,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 						height: 280,
 						width: 640,
 						open: function () {
-							$(this).load('route/controller/client/view/tmc/nome_add_edit.php?step=edit&id=' + gsr);
+							$(this).load('route/deprecated/client/view/tmc/nome_add_edit.php?step=edit&id=' + gsr);
 						}
 					});
 					$('#add_edit').dialog('open');

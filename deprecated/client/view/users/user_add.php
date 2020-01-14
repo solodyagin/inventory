@@ -72,7 +72,7 @@ if ($user->isAdmin()):
 	</script>
 	<div class="container-fluid">
 		<div class="row">
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/users/libre_users_form.php?step=add" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_users_form.php?step=add" method="post" name="form1" target="_self">
 				<div class="form-group">
 					<label for="orgid">Организация</label>
 					<select class="chosen-select form-control" name="orgid" id="orgid">

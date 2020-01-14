@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $step = GetDef('step');
@@ -49,14 +49,14 @@ INSERT INTO repair
 VALUES	(:dt, :kntid, :eqid, :cost, :comment, :dtend, '1', 0, 0, '')
 TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				DB::prepare($sql)->execute([
 					':dt' => $dtpost,
 					':kntid' => $kntid,
 					':eqid' => $eqid,
 					':cost' => $cst,
 					':comment' => $comment,
 					':dtend' => $dt
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог добавить ремонт', 0, $ex);
 			}
@@ -64,10 +64,10 @@ TXT;
 			if ($status != 0) {
 				$sql = 'UPDATE equipment SET repair = :repair WHERE id = :id';
 				try {
-					DB::prepare($sql)->execute(array(
+					DB::prepare($sql)->execute([
 						':repair' => $status,
 						':id' => $eqid
-					));
+					]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не смог обновить запись о ремонте', 0, $ex);
 				}
@@ -86,13 +86,11 @@ TXT;
 		$oper = PostDef('oper');
 		$id = GetDef('id');
 		$where = ($id != '') ? "WHERE reqid = '$id'" : '';
-
-		// Готовим ответ
+		/* Готовим ответ */
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-
 		$sql = 'SELECT COUNT(*) AS cnt FROM repair';
 		try {
 			$row = DB::prepare($sql)->execute()->fetch();
@@ -103,7 +101,6 @@ TXT;
 		if ($count == 0) {
 			jsonExit($responce);
 		}
-
 		$total_pages = ceil($count / $limit);
 		if ($page > $total_pages) {
 			$page = $total_pages;
@@ -112,11 +109,9 @@ TXT;
 		if ($start < 0) {
 			jsonExit($responce);
 		}
-
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-
 		$sql = <<<TXT
 SELECT	rp2.reqid AS reqid,
 		rp2.rstatus AS rstatus,
@@ -192,14 +187,14 @@ SET dt = :dt, dtend = :dtend, cost = :cost, comment = :comment, status = :status
 WHERE id = :id'
 TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				DB::prepare($sql)->execute([
 					':dt' => $dt,
 					':dtend' => $dtend,
 					':cost' => $cost,
 					':comment' => $comment,
 					':status' => $rstatus,
 					':id' => $eqid
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог обновить статус ремонта', 0, $ex);
 			}
@@ -227,7 +222,7 @@ TXT;
 //			}
 			$sql = 'DELETE FROM `repair` WHERE id = :id AND `status` <> 1';
 			try {
-				DB::prepare($sql)->execute(array(':id' => $eqid));
+				DB::prepare($sql)->execute([':id' => $eqid]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог обновить статус ремонта', 0, $ex);
 			}

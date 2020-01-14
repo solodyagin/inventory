@@ -40,7 +40,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 	<script>
 		$('#test_ping').click(function () {
 			$('#ping_add').html('<img src="templates/' + theme + '/img/loading.gif">');
-			$('#ping_add').load('route/controller/server/common/ping.php?orgid=' + defaultorgid);
+			$('#ping_add').load('route/deprecated/server/common/ping.php?orgid=' + defaultorgid);
 		});
 	</script>
 

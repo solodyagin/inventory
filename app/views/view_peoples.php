@@ -46,7 +46,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 	</div>
 	<script>
 		$('#list2').jqGrid({
-			url: 'route/controller/server/users/libre_users.php?org_status=list',
+			url: 'route/deprecated/server/users/libre_users.php?org_status=list',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'Пароль', 'E-mail', 'Администратор', 'Действия'],
 			colModel: [
@@ -65,19 +65,19 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 					ids = 0;
 					if ($('#list3').jqGrid('getGridParam', 'records') > 0) {
 						$('#list3').jqGrid('setGridParam', {
-							url: 'route/controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+							url: 'route/deprecated/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
 						});
 						$('#list3').jqGrid('setGridParam', {
-							editurl: 'route/controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+							editurl: 'route/deprecated/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
 						}).trigger('reloadGrid');
 						GetSubGrid();
 					}
 				} else {
 					$('#list3').jqGrid('setGridParam', {
-						url: 'route/controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+						url: 'route/deprecated/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
 					});
 					$('#list3').jqGrid('setGridParam', {
-						editurl: 'route/controller/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
+						editurl: 'route/deprecated/server/users/usersroles.php?userid=' + ids + '&orgid=' + defaultorgid
 					}).trigger('reloadGrid');
 					GetSubGrid();
 				}
@@ -91,7 +91,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			multiselect: true,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: 'route/controller/server/users/libre_users.php?org_status=edit',
+			editurl: 'route/deprecated/server/users/libre_users.php?org_status=edit',
 			caption: 'Справочник пользователей'
 		});
 		$('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);
@@ -122,7 +122,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			onClickButton: function () {
 				$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Добавление пользователя'});
 				$('#add_edit').dialog('open');
-				$('#add_edit').load('route/controller/client/view/users/user_add.php');
+				$('#add_edit').load('route/deprecated/client/view/users/user_add.php');
 			}
 		});
 		$('#list2').jqGrid('navButtonAdd', '#pager2', {
@@ -134,7 +134,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 				if (gsr) {
 					$('#add_edit').dialog({autoOpen: false, height: 420, width: 400, modal: true, title: 'Редактирование пользователя'});
 					$('#add_edit').dialog('open');
-					$('#add_edit').load('route/controller/client/view/users/user_edit.php?id=' + gsr);
+					$('#add_edit').load('route/deprecated/client/view/users/user_edit.php?id=' + gsr);
 				} else {
 					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 				}
@@ -149,7 +149,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 				if (gsr) {
 					$('#add_edit').dialog({autoOpen: false, height: 440, width: 550, modal: true, title: 'Редактирование профиля'});
 					$('#add_edit').dialog('open');
-					$('#add_edit').load('route/controller/client/view/users/profile_add_edit.php?userid=' + gsr);
+					$('#add_edit').load('route/deprecated/client/view/users/profile_add_edit.php?userid=' + gsr);
 				} else {
 					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 				}
@@ -163,14 +163,14 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			$('#list3').jqGrid({
 				height: 100,
 				autowidth: true,
-				url: 'route/controller/server/users/usersroles.php?userid=',
+				url: 'route/deprecated/server/users/usersroles.php?userid=',
 				datatype: 'json',
 				colNames: ['Id', 'Роль', 'Действия'],
 				colModel: [
 					{name: 'places_users.id', index: 'places_users.id', width: 55, fixed: true},
 					{name: 'role', index: 'role', width: 200, editable: true, edittype: 'select', editoptions: {
 							editrules: {required: true},
-							dataUrl: 'route/controller/server/users/getlistroles.php?orgid=' + defaultorgid
+							dataUrl: 'route/deprecated/server/users/getlistroles.php?orgid=' + defaultorgid
 						}},
 					{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 				],

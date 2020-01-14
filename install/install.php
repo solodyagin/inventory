@@ -12,10 +12,10 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-# Запускаем установщик при условии, что файл настроек отсутствует
+/* Запускаем установщик при условии, что файл настроек отсутствует */
 if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
@@ -52,7 +52,7 @@ try {
 		die(print_r($dbh->errorInfo(), true));
 	}
 
-	# Создаём настройки в БД
+	/* Создаём настройки в БД */
 	$sql = <<<SQL
 INSERT INTO `config` (`ad`, `theme`, `sitename`, `smtpauth`, `sendemail`, `version`)
 VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
@@ -61,10 +61,10 @@ SQL;
 		':version' => SITE_VERSION
 	]);
 
-	# Создаём организацию
+	/* Создаём организацию */
 	$dbh->prepare('INSERT INTO org (name, active) VALUES (:orgname, 1)')->execute([':orgname' => $orgname]);
 
-	# Создаём администратора
+	/* Создаём администратора */
 	$salt = generateSalt();
 	$password = sha1(sha1($pass) . $salt);
 	$sql = <<<SQL
@@ -82,7 +82,7 @@ SQL;
 		':salt' => $salt
 	]);
 
-	# Создаём профиль администратора
+	/* Создаём профиль администратора */
 	$sql = <<<SQL
 INSERT INTO users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
 VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')

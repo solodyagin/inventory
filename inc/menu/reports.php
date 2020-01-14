@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $this->Add('main', '<i class="fa fa-bar-chart fa-fw"></i> Отчёты', 'Отчёты', 3, 'reports', '');

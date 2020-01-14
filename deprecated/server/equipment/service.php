@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $step = GetDef('step');
@@ -23,7 +23,9 @@ if ($id != '') {
 	$eqid = $id;
 }
 
-if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
+$user = User::getInstance();
+
+if ($user->isAdmin() || $user->TestRoles('1,4,5,6')) {
 	if ($step == 'add') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		if ($dtpost == '') {
@@ -45,13 +47,12 @@ if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
 		$suserid2 = PostDef('suserid2', '-1');
 		if (count($err) == 0) {
 			$sql = <<<TXT
-INSERT INTO repair
-            (id,dt,kntid,eqid,cost,comment,dtend,status,userfrom,userto,doc)
-VALUES      (NULL, :dtpost, :kntid, :eqid, :cost, :comment, :dtend, '1', :userfrom, :userto, :doc)
+INSERT INTO repair (id, dt, kntid, eqid, cost, comment, dtend, status, userfrom, userto, doc)
+VALUES (NULL, :dtpost, :kntid, :eqid, :cost, :comment, :dtend, '1', :userfrom, :userto, :doc)
 TXT;
 			try {
-				DB::prepare($sql)->execute(array(
-					':dt' => $dtpost,
+				DB::prepare($sql)->execute([
+					':dtpost' => $dtpost,
 					':kntid' => $kntid,
 					':eqid' => $eqid,
 					':cost' => $cst,
@@ -60,7 +61,7 @@ TXT;
 					':userfrom' => $suserid1,
 					':userto' => $suserid2,
 					':doc' => $doc
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог добавить ремонт', 0, $ex);
 			}
@@ -69,7 +70,7 @@ TXT;
 			if ($status != 0) {
 				$sql = 'UPDATE equipment SET repair = :repair WHERE id = :id';
 				try {
-					DB::prepare($sql)->execute(array(':repair' => $status, ':id' => $eqid));
+					DB::prepare($sql)->execute([':repair' => $status, ':id' => $eqid]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не смог обновить запись о ремонте', 0, $ex);
 				}
@@ -88,12 +89,12 @@ TXT;
 		$kntid = PostDef('kntid');
 		$sql = <<<TXT
 UPDATE repair
-SET    dt = :dt,dtend = :dtend,cost = :cost,comment = :comment,status = :status,doc = :doc,
-       userfrom = :userfrom,userto = :userto,kntid = :kntid
-WHERE  id = :id
+SET dt = :dt, dtend = :dtend, cost = :cost, comment = :comment, status = :status, doc = :doc,
+  userfrom = :userfrom, userto = :userto, kntid = :kntid
+WHERE id = :id
 TXT;
 		try {
-			DB::prepare($sql)->execute(array(
+			DB::prepare($sql)->execute([
 				':dt' => $dt,
 				':dtend' => $dtend,
 				':cost' => $cost,
@@ -104,7 +105,7 @@ TXT;
 				':userto' => $suserid2,
 				':kntid' => $kntid,
 				':id' => $eqid
-			));
+			]);
 		} catch (PDOException $ex) {
 			throw new DBException('Не смог обновить статус ремонта', 0, $ex);
 		}

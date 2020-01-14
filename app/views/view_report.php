@@ -94,7 +94,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 		function ListEqByPlaces(oid, pid, plpid) {
 			if (!$('#gr').prop('checked')) {
 				$('#list2').jqGrid({
-					url: 'route/controller/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
+					url: 'route/deprecated/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 					datatype: 'json',
 					colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 					colModel: [
@@ -123,7 +123,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 				});
 			} else {
 				$('#list2').jqGrid({
-					url: 'route/controller/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
+					url: 'route/deprecated/server/reports/report.php?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 					datatype: 'json',
 					colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 					colModel: [
@@ -237,7 +237,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 		}
 
 		function GetListPlaces(orgid, placesid) {
-			url = 'route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid + '&addnone=true';
+			url = 'route/deprecated/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid + '&addnone=true';
 			$.get(url, function (data) {
 				$('#sel_pom').html(data);
 				UpdateChosen();
@@ -245,7 +245,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 		}
 
 		function GetListUsers(orgid, userid) {
-			url = 'route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid + '&addnone=true';
+			url = 'route/deprecated/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid + '&addnone=true';
 			$.get(url, function (data) {
 				$('#sel_plp').html(data);
 				UpdateChosen();

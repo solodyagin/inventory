@@ -78,7 +78,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			closeOnEscape: true
 		};
 		$('#list2').jqGrid({
-			url: 'route/controller/server/knt/libre_knt.php?org_status=list',
+			url: 'route/deprecated/server/knt/libre_knt.php?org_status=list',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Пок', 'Прод', 'Контролировать', 'ERPCode', 'Комментарий', 'Действия'],
 			colModel: [
@@ -100,15 +100,15 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			scroll: 1,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: 'route/controller/server/knt/libre_knt.php?org_status=edit',
+			editurl: 'route/deprecated/server/knt/libre_knt.php?org_status=edit',
 			caption: 'Справочник контрагентов',
 			onSelectRow: function (ids) {
 				$('#list4').css('visibility', 'hidden');
 				$('#simple-btn').css('visibility', 'hidden');
-				$('#list3').jqGrid('setGridParam', {url: 'route/controller/server/knt/getcontrakts.php?idknt=' + ids});
-				$('#list3').jqGrid('setGridParam', {editurl: 'route/controller/server/knt/getcontrakts.php?idknt=' + ids});
+				$('#list3').jqGrid('setGridParam', {url: 'route/deprecated/server/knt/getcontrakts.php?idknt=' + ids});
+				$('#list3').jqGrid('setGridParam', {editurl: 'route/deprecated/server/knt/getcontrakts.php?idknt=' + ids});
 				$('#list3').jqGrid({
-					url: 'route/controller/server/knt/getcontrakts.php?idknt=' + ids,
+					url: 'route/deprecated/server/knt/getcontrakts.php?idknt=' + ids,
 					datatype: 'json',
 					colNames: [' ', 'Id', 'Номер', 'Название', 'Начало', 'Конец', 'Рабочий', 'Комментарий', 'Действия'],
 					colModel: [
@@ -150,16 +150,16 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 					scroll: 1,
 					viewrecords: true,
 					sortorder: 'asc',
-					editurl: 'route/controller/server/knt/getcontrakts.php?idknt=' + ids,
+					editurl: 'route/deprecated/server/knt/getcontrakts.php?idknt=' + ids,
 					caption: 'Заключенные договора',
 					onSelectRow: function (ids) {
 						$('#list4').css('visibility', 'visible');
 						$('#simple-btn').css('visibility', 'visible');
 						$('#simple-btn').fileapi('data', {'contractid': ids});
-						$('#list4').jqGrid('setGridParam', {url: 'route/controller/server/knt/getfilescontrakts.php?idcontract=' + ids});
-						$('#list4').jqGrid('setGridParam', {editurl: 'route/controller/server/knt/getfilescontrakts.php?idcontract=' + ids});
+						$('#list4').jqGrid('setGridParam', {url: 'route/deprecated/server/knt/getfilescontrakts.php?idcontract=' + ids});
+						$('#list4').jqGrid('setGridParam', {editurl: 'route/deprecated/server/knt/getfilescontrakts.php?idcontract=' + ids});
 						$('#list4').jqGrid({
-							url: 'route/controller/server/knt/getfilescontrakts.php?idcontract=' + ids,
+							url: 'route/deprecated/server/knt/getfilescontrakts.php?idcontract=' + ids,
 							datatype: 'json',
 							colNames: ['Id', 'Имя файла', 'Действия'],
 							colModel: [
@@ -174,7 +174,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 							scroll: 1,
 							viewrecords: true,
 							sortorder: 'asc',
-							editurl: 'route/controller/server/knt/getfilescontrakts.php?idcontract=' + ids,
+							editurl: 'route/deprecated/server/knt/getfilescontrakts.php?idcontract=' + ids,
 							caption: 'Прикрепленные файлы'
 						}).trigger('reloadGrid');
 						$('#list4').jqGrid('navGrid', '#pager4', {edit: false, add: false, del: false, search: false});
@@ -204,7 +204,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			}
 		});
 		$('#simple-btn').fileapi({
-			url: 'route/controller/server/common/uploadanyfiles.php',
+			url: 'route/deprecated/server/common/uploadanyfiles.php',
 			data: {'geteqid': 0},
 			multiple: true,
 			maxSize: 20 * FileAPI.MB,

@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -39,11 +39,11 @@ FROM equipment
 WHERE equipment.id = :idm
 TXT;
 				try {
-					$row = DB::prepare($sql)->execute(array(':idm' => $idm))->fetch();
+					$row = DB::prepare($sql)->execute([':idm' => $idm])->fetch();
 					if ($row) {
 						echo "<font size=\"1\">Бух:{$row['buhname']}<br>";
 						echo "ИТ:{$row['nomename']}</font><br>";
-						echo "<img src=\"ean13.php?shtrihkod={$row['shtrihkod']}\"><br>";
+						echo "<img src=\"inc/ean13.php?shtrihkod={$row['shtrihkod']}\"><br>";
 						echo "№{$row['invnum']}<br>";
 					}
 				} catch (PDOException $ex) {

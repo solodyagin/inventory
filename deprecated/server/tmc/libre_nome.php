@@ -32,7 +32,7 @@ if ($oper == '') {
 	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 	$flt = json_decode($filters, true);
-	$cnt = count($flt['rules']);
+	$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
 	$where = '';
 	for ($i = 0; $i < $cnt; $i++) {
 		$field = $flt['rules'][$i]['field'];
@@ -95,7 +95,7 @@ ORDER BY   $sidx $sord
 LIMIT      $start, $limit
 TXT;
 	try {
-		$arr = DB::prepare($sql)->execute(array())->fetchAll();
+		$arr = DB::prepare($sql)->execute()->fetchAll();
 		$i = 0;
 		foreach ($arr as $row) {
 			$responce->rows[$i]['id'] = $row['nomeid'];
@@ -118,10 +118,10 @@ if ($oper == 'add') {
 
 	$sql = 'INSERT INTO knt (id, name, comment, active) VALUES (null, :name, :comment, 1)';
 	try {
-		DB::prepare($sql)->execute(array(
+		DB::prepare($sql)->execute([
 			':name' => $name,
 			':comment' => $comment
-		));
+		]);
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу добавить пользователя', 0, $ex);
 	}
@@ -160,7 +160,7 @@ if ($oper == 'del') {
 
 	$sql = 'UPDATE nome SET active = NOT active WHERE id = :id';
 	try {
-		DB::prepare($sql)->execute(array(':id' => $id));
+		DB::prepare($sql)->execute([':id' => $id]);
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу пометить на удаление номенклатуру', 0, $ex);
 	}

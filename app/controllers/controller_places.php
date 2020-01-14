@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Places extends Controller {
@@ -24,10 +24,8 @@ class Controller_Places extends Controller {
 
 	function get() {
 		$user = User::getInstance();
-
-		# Проверяем может ли пользователь просматривать?
+		/* Проверяем может ли пользователь просматривать? */
 		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -36,13 +34,11 @@ class Controller_Places extends Controller {
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
 		$orgid = GetDef('orgid');
-
-		# Готовим ответ
+		/* Готовим ответ */
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-
 		$sql = 'SELECT COUNT(*) AS cnt FROM places WHERE orgid = :orgid';
 		try {
 			$row = DB::prepare($sql)->execute([':orgid' => $orgid])->fetch();
@@ -53,7 +49,6 @@ class Controller_Places extends Controller {
 		if ($count == 0) {
 			jsonExit($responce);
 		}
-
 		$total_pages = ceil($count / $limit);
 		if ($page > $total_pages) {
 			$page = $total_pages;
@@ -62,11 +57,9 @@ class Controller_Places extends Controller {
 		if ($start < 0) {
 			jsonExit($responce);
 		}
-
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-
 		$sql = <<<TXT
 SELECT	id,
 		opgroup,
@@ -89,8 +82,8 @@ TXT;
 				$responce->rows[$i]['id'] = $row['id'];
 				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-					$row['id'], $row['opgroup'], $row['name'], $row['comment']
+						"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+						$row['id'], $row['opgroup'], $row['name'], $row['comment']
 				];
 				$i++;
 			}
@@ -103,52 +96,48 @@ TXT;
 	function change() {
 		$user = User::getInstance();
 		$oper = PostDef('oper');
+		$id = PostDef('id');
+		$name = PostDef('name');
+		$orgid = GetDef('orgid');
+		$comment = PostDef('comment');
+		$opgroup = PostDef('opgroup');
 		switch ($oper) {
 			case 'add':
-				# Проверяем может ли пользователь добавлять?
+				/* Проверяем может ли пользователь добавлять? */
 				($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
-				$orgid = GetDef('orgid');
-				$name = PostDef('name');
-				$comment = PostDef('comment');
-				$opgroup = PostDef('opgroup');
 				$sql = <<<TXT
 INSERT INTO places (id, orgid, opgroup, name, comment, active)
 VALUES (null, :orgid, :opgroup, :name, :comment, 1)
 TXT;
 				try {
-					DB::prepare($sql)->execute(array(
-						':orgid' => $orgid,
-						':opgroup' => $opgroup,
-						':name' => $name,
-						':comment' => $comment
-					));
+					DB::prepare($sql)->execute([
+							':orgid' => $orgid,
+							':opgroup' => $opgroup,
+							':name' => $name,
+							':comment' => $comment
+					]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу добавить помещение', 0, $ex);
 				}
 				break;
 			case 'edit':
-				# Проверяем может ли пользователь редактировать?
+				/* Проверяем может ли пользователь редактировать? */
 				($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
-				$id = PostDef('id');
-				$name = PostDef('name');
-				$comment = PostDef('comment');
-				$opgroup = PostDef('opgroup');
 				$sql = 'UPDATE places SET opgroup = :opgroup, name = :name, comment = :comment WHERE id = :id';
 				try {
 					DB::prepare($sql)->execute([
-						':opgroup' => $opgroup,
-						':name' => $name,
-						':comment' => $comment,
-						':id' => $id
+							':opgroup' => $opgroup,
+							':name' => $name,
+							':comment' => $comment,
+							':id' => $id
 					]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по помещениям', 0, $ex);
 				}
 				break;
 			case 'del':
-				# Проверяем может ли пользователь удалять?
+				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
-				$id = PostDef('id');
 				$sql = 'UPDATE places SET active = NOT active WHERE id = :id';
 				try {
 					DB::prepare($sql)->execute([':id' => $id]);
@@ -162,7 +151,7 @@ TXT;
 	function getsub() {
 		$user = User::getInstance();
 
-		# Проверяем может ли пользователь просматривать?
+		/* Проверяем может ли пользователь просматривать? */
 		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
 
 		$page = GetDef('page', 1);
@@ -240,7 +229,7 @@ TXT;
 		$oper = PostDef('oper');
 		switch ($oper) {
 			case 'add':
-				# Проверяем может ли пользователь добавлять?
+				/* Проверяем может ли пользователь добавлять? */
 				($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
 				$placesid = GetDef('placesid');
 				$name = PostDef('name');
@@ -255,7 +244,7 @@ TXT;
 				}
 				break;
 			case 'edit':
-				# Проверяем может ли пользователь редактировать?
+				/* Проверяем может ли пользователь редактировать? */
 				($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
 				$id = PostDef('id');
 				$name = PostDef('name');
@@ -267,7 +256,7 @@ TXT;
 				}
 				break;
 			case 'del':
-				# Проверяем может ли пользователь удалять?
+				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
 				$id = PostDef('id');
 				$sql = 'DELETE FROM places_users WHERE id = :id';

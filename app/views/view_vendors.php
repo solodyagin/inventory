@@ -43,7 +43,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 	</div>
 	<script>
 		$('#list2').jqGrid({
-			url: 'route/controller/server/tmc/libre_vendor.php',
+			url: 'route/deprecated/server/tmc/libre_vendor.php',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Имя', 'Комментарий', 'Действия'],
 			colModel: [
@@ -59,7 +59,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			scroll: 1,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: 'route/controller/server/tmc/libre_vendor.php',
+			editurl: 'route/deprecated/server/tmc/libre_vendor.php',
 			caption: 'Справочник производителей'
 		});
 		var addOptions = {

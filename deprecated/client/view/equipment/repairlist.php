@@ -25,7 +25,7 @@ $cfg = Config::getInstance();
 	var lastsel3;
 
 	$('#list_rep').jqGrid({
-		url: 'route/controller/server/equipment/repair.php?step=list&id=' + repid + '&eqid=' + repid,
+		url: 'route/deprecated/server/equipment/repair.php?step=list&id=' + repid + '&eqid=' + repid,
 		datatype: 'json',
 		colNames: ['Id', 'Контрагент', 'ТМЦ', 'Дата начала', 'Дата конца', 'Стоимость', 'Комментарий', 'Статус'],
 		colModel: [
@@ -53,7 +53,7 @@ $cfg = Config::getInstance();
 		sortname: 'rpid',
 		viewrecords: true,
 		sortorder: 'asc',
-		editurl: 'route/controller/server/equipment/repair.php?step=edit',
+		editurl: 'route/deprecated/server/equipment/repair.php?step=edit',
 		caption: 'Реестр ремонтов'
 	});
 

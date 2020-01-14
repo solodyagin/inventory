@@ -48,7 +48,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 			top: 0, left: 0, width: 500
 		};
 		$('#list2').jqGrid({
-			url: 'route/controller/server/tmc/libre_group.php',
+			url: 'route/deprecated/server/tmc/libre_group.php',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Имя', 'Комментарий', 'Действия'],
 			colModel: [
@@ -66,19 +66,19 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 			height: 140,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: 'route/controller/server/tmc/libre_group.php',
+			editurl: 'route/deprecated/server/tmc/libre_group.php',
 			caption: 'Группы номенклатуры',
 			onSelectRow: function (ids) {
 				if (ids == null) {
 					ids = 0;
 					if ($('#list10_d').jqGrid('getGridParam', 'records') > 0) {
-						$('#list10_d').jqGrid('setGridParam', {url: 'route/controller/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1});
-						$('#list10_d').jqGrid('setGridParam', {editurl: 'route/controller/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1})
+						$('#list10_d').jqGrid('setGridParam', {url: 'route/deprecated/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1});
+						$('#list10_d').jqGrid('setGridParam', {editurl: 'route/deprecated/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1})
 										.trigger('reloadGrid');
 					}
 				} else {
-					$('#list10_d').jqGrid('setGridParam', {url: 'route/controller/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1});
-					$('#list10_d').jqGrid('setGridParam', {editurl: 'route/controller/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1})
+					$('#list10_d').jqGrid('setGridParam', {url: 'route/deprecated/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1});
+					$('#list10_d').jqGrid('setGridParam', {editurl: 'route/deprecated/server/tmc/libre_group_sub.php?q=1&groupid=' + ids, page: 1})
 									.trigger('reloadGrid');
 				}
 			}
@@ -89,7 +89,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 		$('#list10_d').jqGrid({
 			height: 100,
 			autowidth: true,
-			url: 'route/controller/server/tmc/libre_group_sub.php',
+			url: 'route/deprecated/server/tmc/libre_group_sub.php',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Параметр', 'Действия'],
 			colModel: [

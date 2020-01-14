@@ -165,7 +165,7 @@ if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 	<div class="container-fluid">
 		<div class="row">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
 				<div class="row-fluid">
 					<div class="col-xs-4 col-md-4 col-sm-4">
 						<div class="form-group">
@@ -293,7 +293,7 @@ if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: 'route/controller/server/common/uploadfile.php',
+				url: 'route/deprecated/server/common/uploadfile.php',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ''},
@@ -367,23 +367,23 @@ if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 		}
 
 		function GetListPlaces(orgid, placesid) {
-			$('#splaces').load('route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
+			$('#splaces').load('route/deprecated/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 			UpdateChosen();
 		}
 
 		function GetListUsers(orgid, userid) {
-			$('#susers').load('route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
+			$('#susers').load('route/deprecated/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
 			UpdateChosen();
 		}
 
 		function GetListGroups(groupid) {
-			$('#sgroups').load('route/controller/server/common/getlistgroupname.php?groupid=' + groupid);
+			$('#sgroups').load('route/deprecated/server/common/getlistgroupname.php?groupid=' + groupid);
 			UpdateChosen();
 		}
 
 		function GetListNome(groupid, vendorid, nmd) {
 			$.ajax({
-				url: 'route/controller/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
+				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
 				success: function (answ) {
 					$('#snomes').html(answ);
 					UpdateChosen();
@@ -393,7 +393,7 @@ if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 
 		function GetListVendors(groupid, vendorid) {
 			$.ajax({
-				url: 'route/controller/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
+				url: 'route/deprecated/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
 				success: function (answ) {
 					$('#svendors').html(answ);
 					GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
@@ -418,7 +418,7 @@ if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 
 		// правка Мазур
 		$('#bshtr').click(function Calculate() {
-			$.get('route/controller/server/common/getean13.php', function (data) {
+			$.get('route/deprecated/server/common/getean13.php', function (data) {
 				$('#shtrihkod').val(data);
 			});
 			return false;

@@ -26,7 +26,7 @@ $groupid = '';
 if ($step == 'edit') {
 	$sql = 'SELECT * FROM nome WHERE id = :id';
 	try {
-		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+		$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 		if ($row) {
 			$groupid = $row['groupid'];
 			$vendorid = $row['vendorid'];
@@ -55,30 +55,27 @@ if ($step == 'edit') {
 				}
 			});
 			if (error == 1) {
-				$('#messenger').addClass('alert alert-danger');
-				$('#messenger').html('Не все обязательные поля заполнены!');
-				$('#messenger').fadeIn('slow');
+				$('#messenger').addClass('alert alert-danger')
+								.html('Не все обязательные поля заполнены!')
+								.fadeIn('slow');
 				return false;
 			}
 			return true;
 		});
-	});
-	$(document).ready(function () {
+
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
-				$('#messenger').addClass('alert alert-danger');
-				$('#messenger').html(msg);
+				$('#messenger').addClass('alert alert-danger').html(msg);
 			} else {
-				$('#add_edit').html('');
-				$('#add_edit').dialog('destroy');
-				jQuery('#list2').jqGrid().trigger('reloadGrid');
+				$('#add_edit').html('').dialog('destroy');
+				$('#list2').jqGrid().trigger('reloadGrid');
 			}
 		});
 	});
 </script>
-<form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/tmc/add_edit_tmc.php?step=<?php echo "$step&id=$id"; ?>" method="post" name="form1" target="_self">
+<form class="form-horizontal" role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/tmc/add_edit_tmc.php?step=<?= "$step&id=$id"; ?>" method="post" name="form1" target="_self">
 	<div class="form-group">
-		<label for="groupid" class="col-sm-3 control-label">Группа</label>
+		<label for="groupid" class="col-sm-3 control-label">Группа:</label>
 		<div class="col-sm-9">
 			<select class="chosen-select form-control" name="groupid" id="groupid">
 				<?php
@@ -98,7 +95,7 @@ if ($step == 'edit') {
 		</div>
 	</div>
 	<div class="form-group">
-		<label for="vendorid" class="col-sm-3 control-label">Производитель</label>
+		<label for="vendorid" class="col-sm-3 control-label">Производитель:</label>
 		<div class="col-sm-9">
 			<select class="chosen-select form-control" name="vendorid" id="vendorid">
 				<?php
@@ -118,9 +115,9 @@ if ($step == 'edit') {
 		</div>
 	</div>
 	<div class="form-group">
-		<label for="namenome" class="col-sm-3 control-label">Наименование</label>
+		<label for="namenome" class="col-sm-3 control-label">Наименование:</label>
 		<div class="col-sm-9">
-			<input class="form-control" placeholder="Введите наименование номенклатуры" name="namenome" id="namenome" size="100" value="<?php echo $name; ?>">
+			<input class="form-control" placeholder="Введите наименование номенклатуры" name="namenome" id="namenome" size="100" value="<?= $name; ?>">
 		</div>
 	</div>
 	<div class="form-group">

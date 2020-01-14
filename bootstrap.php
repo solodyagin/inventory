@@ -128,7 +128,7 @@ if (strpos($uri, 'route') === 0) {
 		parse_str($p, $PARAMS);
 	}
 	# Разрешаем подключать php-скрипты только из каталогов /controller и /inc
-	if ((!preg_match('#^(/controller)|(/inc)#', $route)) || (strpos($route, '..') !== false)) {
+	if ((!preg_match('#^(/deprecated)|(/inc)#', $route)) || (strpos($route, '..') !== false)) {
 		die("Запрещён доступ к '$route'");
 	}
 	# Подключаем запрашиваемый скрипт

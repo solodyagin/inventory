@@ -49,7 +49,7 @@ $userid = $tmptmc->usersid;
 <div class="container-fluid">
 	<div class="row">
 		<div id="messenger"></div>
-		<form id="myForm" enctype="multipart/form-data" action="route/controller/server/equipment/equipment_form.php?step=move&id=<?= $id; ?>" method="post" name="form1" target="_self">
+		<form id="myForm" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=move&id=<?= $id; ?>" method="post" name="form1" target="_self">
 			<div class="row-fluid">
 				<div class="col-xs-12 col-md-12 col-sm-12">
 					<div class="form-group">
@@ -98,13 +98,13 @@ $userid = $tmptmc->usersid;
 		}
 	}
 	function getListUsers(orgid, userid) {
-		$.get('route/controller/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
+		$.get('route/deprecated/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
 			$('#susers').html(data);
 			updateChosen();
 		});
 	}
 	function getListPlaces(orgid, placesid) {
-		$.get('route/controller/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid, function (data) {
+		$.get('route/deprecated/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid, function (data) {
 			$('#splaces').html(data);
 			updateChosen();
 		});

@@ -101,7 +101,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 		}
 
 		function LoadMoveInfoTable(ids) {
-			var sUrl = 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids;
+			var sUrl = 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids;
 			$('#tbl_move').jqGrid('setGridParam', {url: sUrl});
 			$('#tbl_move').jqGrid({
 				url: sUrl,
@@ -146,7 +146,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 				curuserid = defaultuserid;
 			}
 			$(list).jqGrid({
-				url: 'route/controller/server/equipment/eq_list.php?curuserid=' + curuserid,
+				url: 'route/deprecated/server/equipment/eq_list.php?curuserid=' + curuserid,
 				datatype: 'json',
 				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан'],
 				colModel: [
@@ -160,7 +160,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 					{name: 'mode', index: 'mode', width: 55, formatter: 'checkbox', edittype: 'checkbox'}
 				],
 				onSelectRow: function (ids) {
-					$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
+					$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
 					$('#geteqid').val(ids);
 					LoadMoveInfoTable(ids);
 				},
@@ -189,7 +189,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 				curuserid = tmp;
 			}
 			$(list).jqGrid({
-				url: 'route/controller/server/equipment/eq_list_mat.php?curuserid=' + curuserid,
+				url: 'route/deprecated/server/equipment/eq_list_mat.php?curuserid=' + curuserid,
 				datatype: 'json',
 				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан', 'ОС', 'Цена', 'Тек.стоим', 'Бух.имя'],
 				colModel: [
@@ -207,7 +207,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 					{name: 'bn', index: 'bn', width: 100}
 				],
 				onSelectRow: function (ids) {
-					$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
+					$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
 					$('#geteqid').val(ids);
 					LoadMoveInfoTable(ids);
 				},

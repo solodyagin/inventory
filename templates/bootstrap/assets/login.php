@@ -90,7 +90,7 @@ if ($user->id == ''):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: 'route/controller/server/common/uploadfile.php',
+				url: 'route/deprecated/server/common/uploadfile.php',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ""},
@@ -109,7 +109,7 @@ if ($user->id == ''):
 					} else {
 						$('#picname').val(uiEvt.result.msg);
 						//сохраняем аватарку
-						$.get('route/controller/server/common/save_avatar.php?photo=' + uiEvt.result.msg, function (data) {
+						$.get('route/deprecated/server/common/save_avatar.php?photo=' + uiEvt.result.msg, function (data) {
 						});
 					}
 				},

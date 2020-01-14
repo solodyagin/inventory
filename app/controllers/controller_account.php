@@ -12,17 +12,15 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Account extends Controller {
 
 	function login() {
 		global $err;
-
 		$user = User::getInstance();
 		$cfg = Config::getInstance();
-
 		$login = filter_input(INPUT_POST, 'login');
 		if ($login == '') {
 			$err[] = 'Логин не может быть пустым!';

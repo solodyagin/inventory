@@ -63,16 +63,16 @@ endif;
 	}
 
 	$('#workmen').jqGrid({
-		url: 'route/controller/server/tmc/workmen.php',
+		url: 'route/deprecated/server/tmc/workmen.php',
 		datatype: 'json',
-		colNames: ['Статус', 'Организация', 'Помещение', 'Группа', 'Id', 'Инв.№', 'ТМЦ', 'Ответственный', 'За месяц', 'За год'],
+		colNames: ['Статус', 'Организация', 'Помещение', 'Группа', 'Id', 'Инв.№', 'Оргтехника', 'Ответственный', 'За месяц', 'За год'],
 		colModel: [
 			{name: 'repair', index: 'repair', width: 100, search: false},
 			{name: 'orgname', index: 'orgname', width: 155, stype: 'select',
-				searchoptions: {dataUrl: 'route/controller/server/common/getlistorgs.php?addnone=true'}},
+				searchoptions: {dataUrl: 'route/deprecated/server/common/getlistorgs.php?addnone=true'}},
 			{name: 'placename', index: 'placename', width: 150, search: false},
 			{name: 'groupnomename', index: 'groupnomename', width: 150, stype: 'select',
-				searchoptions: {dataUrl: 'route/controller/server/equipment/getlistgroupname.php?addnone=true'}},
+				searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistgroupname.php?addnone=true'}},
 			{name: 'idnome', index: 'idnome', width: 50},
 			{name: 'invnum', index: 'invnum', width: 100},
 			{name: 'nomename', index: 'nomename', width: 200},
@@ -81,11 +81,11 @@ endif;
 			{name: 'byear', index: 'byear', width: 50, search: false}
 		],
 		onSelectRow: function (ids) {
-			$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
+			$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
 			$.jgrid.gridUnload('#tbl_rep');
-			$('#tbl_rep').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids});
+			$('#tbl_rep').jqGrid('setGridParam', {url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids});
 			$('#tbl_rep').jqGrid({
-				url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
+				url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
 				datatype: "json",
 				colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', 'Отправитель', 'Получатель', 'Документ', ''],
 				colModel: [
@@ -132,7 +132,7 @@ endif;
 				viewrecords: true,
 				height: 200,
 				sortorder: 'desc',
-				editurl: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
+				editurl: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
 				caption: 'История ремонтов'
 			}).trigger('reloadGrid');
 			$('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
@@ -146,9 +146,9 @@ endif;
 						$('#tbl_rep').jqGrid('getRowData', id);
 						$('#pg_add_edit').dialog({autoOpen: false, height: 480, width: 620, modal: true, title: 'Ремонт имущества'});
 						$('#pg_add_edit').dialog('open');
-						$('#pg_add_edit').load('route/controller/client/view/equipment/service.php?step=edit&eqid=' + id);
+						$('#pg_add_edit').load('route/deprecated/client/view/equipment/service.php?step=edit&eqid=' + id);
 					} else {
-						$().toastmessage('showWarningToast', 'Выберите ТМЦ для изменения статуса ремонта!');
+						$().toastmessage('showWarningToast', 'Выберите оргтехнику для изменения статуса ремонта!');
 					}
 				}
 			});
@@ -163,7 +163,7 @@ endif;
 						tmc = ret.nomename + ' инвентарный №' + ret.invnum;
 						exportExcel('#tbl_rep', tmc);
 					} else {
-						$().toastmessage('showWarningToast', 'Выберите ТМЦ для вывода отчета!');
+						$().toastmessage('showWarningToast', 'Выберите оргтехнику для вывода отчета!');
 					}
 				}
 			});
@@ -183,15 +183,15 @@ endif;
 		rowNum: 1000,
 		scroll: 1,
 		sortorder: 'asc',
-		editurl: 'route/controller/server/tmc/workmen.php',
-		caption: 'Сервисное обслуживание ТМЦ'
+		editurl: 'route/deprecated/server/tmc/workmen.php',
+		caption: 'Сервисное обслуживание'
 	});
 	$('#workmen').jqGrid('navGrid', '#workmen_footer', {edit: false, add: false, del: false, search: false});
 	$('#workmen').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 
 	$('#workmen').jqGrid('navButtonAdd', '#workmen_footer', {
 		caption: '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>',
-		title: 'Отдать в ремонт ТМЦ',
+		title: 'Отдать в ремонт',
 		buttonicon: 'none',
 		onClickButton: function () {
 			var id = $('#workmen').jqGrid('getGridParam', 'selrow');
@@ -199,9 +199,9 @@ endif;
 				$('#workmen').jqGrid('getRowData', id);
 				$('#pg_add_edit').dialog({autoOpen: false, height: 480, width: 620, modal: true, title: 'Ремонт имущества'});
 				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('route/controller/client/view/equipment/service.php?step=add&eqid=' + id);
+				$('#pg_add_edit').load('route/deprecated/client/view/equipment/service.php?step=add&eqid=' + id);
 			} else {
-				$().toastmessage('showWarningToast', 'Выберите ТМЦ для ремонта!');
+				$().toastmessage('showWarningToast', 'Выберите оргтехнику для ремонта!');
 			}
 		}
 	});

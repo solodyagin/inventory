@@ -47,7 +47,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 		$.extend($.jgrid.defaults, {ajaxSelectOptions: {cache: false}});
 
 		$('#list2').jqGrid({
-			url: 'route/controller/server/knt/libre_knt.php?org_status=list',
+			url: 'route/deprecated/server/knt/libre_knt.php?org_status=list',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Пок', 'Прод', 'К.договор', 'ERPCode', 'Комментарий', 'Действия'],
 			colModel: [
@@ -71,10 +71,10 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			scroll: 1,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: 'route/controller/server/knt/libre_knt.php?org_status=edit',
+			editurl: 'route/deprecated/server/knt/libre_knt.php?org_status=edit',
 			caption: 'Справочник контрагентов',
 			onSelectRow: function (ids) {
-				$('#info_contract').load('route/controller/server/knt/info_contract.php?kntid=' + ids);
+				$('#info_contract').load('route/deprecated/server/knt/info_contract.php?kntid=' + ids);
 			}
 		}).trigger('reloadGrid');
 

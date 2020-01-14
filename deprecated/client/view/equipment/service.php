@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $eqid = GetDef('eqid');
@@ -58,7 +58,7 @@ if ($step == 'edit') {
 			var error = 0;
 			$('form').find(':input').each(function () {
 				for (var i = 0; i < fields.length; i++) {
-					if ($(this).attr('name') == fields[i]) {
+					if ($(this).attr('name') === fields[i]) {
 						if (!$(this).val()) {
 							error = 1;
 							$(this).parent().addClass('has-error');
@@ -69,23 +69,20 @@ if ($step == 'edit') {
 				}
 			});
 			if (error == 1) {
-				$('#messenger').addClass('alert alert-danger');
-				$('#messenger').html('Не все обязательные поля заполнены!');
-				$('#messenger').fadeIn('slow');
+				$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 				return false;
 			}
 			return true;
 		});
-	});
-	$(document).ready(function () {
+
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg != 'ok') {
 				$('#messenger').html(msg);
 			} else {
 				$('#pg_add_edit').dialog('destroy');
 				$('#pg_add_edit').html('');
-				jQuery('#workmen').jqGrid().trigger('reloadGrid');
-				jQuery('#tbl_rep').jqGrid().trigger('reloadGrid');
+				$('#workmen').jqGrid().trigger('reloadGrid');
+				$('#tbl_rep').jqGrid().trigger('reloadGrid');
 			}
 		});
 	});
@@ -94,7 +91,7 @@ if ($step == 'edit') {
 	<div class="row-fluid">
 		<div class="col-xs-12 col-md-12 col-sm-12">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/equipment/service.php?step=<?= $step; ?>&eqid=<?= $eqid; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/equipment/service.php?step=<?= $step; ?>&eqid=<?= $eqid; ?>" method="post" name="form1" target="_self">
 				<label>Кто ремонтирует:</label>
 				<div id="sorg1">
 					<select class="chosen-select" name="kntid" id="kntid">
@@ -181,8 +178,8 @@ TXT;
 				<input class="form-control" name="doc" id="doc" size="14" class="span6" value="<?= $doc; ?>">
 				<label>Комментарии:</label>
 				<textarea class="form-control" name="comment"><?= $comment; ?></textarea>
-				<div align="center">
-					<input class="form-control" type="submit" name="Submit" value="Сохранить">
+				<div class="form-group">
+					<input class="btn btn-primary" type="submit" name="Submit" value="Сохранить">
 				</div>
 			</form>
 		</div>

@@ -45,7 +45,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 	<script>
 		// загружаем в таблицу #list2 список новостей
 		$('#list2').jqGrid({
-			url: 'route/controller/server/news/news.php',
+			url: 'route/deprecated/server/news/news.php',
 			datatype: 'json',
 			colNames: ['Id', 'Дата', 'Заголовок', 'Закреплено', 'Действия'],
 			colModel: [
@@ -62,7 +62,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 			rowNum: 30,
 			viewrecords: true,
 			sortorder: 'desc',
-			editurl: 'route/controller/server/news/news.php',
+			editurl: 'route/deprecated/server/news/news.php',
 			caption: 'Новости'
 		});
 
@@ -83,7 +83,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 					modal: false,
 					title: 'Добавление новости',
 					open: function () {
-						$(this).load('route/controller/client/view/news/news.php?step=add');
+						$(this).load('route/deprecated/client/view/news/news.php?step=add');
 					}
 				});
 				$('#pg_add_edit').dialog('open');
@@ -106,7 +106,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1')):
 						modal: false,
 						title: 'Редактирование новости',
 						open: function () {
-							$(this).load('route/controller/client/view/news/news.php?step=edit&id=' + gsr);
+							$(this).load('route/deprecated/client/view/news/news.php?step=edit&id=' + gsr);
 						}
 					});
 					$('#pg_add_edit').dialog('open');

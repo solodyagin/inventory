@@ -51,7 +51,7 @@ if ($user->isAdmin()):
 	<div class="container-fluid">
 		<div class="row">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/controller/server/users/libre_profile_users_form.php?<?= "userid=$userid"; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_profile_users_form.php?<?= "userid=$userid"; ?>" method="post" name="form1" target="_self">
 				<div class="row-fluid">
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<div class="form-group">
@@ -99,7 +99,7 @@ if ($user->isAdmin()):
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
-				url: 'route/controller/server/common/uploadfile.php',
+				url: 'route/deprecated/server/common/uploadfile.php',
 				accept: 'image/*',
 				imageSize: {minWidth: 200, minHeight: 200},
 				data: {'geteqid': ''},

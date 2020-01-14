@@ -83,7 +83,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 		function LoadTable() {
 			var table = $('#tbl_equpment');
 			table.jqGrid({
-				url: 'route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
+				url: 'route/deprecated/server/equipment/equipment.php?sorgider=' + defaultorgid,
 				datatype: 'json',
 				colNames: [' ', 'Id', 'IP', 'Помещение', 'Номенклатура', 'Группа', 'В пути',
 					'Производитель', 'Имя по бухгалтерии', 'Сер.№', 'Инв.№',
@@ -95,12 +95,12 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 					{name: 'equipment.id', index: 'equipment.id', width: 55, search: false, frozen: true, hidden: true, fixed: true},
 					{name: 'ip', index: 'ip', width: 100, hidden: true, fixed: true},
 					{name: 'placesid', index: 'placesid', width: 155, stype: 'select', frozen: true, fixed: true,
-						searchoptions: {dataUrl: 'route/controller/server/equipment/getlistplaces.php?addnone=true'}},
+						searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistplaces.php?addnone=true'}},
 					{name: 'nomename', index: 'getvendorandgroup.nomename', width: 135, frozen: true},
 					{name: 'getvendorandgroup.groupname', index: 'getvendorandgroup.grnomeid', width: 100, stype: 'select', fixed: true,
-						searchoptions: {dataUrl: 'route/controller/server/equipment/getlistgroupname.php?addnone=true'}},
+						searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistgroupname.php?addnone=true'}},
 					{name: 'tmcgo', index: 'tmcgo', width: 80, search: true, stype: 'select', fixed: true,
-						searchoptions: {dataUrl: 'route/controller/server/equipment/getlisttmcgo.php?addnone=true'},
+						searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlisttmcgo.php?addnone=true'},
 						formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: 'Yes:No'}, editable: true, hiddem: true
 					},
 					{name: 'getvendorandgroup.vendorname', index: 'getvendorandgroup.vendorname', width: 100},
@@ -135,10 +135,10 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 					table.saveCommonParam('tbleq');
 				},
 				onSelectRow: function (ids) {
-					$('#photoid').load('route/controller/server/equipment/getphoto.php?eqid=' + ids);
-					$('#tbl_move').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids});
+					$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
+					$('#tbl_move').jqGrid('setGridParam', {url: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids});
 					$('#tbl_move').jqGrid({
-						url: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
+						url: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids,
 						datatype: 'json',
 						colNames: ['Id', 'Дата', 'Организация', 'Помещение',
 							'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', '',
@@ -165,7 +165,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 						viewrecords: true,
 						height: 200,
 						sortorder: 'asc',
-						editurl: 'route/controller/server/equipment/getmoveinfo.php?eqid=' + ids,
+						editurl: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids,
 						caption: 'История перемещений'
 					}).trigger('reloadGrid');
 					$('#tbl_move').jqGrid('destroyGroupHeader');
@@ -177,9 +177,9 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 						]
 					});
 					$.jgrid.gridUnload('#tbl_rep');
-					$('#tbl_rep').jqGrid('setGridParam', {url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids});
+					$('#tbl_rep').jqGrid('setGridParam', {url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids});
 					$('#tbl_rep').jqGrid({
-						url: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
+						url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
 						datatype: 'json',
 						colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', ''],
 						colModel: [
@@ -223,13 +223,13 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 						viewrecords: true,
 						height: 200,
 						sortorder: 'asc',
-						editurl: 'route/controller/server/equipment/getrepinfo.php?eqid=' + ids,
+						editurl: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
 						caption: 'История ремонтов'
 					}).trigger('reloadGrid');
 					$('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
 					$('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
 						caption: '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
-						title: 'Отдать в ремонт ТМЦ',
+						title: 'Отдать в ремонт',
 						buttonicon: 'none',
 						onClickButton: function () {
 							var id = table.jqGrid('getGridParam', 'selrow');
@@ -237,9 +237,9 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 								table.jqGrid('getRowData', id);
 								$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 								$('#pg_add_edit').dialog('open');
-								$('#pg_add_edit').load('route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
+								$('#pg_add_edit').load('route/deprecated/client/view/equipment/repair.php?step=add&eqid=' + id);
 							} else {
-								$().toastmessage('showWarningToast', 'Выберите ТМЦ для ремонта!');
+								$().toastmessage('showWarningToast', 'Выберите оргтехнику для ремонта!');
 							}
 						}
 					});
@@ -257,7 +257,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 					pager_id = 'p_' + subgrid_table_id;
 					$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id + '" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
 					$('#' + subgrid_table_id).jqGrid({
-						url: 'route/controller/server/equipment/paramlist.php?eqid=' + row_id,
+						url: 'route/deprecated/server/equipment/paramlist.php?eqid=' + row_id,
 						datatype: 'json',
 						colNames: ['Id', 'Наименование', 'Параметр', ''],
 						colModel: [
@@ -267,7 +267,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 							{name: 'myac', width: 80, fixed: true, sortable: false, resize: false,
 								formatter: 'actions', formatoptions: {keys: true}}
 						],
-						editurl: 'route/controller/server/equipment/paramlist.php?eqid=' + row_id,
+						editurl: 'route/deprecated/server/equipment/paramlist.php?eqid=' + row_id,
 						pager: pager_id,
 						sortname: 'name',
 						sortorder: 'asc',
@@ -290,7 +290,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 				rowNum: 40,
 				viewrecords: true,
 				sortorder: 'asc',
-				editurl: 'route/controller/server/equipment/equipment.php?sorgider=' + defaultorgid,
+				editurl: 'route/deprecated/server/equipment/equipment.php?sorgider=' + defaultorgid,
 				caption: 'Оргтехника'
 			});
 			table.jqGrid('setGridHeight', $(window).innerHeight() /*- 285*/ / 2);
@@ -321,24 +321,24 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			});
 			table.jqGrid('navButtonAdd', '#pg_nav', {
 				caption: '<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-				title: 'Добавить ТМЦ',
+				title: 'Добавить',
 				buttonicon: 'none',
 				onClickButton: function () {
 					$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
 					$('#pg_add_edit').dialog('open');
-					$('#pg_add_edit').load('route/controller/client/view/equipment/equipment.php?step=add&id=');
+					$('#pg_add_edit').load('route/deprecated/client/view/equipment/equipment.php?step=add&id=');
 				}
 			});
 			table.jqGrid('navButtonAdd', '#pg_nav', {
 				caption: '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
-				title: 'Редактировать ТМЦ',
+				title: 'Редактировать',
 				buttonicon: 'none',
 				onClickButton: function () {
 					var gsr = table.jqGrid('getGridParam', 'selrow');
 					if (gsr) {
 						$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
 						$('#pg_add_edit').dialog('open');
-						$('#pg_add_edit').load('route/controller/client/view/equipment/equipment.php?step=edit&id=' + gsr);
+						$('#pg_add_edit').load('route/deprecated/client/view/equipment/equipment.php?step=edit&id=' + gsr);
 					} else {
 						$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 					}
@@ -346,7 +346,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			});
 			table.jqGrid('navButtonAdd', '#pg_nav', {
 				caption: '<i class="fa fa-arrows" aria-hidden="true"></i>',
-				title: 'Переместить ТМЦ',
+				title: 'Переместить',
 				buttonicon: 'none',
 				onClickButton: function () {
 					var gsr = table.jqGrid('getGridParam', 'selrow');
@@ -357,7 +357,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 							modal: true,
 							title: 'Перемещение имущества',
 							open: function () {
-								$(this).load('route/controller/client/view/equipment/move.php?id=' + gsr);
+								$(this).load('route/deprecated/client/view/equipment/move.php?id=' + gsr);
 							}
 						});
 					} else {
@@ -367,7 +367,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			});
 			table.jqGrid('navButtonAdd', '#pg_nav', {
 				caption: '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>',
-				title: 'Отдать в ремонт ТМЦ',
+				title: 'Отдать в ремонт',
 				buttonicon: 'none',
 				onClickButton: function () {
 					var id = table.jqGrid('getGridParam', 'selrow');
@@ -375,7 +375,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 						table.jqGrid('getRowData', id);
 						$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
 						$('#pg_add_edit').dialog('open');
-						$('#pg_add_edit').load('route/controller/client/view/equipment/repair.php?step=add&eqid=' + id);
+						$('#pg_add_edit').load('route/deprecated/client/view/equipment/repair.php?step=add&eqid=' + id);
 					} else {
 						$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 					}
@@ -383,7 +383,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			});
 			table.jqGrid('navButtonAdd', '#pg_nav', {
 				caption: '<i class="fa fa-table" aria-hidden="true"></i>',
-				title: 'Вывести штрихкоды ТМЦ',
+				title: 'Вывести штрихкоды',
 				buttonicon: 'none',
 				onClickButton: function () {
 					var gsr = table.jqGrid('getGridParam', 'selrow');
@@ -409,18 +409,18 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 				title: 'Экспорт XML',
 				buttonicon: 'none',
 				onClickButton: function () {
-					newWin2 = window.open('route/controller/server/equipment/export_xml.php', 'printWindow4');
+					newWin2 = window.open('route/deprecated/server/equipment/export_xml.php', 'printWindow4');
 				}
 			});
 			table.jqGrid('setFrozenColumns');
 		}
 
 		function GetListUsers(orgid, userid) {
-			$('#susers').load('route/controller/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
+			$('#susers').load('route/deprecated/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
 		}
 
 		function GetListPlaces(orgid, placesid) {
-			$('#splaces').load('route/controller/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
+			$('#splaces').load('route/deprecated/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
 		}
 
 		$(function () {
