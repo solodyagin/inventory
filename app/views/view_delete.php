@@ -22,7 +22,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 $user = User::getInstance();
 
 # Проверка: если не администратор и не назначена одна из ролей, то
-if (!$user->isAdmin() && !$user->TestRoles('1')):
+if (!$user->isAdmin() && !$user->TestRights[1]):
 	?>
 
 	<div class="alert alert-danger">

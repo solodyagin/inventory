@@ -18,14 +18,21 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 class Controller_Orglist extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_orglist', $cfg->theme);
+		$data['section'] = 'Справочники / Список организаций';
+		if ($user->isAdmin() || $user->TestRights([1])) {
+			$this->view->generate('orglist/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
+	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
 		/* Проверяем может ли пользователь просматривать? */
-		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -79,6 +86,7 @@ class Controller_Orglist extends Controller {
 		jsonExit($responce);
 	}
 
+	/** Для работы jqGrid (editurl) */
 	function change() {
 		$user = User::getInstance();
 		$oper = PostDef('oper');
@@ -87,7 +95,7 @@ class Controller_Orglist extends Controller {
 		switch ($oper) {
 			case 'add':
 				/* Проверяем может ли пользователь добавлять? */
-				($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
+				($user->isAdmin() || $user->TestRights([1, 4])) or die('Для добавления недостаточно прав');
 				$sql = 'INSERT INTO org (id, name, active) VALUES (null, :name, 1)';
 				try {
 					DB::prepare($sql)->execute([':name' => $name]);
@@ -97,7 +105,7 @@ class Controller_Orglist extends Controller {
 				break;
 			case 'edit':
 				/* Проверяем может ли пользователь редактировать? */
-				($user->isAdmin() || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
+				($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования недостаточно прав');
 				$sql = 'UPDATE org SET name = :name WHERE id = :id';
 				try {
 					DB::prepare($sql)->execute([':name' => $name, ':id' => $id]);
@@ -107,7 +115,7 @@ class Controller_Orglist extends Controller {
 				break;
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
-				($user->isAdmin() || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
+				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления недостаточно прав');
 				$sql = 'UPDATE org SET active = NOT active WHERE id = :id';
 				try {
 					DB::prepare($sql)->execute([':id' => $id]);

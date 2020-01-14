@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
@@ -26,7 +26,7 @@ $cfg = Config::getInstance();
 			var error = 0;
 			$('form').find(':input').each(function () {
 				for (var i = 0; i < fields.length; i++) {
-					if ($(this).attr('name') == fields[i]) {
+					if ($(this).attr('name') === fields[i]) {
 						if (!$(this).val()) {
 							error = 1;
 							$(this).parent().addClass('has-error');
@@ -37,15 +37,12 @@ $cfg = Config::getInstance();
 				}
 			});
 			if (error === 1) {
-				$('#messenger').addClass('alert alert-danger')
-						.html('Не все обязательные поля заполнены!')
-						.fadeIn('slow');
+				$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 				return false;
 			}
 			return true;
 		});
-	});
-	$(document).ready(function () {
+
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg !== 'ok') {
 				$('#messenger').html(msg);
@@ -64,7 +61,7 @@ $id = GetDef('id');
 
 $user = User::getInstance();
 
-if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
+if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 	echo "<script>orgid='';</script>";
 	echo "<script>placesid='';</script>";
 	echo "<script>userid='';</script>";
@@ -343,7 +340,7 @@ if ($user->isAdmin() || $user->TestRoles('1,4,5,6')):
 		$('#dtpost').datepicker();
 		$('#dtpost').datepicker('option', 'dateFormat', 'dd.mm.yy');
 
-		if (step != 'edit') {
+		if (step !== 'edit') {
 			$('#dtpost').datepicker('setDate', '0');
 			$('#dtendgar').datepicker('setDate', '0');
 		} else {

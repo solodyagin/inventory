@@ -46,7 +46,7 @@ $suserid = PostDef('suserid');
 
 $user = User::getInstance();
 
-if (($user->isAdmin() || $user->TestRoles('1,4,5,6')) && ($step != '')) {
+if (($user->isAdmin() || $user->TestRights([1,4,5,6])) && ($step != '')) {
 	if ($step != 'move') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		$dtendgar = DateToMySQLDateTime2(PostDef('dtendgar') . ' 00:00:00');

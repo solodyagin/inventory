@@ -25,7 +25,7 @@ if ($id != '') {
 
 $user = User::getInstance();
 
-if ($user->isAdmin() || $user->TestRoles('1,4,5,6')) {
+if ($user->isAdmin() || $user->TestRights([1,4,5,6])) {
 	if ($step == 'add') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		if ($dtpost == '') {

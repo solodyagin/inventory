@@ -12,21 +12,26 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Modules extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_modules', $cfg->theme);
+		$data['section'] = 'Настройка / Подключенные модули';
+		if ($user->isAdmin() || $user->TestRights([1])) {
+			$this->view->generate('modules/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
-	function get() {
+	function list() {
 		$user = User::getInstance();
-		# Проверяем может ли пользователь просматривать?
-		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-
+		/* Проверка: может ли пользователь просматривать? */
+		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -34,13 +39,11 @@ class Controller_Modules extends Controller {
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
-
-		# Готовим ответ
+		/* Готовим ответ */
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-
 		$sql = "SELECT COUNT(*) AS cnt FROM config_common WHERE nameparam LIKE 'modulename_%'";
 		try {
 			$row = DB::prepare($sql)->execute()->fetch();
@@ -51,7 +54,6 @@ class Controller_Modules extends Controller {
 		if ($count == 0) {
 			jsonExit($responce);
 		}
-
 		$total_pages = ceil($count / $limit);
 		if ($page > $total_pages) {
 			$page = $total_pages;
@@ -60,11 +62,9 @@ class Controller_Modules extends Controller {
 		if ($start < 0) {
 			jsonExit($responce);
 		}
-
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-
 		$sql = <<<TXT
 SELECT	t1.id `id`,
 		SUBSTR(t1.nameparam, 12) AS `name`,
@@ -79,7 +79,7 @@ FROM	config_common t1
 		ON (SUBSTR(t3.nameparam, 12) = SUBSTR(t1.nameparam, 12) AND
 			t3.nameparam LIKE "modulecopy_%")
 WHERE	t1.nameparam LIKE "modulename_%"
-ORDER BY  $sidx $sord
+ORDER BY $sidx $sord
 LIMIT	:start, :limit
 TXT;
 		try {
@@ -90,8 +90,7 @@ TXT;
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
-				$responce->rows[$i]['cell'] = array($row['id'], $row['name'],
-					$row['comment'], $row['copy'], $row['active']);
+				$responce->rows[$i]['cell'] = [$row['id'], $row['name'], $row['comment'], $row['copy'], $row['active']];
 				$i++;
 			}
 		} catch (PDOException $ex) {
@@ -103,11 +102,11 @@ TXT;
 	function change() {
 		$user = User::getInstance();
 		$oper = PostDef('oper');
+		$id = PostDef('id');
 		switch ($oper) {
 			case 'edit':
-				# Проверяем может ли пользователь редактировать?
-				($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
-				$id = PostDef('id');
+				/* Проверка: может ли пользователь редактировать? */
+				($user->isAdmin() || $user->TestRights([1,5])) or die('Недостаточно прав');
 				$active = PostDef('active');
 				$sql = 'UPDATE config_common SET valueparam = :active WHERE id = :id';
 				try {
@@ -117,9 +116,8 @@ TXT;
 				}
 				break;
 			case 'del':
-				# Проверяем может ли пользователь удалять?
-				($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
-				$id = PostDef('id');
+				/* Проверка: может ли пользователь удалять? */
+				($user->isAdmin() || $user->TestRights([1,6])) or die('Недостаточно прав');
 				$sql = 'SELECT * FROM config_common WHERE id = :id';
 				try {
 					$row = DB::prepare($sql)->execute([':id' => $id])->fetch();

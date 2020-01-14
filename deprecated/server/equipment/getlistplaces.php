@@ -20,7 +20,7 @@ $placesid = GetDef('placesid');
 $addnone = GetDef('addnone');
 $oldopgroup = '';
 
-if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
+if (($user->mode == 1) || $user->TestRights([1,4,5,6])) {
 	echo '<select name="splaces" id="splaces">';
 	if ($addnone == 'true') {
 		echo '<option value="-1">не выбрано</option>';

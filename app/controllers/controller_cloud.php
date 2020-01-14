@@ -12,14 +12,29 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Cloud extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_cloud', $cfg->theme);
+		$data['section'] = 'Хранилище документов';
+		/* Проверка: включен ли модуль "cloud"? */
+		$mod = new Mod();
+		$active = $mod->IsActive('cloud');
+		unset($mod);
+		if (!$active) {
+			$this->view->generate('disabled', $cfg->theme, $data);
+			exit;
+		}
+		/* Проверка: назначены ли права? */
+		if ($user->isAdmin() || $user->TestRights([1,3,4,6])) {
+			$this->view->generate('cloud/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
 	/**
@@ -28,12 +43,9 @@ class Controller_Cloud extends Controller {
 	 */
 	function addfolder() {
 		$user = User::getInstance();
-
-		# Проверка: может ли пользователь добавлять?
-		($user->isAdmin() || $user->TestRoles('1,4')) or die('У вас не хватает прав на добавление!');
-
+		/* Проверка: может ли пользователь добавлять? */
+		($user->isAdmin() || $user->TestRights([1,4])) or die('У вас не хватает прав на добавление!');
 		$foldername = (isset(Router::$params['foldername'])) ? Router::$params['foldername'] : '';
-
 		if (!empty($foldername)) {
 			$sql = 'INSERT INTO cloud_dirs (parent, name) VALUES (0, :foldername)';
 			try {
@@ -50,10 +62,8 @@ class Controller_Cloud extends Controller {
 	 */
 	function delfolder() {
 		$user = User::getInstance();
-
-		# Проверка: может ли пользователь удалять?
-		($user->isAdmin() || $user->TestRoles('1,6')) or die('У вас не хватает прав на удаление!');
-
+		/* Проверка: может ли пользователь удалять? */
+		($user->isAdmin() || $user->TestRights([1,6])) or die('У вас не хватает прав на удаление!');
 		$folderkey = (isset(Router::$params['folderkey'])) ? Router::$params['folderkey'] : '';
 		if (!empty($folderkey)) {
 			$sql = 'DELETE FROM cloud_dirs WHERE id = :folderkey';
@@ -92,12 +102,9 @@ class Controller_Cloud extends Controller {
 	 */
 	function gettree() {
 		$user = User::getInstance();
-
-		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-
+		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 		echo '[';
-
-		# Получаем корневые папки
+		/* Получаем корневые папки */
 		$sql = 'SELECT * FROM cloud_dirs WHERE parent = 0';
 		try {
 			$arr = DB::prepare($sql)->execute()->fetchAll();
@@ -116,20 +123,15 @@ class Controller_Cloud extends Controller {
 		} catch (PDOException $ex) {
 			throw new DBException('Не могу прочитать папку', 0, $ex);
 		}
-
 		echo ']';
 	}
 
 	function download() {
 		$user = User::getInstance();
-
-		($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-
+		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 		$id = (isset(Router::$params['id'])) ? Router::$params['id'] : '';
 		is_numeric($id) or die('Переданы неправильные параметры');
-
 		$filename = '';
-
 		$sql = 'SELECT * FROM cloud_files WHERE id = :id';
 		try {
 			$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
@@ -139,26 +141,20 @@ class Controller_Cloud extends Controller {
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка получения файла из базы', 0, $ex);
 		}
-
 		(!empty($filename) && file_exists($filename) && is_file($filename)) or die('Файл не найден');
-
-		# Органичение скорости скачивания - 10.0 MB/s
+		/* Органичение скорости скачивания - 10.0 MB/s */
 		$download_rate = 10.0;
-
 		$size = filesize($filename);
 		$name = rawurldecode($row['title']);
-
-		# Decrease CPU usage extreme.
+		/* Decrease CPU usage extreme. */
 		@ob_end_clean();
-
 		header('Content-Type: application/octet-stream');
 		header('Content-Disposition: attachment; filename="' . $name . '"');
 		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 		header('Accept-Ranges: bytes');
 		header('Cache-control: private');
 		header('Pragma: private');
-
-		# Multipart-download and resume-download.
+		/* Multipart-download and resume-download. */
 		if (isset($_SERVER['HTTP_RANGE'])) {
 			list($a, $range) = explode('=', $_SERVER['HTTP_RANGE']);
 			str_replace($range, '-', $range);
@@ -172,12 +168,9 @@ class Controller_Cloud extends Controller {
 			header("Content-Length: $size");
 			header("Content-Range: bytes 0-$size2/$size");
 		}
-
 		$chunksize = round($download_rate * 1048576);
-
-		# Flush content.
+		/* Flush content. */
 		flush();
-
 		if ($fp = @fopen($filename, 'rb')) {
 			flock($fp, LOCK_SH);
 			if (isset($_SERVER['HTTP_RANGE'])) {
@@ -185,15 +178,12 @@ class Controller_Cloud extends Controller {
 			}
 			while (!feof($fp) and ( connection_status() == 0)) {
 				echo fread($fp, $chunksize);
-
-				# Flush the content to the browser.
+				/* Flush the content to the browser. */
 				flush();
-
-				# Decrease download speed.
+				/* Decrease download speed. */
 				sleep(1);
 			}
 			flock($fp, LOCK_UN);
-
 			fclose($fp);
 		} else {
 			//die('Невозможно открыть файл');
@@ -202,7 +192,6 @@ class Controller_Cloud extends Controller {
 
 	function listfiles() {
 		$user = User::getInstance();
-
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -210,25 +199,21 @@ class Controller_Cloud extends Controller {
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
-
 		$oper = PostDef('oper');
 		$id = PostDef('id');
 		$title = PostDef('title');
 		$cloud_dirs_id = GetDef('cloud_dirs_id');
-
 		if ($oper == '') {
-			# Проверка: может ли пользователь просматривать?
-			($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
-
-			# Готовим ответ
+			/* Проверка: может ли пользователь просматривать? */
+			($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
+			/* Готовим ответ */
 			$responce = new stdClass();
 			$responce->page = 0;
 			$responce->total = 0;
 			$responce->records = 0;
-
 			$sql = 'SELECT COUNT(*) AS cnt FROM cloud_files WHERE cloud_dirs_id = :cloud_dirs_id';
 			try {
-				$row = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetch();
+				$row = DB::prepare($sql)->execute([':cloud_dirs_id' => $cloud_dirs_id])->fetch();
 				$count = ($row) ? $row['cnt'] : 0;
 			} catch (PDOException $ex) {
 				throw new DBException('Не могу выбрать количество записей', 0, $ex);
@@ -236,7 +221,6 @@ class Controller_Cloud extends Controller {
 			if ($count == 0) {
 				jsonExit($responce);
 			}
-
 			$total_pages = ceil($count / $limit);
 			if ($page > $total_pages) {
 				$page = $total_pages;
@@ -245,11 +229,9 @@ class Controller_Cloud extends Controller {
 			if ($start < 0) {
 				jsonExit($responce);
 			}
-
 			$responce->page = $page;
 			$responce->total = $total_pages;
 			$responce->records = $count;
-
 			$sql = <<<TXT
 SELECT   *
 FROM     cloud_files
@@ -259,7 +241,7 @@ LIMIT    $start, $limit
 TXT;
 			try {
 				$i = 0;
-				$arr = DB::prepare($sql)->execute(array(':cloud_dirs_id' => $cloud_dirs_id))->fetchAll();
+				$arr = DB::prepare($sql)->execute([':cloud_dirs_id' => $cloud_dirs_id])->fetchAll();
 				foreach ($arr as $row) {
 					$responce->rows[$i]['id'] = $row['id'];
 					switch (pathinfo($row['filename'], PATHINFO_EXTENSION)) {
@@ -281,7 +263,7 @@ TXT;
 					}
 					$ico = '<a target="_blank" href="cloud/download?id=' . $row['id'] . '">' . $ico . '</a>';
 					$title = $row['title'];
-					$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], human_sz($row['sz']));
+					$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], humanSize($row['sz']));
 					$i++;
 				}
 			} catch (PDOException $ex) {
@@ -291,12 +273,11 @@ TXT;
 		}
 
 		if ($oper == 'edit') {
-			# Проверка: может ли пользователь редактировать?
-			($user->isAdmin() || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
-
+			/* Проверка: может ли пользователь редактировать? */
+			($user->isAdmin() || $user->TestRights([1,5])) or die('Для редактирования не хватает прав!');
 			$sql = 'UPDATE cloud_files SET title = :title WHERE id = :id';
 			try {
-				DB::prepare($sql)->execute(array(':title' => $title, ':id' => $id));
+				DB::prepare($sql)->execute([':title' => $title, ':id' => $id]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не могу выполнить запрос', 0, $ex);
 			}
@@ -304,12 +285,11 @@ TXT;
 		}
 
 		if ($oper == 'del') {
-			# Проверка: может ли пользователь удалять?
-			($user->isAdmin() || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
-
+			/* Проверка: может ли пользователь удалять? */
+			($user->isAdmin() || $user->TestRights([1,6])) or die('Для удаления не хватает прав!');
 			$sql = 'DELETE FROM cloud_files WHERE id = :id';
 			try {
-				DB::prepare($sql)->execute(array(':id' => $id));
+				DB::prepare($sql)->execute([':id' => $id]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не могу выполнить запрос', 0, $ex);
 			}
@@ -319,16 +299,13 @@ TXT;
 
 	function movefolder() {
 		$user = User::getInstance();
-
-		# Проверяем может ли пользователь редактировать?
-		($user->isAdmin() || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
-
+		/* Проверяем может ли пользователь редактировать? */
+		($user->isAdmin() || $user->TestRights([1,5])) or die('Для редактирования не хватает прав!');
 		$nodekey = GetDef('nodekey');
 		$srnodekey = GetDef('srnodekey');
-
 		$sql = 'UPDATE cloud_dirs SET parent = :nodekey WHERE id = :srnodekey';
 		try {
-			DB::prepare($sql)->execute(array(':nodekey' => $nodekey, ':srnodekey' => $srnodekey));
+			DB::prepare($sql)->execute([':nodekey' => $nodekey, ':srnodekey' => $srnodekey]);
 		} catch (PDOException $ex) {
 			throw new DBException('Не могу обновить дерево папок', 0, $ex);
 		}
@@ -336,16 +313,12 @@ TXT;
 
 	function uploadfiles() {
 		$user = User::getInstance();
-
-		# Проверяем: может ли пользователь добавлять файлы?
-		($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
-
+		/* Проверяем: может ли пользователь добавлять файлы? */
+		($user->isAdmin() || $user->TestRights([1,4])) or die('Недостаточно прав');
 		$selectedkey = PostDef('selectedkey');
 		$orig_file = $_FILES['filedata']['name'];
-		$dis = array('.htaccess'); // Запрещённые для загрузки файлы
-
-		$rs = array('msg' => 'error'); // Ответ по умолчанию, если пойдёт что-то не так
-
+		$dis = ['.htaccess']; # Запрещённые для загрузки файлы
+		$rs = ['msg' => 'error']; # Ответ по умолчанию, если пойдёт что-то не так
 		if (!in_array($orig_file, $dis)) {
 			$userfile_name = GetRandomId(8) . '.' . pathinfo($orig_file, PATHINFO_EXTENSION);
 			$src = $_FILES['filedata']['tmp_name'];
@@ -362,10 +335,10 @@ VALUES      (NULL, :selectedkey, :orig_file, :userfile_name, NOW(), :sz)
 TXT;
 					try {
 						DB::prepare($sql)->execute([
-							':selectedkey' => $selectedkey,
-							':orig_file' => $orig_file,
-							':userfile_name' => $userfile_name,
-							':sz' => $sz
+								':selectedkey' => $selectedkey,
+								':orig_file' => $orig_file,
+								':userfile_name' => $userfile_name,
+								':sz' => $sz
 						]);
 					} catch (PDOException $ex) {
 						throw new DBException('Не могу добавить файл', 0, $ex);
@@ -373,7 +346,6 @@ TXT;
 				}
 			}
 		}
-
 		jsonExit($rs);
 	}
 

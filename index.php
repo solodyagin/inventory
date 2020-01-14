@@ -15,7 +15,7 @@
 /* Объявляем глобальные переменные */
 define('SITE_EXEC', true);
 define('SITE_ROOT', dirname(__FILE__));
-define('SITE_VERSION', '200113');
+define('SITE_VERSION', '200114');
 define('SITE_MINIMUM_PHP', '7.0.22');
 
 header('Content-Type: text/html; charset=utf-8');

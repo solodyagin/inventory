@@ -22,7 +22,7 @@ $user = User::getInstance();
 $cfg = Config::getInstance();
 
 # Проверка: если пользователь - не администратор и не назначена одна из ролей, то
-if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
+if (!$user->isAdmin() && !$user->TestRights([1,4,5,6])):
 	?>
 
 	<div class="alert alert-danger">

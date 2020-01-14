@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class View {
@@ -20,8 +20,7 @@ class View {
 		if (is_array($data)) {
 			extract($data);
 		}
-
-		# Подключаем файл вида
+		/* Подключаем файл вида */
 		$file = SITE_ROOT . "/app/views/{$content_view}.php";
 		if (file_exists($file)) {
 			if (!empty($template_view)) {
@@ -32,8 +31,7 @@ class View {
 				require_once $file;
 			}
 		}
-
-		# Подключаем общий шаблон
+		/* Подключаем общий шаблон */
 		if (!empty($template_view)) {
 			$file = SITE_ROOT . "/templates/{$template_view}/index.php";
 			if (file_exists($file)) {

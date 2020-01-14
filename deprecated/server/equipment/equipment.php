@@ -45,7 +45,7 @@ $user = User::getInstance();
 
 if ($oper == '') {
 	// Проверка: может ли пользователь просматривать?
-	($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 
 	// получаем наложенные поисковые фильтры
 	$filters = GetDef('filters');
@@ -196,7 +196,7 @@ TXT;
 
 if ($oper == 'add') {
 	// Проверка: может ли пользователь добавлять?
-	($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,4])) or die('Недостаточно прав');
 
 	$sql = 'INSERT INTO places (id, orgid, name, comment, active) VALUES (null, :orgid, :name, :comment, 1)';
 	try {
@@ -213,7 +213,7 @@ if ($oper == 'add') {
 
 if ($oper == 'edit') {
 	// Проверка: может ли пользователь редактировать?
-	($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,5])) or die('Недостаточно прав');
 
 	$os = ($os == 'Yes') ? 1 : 0;
 	$tmcgo = ($tmcgo == 'Yes') ? 1 : 0;
@@ -249,7 +249,7 @@ TXT;
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,6])) or die('Недостаточно прав');
 
 	$sql = 'UPDATE equipment SET active = NOT active WHERE id = :id';
 	try {

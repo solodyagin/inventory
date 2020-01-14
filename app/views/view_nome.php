@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
@@ -21,8 +21,8 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 $user = User::getInstance();
 $cfg = Config::getInstance();
 
-# Проверка: если пользователь - не администратор и не назначена одна из ролей, то
-if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
+/* Проверка: если пользователь - не администратор и не назначена одна из ролей, то показываем сообщение */
+if (!$user->isAdmin() && !$user->TestRights([1,4,5,6])):
 	?>
 
 	<div class="alert alert-danger">
@@ -44,7 +44,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 	</div>
 	<script>
 		$('#list2').jqGrid({
-			url: 'route/deprecated/server/tmc/libre_nome.php',
+			url: 'nome/list',
 			datatype: 'json',
 			colNames: [' ', 'Id', 'Группа', 'Производитель', 'Наименование', ''],
 			colModel: [
@@ -69,7 +69,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,4,5,6')):
 			rowNum: 1000,
 			scroll: 1,
 			sortorder: 'asc',
-			editurl: 'route/deprecated/server/tmc/libre_nome.php',
+			editurl: 'nome/change',
 			caption: 'Справочник номенклатуры'
 		});
 		$('#list2').jqGrid('setGridHeight', $(window).innerHeight() / 2);

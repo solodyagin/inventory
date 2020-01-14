@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Config extends Controller {
@@ -24,14 +24,10 @@ class Controller_Config extends Controller {
 
 	function save() {
 		global $ok, $err;
-
 		$user = User::getInstance();
-
-		# Проверка: если не администратор и нет полных прав, то
-		if (!$user->isAdmin() && !$user->TestRoles('1')) {
-			die('Нет полных прав');
+		if (!$user->isAdmin()) {
+			die('Настройки может сохранять только администратор!');
 		}
-
 		$cfg = Config::getInstance();
 		$cfg->sitename = filter_input(INPUT_POST, 'form_sitename');
 		$opt = ['options' => ['default' => 0]];
@@ -55,8 +51,7 @@ class Controller_Config extends Controller {
 		} else {
 			$err[] = 'Что-то пошло не так!';
 		}
-
-		# Подключаем шаблон
+		/* Подключаем шаблон */
 		$this->view->generate('view_config', $cfg->theme);
 	}
 

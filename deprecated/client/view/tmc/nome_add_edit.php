@@ -15,7 +15,7 @@
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 // Проверка прав
-(($user->mode == 1) || $user->TestRoles('1,4,5,6')) or die('Недостаточно прав');
+(($user->mode == 1) || $user->TestRights([1,4,5,6])) or die('Недостаточно прав');
 
 $step = GetDef('step');
 $id = GetDef('id');

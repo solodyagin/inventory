@@ -18,7 +18,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 $err = array();
 
 // Требуются полные права!
-if (($user->mode == 1) || $user->TestRoles('1')) {
+if (($user->mode == 1) || $user->TestRights[1]) {
 	// Получаем переменные, проверяем на правильность заполнения
 	$step = GetDef('step');
 	$orgid = PostDef('orgid');

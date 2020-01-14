@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class BaseUser {
@@ -34,30 +34,30 @@ class BaseUser {
 	public $post; // Должность
 
 	/**
-	 * Проверяем соответствие роли
+	 * Проверяем соответствие прав
 	 *
-	 * Роли:
+	 * Права:
 	 * http://грибовы.рф/wiki/doku.php/основы:доступ:роли
-	 *            1="Полный доступ"
-	 *            2="Просмотр финансовых отчетов"
-	 *            3="Просмотр"
-	 *            4="Добавление"
-	 *            5="Редактирование"
-	 *            6="Удаление"
-	 *            7="Отправка СМС"
-	 *            8="Манипуляции с деньгами"
-	 *            9="Редактирование карт"
+	 *   1="Полный доступ"
+	 *   2="Просмотр финансовых отчетов" - не используется
+	 *   3="Просмотр"
+	 *   4="Добавление"
+	 *   5="Редактирование"
+	 *   6="Удаление"
+	 *   7="Отправка СМС" - не используется
+	 *   8="Манипуляции с деньгами" - не используется
+	 *   9="Редактирование карт" - не используется
 	 *
-	 * @param string $roles
+	 * @param array $roles
 	 * @return boolean
 	 */
-
-	function TestRoles($roles) {
-		$sql = "SELECT COUNT(*) FROM usersroles WHERE userid = :id AND role IN ($roles)";
+	function TestRights($roles) {
+		$sr = implode(',', array_map('intval', $roles));
+		$sql = "SELECT COUNT(*) FROM usersroles WHERE userid = :id AND role IN ($sr)";
 		try {
-			return (DB::prepare($sql)->execute(array(':id' => $this->id))->fetchColumn() > 0);
+			return (DB::prepare($sql)->execute([':id' => $this->id])->fetchColumn() > 0);
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.TestRoles', 0, $ex);
+			throw new DBException('Ошибка выполнения User.TestRights', 0, $ex);
 		}
 	}
 
@@ -87,14 +87,14 @@ SET		`orgid` = :orgid, `login` = :login, `password` = :password, `salt` = :salt,
 WHERE	`id` = :id
 TXT;
 			DB::prepare($sql)->execute(array(
-				':orgid' => $this->orgid,
-				':login' => $this->login,
-				':password' => $this->password,
-				':salt' => $this->salt,
-				':email' => $this->email,
-				':mode' => $this->mode,
-				':active' => $this->active,
-				':id' => $this->id
+					':orgid' => $this->orgid,
+					':login' => $this->login,
+					':password' => $this->password,
+					':salt' => $this->salt,
+					':email' => $this->email,
+					':mode' => $this->mode,
+					':active' => $this->active,
+					':id' => $this->id
 			));
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.Update (1)', 0, $ex);
@@ -111,12 +111,12 @@ ON DUPLICATE KEY UPDATE
 	`post` = :post
 TXT;
 			DB::prepare($sql)->execute(array(
-				':usersid' => $this->id,
-				':fio' => $this->fio,
-				':telephonenumber' => $this->telephonenumber,
-				':homephone' => $this->homephone,
-				':jpegphoto' => $this->jpegphoto,
-				':post' => $this->post
+					':usersid' => $this->id,
+					':fio' => $this->fio,
+					':telephonenumber' => $this->telephonenumber,
+					':homephone' => $this->homephone,
+					':jpegphoto' => $this->jpegphoto,
+					':post' => $this->post
 			));
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.Update (2)', 0, $ex);
@@ -140,7 +140,7 @@ FROM	`users` u
 		ON p.`usersid` = u.`id`
 WHERE	{$where}
 SQL
-					)->execute($params)->fetch();
+							)->execute($params)->fetch();
 			if ($row) {
 				$this->id = $row['sid'];
 				$this->randomid = $row['randomid'];
@@ -245,13 +245,13 @@ VALUES	(:randomid, :orgid, :login, :password, :salt, :email, :mode, NOW(), 1)
 TXT;
 		try {
 			DB::prepare($sql)->execute(array(
-				':randomid' => $this->randomid,
-				':orgid' => $this->orgid,
-				':login' => $this->login,
-				':password' => $this->password,
-				':salt' => $this->salt,
-				':email' => $this->email,
-				':mode' => $this->mode
+					':randomid' => $this->randomid,
+					':orgid' => $this->orgid,
+					':login' => $this->login,
+					':password' => $this->password,
+					':salt' => $this->salt,
+					':email' => $this->email,
+					':mode' => $this->mode
 			));
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.Add', 0, $ex);
@@ -268,12 +268,12 @@ VALUES	(:userid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
 TXT;
 			try {
 				DB::prepare($sql)->execute(array(
-					':userid' => $zx->id,
-					':fio' => $this->fio,
-					':telephonenumber' => $this->telephonenumber,
-					':homephone' => $this->homephone,
-					':jpegphoto' => $this->jpegphoto,
-					':post' => $this->post
+						':userid' => $zx->id,
+						':fio' => $this->fio,
+						':telephonenumber' => $this->telephonenumber,
+						':homephone' => $this->homephone,
+						':jpegphoto' => $this->jpegphoto,
+						':post' => $this->post
 				));
 			} catch (PDOException $ex) {
 				throw new DBException('Ошибка выполнения User.Add', 0, $ex);

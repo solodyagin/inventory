@@ -48,7 +48,7 @@ $user = User::getInstance();
 
 if ($oper == '') {
 	/* Разрешаем при наличии ролей "Полный доступ" и "Просмотр" */
-	($user->isAdmin() || $user->TestRoles('1,3')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,3])) or die('Недостаточно прав');
 	/* Готовим ответ */
 	$responce = new stdClass();
 	$responce->page = 0;
@@ -98,7 +98,7 @@ TXT;
 
 if ($oper == 'add') {
 	/* Только с полными правами можно добавлять роль! */
-	($user->isAdmin() || $user->TestRoles('1')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1])) or die('Недостаточно прав');
 	$sql = 'INSERT INTO usersroles (userid, role) VALUES (:userid, :role)';
 	try {
 		DB::prepare($sql)->execute([
@@ -113,7 +113,7 @@ if ($oper == 'add') {
 
 if ($oper == 'del') {
 	/* Только с полными правами можно удалять роль! */
-	($user->isAdmin() || $user->TestRoles('1')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1])) or die('Недостаточно прав');
 	$sql = 'DELETE FROM usersroles WHERE id = :id';
 	try {
 		DB::prepare($sql)->execute([':id' => $id]);

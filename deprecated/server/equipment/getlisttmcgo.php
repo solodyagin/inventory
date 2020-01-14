@@ -18,7 +18,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 $orgid = $cfg->defaultorgid;
 $addnone = GetDef('addnone');
 
-if (($user->mode == 1) || $user->TestRoles('1,4,5,6')) {
+if (($user->mode == 1) || $user->TestRights([1,4,5,6])) {
 	echo '<select name="tmcgo" id="tmcgo">';
 	if ($addnone == 'true') {
 		echo '<option value="-1">не выбрано</option>';

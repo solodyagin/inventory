@@ -1,5 +1,4 @@
 <?php
-
 /*
  * WebUseOrg3 - учёт оргтехники в организации
  * Лицензия: GPL-3.0
@@ -23,7 +22,7 @@ $user = User::getInstance();
 $cfg = Config::getInstance();
 
 # Проверка: если пользователь - не администратор и не назначена одна из ролей, то
-if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
+if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 	?>
 
 	<div class="alert alert-danger">
@@ -35,11 +34,12 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 <?php else: ?>
 
 	<div class="container-fluid">
-		<h5>Контроль договоров</h5>
-		<div class="row-fluid">
-			<table id="list2"></table>
-			<div id="pager2"></div>
-			<div id="info_contract">
+		<h4>Контроль договоров</h4>
+		<div class="row">
+			<div class="col-xs-12 col-md-12 col-sm-12">
+				<table id="list2"></table>
+				<div id="pager2"></div>
+				<div id="info_contract"></div>
 			</div>
 		</div>
 	</div>
@@ -76,7 +76,7 @@ if (!$user->isAdmin() && !$user->TestRoles('1,3,4,5,6')):
 			onSelectRow: function (ids) {
 				$('#info_contract').load('route/deprecated/server/knt/info_contract.php?kntid=' + ids);
 			}
-		}).trigger('reloadGrid');
+		});
 
 		$('#list2').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 	</script>

@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $user = User::getInstance();
@@ -33,7 +33,7 @@ if ($user->id == ''):
 	<div class="container-fluid">
 		<?php
 		$jpegphoto = $user->jpegphoto;
-		if (!file_exists(SITE_ROOT . "/photos/$jpegphoto")) {
+		if (!is_file(SITE_ROOT . "/photos/$jpegphoto")) {
 			$jpegphoto = 'noimage.jpg';
 		}
 		?>
@@ -104,7 +104,7 @@ if ($user->id == ''):
 					progress: '.js-progress'
 				},
 				onFileComplete: function (evt, uiEvt) {
-					if (uiEvt.result.msg == 'error') {
+					if (uiEvt.result.msg === 'error') {
 						$('#messenger').html('Ошибка загрузки фото');
 					} else {
 						$('#picname').val(uiEvt.result.msg);

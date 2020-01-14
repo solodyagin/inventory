@@ -130,7 +130,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,5])) or die('Недостаточно прав');
 	$sql = 'UPDATE move SET comment = :comment WHERE id = :id';
 	try {
 		DB::prepare($sql)->execute(array(':comment' => $comment, ':id' => $id));
@@ -142,7 +142,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,6])) or die('Недостаточно прав');
 	$sql = 'DELETE FROM move WHERE id = :id';
 	try {
 		DB::prepare($sql)->execute(array(':id' => $id));

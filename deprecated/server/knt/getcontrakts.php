@@ -34,7 +34,7 @@ $comment = PostDef('comment');
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 
 	// Готовим ответ
 	$responce = new stdClass();
@@ -96,7 +96,7 @@ if ($oper == '') {
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,4])) or die('Недостаточно прав');
 
 	$work = ($work == 'Yes') ? '1' : '0';
 	$datestart = DateToMySQLDateTime2($datestart);
@@ -124,7 +124,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Для редактирования не хватает прав!');
+	(($user->mode == 1) || $user->TestRights([1,5])) or die('Для редактирования не хватает прав!');
 
 	$work = ($work == 'Yes') ? '1' : '0';
 	$datestart = DateToMySQLDateTime2($datestart);
@@ -152,7 +152,7 @@ TXT;
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Для удаления не хватает прав!');
+	(($user->mode == 1) || $user->TestRights([1,6])) or die('Для удаления не хватает прав!');
 
 	$sql = 'UPDATE contract SET active = NOT active WHERE id = :id';
 	try {

@@ -33,7 +33,7 @@ $mode = PostDef('mode');
 
 if ($oper == '') {
 	// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
-	(($user->mode == 1) || $user->TestRoles('1,3')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,3])) or die('Недостаточно прав');
 
 	$flt = json_decode($filters, true);
 	$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
@@ -119,7 +119,7 @@ TXT;
 
 if ($oper == 'edit') {
 	// Только с полными правами можно редактировать пользователя!
-	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1])) or die('Недостаточно прав');
 
 	$imode = ($mode == 'Да') ? '1' : '0';
 	$ps = ($pass != 'скрыто') ? "`password`=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
@@ -139,7 +139,7 @@ if ($oper == 'edit') {
 /*
 if ($oper == 'add') {
 	// Только с полными правами можно добавлять пользователя!
-	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights[1]) or die('Недостаточно прав');
 
 	$sql = 'INSERT INTO knt (id, name, comment, active) VALUES (null, :name, :comment, 1)';
 	try {
@@ -155,7 +155,7 @@ if ($oper == 'add') {
 */
 if ($oper == 'del') {
 	// Только с полными правами можно удалять пользователя!
-	(($user->mode == 1) || $user->TestRoles('1')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1])) or die('Недостаточно прав');
 
 	$sql = 'UPDATE users SET active = NOT active WHERE id = :id';
 	try {

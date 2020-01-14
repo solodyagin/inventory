@@ -32,7 +32,7 @@ $name = PostDef('name');
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	(($user->mode == 1) || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 
 	// Готовим ответ
 	$responce = new stdClass();
@@ -91,7 +91,7 @@ TXT;
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	(($user->mode == 1) || $user->TestRoles('1,4')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,4])) or die('Недостаточно прав');
 
 	if (($groupid == '') || ($name == '')) {
 		die();
@@ -107,7 +107,7 @@ if ($oper == 'add') {
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	(($user->mode == 1) || $user->TestRoles('1,5')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,5])) or die('Недостаточно прав');
 
 	$sql = 'UPDATE group_param SET name = :name WHERE id = :id';
 	try {
@@ -120,7 +120,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	(($user->mode == 1) || $user->TestRoles('1,6')) or die('Недостаточно прав');
+	(($user->mode == 1) || $user->TestRights([1,6])) or die('Недостаточно прав');
 
 	$sql = 'UPDATE group_param SET active = NOT active WHERE id = :id';
 	try {

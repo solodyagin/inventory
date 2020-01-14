@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $crd = date('Y-m-d H:i:s');
@@ -31,7 +31,7 @@ try {
 		$fio = $row['fio'];
 		$jpegphoto = $row['jpegphoto'];
 		if ($res < 10000) {
-			if (!file_exists(SITE_ROOT . "/photos/$jpegphoto")) {
+			if (!is_file(SITE_ROOT . "/photos/$jpegphoto")) {
 				$jpegphoto = 'noimage.jpg';
 			}
 			echo <<<TXT

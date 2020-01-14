@@ -31,7 +31,7 @@ $user = User::getInstance();
 
 if ($oper == '') {
 	// Проверяем может ли пользователь просматривать?
-	($user->isAdmin() || $user->TestRoles('1,3,4,5,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
 
 	// Готовим ответ
 	$responce = new stdClass();
@@ -84,7 +84,7 @@ if ($oper == '') {
 
 if ($oper == 'add') {
 	// Проверяем может ли пользователь добавлять?
-	($user->isAdmin() || $user->TestRoles('1,4')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,4])) or die('Недостаточно прав');
 
 	$sql = 'INSERT INTO vendor (id, name, comment, active) VALUES (null, :name, :comment, 1)';
 	try {
@@ -100,7 +100,7 @@ if ($oper == 'add') {
 
 if ($oper == 'edit') {
 	// Проверяем может ли пользователь редактировать?
-	($user->isAdmin() || $user->TestRoles('1,5')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,5])) or die('Недостаточно прав');
 
 	$sql = 'UPDATE vendor SET name = :name, comment = :comment WHERE id = :id';
 	try {
@@ -117,7 +117,7 @@ if ($oper == 'edit') {
 
 if ($oper == 'del') {
 	// Проверяем может ли пользователь удалять?
-	($user->isAdmin() || $user->TestRoles('1,6')) or die('Недостаточно прав');
+	($user->isAdmin() || $user->TestRights([1,6])) or die('Недостаточно прав');
 
 	$sql = 'UPDATE vendor SET active = NOT active WHERE id = :id';
 	try {
