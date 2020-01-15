@@ -131,7 +131,7 @@ class Controller_News extends Controller {
 			foreach ($arr as $row) {
 				$dt = MySQLDateTimeToDateTimeNoTime($row['dt']);
 				$title = $row['title'];
-				echo '<span class="label label-info">' . $dt . '</span><h5>' . $title . '</h5>';
+				echo '<h5><span class="label label-info">' . $dt . '</span> ' . $title . '</h5>';
 				$pieces = explode('<!-- pagebreak -->', $row['body']);
 				echo "<p>$pieces[0]</p>";
 				if (isset($pieces[1])) {

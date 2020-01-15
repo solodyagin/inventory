@@ -20,7 +20,7 @@ $step = GetDef('step');
 if ($step == 'edit') {
 	$sql = 'SELECT * FROM repair WHERE id = :eqid';
 	try {
-		$row = DB::prepare($sql)->execute(array(':eqid' => $eqid))->fetch();
+		$row = DB::prepare($sql)->execute([':eqid' => $eqid])->fetch();
 		if ($row) {
 			$kntid = $row['kntid'];
 			$cost = $row['cost'];
@@ -68,7 +68,7 @@ if ($step == 'edit') {
 					}
 				}
 			});
-			if (error == 1) {
+			if (error === 1) {
 				$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 				return false;
 			}
@@ -76,11 +76,10 @@ if ($step == 'edit') {
 		});
 
 		$('#myForm').ajaxForm(function (msg) {
-			if (msg != 'ok') {
+			if (msg !== 'ok') {
 				$('#messenger').html(msg);
 			} else {
-				$('#pg_add_edit').dialog('destroy');
-				$('#pg_add_edit').html('');
+				$('#pg_add_edit').empty().dialog('destroy');
 				$('#workmen').jqGrid().trigger('reloadGrid');
 				$('#tbl_rep').jqGrid().trigger('reloadGrid');
 			}
@@ -195,7 +194,7 @@ TXT;
 
 	$('#dt').datepicker();
 	$('#dt').datepicker('option', 'dateFormat', 'dd.mm.yy');
-	if (step != 'edit') {
+	if (step !== 'edit') {
 		$('#dt').datepicker('setDate', '0');
 	} else {
 		$('#dt').datepicker('setDate', dt);
@@ -203,7 +202,7 @@ TXT;
 
 	$('#dtpost').datepicker();
 	$('#dtpost').datepicker('option', 'dateFormat', 'dd.mm.yy');
-	if (step != 'edit') {
+	if (step !== 'edit') {
 		$('#dtpost').datepicker('setDate', '0');
 	} else {
 		$('#dtpost').datepicker('setDate', dtpost);

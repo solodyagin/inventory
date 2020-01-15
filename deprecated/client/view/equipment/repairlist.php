@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $id = GetDef('id');
@@ -27,7 +27,7 @@ $cfg = Config::getInstance();
 	$('#list_rep').jqGrid({
 		url: 'route/deprecated/server/equipment/repair.php?step=list&id=' + repid + '&eqid=' + repid,
 		datatype: 'json',
-		colNames: ['Id', 'Контрагент', 'ТМЦ', 'Дата начала', 'Дата конца', 'Стоимость', 'Комментарий', 'Статус'],
+		colNames: ['Id', 'Контрагент', 'Оргтехника', 'Дата начала', 'Дата конца', 'Стоимость', 'Комментарий', 'Статус'],
 		colModel: [
 			{name: 'rpid', index: 'rpid', width: 35},
 			{name: 'namekont', index: 'namekont', width: 100, editable: false},

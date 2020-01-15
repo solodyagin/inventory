@@ -13,18 +13,18 @@
 $('#tbl_move').jqGrid({
 	url: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=',
 	datatype: 'json',
-	colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'ТМЦ', 'Комментарий'],
+	colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'Оргтехника', 'Комментарий'],
 	colModel: [
 		{name: 'id', index: 'id', width: 25, hidden: true},
-		{name: 'dt', index: 'dt', width: 65},
-		{name: 'orgname1', index: 'orgname1', width: 120, hidden: true},
-		{name: 'place1', index: 'place1', width: 80},
+		{name: 'dt', index: 'dt', width: 100},
+		{name: 'orgname1', index: 'orgname1', width: 140, hidden: true},
+		{name: 'place1', index: 'place1', width: 90},
 		{name: 'user1', index: 'user1', width: 90},
-		{name: 'orgname2', index: 'orgname2', width: 120, hidden: true},
-		{name: 'place2', index: 'place2', width: 80},
+		{name: 'orgname2', index: 'orgname2', width: 140, hidden: true},
+		{name: 'place2', index: 'place2', width: 90},
 		{name: 'user2', index: 'user2', width: 90},
-		{name: 'name', index: 'name', width: 90},
-		{name: 'comment', index: 'comment', width: 200, editable: true}
+		{name: 'name', index: 'name', width: 120},
+		{name: 'comment', index: 'comment', width: 100, editable: true}
 	],
 	autowidth: true,
 	pager: '#pager2',

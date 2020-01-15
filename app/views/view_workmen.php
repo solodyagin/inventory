@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
@@ -21,7 +21,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 $user = User::getInstance();
 $cfg = Config::getInstance();
 
-# Проверка: если пользователь - не администратор и не назначена одна из ролей, то
+/* Проверка: если пользователь - не администратор и не назначена одна из ролей, то */
 if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 ?>
 
@@ -137,7 +137,7 @@ endif;
 			}).trigger('reloadGrid');
 			$('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
 			$('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
-				caption: '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>',
+				caption: '<i class="fas fa-edit"></i>',
 				title: 'Изменить статус ремонта',
 				buttonicon: 'none',
 				onClickButton: function () {
@@ -153,7 +153,7 @@ endif;
 				}
 			});
 			$('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
-				caption: '<i class="fa fa-floppy-o" aria-hidden="true"></i>',
+				caption: '<i class="fas fa-save"></i>',
 				title: 'Экспорт в Excel',
 				buttonicon: 'none',
 				onClickButton: function () {
@@ -190,7 +190,7 @@ endif;
 	$('#workmen').jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 
 	$('#workmen').jqGrid('navButtonAdd', '#workmen_footer', {
-		caption: '<i class="fa fa-exclamation-circle" aria-hidden="true"></i>',
+		caption: '<i class="fas fa-exclamation-circle"></i>',
 		title: 'Отдать в ремонт',
 		buttonicon: 'none',
 		onClickButton: function () {

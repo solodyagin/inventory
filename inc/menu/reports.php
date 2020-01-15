@@ -15,5 +15,5 @@
 /* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$this->Add('main', '<i class="fa fa-bar-chart fa-fw"></i> Отчёты', 'Отчёты', 3, 'reports', '');
-$this->Add('reports', '<i class="fa fa-empire fa-fw"></i> Имущество', 'Отчеты по имуществу', 3, 'reports/report', 'report');
+$this->Add('main', '<i class="fas fa-chart-bar"></i> Отчёты', 'Отчёты', 3, 'reports', '');
+$this->Add('reports', '<i class="fab fa-empire"></i> Имущество', 'Отчеты по имуществу', 3, 'reports/report', 'report');

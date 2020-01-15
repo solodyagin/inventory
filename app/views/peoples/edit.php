@@ -61,15 +61,26 @@ unset($tmpuser);
 	});
 </script>
 <style>
-	.input-group-btn{
-		font-size: inherit;
+	#pass_gen, #pass_show {
+		font: initial;
 	}
 </style>
 <script src="js/jquery.passgen.min.js"></script>
 <script>
 	$(function () {
-		$('#passgen').click(function () {
+		$('#pass_gen').click(function () {
 			$('#pass').val($.passGen());
+		});
+		$('#pass_show').click(function () {
+			var $t = $(this);
+			$t.toggleClass('active');
+			if ($t.hasClass('active')) {
+				$t.find('i').removeClass('fa-eye-slash').addClass('fa-eye');
+				$t.closest('.input-group').find('input').prop('type', 'text');
+			} else {
+				$t.find('i').removeClass('fa-eye').addClass('fa-eye-slash');
+				$t.closest('.input-group').find('input').prop('type', 'password');
+			}
 		});
 	});
 </script>
@@ -108,9 +119,10 @@ unset($tmpuser);
 		<label class="control-label col-sm-2">Пароль:</label>
 		<div class="col-sm-10">
 			<div class="input-group">
-				<input type="text" class="form-control" placeholder="Пароль" name="pass" id="pass" value="">
+				<input type="password" class="form-control" placeholder="Пароль" name="pass" id="pass" value="">
 				<span class="input-group-btn">
-					<button type="button" class="btn btn-default" id="passgen"><i class="fa fa-refresh"></i></button>
+					<button type="button" class="btn btn-default" id="pass_gen"><i class="fas fa-dice"></i></button>
+					<button type="button" class="btn btn-default" id="pass_show"><i class="fas fa-eye-slash"></i></button>
 				</span>
 			</div>
 		</div>

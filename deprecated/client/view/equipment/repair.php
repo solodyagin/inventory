@@ -45,8 +45,7 @@ $step = GetDef('step');
 			if (msg !== 'ok') {
 				$('#messenger').html(msg);
 			} else {
-				$('#pg_add_edit').dialog('destroy');
-				$('#pg_add_edit').html('');
+				$('#pg_add_edit').empty().dialog('destroy');
 				$('#tbl_equpment').jqGrid().trigger('reloadGrid');
 				$('#tbl_rep').jqGrid().trigger('reloadGrid');
 			}

@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $user = User::getInstance();
@@ -34,9 +34,9 @@ $userid = $tmptmc->usersid;
 	var placesid1 = '<?= $tmptmc->placesid; ?>';
 	var userid1 = '<?= $tmptmc->usersid; ?>';
 
-	$(document).ready(function () {
+	$(function () {
 		$('#myForm').ajaxForm(function (msg) {
-			if (msg != 'ok') {
+			if (msg !== 'ok') {
 				$('#messenger').html(msg);
 			} else {
 				$('#pg_add_edit').html('');
@@ -72,7 +72,7 @@ $userid = $tmptmc->usersid;
 						<div name="susers" id="susers">идет загрузка...</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" id="tmcgo" name="tmcgo">ТМЦ в "пути"
+								<input type="checkbox" id="tmcgo" name="tmcgo">Оргтехника в "пути"
 							</label>
 						</div>
 					</div>

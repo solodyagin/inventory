@@ -175,7 +175,7 @@ $cfg = Config::getInstance();
 	$('#list2').jqGrid('bindKeys', '');
 
 	$('#list2').jqGrid('navButtonAdd', '#pager2', {
-		caption: '<i class="fa fa-tag" aria-hidden="true"></i>',
+		caption: '<i class="fas fa-tag"></i>',
 		title: 'Выбор колонок',
 		buttonicon: 'none',
 		onClickButton: function () {

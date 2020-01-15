@@ -14,7 +14,7 @@
 /* Объявляем глобальные переменные */
 define('SITE_EXEC', true);
 define('SITE_ROOT', dirname(dirname(__FILE__)));
-define('SITE_VERSION', '200114');
+define('SITE_VERSION', '200116');
 
 header('Content-Type: text/html; charset=utf-8');
 

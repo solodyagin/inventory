@@ -36,7 +36,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'Пароль', 'E-mail', 'Администратор', 'Действия'],
 		colModel: [
-			{name: 'active', index: 'active', width: 5, search: false},
+			{name: 'active', index: 'active', width: 15, search: false},
 			{name: 'usersid', index: 'u.id', width: 55, hidden: true},
 			{name: 'orgname', index: 'o.name', width: 60},
 			{name: 'fio', index: 'fio', width: 45},
@@ -97,7 +97,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 	});
 
 	$list1.jqGrid('navButtonAdd', '#pager1', {
-		caption: '<i class="fa fa-user-plus"></i>',
+		caption: '<i class="fas fa-user-plus"></i>',
 		title: 'Добавить',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -113,7 +113,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 	});
 
 	$list1.jqGrid('navButtonAdd', '#pager1', {
-		caption: '<i class="fa fa-user-md"></i>',
+		caption: '<i class="fas fa-user-md"></i>',
 		title: 'Изменить данные',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -134,7 +134,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 	});
 
 	$list1.jqGrid('navButtonAdd', '#pager1', {
-		caption: '<i class="fa fa-id-card-o"></i>',
+		caption: '<i class="fas fa-id-card"></i>',
 		title: 'Профиль',
 		buttonicon: 'none',
 		onClickButton: function () {

@@ -19,7 +19,7 @@ $cfg = Config::getInstance();
 
 if ($user->id == ''):
 	?>
-	<form role="form" action="account/login" method="post" name="form1" target="_self">
+	<form action="account/login" method="post" name="form1" target="_self">
 		<div class="form-group">
 			<input type="text" class="form-control" id="login" name="login" placeholder="Логин">
 			<input type="password" class="form-control" id="password" name="password" placeholder="Пароль">
@@ -82,7 +82,7 @@ if ($user->id == ''):
 		<form class="form-horizontal" action="account/logout" method="get" name="form1" target="_self">
 			<div class="form-group">
 				<div class="controls">
-					<button type="submit" class="btn btn-default">Выйти из системы</button>
+					<button type="submit" class="btn btn-default"><i class="fas fa-sign-out-alt"></i> Выйти из системы</button>
 				</div>
 			</div>
 		</form>

@@ -15,10 +15,10 @@
 /* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$this->Add('main', '<i class="fa fa-hashtag fa-fw"></i> Журналы', 'Журналы', 3, 'doc', '');
+$this->Add('main', '<i class="fas fa-hashtag"></i> Журналы', 'Журналы', 3, 'doc', '');
 $mod = new Mod();
 if ($mod->IsActive('news')) {
-	$this->Add('doc', '<i class="fa fa-newspaper-o fa-fw"></i> Новости', 'Новости', 3, 'doc/news', 'news');
+	$this->Add('doc', '<i class="fas fa-newspaper"></i> Новости', 'Новости', 3, 'doc/news', 'news');
 }
 unset($mod);
-$this->Add('doc', '<i class="fa fa-empire fa-fw"></i> Имущество', 'Имущество', 3, 'doc/equipment', 'equipment');
+$this->Add('doc', '<i class="fab fa-empire"></i> Имущество', 'Имущество', 3, 'doc/equipment', 'equipment');

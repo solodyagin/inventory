@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
@@ -23,7 +23,7 @@ $user = User::getInstance();
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="Учет ТМЦ в организации">
+		<meta name="description" content="Учет оргтехники в организации">
 		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title><?= $cfg->sitename; ?></title>
@@ -34,10 +34,9 @@ $user = User::getInstance();
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.multiselect.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/bootstrap.min.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid-bootstrap.css">
-		<!--<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.jqgrid.css">-->
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/chosen.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery.toastmessage-min.css">
-		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/font-awesome.min.css">
+		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/all.min.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/common.css">
 		<script src="templates/<?= $cfg->theme; ?>/js/jquery-1.11.0.min.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/jquery-ui.min.js"></script>
@@ -181,7 +180,11 @@ $user = User::getInstance();
 		?>
 		<footer class="footer">
 			<div class="container">
-				<p class="text-muted text-center">2011-<?= date('Y'); ?> &copy; <a href="http://грибовы.рф" target="_blank">Павел Грибов</a>. Собрано за <?= $time; ?> сек.</p>
+				<p class="text-muted text-right">
+					2011-2017 &copy; <a href="http://грибовы.рф" target="_blank">Павел Грибов</a><br>
+					2018-<?= date('Y'); ?> &copy; <a href="https://github.com/solodyagin/inventory" target="_blank">Сергей Солодягин</a><br>
+					Собрано за <?= $time; ?> сек.
+				</p>
 			</div>
 		</footer>
 	</body>

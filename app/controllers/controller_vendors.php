@@ -12,14 +12,20 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Controller_Vendors extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_vendors', $cfg->theme);
+		$data['section'] = 'Справочники / Производители';
+		if ($user->isAdmin() || $user->TestRights([1,3,4,5,6])) {
+			$this->view->generate('vendors/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
 }

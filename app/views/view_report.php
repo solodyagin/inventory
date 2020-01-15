@@ -11,7 +11,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
@@ -39,8 +39,8 @@ if (!$user->isAdmin() && !$user->TestRights[1]):
 				<div class="col-xs-12 col-md-4 col-sm-4">
 					<label for="sel_rep" class="control-label">Название отчета</label>
 					<select class="chosen-select" name="sel_rep" id="sel_rep">
-						<option value="1">Наличие ТМЦ</option>
-						<option value="2">Наличие ТМЦ - только не ОС и не списанное</option>
+						<option value="1">Наличие оргтехники</option>
+						<option value="2">Наличие оргтехники - только не ОС и не списанное</option>
 					</select>
 					<label for="sel_plp" class="control-label">Сотрудник</label>
 					<div name="sel_plp" id="sel_plp"></div>
@@ -161,7 +161,7 @@ if (!$user->isAdmin() && !$user->TestRights[1]):
 
 			$('#list2').jqGrid('navButtonAdd', '#pager2', {
 				id: 'ExportToCSV',
-				caption: '<i class="fa fa-floppy-o" aria-hidden="true"></i>',
+				caption: '<i class="fas fa-save"></i>',
 				title: 'Экспорт в CSV',
 				buttonicon: 'none',
 				onClickButton: function (e) {

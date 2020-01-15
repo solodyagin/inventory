@@ -16,7 +16,7 @@
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
- * Инструменты / ТМЦ на моём рабочем месте
+ * Инструменты / Оргтехника на моём рабочем месте
  */
 
 $user = User::getInstance();
@@ -27,7 +27,7 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 	?>
 
 	<div class="alert alert-danger">
-		У вас нет доступа в раздел "Инструменты / ТМЦ на моём рабочем месте"!<br><br>
+		У вас нет доступа в раздел "Инструменты / Оргтехника на моём рабочем месте"!<br><br>
 		Возможно не назначена <a href="http://грибовы.рф/wiki/doku.php/основы:доступ:роли" target="_blank">роль</a>:
 		"Полный доступ", "Просмотр", "Добавление", "Редактирование", "Удаление".
 	</div>
@@ -140,7 +140,7 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 		function ListEqByPlaces(list, pager) {
 			$_GET = parseGET();
 			tmp = $_GET['usid'];
-			if (typeof (tmp) != 'undefined') {
+			if (typeof (tmp) !== 'undefined') {
 				curuserid = tmp;
 			} else {
 				curuserid = defaultuserid;
@@ -185,7 +185,7 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 		function ListEqByMat(list, pager) {
 			var $_GET = parseGET();
 			tmp = $_GET['usid'];
-			if (typeof (tmp) != 'undefined') {
+			if (typeof (tmp) !== 'undefined') {
 				curuserid = tmp;
 			}
 			$(list).jqGrid({

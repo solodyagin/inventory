@@ -18,8 +18,14 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 class Controller_Equipment extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_equipment', $cfg->theme);
+		$data['section'] = 'Журнал / Имущество';
+		if ($user->isAdmin() || $user->TestRights([1,3,4,5,6])) {
+			$this->view->generate('equipment/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
 }

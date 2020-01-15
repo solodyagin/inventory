@@ -18,8 +18,14 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 class Controller_Nome extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_nome', $cfg->theme);
+		$data['section'] = 'Справочники / Номенклатура';
+		if ($user->isAdmin() || $user->TestRights([1,4,5,6])) {
+			$this->view->generate('nome/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
 	/* Для работы jqGrid */

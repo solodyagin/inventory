@@ -21,7 +21,7 @@ $morgs = GetArrayOrgs(); # список активных организаций
 $mod = new Mod();	 # обьявляем переменную для работы с классом модуля
 $mod->Register('news', 'Модуль новостей', 'Грибов Павел');
 $mod->Register('stiknews', 'Закрепленные новости', 'Грибов Павел');
-$mod->Register('lastmoved', 'Последние перемещения ТМЦ', 'Грибов Павел');
+$mod->Register('lastmoved', 'Последние перемещения оргтехники', 'Грибов Павел');
 $mod->Register('whoonline', 'Кто на сайте?', 'Грибов Павел');
 $mod->Register('commits-widget', 'Виджет разработки на github.com на главной странице', 'Солодягин Сергей');
 ?>
@@ -104,11 +104,11 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 			</div>
 			<div class="row">
 				<div class="col-xs-12 col-md-12 col-sm-12">
-					<!-- [Последние перемещения ТМЦ] -->
+					<!-- [Последние перемещения оргтехники] -->
 					<?php if ($mod->IsActive('lastmoved') && ($user->id != '')): ?>
 						<div class="panel panel-default">
 							<div class="panel-heading">
-								<h4 class="panel-title">Последние перемещения ТМЦ</h4>
+								<h4 class="panel-title">Последние перемещения оргтехники</h4>
 							</div>
 							<div class="panel-body">
 								<table id="tbl_move"></table>
@@ -117,7 +117,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 						</div>
 						<script src="templates/<?= $cfg->theme; ?>/assets/js/lastmoved.js"></script>
 					<?php endif; ?>
-					<!-- [/Последние перемещения ТМЦ] -->
+					<!-- [/Последние перемещения оргтехники] -->
 					<!-- [Кто онлайн] -->
 					<?php if ($mod->IsActive('whoonline')): ?>
 						<div class="panel panel-default">

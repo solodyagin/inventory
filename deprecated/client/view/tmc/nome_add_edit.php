@@ -11,11 +11,12 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-// Проверка прав
-(($user->mode == 1) || $user->TestRights([1,4,5,6])) or die('Недостаточно прав');
+/* Проверка прав */
+$user = User::getInstance();
+(($user->isAdmin()) || $user->TestRights([1,4,5,6])) or die('Недостаточно прав');
 
 $step = GetDef('step');
 $id = GetDef('id');
@@ -44,7 +45,7 @@ if ($step == 'edit') {
 			var error = 0;
 			$('form').find(':input').each(function () {
 				for (var i = 0; i < fields.length; i++) {
-					if ($(this).attr('name') == fields[i]) {
+					if ($(this).attr('name') === fields[i]) {
 						if (!$(this).val()) {
 							error = 1;
 							$(this).parent().addClass('has-error');
@@ -54,21 +55,19 @@ if ($step == 'edit') {
 					}
 				}
 			});
-			if (error == 1) {
-				$('#messenger').addClass('alert alert-danger')
-								.html('Не все обязательные поля заполнены!')
-								.fadeIn('slow');
+			if (error === 1) {
+				$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 				return false;
 			}
 			return true;
 		});
 
 		$('#myForm').ajaxForm(function (msg) {
-			if (msg != 'ok') {
+			if (msg !== 'ok') {
 				$('#messenger').addClass('alert alert-danger').html(msg);
 			} else {
 				$('#add_edit').html('').dialog('destroy');
-				$('#list2').jqGrid().trigger('reloadGrid');
+				$('#list1').jqGrid().trigger('reloadGrid');
 			}
 		});
 	});

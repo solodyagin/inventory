@@ -33,7 +33,7 @@
 	$('#list2').jqGrid('navGrid', '#pager2', {edit: false, add: false, del: false, search: false});
 
 	$('#list2').jqGrid('navButtonAdd', '#pager2', {
-		caption: '<i class="fa fa-plus-circle"></i>',
+		caption: '<i class="fas fa-plus-circle"></i>',
 		title: 'Добавить',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -53,7 +53,7 @@
 	});
 
 	$('#list2').jqGrid('navButtonAdd', '#pager2', {
-		caption: '<i class="fa fa-pencil-square-o"></i>',
+		caption: '<i class="fas fa-edit"></i>',
 		title: 'Отредактировать',
 		buttonicon: 'none',
 		onClickButton: function () {

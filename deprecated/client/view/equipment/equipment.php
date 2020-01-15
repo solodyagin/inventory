@@ -48,9 +48,8 @@ $cfg = Config::getInstance();
 				$('#messenger').html(msg);
 			} else {
 				$('#dtpost').datepicker('destroy');
-				$('#pg_add_edit').html('');
-				$('#pg_add_edit').dialog('destroy');
-				jQuery('#tbl_equpment').jqGrid().trigger('reloadGrid');
+				$('#pg_add_edit').empty().dialog('destroy');
+				$('#tbl_equpment').jqGrid().trigger('reloadGrid');
 			}
 		});
 	});

@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 /*
@@ -40,9 +40,7 @@ if (!$user->isAdmin() && !$user->TestRights[1]):
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="alert alert-info">
-						Версия программы: Inventory v<?= SITE_VERSION; ?><br>
-						Актуальные версии ПО: <a href="https://github.com/solodyagin/inventory" target="_blank">github.com</a><br>
-						Документация: <a href="http://грибовы.рф/?page_id=1202" target="_blank">здесь</a>
+						Версия программы: Inventory v<?= SITE_VERSION; ?>
 					</div>
 				</div>
 			</div>

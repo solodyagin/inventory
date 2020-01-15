@@ -18,6 +18,6 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 $mod = new Mod();
 $mod->Register('cloud', 'Хранилище документов', 'Грибов Павел');
 if ($mod->IsActive('cloud')) {
-	$this->Add('main', '<i class="fa fa-cloud fa-fw"></i> Хранилище документов', 'Хранилище документов', 2, 'cloud', 'cloud');
+	$this->Add('main', '<i class="fas fa-cloud"></i> Хранилище документов', 'Хранилище документов', 2, 'cloud', 'cloud');
 }
 unset($mod);
