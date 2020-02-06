@@ -23,3 +23,28 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
 1. Запустить инсталлятор _http://адрессайта/install/index.php_
 2. Поправить права на папки `files`, `photo`, `maps` на 0777
 3. Удалить каталог _install_
+
+### Запуск Inventory в Windows 10 через Docker.
+1. Установить пакетный менеджер chocolatey, если он не установлен ( https://goo.gl/dVvhWp )
+2. Установить docker, docker-compose, git. Для этого открыть новую командную строку от имени Администратора и ввести
+    choco install -y docker-for-windows docker-compose git
+3. Тут желательно перезагрузить компьютер. И в настройках Docker разрешить доступ к дискам (Shared Drives)
+4. Скачать WAMP stack (Apache, MySQL, PHP). Для удобства команды объединил в файл inventory-install.cmd ( https://goo.gl/AxwSxL )
+    mkdir wamp
+    cd wamp
+    git clone https://github.com/solodyagin/docker-compose-wamp.git .
+5. Скачать Inventory
+    cd www
+    rm .gitignore
+    git clone https://github.com/solodyagin/inventory.git .
+6. Запустить docker
+    cd ..
+    docker-compose up
+
+Система Inventory доступна по адресу: http://localhost
+
+phpMyAdmin: http://localhost:8080 \\
+Пользователь: root \\
+Пароль: tiger
+
+При установке системы в качестве сервера MySQL указать "mysql", пользователь баз данных "root", пароль: "tiger"
