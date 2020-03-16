@@ -31,7 +31,7 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
   choco install -y docker-for-windows docker-compose git
 ```
 3. Тут желательно перезагрузить компьютер. И в настройках Docker разрешить доступ к дискам (Shared Drives)
-4. Скачать WAMP stack (Apache, MySQL, PHP). Для удобства команды объединил в файл inventory-install.cmd ( https://goo.gl/AxwSxL )
+4. Скачать WAMP stack (Apache, MySQL, PHP)
 ```
   mkdir wamp
   cd wamp
@@ -48,10 +48,12 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
   cd ..
   docker-compose up
 ```
+Для удобства команды 4, 5 и 6 пунктов объединил в файл inventory-install.cmd ( https://goo.gl/AxwSxL )
+
 Система Inventory доступна по адресу: http://localhost
+
+При установке системы в качестве сервера MySQL указать "**mysql**", пользователь баз данных "root", пароль: "tiger"
 
 phpMyAdmin: http://localhost:8080 \
 Пользователь: root \
 Пароль: tiger
-
-При установке системы в качестве сервера MySQL указать "mysql", пользователь баз данных "root", пароль: "tiger"
