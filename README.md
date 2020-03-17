@@ -40,7 +40,7 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
 5. Скачать Inventory
 ```
   cd www
-  rm .gitignore
+  del .gitignore
   git clone https://github.com/solodyagin/inventory.git .
 ```
 6. Запустить docker
