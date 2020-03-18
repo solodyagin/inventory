@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $page = GetDef('page', 1);
@@ -32,10 +32,18 @@ if ($oper == '') {
 	$responce->page = 0;
 	$responce->total = 0;
 	$responce->records = 0;
-
-	$sql = 'SELECT COUNT(*) AS cnt FROM group_nome';
 	try {
-		$row = DB::prepare($sql)->execute()->fetch();
+		$sql = <<<TXT
+select
+	count(*) as cnt
+from group_nome
+	inner join nome on (nome.groupid = group_nome.id)
+	inner join equipment on (equipment.nomeid = nome.id)
+	inner join places_users on (places_users.placesid = equipment.placesid)
+	inner join places on (places.id = equipment.placesid)
+where equipment.active = 1 and places_users.userid = :userid
+TXT;
+		$row = DB::prepare($sql)->execute([':userid' => $curuserid])->fetch();
 		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу выбрать сформировать список по оргтехнике/помещениям/пользователю (1)', 0, $ex);
@@ -56,57 +64,53 @@ if ($oper == '') {
 	$responce->page = $page;
 	$responce->total = $total_pages;
 	$responce->records = $count;
-
-	$sql = <<<TXT
-SELECT     name AS grname,
-           res2.*
-FROM       group_nome
-INNER JOIN
-           (
-                      SELECT     places.name AS plname,
-                                 res.*
-                      FROM       places
-                      INNER JOIN
-                                 (
-                                            SELECT     name         AS namenome,
-                                                       nome.groupid AS grpid,
-                                                       eq.*
-                                            FROM       nome
-                                            INNER JOIN
-                                                       (
-                                                                  SELECT     equipment.id          AS eqid,
-                                                                             equipment.placesid    AS plid,
-                                                                             equipment.nomeid      AS nid,
-                                                                             equipment.buhname     AS bn,
-                                                                             equipment.cost        AS cs,
-                                                                             equipment.currentcost AS curc,
-                                                                             equipment.invnum,
-                                                                             equipment.sernum,
-                                                                             equipment.shtrihkod,
-                                                                             equipment.mode,
-                                                                             equipment.os
-                                                                  FROM       equipment
-                                                                  INNER JOIN
-                                                                             (
-                                                                                    SELECT placesid
-                                                                                    FROM   places_users
-                                                                                    WHERE  userid = '$curuserid' ) AS pl
-                                                                  ON         pl.placesid = equipment.placesid
-                                                                  WHERE      equipment.active = 1 ) AS eq
-                                            ON         nome.id = eq.nid ) AS res
-                      ON         places.id = res.plid
-                      ORDER BY   $sidx $sord
-                      LIMIT      $start, $limit ) AS res2
-ON         group_nome.id = res2.grpid
-TXT;
 	try {
-		$arr = DB::prepare($sql)->execute()->fetchAll();
+		$sql = <<<TXT
+select
+	group_nome.name as grname,
+	places.name as plname,
+	nome.name as namenome,
+	nome.groupid as grpid,
+	equipment.id as eqid,
+	equipment.placesid as plid,
+	equipment.nomeid as nid,
+	equipment.buhname as bn,
+	equipment.cost as cs,
+	equipment.currentcost as curc,
+	equipment.invnum,
+	equipment.sernum,
+	equipment.shtrihkod,
+	equipment.mode,
+	equipment.os
+from group_nome
+	inner join nome on (nome.groupid = group_nome.id)
+	inner join equipment on (equipment.nomeid = nome.id)
+	inner join places_users on (places_users.placesid = equipment.placesid)
+	inner join places on (places.id = equipment.placesid)
+where equipment.active = 1 and places_users.userid = :userid
+order by :sidx :sord
+limit :start, :limit
+TXT;
+		$stmt = DB::prepare($sql);
+		$stmt->bindValue(':userid', $curuserid, PDO::PARAM_INT);
+		$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
+		$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
+		$stmt->bindValue(':start', $start, PDO::PARAM_INT);
+		$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$arr = $stmt->execute()->fetchAll();
 		$i = 0;
 		foreach ($arr as $row) {
 			$responce->rows[$i]['id'] = $row['eqid'];
-			$responce->rows[$i]['cell'] = array($row['eqid'], $row['plname'],
-				$row['namenome'], $row['grname'], $row['invnum'], $row['sernum'],
-				$row['shtrihkod'], $row['mode']);
+			$responce->rows[$i]['cell'] = [
+				$row['eqid'],
+				$row['plname'],
+				$row['namenome'],
+				$row['grname'],
+				$row['invnum'],
+				$row['sernum'],
+				$row['shtrihkod'],
+				$row['mode']
+			];
 			$i++;
 		}
 	} catch (PDOException $ex) {

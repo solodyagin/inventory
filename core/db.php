@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class DB {
@@ -22,12 +22,12 @@ class DB {
 	public static function getInstance() {
 		if (self::$instance === null) {
 			$cfg = Config::getInstance();
-			$opt = array(
+			$opt = [
 				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 				PDO::ATTR_EMULATE_PREPARES => true,
-				PDO::ATTR_STATEMENT_CLASS => array('myPDOStatement'),
-			);
+				PDO::ATTR_STATEMENT_CLASS => ['myPDOStatement'],
+			];
 			$dsn = "mysql:host={$cfg->db_host};dbname={$cfg->db_name};charset={$cfg->db_char}";
 			self::$instance = new PDO($dsn, $cfg->db_user, $cfg->db_pass, $opt);
 		}
@@ -35,7 +35,7 @@ class DB {
 	}
 
 	public static function __callStatic($method, $args) {
-		return call_user_func_array(array(self::getInstance(), $method), $args);
+		return call_user_func_array([self::getInstance(), $method], $args);
 	}
 
 	final private function __construct() {}

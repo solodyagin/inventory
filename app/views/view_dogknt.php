@@ -64,11 +64,10 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 				{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false, hidden: true}
 			],
 			autowidth: true,
-			rowNum: 20,
-			rowList: [20, 40, 60],
+			rowNum: 10,
+			rowList: [10, 20, 50],
 			pager: '#pager2',
 			sortname: 'id',
-			scroll: 1,
 			viewrecords: true,
 			sortorder: 'asc',
 			editurl: 'route/deprecated/server/knt/libre_knt.php?org_status=edit',

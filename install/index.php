@@ -14,7 +14,7 @@
 /* Объявляем глобальные переменные */
 define('SITE_EXEC', true);
 define('SITE_ROOT', dirname(dirname(__FILE__)));
-define('SITE_VERSION', '200116');
+define('SITE_VERSION', '20-03-18');
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -41,13 +41,9 @@ if ($action == 'install') {
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="Учёт оргтехники в организации">
-		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Учёт оргтехники в организации</title>
-		<meta name="keywords" content="учёт оргтехники">
-		<link href="../favicon.ico" type="image/ico" rel="icon">
-		<link href="../favicon.ico" type="image/ico" rel="shortcut icon">
+		<link rel="icon" type="image/png" href="../favicon.png" sizes="16x16">
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<script src="js/jquery-1.11.0.min.js"></script>
@@ -83,55 +79,76 @@ if ($action == 'install') {
 						$('#messenger').html(msg);
 					} else {
 						$('#messenger').hide();
-						$('#prim').html('<div class="alert alert-info">Внимание!<br>Инсталляция прошла успешно.<br>Не забудьте удалить каталог install</div>');
+						$('#prim').html('<div class="alert alert-info">Внимание!<br>Инсталляция прошла успешно.<br>Не забудьте удалить каталог <strong>install</strong></div>');
 					}
+				});
+				$('[data-toggle="tooltip"]').tooltip({
+					container: 'body'
 				});
 			});
 		</script>
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-xs-6 col-md-4 col-sm-4">
+				<div class="col-sm-3">
 					<div id="messenger"></div>
 				</div>
-				<div class="col-xs-6 col-md-4 col-sm-4">
+				<div class="col-sm-6">
 					<div class="panel panel-primary">
 						<div class="panel-heading">Установка "Учёт оргтехники в организации"</div>
 						<div class="panel-body" id="prim">
-							<form role="form" name="myform" id="myform" action="?action=install" method="post" target="_self">
+							<form class="form-horizontal" id="myform" name="myform" action="?action=install" method="post" target="_self">
 								<div class="form-group">
-									<label for="dbhost">Сервер MySQL</label>
-									<input type="dbhost" class="form-control" name="dbhost" id="dbhost" placeholder="localhost" value="localhost">
+									<label class="control-label col-sm-4" for="dbhost">Сервер MySQL:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="dbhost" id="dbhost" placeholder="localhost" value="localhost"
+											   data-toggle="tooltip" data-html="true" data-placement="right" title="Для Docker укажите <strong>mysql</strong>">
+									</div>
 								</div>
 								<div class="form-group">
-									<label for="dbname">Имя базы</label>
-									<input type="dbname" class="form-control" name="dbname" id="dbname" placeholder="webuser" value="webuser">
+									<label class="control-label col-sm-4" for="dbname">Имя базы:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="dbname" id="dbname" placeholder="inventory" value="inventory">
+									</div>
 								</div>
 								<div class="form-group">
-									<label for="dbuser">Имя пользователя базы</label>
-									<input type="dbuser" class="form-control" name="dbuser" id="dbuser" placeholder="Введите имя пользователя mysql" value="root">
+									<label class="control-label col-sm-4" for="dbuser">Имя пользователя базы:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="dbuser" id="dbuser" placeholder="Введите имя пользователя mysql" value="root">
+									</div>
 								</div>
 								<div class="form-group">
-									<label for="dbpass">Пароль пользователя</label>
-									<input type="password" class="form-control" name="dbpass" id="dbpass" placeholder="Введите пароль" value="">
+									<label class="control-label col-sm-4" for="dbpass">Пароль пользователя:</label>
+									<div class="col-sm-8">
+										<input type="password" class="form-control" name="dbpass" id="dbpass" placeholder="Введите пароль" value="">
+									</div>
 								</div>
 								<div class="form-group">
-									<label for="orgname">Название организации</label>
-									<input type="orgname" class="form-control" name="orgname" id="orgname" placeholder="Введите название организации" value="ООО Рога и Копыта">
+									<label class="control-label col-sm-4" for="orgname">Название организации:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="orgname" id="orgname" placeholder="Введите название организации" value="ООО Рога и Копыта">
+									</div>
 								</div>
 								<div class="form-group">
-									<label for="login">Логин администратора</label>
-									<input type="login" class="form-control" name="login" id="login" placeholder="Введите логин администратора" value="admin">
+									<label class="control-label col-sm-4" for="login">Логин администратора:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" name="login" id="login" placeholder="Введите логин администратора" value="admin">
+									</div>
 								</div>
 								<div class="form-group">
-									<label for="pass">Пароль администратора</label>
-									<input type="password" class="form-control" name="pass" id="pass" placeholder="Пароль администратора" value="">
+									<label class="control-label col-sm-4" for="pass">Пароль администратора:</label>
+									<div class="col-sm-8">
+										<input type="password" class="form-control" name="pass" id="pass" placeholder="Пароль администратора" value="">
+									</div>
 								</div>
-								<button type="submit" class="btn btn-default">Начать инсталляцию</button>
+								<div class="form-group">
+									<div class="col-sm-offset-4 col-sm-8">
+										<button type="submit" class="btn btn-primary">Начать установку</button>
+									</div>
+								</div>
 							</form>
 						</div>
 					</div>
 				</div>
-				<div class="col-xs-6 col-md-4 col-sm-4"></div>
 			</div>
 		</div>
 	</body>

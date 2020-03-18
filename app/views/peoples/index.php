@@ -56,8 +56,6 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 		},
 		autowidth: true,
 		scroll: 1,
-		rowNum: 200,
-		rowList: [10, 20, 30],
 		pager: '#pager1',
 		sortname: 'id',
 		viewrecords: true,
@@ -171,10 +169,10 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 				}},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],
-		rowNum: 5,
+		rowNum: 10,
+		rowList: [10, 20, 30],
 		pager: '#pager2',
 		sortname: 'id',
-		scroll: 1,
 		viewrecords: true,
 		sortorder: 'asc',
 		caption: 'Набор прав сотрудника'

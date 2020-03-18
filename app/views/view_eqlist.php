@@ -175,8 +175,8 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 				pager: pager,
 				sortname: 'namenome',
 				viewrecords: true,
-				rowNum: 1000,
-				scroll: 1,
+				rowNum: 10,
+				rowList: [10, 20, 50],
 				sortorder: 'asc',
 				caption: 'Список имущества'
 			});
@@ -223,8 +223,8 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 				pager: pager,
 				sortname: 'namenome',
 				viewrecords: true,
-				rowNum: 1000,
-				scroll: 1,
+				rowNum: 10,
+				rowList: [10, 20, 50],
 				sortorder: 'asc',
 				caption: 'Список имущества (материальная ответственность)'
 			});

@@ -46,8 +46,8 @@ class Controller_Places extends Controller {
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-		$sql = 'SELECT COUNT(*) AS cnt FROM places WHERE orgid = :orgid';
 		try {
+			$sql = 'SELECT COUNT(*) AS cnt FROM places WHERE orgid = :orgid';
 			$row = DB::prepare($sql)->execute([':orgid' => $orgid])->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -67,26 +67,31 @@ class Controller_Places extends Controller {
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-		$sql = <<<TXT
+		try {
+			$sql = <<<TXT
 SELECT id, opgroup, name, comment, active
 FROM places
 WHERE orgid = :orgid
-ORDER BY $sidx $sord
+ORDER BY :sidx :sord
 LIMIT :start, :limit
 TXT;
-		try {
 			$stmt = DB::prepare($sql);
-			$stmt->bindValue(':orgid', (int) $orgid, PDO::PARAM_INT);
-			$stmt->bindValue(':start', (int) $start, PDO::PARAM_INT);
-			$stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+			$stmt->bindValue(':orgid', $orgid, PDO::PARAM_INT);
+			$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
+			$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
+			$stmt->bindValue(':start', $start, PDO::PARAM_INT);
+			$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 			$arr = $stmt->execute()->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
 				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-						"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-						$row['id'], $row['opgroup'], $row['name'], $row['comment']
+					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+					$row['id'],
+					$row['opgroup'],
+					$row['name'],
+					$row['comment']
 				];
 				$i++;
 			}
@@ -109,16 +114,16 @@ TXT;
 			case 'add':
 				/* Проверяем может ли пользователь добавлять? */
 				($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
-				$sql = <<<TXT
+				try {
+					$sql = <<<TXT
 INSERT INTO places (id, orgid, opgroup, name, comment, active)
 VALUES (null, :orgid, :opgroup, :name, :comment, 1)
 TXT;
-				try {
 					DB::prepare($sql)->execute([
-							':orgid' => $orgid,
-							':opgroup' => $opgroup,
-							':name' => $name,
-							':comment' => $comment
+						':orgid' => $orgid,
+						':opgroup' => $opgroup,
+						':name' => $name,
+						':comment' => $comment
 					]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу добавить помещение', 0, $ex);
@@ -127,13 +132,13 @@ TXT;
 			case 'edit':
 				/* Проверяем может ли пользователь редактировать? */
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Недостаточно прав');
-				$sql = 'UPDATE places SET opgroup = :opgroup, name = :name, comment = :comment WHERE id = :id';
 				try {
+					$sql = 'UPDATE places SET opgroup = :opgroup, name = :name, comment = :comment WHERE id = :id';
 					DB::prepare($sql)->execute([
-							':opgroup' => $opgroup,
-							':name' => $name,
-							':comment' => $comment,
-							':id' => $id
+						':opgroup' => $opgroup,
+						':name' => $name,
+						':comment' => $comment,
+						':id' => $id
 					]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по помещениям', 0, $ex);
@@ -142,8 +147,8 @@ TXT;
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
-				$sql = 'UPDATE places SET active = NOT active WHERE id = :id';
 				try {
+					$sql = 'UPDATE places SET active = NOT active WHERE id = :id';
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу пометить на удаление помещение', 0, $ex);
@@ -170,8 +175,8 @@ TXT;
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-		$sql = 'SELECT COUNT(*) AS cnt FROM places_users WHERE placesid = :placesid';
 		try {
+			$sql = 'SELECT COUNT(*) AS cnt FROM places_users WHERE placesid = :placesid';
 			$row = DB::prepare($sql)->execute([':placesid' => $placesid])->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -191,7 +196,8 @@ TXT;
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-		$sql = <<<TXT
+		try {
+			$sql = <<<TXT
 SELECT	places_users.id AS plid,
 		placesid,
 		userid,
@@ -200,19 +206,23 @@ FROM	places_users
 	INNER JOIN users_profile
 		ON users_profile.usersid = userid
 WHERE	placesid = :placesid
-ORDER BY $sidx $sord
+ORDER BY :sidx :sord
 LIMIT :start, :limit
 TXT;
-		try {
 			$stmt = DB::prepare($sql);
-			$stmt->bindValue(':placesid', (int) $placesid, PDO::PARAM_INT);
-			$stmt->bindValue(':start', (int) $start, PDO::PARAM_INT);
-			$stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+			$stmt->bindValue(':placesid', $placesid, PDO::PARAM_INT);
+			$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
+			$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
+			$stmt->bindValue(':start', $start, PDO::PARAM_INT);
+			$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 			$arr = $stmt->execute()->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['plid'];
-				$responce->rows[$i]['cell'] = [$row['plid'], $row['name']];
+				$responce->rows[$i]['cell'] = [
+					$row['plid'],
+					$row['name']
+				];
 				$i++;
 			}
 		} catch (PDOException $ex) {
@@ -235,9 +245,14 @@ TXT;
 				if (($placesid == '') || ($name == '')) {
 					die();
 				}
-				$sql = 'INSERT INTO places_users (id, placesid, userid) VALUES (null, :placesid, :userid)';
 				try {
-					DB::prepare($sql)->execute([':placesid' => $placesid, ':userid' => $name]);
+					$sql = 'select count(*) cnt from places_users where placesid = :placesid and userid = :userid';
+					$row = DB::prepare($sql)->execute([':placesid' => $placesid, ':userid' => $name])->fetch();
+					$count = ($row) ? $row['cnt'] : 0;
+					if ($count == 0) {
+						$sql = 'INSERT INTO places_users (id, placesid, userid) VALUES (null, :placesid, :userid)';
+						DB::prepare($sql)->execute([':placesid' => $placesid, ':userid' => $name]);
+					}
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу добавить помещение/пользователя', 0, $ex);
 				}
@@ -245,8 +260,8 @@ TXT;
 			case 'edit':
 				/* Проверяем может ли пользователь редактировать? */
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования недостаточно прав');
-				$sql = 'UPDATE places_users SET userid = :userid WHERE id = :id';
 				try {
+					$sql = 'UPDATE places_users SET userid = :userid WHERE id = :id';
 					DB::prepare($sql)->execute([':userid' => $name, ':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по помещениям/пользователям', 0, $ex);
@@ -255,8 +270,8 @@ TXT;
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления недостаточно прав');
-				$sql = 'DELETE FROM places_users WHERE id = :id';
 				try {
+					$sql = 'DELETE FROM places_users WHERE id = :id';
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу удалить помещение/пользователя', 0, $ex);

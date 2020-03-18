@@ -36,7 +36,6 @@
 			groupCollapse: false
 		},
 		autowidth: true,
-		rowNum: 20,
 		pager: '#pager1',
 		sortname: 'id',
 		scroll: 1,
@@ -75,10 +74,10 @@
 				}},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],
-		rowNum: 5,
+		rowNum: 10,
+		rowList: [10, 20, 50],
 		pager: '#pager2',
 		sortname: 'places_users.id',
-		scroll: 1,
 		viewrecords: true,
 		sortorder: 'asc',
 		caption: 'Рабочие места'

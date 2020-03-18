@@ -23,13 +23,10 @@ $user = User::getInstance();
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="Учет оргтехники в организации">
-		<meta name="author" content="(c) 2011-2016 by Gribov Pavel">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title><?= $cfg->sitename; ?></title>
 		<base href="<?= $cfg->rewrite_base; ?>">
-		<link rel="icon" href="favicon.ico" type="image/x-icon">
-		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/jquery-ui.min.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/ui.multiselect.css">
 		<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/bootstrap.min.css">

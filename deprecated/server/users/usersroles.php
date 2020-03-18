@@ -99,12 +99,14 @@ TXT;
 if ($oper == 'add') {
 	/* Только с полными правами можно добавлять роль! */
 	($user->isAdmin() || $user->TestRights([1])) or die('Недостаточно прав');
-	$sql = 'INSERT INTO usersroles (userid, role) VALUES (:userid, :role)';
 	try {
-		DB::prepare($sql)->execute([
-			':userid' => $userid,
-			':role' => $role
-		]);
+		$sql = 'select count(*) cnt from usersroles where userid = :userid and role = :role';
+		$row = DB::prepare($sql)->execute([':userid' => $userid, ':role' => $role])->fetch();
+		$count = ($row) ? $row['cnt'] : 0;
+		if ($count == 0) {
+			$sql = 'INSERT INTO usersroles (userid, role) VALUES (:userid, :role)';
+			DB::prepare($sql)->execute([':userid' => $userid, ':role' => $role]);
+		}
 	} catch (PDOException $ex) {
 		throw new DBException('Не могу добавить роль пользователя', 0, $ex);
 	}
