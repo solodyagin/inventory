@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Config {
@@ -20,6 +20,7 @@ class Config {
 	use Singleton;
 
 	public $debug; # Режим отладки
+	public $db_driver; # mysql, pgsql
 	public $db_host; # Хост БД
 	public $db_user; # Пользователь БД
 	public $db_pass; # Пароль пользователя БД
@@ -27,22 +28,22 @@ class Config {
 	public $db_char; # Кодировка БД
 	public $rewrite_base; # Размещение системы относительно корня сайта
 	public $sitename; # Название сайта
-	public $ad;   # Использовать для аутентификации Active Directory 0-нет, 1-да
-	public $domain1;   # Домен AD первого уровня (например khortitsa)
-	public $domain2;   # Домен AD второго уровня (например com)
-	public $ldap;   # Сервер ldap, включая протокол ldap:// или ldaps://
-	public $theme;  # Шаблон по умолчанию
+	public $ad; # Использовать для аутентификации Active Directory 0-нет, 1-да
+	public $domain1; # Домен AD первого уровня (например khortitsa)
+	public $domain2; # Домен AD второго уровня (например com)
+	public $ldap; # Сервер ldap, включая протокол ldap:// или ldaps://
+	public $theme; # Шаблон по умолчанию
 	public $emailadmin; # От кого будем посылать почту
-	public $smtphost;  # Сервер SMTP
-	public $smtpauth;  # Требуется аутентификация?
-	public $smtpport, $smtpusername, $smtppass;  # SMTP порт,пользователь,пароль пользователя для входа
+	public $smtphost; # Сервер SMTP
+	public $smtpauth; # Требуется аутентификация?
+	public $smtpport, $smtpusername, $smtppass; # SMTP порт,пользователь,пароль пользователя для входа
 	public $emailreplyto; # Куда слать ответы
-	public $sendemail;  # А вообще будем посылать почту?
-	public $version;  # Версия платформы
-	public $defaultorgid;   # Организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
-	public $urlsite;  # Где находится сайт http://
+	public $sendemail; # А вообще будем посылать почту?
+	public $version; # Версия платформы
+	public $defaultorgid; # Организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
+	public $urlsite; # Где находится сайт http://
 	public $navbar = []; # Навигационная последовательность
-	public $fontsize = '12px';   # Стиль грида по умолчанию
+	public $fontsize = '12px'; # Стиль грида по умолчанию
 
 	/**
 	 *  Получает настройки из файла конфигурации
@@ -51,11 +52,12 @@ class Config {
 		$res = include_once(SITE_ROOT . '/app/config.php');
 		if ($res) {
 			$this->debug = $debug; # Режим отладки
-			$this->db_host = $mysql_host; # Хост БД
-			$this->db_user = $mysql_user; # Пользователь БД
-			$this->db_pass = $mysql_pass; # Пароль пользователя БД
-			$this->db_name = $mysql_base; # Имя базы
-			$this->db_char = $mysql_char; # Кодировка базы
+			$this->db_driver = $db_driver;
+			$this->db_host = $db_host; # Хост БД
+			$this->db_user = $db_user; # Пользователь БД
+			$this->db_pass = $db_pass; # Пароль пользователя БД
+			$this->db_name = $db_base; # Имя базы
+			$this->db_char = $db_char; # Кодировка базы
 			$this->rewrite_base = $rewrite_base; # Размещение системы относительно корня сайта
 		}
 		return $res;

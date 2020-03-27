@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class User extends BaseUser {
@@ -30,15 +30,27 @@ class User extends BaseUser {
 	 */
 	function loginByDB($login, $password) {
 		$this->is_logged = false;
-		$sql = <<<TXT
-SELECT	p.*, u.*, u.`id` sid
-FROM	`users` u
-	LEFT JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-WHERE	u.`login` = :login AND
-		u.`password` = SHA1(CONCAT(SHA1(:pass), u.`salt`))
-TXT;
 		try {
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<SQL
+SELECT	p.*, u.*, u.id sid
+FROM	users u
+	LEFT JOIN users_profile p ON p.usersid = u.id
+WHERE	u.login = :login AND
+		u.password = SHA1(CONCAT(SHA1(:pass), u.salt))
+SQL;
+					break;
+				case 'pgsql':
+$sql = <<<SQL
+SELECT	p.*, u.*, u.id sid
+FROM	users u
+	LEFT JOIN users_profile p ON p.usersid = u.id
+WHERE	u.login = :login AND
+		u.password = SHA1(CONCAT(SHA1(:pass), u.salt::text))
+SQL;
+					break;
+			}
 			$row = DB::prepare($sql)->execute([':login' => $login, ':pass' => $password])->fetch();
 			if ($row) {
 				$this->is_logged = true;

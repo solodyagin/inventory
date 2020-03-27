@@ -1,8 +1,19 @@
+#  Ignore config file
 /app/config.php
+
+# Ignore cloud module files
 /files/*
 !/files/.htaccess
+
+# Ignore logs
 /logs/*
+
+# Ignore NetBeans project
 /nbproject
+
+# Photos
 /photos/**/*.jpg
 !/photos/noimage.jpg
+
+# But not ignore .gitkeep file for hold empty directories
 !.gitkeep

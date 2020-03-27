@@ -66,17 +66,24 @@ class Controller_Orglist extends Controller {
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-		$sql = "SELECT id, name, active FROM org ORDER BY $sidx $sord LIMIT $start, $limit";
 		try {
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = "SELECT id, name, active FROM org ORDER BY $sidx $sord LIMIT $start, $limit";
+					break;
+				case 'pgsql':
+					$sql = "SELECT id, name, active FROM org ORDER BY $sidx $sord OFFSET $start LIMIT $limit";
+					break;
+			}
 			$arr = DB::prepare($sql)->execute()->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
 				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-						"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-						$row['id'],
-						$row['name']
+					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+					$row['id'],
+					$row['name']
 				];
 				$i++;
 			}
@@ -96,7 +103,7 @@ class Controller_Orglist extends Controller {
 			case 'add':
 				/* Проверяем может ли пользователь добавлять? */
 				($user->isAdmin() || $user->TestRights([1, 4])) or die('Для добавления недостаточно прав');
-				$sql = 'INSERT INTO org (id, name, active) VALUES (null, :name, 1)';
+				$sql = 'INSERT INTO org (name, active) VALUES (:name, 1)';
 				try {
 					DB::prepare($sql)->execute([':name' => $name]);
 				} catch (PDOException $ex) {
@@ -116,7 +123,14 @@ class Controller_Orglist extends Controller {
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления недостаточно прав');
-				$sql = 'UPDATE org SET active = NOT active WHERE id = :id';
+				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+					case 'mysql':
+						$sql = 'UPDATE org SET active = NOT active WHERE id = :id';
+						break;
+					case 'pgsql':
+						$sql = 'UPDATE org SET active = active # 1 WHERE id = :id';
+						break;
+				}
 				try {
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {

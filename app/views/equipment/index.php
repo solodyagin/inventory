@@ -77,10 +77,10 @@ $cfg = Config::getInstance();
 				{name: 'equipment.id', index: 'equipment.id', width: 55, search: false, frozen: true, hidden: true, fixed: true},
 				{name: 'ip', index: 'ip', width: 100, hidden: true, fixed: true},
 				{name: 'placesid', index: 'placesid', width: 155, stype: 'select', frozen: true, fixed: true,
-					searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistplaces.php?addnone=true'}},
+					searchoptions: {dataUrl: 'equipment/getlistplaces?addnone=true'}},
 				{name: 'nomename', index: 'getvendorandgroup.nomename', width: 135, frozen: true},
 				{name: 'getvendorandgroup.groupname', index: 'getvendorandgroup.grnomeid', width: 100, stype: 'select', fixed: true,
-					searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistgroupname.php?addnone=true'}},
+					searchoptions: {dataUrl: 'equipment/getlistgroupname?addnone=true'}},
 				{name: 'tmcgo', index: 'tmcgo', width: 80, search: true, stype: 'select', fixed: true,
 					searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlisttmcgo.php?addnone=true'},
 					formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: 'Yes:No'}, editable: true, hiddem: true

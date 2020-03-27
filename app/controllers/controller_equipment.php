@@ -21,10 +21,88 @@ class Controller_Equipment extends Controller {
 		$user = User::getInstance();
 		$cfg = Config::getInstance();
 		$data['section'] = 'Журнал / Имущество';
-		if ($user->isAdmin() || $user->TestRights([1,3,4,5,6])) {
+		if ($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) {
 			$this->view->generate('equipment/index', $cfg->theme, $data);
 		} else {
 			$this->view->generate('restricted', $cfg->theme, $data);
+		}
+	}
+
+	function getlistplaces() {
+		$user = User::getInstance();
+		$cfg = Config::getInstance();
+		$orgid = $cfg->defaultorgid;
+		$placesid = GetDef('placesid');
+		$addnone = GetDef('addnone');
+		$oldopgroup = '';
+		if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) {
+			echo '<select name="splaces" id="splaces">';
+			if ($addnone == 'true') {
+				echo '<option value="-1">не выбрано</option>';
+			}
+			try {
+				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+					case 'mysql':
+						$sql = 'SELECT * FROM places WHERE orgid = :orgid AND active = 1 ORDER BY BINARY(opgroup), BINARY(name)';
+						break;
+					case 'pgsql':
+						$sql = 'SELECT * FROM places WHERE orgid = :orgid AND active = 1 ORDER BY opgroup, name';
+						break;
+				}
+				$arr = DB::prepare($sql)->execute([':orgid' => $orgid])->fetchAll();
+				$flag = 0;
+				foreach ($arr as $row) {
+					$opgroup = $row['opgroup'];
+					if ($opgroup != $oldopgroup) {
+						if ($flag != 0) {
+							echo '</optgroup>';
+						}
+						echo "<optgroup label=\"$opgroup\">";
+						$flag = 1;
+					}
+					$sl = ($row['id'] == $placesid) ? 'selected' : '';
+					echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
+					$oldopgroup = $opgroup;
+				}
+			} catch (PDOException $ex) {
+				throw new DBException('Не могу выбрать список помещений!', 0, $ex);
+			}
+			echo '</optgroup>';
+			echo '</select>';
+		} else {
+			echo 'Недостаточно прав';
+		}
+	}
+
+	function getlistgroupname() {
+		$user = User::getInstance();
+		$cfg = Config::getInstance();
+		$orgid = $cfg->defaultorgid;
+		$addnone = GetDef('addnone');
+		if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) {
+			echo '<select name="sgroupname" id="sgroupname">';
+			if ($addnone == 'true') {
+				echo '<option value="-1">не выбрано</option>';
+			}
+			try {
+				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+					case 'mysql':
+						$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY BINARY(name)';
+						break;
+					case 'pgsql':
+						$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
+						break;
+				}
+				$arr = DB::prepare($sql)->execute()->fetchAll();
+				foreach ($arr as $row) {
+					echo "<option value=\"{$row['id']}\">{$row['name']}</option>";
+				}
+			} catch (PDOException $ex) {
+				throw new DBException('Не могу выбрать список групп!', 0, $ex);
+			}
+			echo '</select>';
+		} else {
+			echo 'Недостаточно прав';
 		}
 	}
 

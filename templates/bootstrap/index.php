@@ -176,9 +176,9 @@ $user = User::getInstance();
 		$time = round($time_end - $time_start, 2);
 		?>
 		<footer class="footer">
-			<div class="container">
+			<div class="container-fluid">
 				<p class="text-muted text-right">
-					2011-2017 &copy; <a href="http://грибовы.рф" target="_blank">Павел Грибов</a><br>
+					2011-2017 &copy; <a href="http://xn--90acbu5aj5f.xn--p1ai" target="_blank">Павел Грибов</a><br>
 					2018-<?= date('Y'); ?> &copy; <a href="https://github.com/solodyagin/inventory" target="_blank">Сергей Солодягин</a><br>
 					Собрано за <?= $time; ?> сек.
 				</p>

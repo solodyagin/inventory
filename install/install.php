@@ -15,67 +15,128 @@
 /* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
+//ini_set('error_reporting', E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+
 /* Запускаем установщик при условии, что файл настроек отсутствует */
 if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
 
-include_once(SITE_ROOT . '/inc/functions.php');
+require_once SITE_ROOT . '/inc/functions.php';
 
-$dbhost = PostDef('dbhost');
-$dbname = PostDef('dbname');
-$dbuser = PostDef('dbuser');
-$dbpass = PostDef('dbpass');
-$orgname = PostDef('orgname');
+$dbDriver = filter_input(INPUT_POST, 'dbdriver', FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '/^(mysql|pgsql)$/']]);
+if ($dbDriver === false) {
+	die('Ошибка: неверный параметр dbdriver');
+}
+$dbHost = PostDef('dbhost');
+$dbName = PostDef('dbname');
+$dbUser = PostDef('dbuser');
+$dbPass = PostDef('dbpass');
+$orgName = PostDef('orgname');
 $login = PostDef('login');
 $pass = PostDef('pass');
 
+/* Загружаем скрипт создания таблиц */
+$text = file_get_contents(SITE_ROOT . "/install/$dbDriver.scheme.sql");
+if (!$text) {
+	die("Ошибка открытия файла /install/$dbDriver.scheme.sql");
+}
+
+$opt = [
+	PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+	PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+	PDO::ATTR_EMULATE_PREPARES => true
+];
+
 try {
-	$dbh = new PDO("mysql:host=$dbhost", $dbuser, $dbpass);
-	$dbh->exec("CREATE DATABASE IF NOT EXISTS $dbname")
-			or die('<div class="alert alert-danger">Ошибка создания базы: ' . $dbh->errorInfo() . '</div>');
+	$dbh = new PDO("$dbDriver:host=$dbHost", $dbUser, $dbPass, $opt);
 
-	$opt = [
-		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-		PDO::ATTR_EMULATE_PREPARES => true
-	];
-	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass, $opt);
-
-	$text = file_get_contents(SITE_ROOT . '/install/mysql.scheme.sql');
-	if (!$text) {
-		die('<div class="alert alert-danger">Ошибка открытия файла /install/mysql.scheme.sql</div>');
+	/* Создаём БД */
+	if (/* $dbh->getAttribute(PDO::ATTR_DRIVER_NAME) */$dbDriver == 'mysql') {
+		$dbh->exec("CREATE DATABASE IF NOT EXISTS $dbName") or die('Ошибка создания базы: ' . implode('<br>', $dbh->errorInfo()));
+	} else {
+//		$sql = "SELECT COUNT(*) cnt FROM pg_catalog.pg_database WHERE datname = :name";
+//		$sth = $dbh->prepare($sql);
+//		$sth->execute([':name' => $dbName]);
+//		if ($row = $sth->fetch()) {
+//			if ($row['cnt'] == 0) {
+//				die("База данных '$dbName' не найдена");
+//			}
+//		}
+		/* Подключаем необходимое расширение "pgcrypto" */
+		$sql = "SELECT COUNT(*) cnt FROM pg_available_extensions WHERE name='pgcrypto' AND installed_version IS NOT NULL";
+		$sth = $dbh->prepare($sql);
+		$sth->execute();
+		if ($row = $sth->fetch()) {
+			if ($row['cnt'] == 0) {
+				$dbh->exec('CREATE EXTENSION pgcrypto');
+			}
+		}
+		$dbh->exec("DROP DATABASE IF EXISTS $dbName");
+		$dbh->exec("CREATE DATABASE $dbName");
 	}
 
-	$imported = $dbh->exec($text);
-	if ($imported === false) {
-		die(print_r($dbh->errorInfo(), true));
-	}
+	$dbh = null;
+
+	/* Переподключаемся к СУБД */
+	$dbh = new PDO("$dbDriver:host=$dbHost;dbname=$dbName", $dbUser, $dbPass, $opt);
+} catch (PDOException $ex) {
+	die('Ошибка БД: ' . $ex->getMessage());
+}
+
+try {
+	$dbh->beginTransaction();
+
+//	$imported = $dbh->exec($text);
+//	if ($imported === false) {
+//		die(implode('<br>', $dbh->errorInfo()));
+//	}
+	$dbh->exec($text);
 
 	/* Создаём настройки в БД */
-	$sql = <<<SQL
-INSERT INTO `config` (`ad`, `theme`, `sitename`, `smtpauth`, `sendemail`, `version`)
-VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
-SQL;
-	$dbh->prepare($sql)->execute([
-		':version' => SITE_VERSION
-	]);
+	if ($dbDriver == 'mysql') {
+		$sql = <<<SQL1
+INSERT INTO config (ad, theme, sitename, smtpauth, sendemail, version) VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
+SQL1;
+	} else {
+		$sql = <<<SQL2
+INSERT INTO public.config (ad, theme, sitename, smtpauth, sendemail, version) VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
+SQL2;
+	}
+	$sth = $dbh->prepare($sql);
+	$sth->execute([':version' => SITE_VERSION]);
 
 	/* Создаём организацию */
-	$dbh->prepare('INSERT INTO org (name, active) VALUES (:orgname, 1)')->execute([':orgname' => $orgname]);
+	if ($dbDriver == 'mysql') {
+		$sql = 'INSERT INTO org (name, active) VALUES (:orgname, 1)';
+	} else {
+		$sql = 'INSERT INTO public.org (name, active) VALUES (:orgname, 1)';
+	}
+	$sth = $dbh->prepare($sql);
+	$sth->execute([':orgname' => $orgName]);
 
 	/* Создаём администратора */
 	$salt = generateSalt();
 	$password = sha1(sha1($pass) . $salt);
-	$sql = <<<SQL
-INSERT INTO users (`randomid`, `orgid`, `login`, `password`, `salt`, `email`, `mode`, `lastdt`, `active`)
+	if ($dbDriver == 'mysql') {
+		$sql = <<<SQL3
+INSERT INTO users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
 VALUES (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, NOW(), 1)
 ON DUPLICATE KEY UPDATE
-	`randomid` = :randomid,
-	`password` = :password,
-	`salt` = :salt
-SQL;
-	$dbh->prepare($sql)->execute([
+	randomid = :randomid,
+	password = :password,
+	salt = :salt
+SQL3;
+	} else {
+		$sql = <<<SQL4
+INSERT INTO public.users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
+VALUES (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, NOW(), 1)
+SQL4;
+	}
+	$sth = $dbh->prepare($sql);
+	$sth->execute([
 		':randomid' => GetRandomId(),
 		':login' => $login,
 		':password' => $password,
@@ -83,27 +144,37 @@ SQL;
 	]);
 
 	/* Создаём профиль администратора */
-	$sql = <<<SQL
+	if ($dbDriver == 'mysql') {
+		$sql = <<<SQL5
 INSERT INTO users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
 VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')
-SQL;
+SQL5;
+	} else {
+		$sql = <<<SQL6
+INSERT INTO public.users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
+VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')
+SQL6;
+	}
 	$dbh->exec($sql);
 
+	$dbh->commit();
 } catch (PDOException $ex) {
-	die('<div class="alert alert-danger">Ошибка БД: ' . $ex->getMessage() . '</div>');
+	$dbh->rollBack();
+	die('Ошибка БД: ' . $ex->getMessage());
 }
 
 $data = '<?php
 $debug = false; // Режим отладки
-$mysql_char = "utf8"; // Кодировка базы
-$mysql_host = "' . $dbhost . '"; // Хост БД
-$mysql_user = "' . $dbuser . '"; // Пользователь БД
-$mysql_pass = "' . $dbpass . '"; // Пароль пользователя БД
-$mysql_base = "' . $dbname . '"; // Имя базы
+$db_driver = "' . $dbDriver . '";
+$db_char = "utf8"; // Кодировка базы
+$db_host = "' . $dbHost . '"; // Хост БД
+$db_user = "' . $dbUser . '"; // Пользователь БД
+$db_pass = "' . $dbPass . '"; // Пароль пользователя БД
+$db_base = "' . $dbName . '"; // Имя базы
 $rewrite_base = "/";
 ';
 
 $file = SITE_ROOT . '/app/config.php';
-file_put_contents($file, $data, LOCK_EX) or die('<div class="alert alert-danger">Ошибка записи в файл: /app/config.php</div>');
+file_put_contents($file, $data, LOCK_EX) or die('Ошибка записи в файл: /app/config.php');
 
-echo 'ok';
+exit('ok');

@@ -31,7 +31,7 @@ class Controller_Modules extends Controller {
 	function list() {
 		$user = User::getInstance();
 		/* Проверка: может ли пользователь просматривать? */
-		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
+		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -65,12 +65,14 @@ class Controller_Modules extends Controller {
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-		$sql = <<<TXT
-SELECT	t1.id `id`,
-		SUBSTR(t1.nameparam, 12) AS `name`,
-		t2.valueparam `comment`,
-		t3.valueparam `copy`,
-		t1.valueparam `active`
+		switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			case 'mysql':
+				$sql = <<<TXT
+SELECT	t1.id id,
+		SUBSTR(t1.nameparam, 12) AS name,
+		t2.valueparam AS comment,
+		t3.valueparam AS copy,
+		t1.valueparam AS active
 FROM	config_common t1
 	LEFT JOIN config_common t2
 		ON (SUBSTR(t2.nameparam, 15) = SUBSTR(t1.nameparam, 12) AND
@@ -82,6 +84,24 @@ WHERE	t1.nameparam LIKE "modulename_%"
 ORDER BY $sidx $sord
 LIMIT	:start, :limit
 TXT;
+				break;
+			case 'pgsql':
+				$sql = <<<TXT
+SELECT
+  t1.id id,
+  SUBSTR(t1.nameparam, 12) AS name,
+  t2.valueparam AS comment,
+  t3.valueparam AS copy,
+  t1.valueparam AS active
+FROM config_common t1
+  LEFT JOIN config_common t2 ON (SUBSTR(t2.nameparam, 15) = SUBSTR(t1.nameparam, 12) AND t2.nameparam LIKE 'modulecomment_%')
+  LEFT JOIN config_common t3 ON (SUBSTR(t3.nameparam, 12) = SUBSTR(t1.nameparam, 12) AND t3.nameparam LIKE 'modulecopy_%')
+WHERE t1.nameparam LIKE 'modulename_%'
+ORDER BY $sidx $sord
+OFFSET :start LIMIT :limit
+TXT;
+				break;
+		}
 		try {
 			$stmt = DB::prepare($sql);
 			$stmt->bindValue(':start', (int) $start, PDO::PARAM_INT);
@@ -106,7 +126,7 @@ TXT;
 		switch ($oper) {
 			case 'edit':
 				/* Проверка: может ли пользователь редактировать? */
-				($user->isAdmin() || $user->TestRights([1,5])) or die('Недостаточно прав');
+				($user->isAdmin() || $user->TestRights([1, 5])) or die('Недостаточно прав');
 				$active = PostDef('active');
 				$sql = 'UPDATE config_common SET valueparam = :active WHERE id = :id';
 				try {
@@ -117,7 +137,7 @@ TXT;
 				break;
 			case 'del':
 				/* Проверка: может ли пользователь удалять? */
-				($user->isAdmin() || $user->TestRights([1,6])) or die('Недостаточно прав');
+				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
 				$sql = 'SELECT * FROM config_common WHERE id = :id';
 				try {
 					$row = DB::prepare($sql)->execute([':id' => $id])->fetch();

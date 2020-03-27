@@ -32,7 +32,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 	var $list1 = $('#list1'), $list2 = $('#list2');
 
 	$list1.jqGrid({
-		url: 'route/deprecated/server/users/libre_users.php?org_status=list',
+		url: 'peoples/list',
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'Пароль', 'E-mail', 'Администратор', 'Действия'],
 		colModel: [
@@ -60,7 +60,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 		sortname: 'id',
 		viewrecords: true,
 		sortorder: 'asc',
-		editurl: 'route/deprecated/server/users/libre_users.php?org_status=edit',
+		editurl: 'peoples/change',
 		caption: 'Справочник сотрудников',
 		loadComplete: function () {
 			$list2.jqGrid('setCaption', 'Набор прав сотрудника');
@@ -158,7 +158,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 	$list2.jqGrid({
 		autowidth: true,
-		url: 'route/deprecated/server/users/usersroles.php?userid=',
+		url: 'route/deprecated/server/users/usersroles.php?userid=0',
 		datatype: 'json',
 		colNames: ['Id', 'Право', 'Действия'],
 		colModel: [

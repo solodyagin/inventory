@@ -95,6 +95,7 @@ TEXT;
 Uncaught exception: "$class" with message "$message"
 Stack trace: {$exception->getTraceAsString()}
 Thrown in "{$exception->getFile()}" on line {$exception->getLine()}
+--
 TEXT;
 		error_log($log);
 	}
