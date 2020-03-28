@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Org {
@@ -23,14 +23,13 @@ class Org {
 	var $active; // 1 - активна, 0 - помечена на удаление
 
 	/**
-	 * Получить данные о пользователе по идентификатору
+	 * Получить данные об организации по идентификатору
 	 * @param type $id
 	 */
-
 	function GetById($id) {
 		$sql = 'SELECT * FROM org WHERE id = :id';
 		try {
-			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
 				$this->id = $row['sid'];
 				$this->name = $row['name'];

@@ -21,7 +21,7 @@ class Controller_Vendors extends Controller {
 		$user = User::getInstance();
 		$cfg = Config::getInstance();
 		$data['section'] = 'Справочники / Производители';
-		if ($user->isAdmin() || $user->TestRights([1,3,4,5,6])) {
+		if ($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) {
 			$this->view->generate('vendors/index', $cfg->theme, $data);
 		} else {
 			$this->view->generate('restricted', $cfg->theme, $data);

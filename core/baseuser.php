@@ -81,10 +81,10 @@ class BaseUser {
 	function Update() {
 		try {
 			$sql = <<<TXT
-UPDATE	users
-SET		orgid = :orgid, login = :login, password = :password, salt = :salt,
-		email = :email, mode = :mode, active = :active
-WHERE	id = :id
+UPDATE users
+SET orgid = :orgid, login = :login, password = :password, salt = :salt,
+  email = :email, mode = :mode, active = :active
+WHERE id = :id
 TXT;
 			DB::prepare($sql)->execute([
 				':orgid' => $this->orgid,
@@ -100,16 +100,33 @@ TXT;
 			throw new DBException('Ошибка выполнения User.Update (1)', 0, $ex);
 		}
 		try {
-			$sql = <<<TXT
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<TXT
 INSERT INTO users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
 VALUES (:usersid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
 ON DUPLICATE KEY UPDATE
-	fio = :fio,
-	telephonenumber = :telephonenumber,
-	homephone = :homephone,
-	jpegphoto = :jpegphoto,
-	post = :post
+  fio = :fio,
+  telephonenumber = :telephonenumber,
+  homephone = :homephone,
+  jpegphoto = :jpegphoto,
+  post = :post
 TXT;
+					break;
+				case 'pgsql':
+					$sql = <<<TXT
+INSERT INTO users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
+VALUES (:usersid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
+ON CONFLICT(usersid) DO UPDATE SET
+  fio = :fio,
+  telephonenumber = :telephonenumber,
+  homephone = :homephone,
+  jpegphoto = :jpegphoto,
+  post = :post
+TXT;
+					break;
+			}
+
 			DB::prepare($sql)->execute([
 				':usersid' => $this->id,
 				':fio' => $this->fio,
@@ -132,13 +149,12 @@ TXT;
 	function select($where, $params) {
 		try {
 			$sql = <<<SQL
-SELECT	p.*,
-		u.*,
-		u.id sid
-FROM	users u
-	LEFT JOIN users_profile p
-		ON p.usersid = u.id
-WHERE	{$where}
+SELECT p.*,
+  u.*,
+  u.id sid
+FROM users u
+  LEFT JOIN users_profile p ON p.usersid = u.id
+WHERE $where
 SQL;
 			$row = DB::prepare($sql)->execute($params)->fetch();
 			if ($row) {
@@ -239,9 +255,8 @@ SQL;
 		$this->email = $email;
 		$this->mode = $mode;
 		$sql = <<<TXT
-INSERT INTO users
-		(randomid, orgid, login, password, salt, email, mode, lastdt, active)
-VALUES	(:randomid, :orgid, :login, :password, :salt, :email, :mode, NOW(), 1)
+INSERT INTO users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
+VALUES (:randomid, :orgid, :login, :password, :salt, :email, :mode, NOW(), 1)
 TXT;
 		try {
 			DB::prepare($sql)->execute([
@@ -262,9 +277,8 @@ TXT;
 		if ($zx->getByRandomIdNoProfile($this->randomid)) {
 			// добавляю профиль
 			$sql = <<<TXT
-INSERT INTO users_profile
-		(usersid, fio, telephonenumber, homephone, jpegphoto, post)
-VALUES	(:userid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
+INSERT INTO users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
+VALUES (:userid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
 TXT;
 			try {
 				DB::prepare($sql)->execute([

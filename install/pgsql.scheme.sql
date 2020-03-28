@@ -5,7 +5,7 @@
 -- Dumped from database version 10.12
 -- Dumped by pg_dump version 11.2
 
--- Started on 2020-03-26 13:18:31
+-- Started on 2020-03-27 22:58:05
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,6 +19,7 @@ SET row_security = off;
 
 ALTER TABLE IF EXISTS ONLY public.vendor DROP CONSTRAINT IF EXISTS vendor_pkey;
 ALTER TABLE IF EXISTS ONLY public.usersroles DROP CONSTRAINT IF EXISTS usersroles_pkey;
+ALTER TABLE IF EXISTS ONLY public.users_profile DROP CONSTRAINT IF EXISTS users_profile_usersid_key;
 ALTER TABLE IF EXISTS ONLY public.users_profile DROP CONSTRAINT IF EXISTS users_profile_pkey;
 ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pkey;
 ALTER TABLE IF EXISTS ONLY public.repair DROP CONSTRAINT IF EXISTS repair_pkey;
@@ -41,26 +42,15 @@ ALTER TABLE IF EXISTS ONLY public.config_common DROP CONSTRAINT IF EXISTS config
 ALTER TABLE IF EXISTS ONLY public.cloud_files DROP CONSTRAINT IF EXISTS cloud_files_pkey;
 ALTER TABLE IF EXISTS ONLY public.cloud_dirs DROP CONSTRAINT IF EXISTS cloud_dirs_pkey;
 ALTER TABLE IF EXISTS public.vendor ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.usersroles ALTER COLUMN userid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.usersroles ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.users_profile ALTER COLUMN usersid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.users_profile ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.users ALTER COLUMN orgid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.users ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.repair ALTER COLUMN eqid DROP DEFAULT;
-ALTER TABLE IF EXISTS public.repair ALTER COLUMN kntid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.repair ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.places_users ALTER COLUMN userid DROP DEFAULT;
-ALTER TABLE IF EXISTS public.places_users ALTER COLUMN placesid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.places_users ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.places ALTER COLUMN orgid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.places ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.org ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.nome ALTER COLUMN vendorid DROP DEFAULT;
-ALTER TABLE IF EXISTS public.nome ALTER COLUMN groupid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.nome ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.news ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.move ALTER COLUMN eqid DROP DEFAULT;
 ALTER TABLE IF EXISTS public.move ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.mailq ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.knt ALTER COLUMN id DROP DEFAULT;
@@ -76,36 +66,25 @@ ALTER TABLE IF EXISTS public.cloud_files ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.cloud_dirs ALTER COLUMN id DROP DEFAULT;
 DROP SEQUENCE IF EXISTS public.vendor_id_seq;
 DROP TABLE IF EXISTS public.vendor;
-DROP SEQUENCE IF EXISTS public.usersroles_userid_seq;
 DROP SEQUENCE IF EXISTS public.usersroles_id_seq;
 DROP TABLE IF EXISTS public.usersroles;
-DROP SEQUENCE IF EXISTS public.users_profile_usersid_seq;
 DROP SEQUENCE IF EXISTS public.users_profile_id_seq;
 DROP TABLE IF EXISTS public.users_profile;
-DROP SEQUENCE IF EXISTS public.users_orgid_seq;
 DROP SEQUENCE IF EXISTS public.users_id_seq;
 DROP TABLE IF EXISTS public.users;
-DROP SEQUENCE IF EXISTS public.repair_kntid_seq;
 DROP SEQUENCE IF EXISTS public.repair_id_seq;
-DROP SEQUENCE IF EXISTS public.repair_eqid_seq;
 DROP TABLE IF EXISTS public.repair;
-DROP SEQUENCE IF EXISTS public.places_users_userid_seq;
-DROP SEQUENCE IF EXISTS public.places_users_placesid_seq;
 DROP SEQUENCE IF EXISTS public.places_users_id_seq;
 DROP TABLE IF EXISTS public.places_users;
-DROP SEQUENCE IF EXISTS public.places_orgid_seq;
 DROP SEQUENCE IF EXISTS public.places_id_seq;
 DROP TABLE IF EXISTS public.places;
 DROP SEQUENCE IF EXISTS public.org_id_seq;
 DROP TABLE IF EXISTS public.org;
-DROP SEQUENCE IF EXISTS public.nome_vendorid_seq;
 DROP SEQUENCE IF EXISTS public.nome_id_seq;
-DROP SEQUENCE IF EXISTS public.nome_groupid_seq;
 DROP TABLE IF EXISTS public.nome;
 DROP SEQUENCE IF EXISTS public.news_id_seq;
 DROP TABLE IF EXISTS public.news;
 DROP SEQUENCE IF EXISTS public.move_id_seq;
-DROP SEQUENCE IF EXISTS public.move_eqid_seq;
 DROP TABLE IF EXISTS public.move;
 DROP SEQUENCE IF EXISTS public.mailq_id_seq;
 DROP TABLE IF EXISTS public.mailq;
@@ -133,9 +112,11 @@ DROP SEQUENCE IF EXISTS public.cloud_dirs_id_seq;
 DROP TABLE IF EXISTS public.cloud_dirs;
 DROP FUNCTION IF EXISTS public.sha1(text);
 DROP FUNCTION IF EXISTS public.sha1(bytea);
+DROP FUNCTION IF EXISTS public.digest(text, text);
+DROP FUNCTION IF EXISTS public.digest(bytea, text);
 DROP SCHEMA IF EXISTS public;
 --
--- TOC entry 4 (class 2615 OID 2200)
+-- TOC entry 3 (class 2615 OID 2200)
 -- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
 
@@ -143,8 +124,8 @@ CREATE SCHEMA public;
 
 
 --
--- TOC entry 3143 (class 0 OID 0)
--- Dependencies: 4
+-- TOC entry 3066 (class 0 OID 0)
+-- Dependencies: 3
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
 --
 
@@ -152,27 +133,47 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
--- TOC entry 303 (class 1255 OID 24625857)
+-- TOC entry 243 (class 1255 OID 24627128)
+-- Name: digest(bytea, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.digest(bytea, text) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT PARALLEL SAFE
+    AS '$libdir/pgcrypto', 'pg_digest';
+
+
+--
+-- TOC entry 242 (class 1255 OID 24627127)
+-- Name: digest(text, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.digest(text, text) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT PARALLEL SAFE
+    AS '$libdir/pgcrypto', 'pg_digest';
+
+
+--
+-- TOC entry 245 (class 1255 OID 24627130)
 -- Name: sha1(bytea); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.sha1(bytea) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-SELECT encode(digest($1, 'sha1'), 'hex')
-$_$;
+		select encode(digest($1, 'sha1'), 'hex')
+	$_$;
 
 
 --
--- TOC entry 302 (class 1255 OID 24625856)
+-- TOC entry 244 (class 1255 OID 24627129)
 -- Name: sha1(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.sha1(text) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-SELECT encode(digest($1, 'sha1'), 'hex')
-$_$;
+		select encode(digest($1, 'sha1'), 'hex')
+	$_$;
 
 
 SET default_tablespace = '';
@@ -180,7 +181,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 198 (class 1259 OID 24625602)
+-- TOC entry 197 (class 1259 OID 24626904)
 -- Name: cloud_dirs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -192,7 +193,7 @@ CREATE TABLE public.cloud_dirs (
 
 
 --
--- TOC entry 197 (class 1259 OID 24625600)
+-- TOC entry 196 (class 1259 OID 24626902)
 -- Name: cloud_dirs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -206,8 +207,8 @@ CREATE SEQUENCE public.cloud_dirs_id_seq
 
 
 --
--- TOC entry 3144 (class 0 OID 0)
--- Dependencies: 197
+-- TOC entry 3067 (class 0 OID 0)
+-- Dependencies: 196
 -- Name: cloud_dirs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -215,7 +216,7 @@ ALTER SEQUENCE public.cloud_dirs_id_seq OWNED BY public.cloud_dirs.id;
 
 
 --
--- TOC entry 200 (class 1259 OID 24625610)
+-- TOC entry 199 (class 1259 OID 24626912)
 -- Name: cloud_files; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -230,7 +231,7 @@ CREATE TABLE public.cloud_files (
 
 
 --
--- TOC entry 199 (class 1259 OID 24625608)
+-- TOC entry 198 (class 1259 OID 24626910)
 -- Name: cloud_files_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -244,8 +245,8 @@ CREATE SEQUENCE public.cloud_files_id_seq
 
 
 --
--- TOC entry 3145 (class 0 OID 0)
--- Dependencies: 199
+-- TOC entry 3068 (class 0 OID 0)
+-- Dependencies: 198
 -- Name: cloud_files_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -253,7 +254,7 @@ ALTER SEQUENCE public.cloud_files_id_seq OWNED BY public.cloud_files.id;
 
 
 --
--- TOC entry 202 (class 1259 OID 24625618)
+-- TOC entry 201 (class 1259 OID 24626920)
 -- Name: config; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -279,7 +280,7 @@ CREATE TABLE public.config (
 
 
 --
--- TOC entry 204 (class 1259 OID 24625632)
+-- TOC entry 203 (class 1259 OID 24626934)
 -- Name: config_common; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -291,7 +292,7 @@ CREATE TABLE public.config_common (
 
 
 --
--- TOC entry 203 (class 1259 OID 24625630)
+-- TOC entry 202 (class 1259 OID 24626932)
 -- Name: config_common_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -305,8 +306,8 @@ CREATE SEQUENCE public.config_common_id_seq
 
 
 --
--- TOC entry 3146 (class 0 OID 0)
--- Dependencies: 203
+-- TOC entry 3069 (class 0 OID 0)
+-- Dependencies: 202
 -- Name: config_common_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -314,7 +315,7 @@ ALTER SEQUENCE public.config_common_id_seq OWNED BY public.config_common.id;
 
 
 --
--- TOC entry 201 (class 1259 OID 24625616)
+-- TOC entry 200 (class 1259 OID 24626918)
 -- Name: config_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -328,8 +329,8 @@ CREATE SEQUENCE public.config_id_seq
 
 
 --
--- TOC entry 3147 (class 0 OID 0)
--- Dependencies: 201
+-- TOC entry 3070 (class 0 OID 0)
+-- Dependencies: 200
 -- Name: config_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -337,7 +338,7 @@ ALTER SEQUENCE public.config_id_seq OWNED BY public.config.id;
 
 
 --
--- TOC entry 206 (class 1259 OID 24625640)
+-- TOC entry 205 (class 1259 OID 24626942)
 -- Name: contract; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -355,7 +356,7 @@ CREATE TABLE public.contract (
 
 
 --
--- TOC entry 205 (class 1259 OID 24625638)
+-- TOC entry 204 (class 1259 OID 24626940)
 -- Name: contract_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -369,8 +370,8 @@ CREATE SEQUENCE public.contract_id_seq
 
 
 --
--- TOC entry 3148 (class 0 OID 0)
--- Dependencies: 205
+-- TOC entry 3071 (class 0 OID 0)
+-- Dependencies: 204
 -- Name: contract_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -378,7 +379,7 @@ ALTER SEQUENCE public.contract_id_seq OWNED BY public.contract.id;
 
 
 --
--- TOC entry 210 (class 1259 OID 24625664)
+-- TOC entry 209 (class 1259 OID 24626966)
 -- Name: eq_param; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -392,7 +393,7 @@ CREATE TABLE public.eq_param (
 
 
 --
--- TOC entry 209 (class 1259 OID 24625662)
+-- TOC entry 208 (class 1259 OID 24626964)
 -- Name: eq_param_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -406,8 +407,8 @@ CREATE SEQUENCE public.eq_param_id_seq
 
 
 --
--- TOC entry 3149 (class 0 OID 0)
--- Dependencies: 209
+-- TOC entry 3072 (class 0 OID 0)
+-- Dependencies: 208
 -- Name: eq_param_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -415,7 +416,7 @@ ALTER SEQUENCE public.eq_param_id_seq OWNED BY public.eq_param.id;
 
 
 --
--- TOC entry 208 (class 1259 OID 24625651)
+-- TOC entry 207 (class 1259 OID 24626953)
 -- Name: equipment; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -450,7 +451,7 @@ CREATE TABLE public.equipment (
 
 
 --
--- TOC entry 207 (class 1259 OID 24625649)
+-- TOC entry 206 (class 1259 OID 24626951)
 -- Name: equipment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -464,8 +465,8 @@ CREATE SEQUENCE public.equipment_id_seq
 
 
 --
--- TOC entry 3150 (class 0 OID 0)
--- Dependencies: 207
+-- TOC entry 3073 (class 0 OID 0)
+-- Dependencies: 206
 -- Name: equipment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -473,7 +474,7 @@ ALTER SEQUENCE public.equipment_id_seq OWNED BY public.equipment.id;
 
 
 --
--- TOC entry 212 (class 1259 OID 24625672)
+-- TOC entry 211 (class 1259 OID 24626974)
 -- Name: files_contract; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -486,7 +487,7 @@ CREATE TABLE public.files_contract (
 
 
 --
--- TOC entry 211 (class 1259 OID 24625670)
+-- TOC entry 210 (class 1259 OID 24626972)
 -- Name: files_contract_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -500,8 +501,8 @@ CREATE SEQUENCE public.files_contract_id_seq
 
 
 --
--- TOC entry 3151 (class 0 OID 0)
--- Dependencies: 211
+-- TOC entry 3074 (class 0 OID 0)
+-- Dependencies: 210
 -- Name: files_contract_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -509,7 +510,7 @@ ALTER SEQUENCE public.files_contract_id_seq OWNED BY public.files_contract.id;
 
 
 --
--- TOC entry 214 (class 1259 OID 24625680)
+-- TOC entry 213 (class 1259 OID 24626982)
 -- Name: group_nome; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -522,7 +523,7 @@ CREATE TABLE public.group_nome (
 
 
 --
--- TOC entry 213 (class 1259 OID 24625678)
+-- TOC entry 212 (class 1259 OID 24626980)
 -- Name: group_nome_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -536,8 +537,8 @@ CREATE SEQUENCE public.group_nome_id_seq
 
 
 --
--- TOC entry 3152 (class 0 OID 0)
--- Dependencies: 213
+-- TOC entry 3075 (class 0 OID 0)
+-- Dependencies: 212
 -- Name: group_nome_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -545,7 +546,7 @@ ALTER SEQUENCE public.group_nome_id_seq OWNED BY public.group_nome.id;
 
 
 --
--- TOC entry 216 (class 1259 OID 24625691)
+-- TOC entry 215 (class 1259 OID 24626993)
 -- Name: group_param; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -558,7 +559,7 @@ CREATE TABLE public.group_param (
 
 
 --
--- TOC entry 215 (class 1259 OID 24625689)
+-- TOC entry 214 (class 1259 OID 24626991)
 -- Name: group_param_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -572,8 +573,8 @@ CREATE SEQUENCE public.group_param_id_seq
 
 
 --
--- TOC entry 3153 (class 0 OID 0)
--- Dependencies: 215
+-- TOC entry 3076 (class 0 OID 0)
+-- Dependencies: 214
 -- Name: group_param_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -581,7 +582,7 @@ ALTER SEQUENCE public.group_param_id_seq OWNED BY public.group_param.id;
 
 
 --
--- TOC entry 218 (class 1259 OID 24625699)
+-- TOC entry 217 (class 1259 OID 24627001)
 -- Name: knt; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -601,7 +602,7 @@ CREATE TABLE public.knt (
 
 
 --
--- TOC entry 217 (class 1259 OID 24625697)
+-- TOC entry 216 (class 1259 OID 24626999)
 -- Name: knt_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -615,8 +616,8 @@ CREATE SEQUENCE public.knt_id_seq
 
 
 --
--- TOC entry 3154 (class 0 OID 0)
--- Dependencies: 217
+-- TOC entry 3077 (class 0 OID 0)
+-- Dependencies: 216
 -- Name: knt_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -624,7 +625,7 @@ ALTER SEQUENCE public.knt_id_seq OWNED BY public.knt.id;
 
 
 --
--- TOC entry 220 (class 1259 OID 24625710)
+-- TOC entry 219 (class 1259 OID 24627012)
 -- Name: mailq; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -638,7 +639,7 @@ CREATE TABLE public.mailq (
 
 
 --
--- TOC entry 219 (class 1259 OID 24625708)
+-- TOC entry 218 (class 1259 OID 24627010)
 -- Name: mailq_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -652,8 +653,8 @@ CREATE SEQUENCE public.mailq_id_seq
 
 
 --
--- TOC entry 3155 (class 0 OID 0)
--- Dependencies: 219
+-- TOC entry 3078 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: mailq_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -661,7 +662,7 @@ ALTER SEQUENCE public.mailq_id_seq OWNED BY public.mailq.id;
 
 
 --
--- TOC entry 223 (class 1259 OID 24625723)
+-- TOC entry 221 (class 1259 OID 24627023)
 -- Name: move; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -680,30 +681,7 @@ CREATE TABLE public.move (
 
 
 --
--- TOC entry 222 (class 1259 OID 24625721)
--- Name: move_eqid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.move_eqid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3156 (class 0 OID 0)
--- Dependencies: 222
--- Name: move_eqid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.move_eqid_seq OWNED BY public.move.eqid;
-
-
---
--- TOC entry 221 (class 1259 OID 24625719)
+-- TOC entry 220 (class 1259 OID 24627021)
 -- Name: move_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -717,8 +695,8 @@ CREATE SEQUENCE public.move_id_seq
 
 
 --
--- TOC entry 3157 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3079 (class 0 OID 0)
+-- Dependencies: 220
 -- Name: move_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -726,7 +704,7 @@ ALTER SEQUENCE public.move_id_seq OWNED BY public.move.id;
 
 
 --
--- TOC entry 225 (class 1259 OID 24625735)
+-- TOC entry 223 (class 1259 OID 24627034)
 -- Name: news; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -740,7 +718,7 @@ CREATE TABLE public.news (
 
 
 --
--- TOC entry 224 (class 1259 OID 24625733)
+-- TOC entry 222 (class 1259 OID 24627032)
 -- Name: news_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -754,8 +732,8 @@ CREATE SEQUENCE public.news_id_seq
 
 
 --
--- TOC entry 3158 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3080 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: news_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -763,7 +741,7 @@ ALTER SEQUENCE public.news_id_seq OWNED BY public.news.id;
 
 
 --
--- TOC entry 229 (class 1259 OID 24625751)
+-- TOC entry 225 (class 1259 OID 24627046)
 -- Name: nome; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -777,30 +755,7 @@ CREATE TABLE public.nome (
 
 
 --
--- TOC entry 227 (class 1259 OID 24625747)
--- Name: nome_groupid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.nome_groupid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3159 (class 0 OID 0)
--- Dependencies: 227
--- Name: nome_groupid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.nome_groupid_seq OWNED BY public.nome.groupid;
-
-
---
--- TOC entry 226 (class 1259 OID 24625745)
+-- TOC entry 224 (class 1259 OID 24627044)
 -- Name: nome_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -814,8 +769,8 @@ CREATE SEQUENCE public.nome_id_seq
 
 
 --
--- TOC entry 3160 (class 0 OID 0)
--- Dependencies: 226
+-- TOC entry 3081 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: nome_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -823,30 +778,7 @@ ALTER SEQUENCE public.nome_id_seq OWNED BY public.nome.id;
 
 
 --
--- TOC entry 228 (class 1259 OID 24625749)
--- Name: nome_vendorid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.nome_vendorid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3161 (class 0 OID 0)
--- Dependencies: 228
--- Name: nome_vendorid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.nome_vendorid_seq OWNED BY public.nome.vendorid;
-
-
---
--- TOC entry 231 (class 1259 OID 24625761)
+-- TOC entry 227 (class 1259 OID 24627054)
 -- Name: org; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -859,7 +791,7 @@ CREATE TABLE public.org (
 
 
 --
--- TOC entry 230 (class 1259 OID 24625759)
+-- TOC entry 226 (class 1259 OID 24627052)
 -- Name: org_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -873,8 +805,8 @@ CREATE SEQUENCE public.org_id_seq
 
 
 --
--- TOC entry 3162 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 3082 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: org_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -882,7 +814,7 @@ ALTER SEQUENCE public.org_id_seq OWNED BY public.org.id;
 
 
 --
--- TOC entry 234 (class 1259 OID 24625771)
+-- TOC entry 229 (class 1259 OID 24627062)
 -- Name: places; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -897,7 +829,7 @@ CREATE TABLE public.places (
 
 
 --
--- TOC entry 232 (class 1259 OID 24625767)
+-- TOC entry 228 (class 1259 OID 24627060)
 -- Name: places_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -911,8 +843,8 @@ CREATE SEQUENCE public.places_id_seq
 
 
 --
--- TOC entry 3163 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3083 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: places_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -920,30 +852,7 @@ ALTER SEQUENCE public.places_id_seq OWNED BY public.places.id;
 
 
 --
--- TOC entry 233 (class 1259 OID 24625769)
--- Name: places_orgid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.places_orgid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3164 (class 0 OID 0)
--- Dependencies: 233
--- Name: places_orgid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.places_orgid_seq OWNED BY public.places.orgid;
-
-
---
--- TOC entry 238 (class 1259 OID 24625787)
+-- TOC entry 231 (class 1259 OID 24627073)
 -- Name: places_users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -955,7 +864,7 @@ CREATE TABLE public.places_users (
 
 
 --
--- TOC entry 235 (class 1259 OID 24625781)
+-- TOC entry 230 (class 1259 OID 24627071)
 -- Name: places_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -969,8 +878,8 @@ CREATE SEQUENCE public.places_users_id_seq
 
 
 --
--- TOC entry 3165 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 3084 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: places_users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -978,53 +887,7 @@ ALTER SEQUENCE public.places_users_id_seq OWNED BY public.places_users.id;
 
 
 --
--- TOC entry 236 (class 1259 OID 24625783)
--- Name: places_users_placesid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.places_users_placesid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3166 (class 0 OID 0)
--- Dependencies: 236
--- Name: places_users_placesid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.places_users_placesid_seq OWNED BY public.places_users.placesid;
-
-
---
--- TOC entry 237 (class 1259 OID 24625785)
--- Name: places_users_userid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.places_users_userid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3167 (class 0 OID 0)
--- Dependencies: 237
--- Name: places_users_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.places_users_userid_seq OWNED BY public.places_users.userid;
-
-
---
--- TOC entry 242 (class 1259 OID 24625801)
+-- TOC entry 233 (class 1259 OID 24627081)
 -- Name: repair; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1044,30 +907,7 @@ CREATE TABLE public.repair (
 
 
 --
--- TOC entry 241 (class 1259 OID 24625799)
--- Name: repair_eqid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.repair_eqid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3168 (class 0 OID 0)
--- Dependencies: 241
--- Name: repair_eqid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.repair_eqid_seq OWNED BY public.repair.eqid;
-
-
---
--- TOC entry 239 (class 1259 OID 24625795)
+-- TOC entry 232 (class 1259 OID 24627079)
 -- Name: repair_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1081,8 +921,8 @@ CREATE SEQUENCE public.repair_id_seq
 
 
 --
--- TOC entry 3169 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3085 (class 0 OID 0)
+-- Dependencies: 232
 -- Name: repair_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -1090,30 +930,7 @@ ALTER SEQUENCE public.repair_id_seq OWNED BY public.repair.id;
 
 
 --
--- TOC entry 240 (class 1259 OID 24625797)
--- Name: repair_kntid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.repair_kntid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3170 (class 0 OID 0)
--- Dependencies: 240
--- Name: repair_kntid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.repair_kntid_seq OWNED BY public.repair.kntid;
-
-
---
--- TOC entry 245 (class 1259 OID 24625816)
+-- TOC entry 235 (class 1259 OID 24627092)
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1132,7 +949,7 @@ CREATE TABLE public.users (
 
 
 --
--- TOC entry 243 (class 1259 OID 24625812)
+-- TOC entry 234 (class 1259 OID 24627090)
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1146,8 +963,8 @@ CREATE SEQUENCE public.users_id_seq
 
 
 --
--- TOC entry 3171 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 3086 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -1155,36 +972,13 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- TOC entry 244 (class 1259 OID 24625814)
--- Name: users_orgid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.users_orgid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3172 (class 0 OID 0)
--- Dependencies: 244
--- Name: users_orgid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.users_orgid_seq OWNED BY public.users.orgid;
-
-
---
--- TOC entry 251 (class 1259 OID 24625838)
+-- TOC entry 239 (class 1259 OID 24627108)
 -- Name: users_profile; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users_profile (
     id integer NOT NULL,
-    usersid integer NOT NULL,
+    usersid integer,
     fio character varying(100) NOT NULL,
     post character varying(255) NOT NULL,
     telephonenumber character varying(20) NOT NULL,
@@ -1194,7 +988,7 @@ CREATE TABLE public.users_profile (
 
 
 --
--- TOC entry 249 (class 1259 OID 24625834)
+-- TOC entry 238 (class 1259 OID 24627106)
 -- Name: users_profile_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1208,8 +1002,8 @@ CREATE SEQUENCE public.users_profile_id_seq
 
 
 --
--- TOC entry 3173 (class 0 OID 0)
--- Dependencies: 249
+-- TOC entry 3087 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: users_profile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -1217,30 +1011,7 @@ ALTER SEQUENCE public.users_profile_id_seq OWNED BY public.users_profile.id;
 
 
 --
--- TOC entry 250 (class 1259 OID 24625836)
--- Name: users_profile_usersid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.users_profile_usersid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3174 (class 0 OID 0)
--- Dependencies: 250
--- Name: users_profile_usersid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.users_profile_usersid_seq OWNED BY public.users_profile.usersid;
-
-
---
--- TOC entry 248 (class 1259 OID 24625827)
+-- TOC entry 237 (class 1259 OID 24627100)
 -- Name: usersroles; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1252,7 +1023,7 @@ CREATE TABLE public.usersroles (
 
 
 --
--- TOC entry 246 (class 1259 OID 24625823)
+-- TOC entry 236 (class 1259 OID 24627098)
 -- Name: usersroles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1266,8 +1037,8 @@ CREATE SEQUENCE public.usersroles_id_seq
 
 
 --
--- TOC entry 3175 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 3088 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: usersroles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -1275,30 +1046,7 @@ ALTER SEQUENCE public.usersroles_id_seq OWNED BY public.usersroles.id;
 
 
 --
--- TOC entry 247 (class 1259 OID 24625825)
--- Name: usersroles_userid_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.usersroles_userid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- TOC entry 3176 (class 0 OID 0)
--- Dependencies: 247
--- Name: usersroles_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.usersroles_userid_seq OWNED BY public.usersroles.userid;
-
-
---
--- TOC entry 253 (class 1259 OID 24625847)
+-- TOC entry 241 (class 1259 OID 24627118)
 -- Name: vendor; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1311,7 +1059,7 @@ CREATE TABLE public.vendor (
 
 
 --
--- TOC entry 252 (class 1259 OID 24625845)
+-- TOC entry 240 (class 1259 OID 24627116)
 -- Name: vendor_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1325,8 +1073,8 @@ CREATE SEQUENCE public.vendor_id_seq
 
 
 --
--- TOC entry 3177 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 3089 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: vendor_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -1334,7 +1082,7 @@ ALTER SEQUENCE public.vendor_id_seq OWNED BY public.vendor.id;
 
 
 --
--- TOC entry 2874 (class 2604 OID 24625605)
+-- TOC entry 2817 (class 2604 OID 24626907)
 -- Name: cloud_dirs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1342,7 +1090,7 @@ ALTER TABLE ONLY public.cloud_dirs ALTER COLUMN id SET DEFAULT nextval('public.c
 
 
 --
--- TOC entry 2875 (class 2604 OID 24625613)
+-- TOC entry 2818 (class 2604 OID 24626915)
 -- Name: cloud_files id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1350,7 +1098,7 @@ ALTER TABLE ONLY public.cloud_files ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 2876 (class 2604 OID 24625621)
+-- TOC entry 2819 (class 2604 OID 24626923)
 -- Name: config id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1358,7 +1106,7 @@ ALTER TABLE ONLY public.config ALTER COLUMN id SET DEFAULT nextval('public.confi
 
 
 --
--- TOC entry 2880 (class 2604 OID 24625635)
+-- TOC entry 2823 (class 2604 OID 24626937)
 -- Name: config_common id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1366,7 +1114,7 @@ ALTER TABLE ONLY public.config_common ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 2881 (class 2604 OID 24625643)
+-- TOC entry 2824 (class 2604 OID 24626945)
 -- Name: contract id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1374,7 +1122,7 @@ ALTER TABLE ONLY public.contract ALTER COLUMN id SET DEFAULT nextval('public.con
 
 
 --
--- TOC entry 2885 (class 2604 OID 24625667)
+-- TOC entry 2828 (class 2604 OID 24626969)
 -- Name: eq_param id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1382,7 +1130,7 @@ ALTER TABLE ONLY public.eq_param ALTER COLUMN id SET DEFAULT nextval('public.eq_
 
 
 --
--- TOC entry 2882 (class 2604 OID 24625654)
+-- TOC entry 2825 (class 2604 OID 24626956)
 -- Name: equipment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1390,7 +1138,7 @@ ALTER TABLE ONLY public.equipment ALTER COLUMN id SET DEFAULT nextval('public.eq
 
 
 --
--- TOC entry 2886 (class 2604 OID 24625675)
+-- TOC entry 2829 (class 2604 OID 24626977)
 -- Name: files_contract id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1398,7 +1146,7 @@ ALTER TABLE ONLY public.files_contract ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 2887 (class 2604 OID 24625683)
+-- TOC entry 2830 (class 2604 OID 24626985)
 -- Name: group_nome id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1406,7 +1154,7 @@ ALTER TABLE ONLY public.group_nome ALTER COLUMN id SET DEFAULT nextval('public.g
 
 
 --
--- TOC entry 2888 (class 2604 OID 24625694)
+-- TOC entry 2831 (class 2604 OID 24626996)
 -- Name: group_param id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1414,7 +1162,7 @@ ALTER TABLE ONLY public.group_param ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 2889 (class 2604 OID 24625702)
+-- TOC entry 2832 (class 2604 OID 24627004)
 -- Name: knt id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1422,7 +1170,7 @@ ALTER TABLE ONLY public.knt ALTER COLUMN id SET DEFAULT nextval('public.knt_id_s
 
 
 --
--- TOC entry 2890 (class 2604 OID 24625713)
+-- TOC entry 2833 (class 2604 OID 24627015)
 -- Name: mailq id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1430,7 +1178,7 @@ ALTER TABLE ONLY public.mailq ALTER COLUMN id SET DEFAULT nextval('public.mailq_
 
 
 --
--- TOC entry 2891 (class 2604 OID 24625726)
+-- TOC entry 2834 (class 2604 OID 24627026)
 -- Name: move id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1438,15 +1186,7 @@ ALTER TABLE ONLY public.move ALTER COLUMN id SET DEFAULT nextval('public.move_id
 
 
 --
--- TOC entry 2892 (class 2604 OID 24625727)
--- Name: move eqid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.move ALTER COLUMN eqid SET DEFAULT nextval('public.move_eqid_seq'::regclass);
-
-
---
--- TOC entry 2893 (class 2604 OID 24625738)
+-- TOC entry 2835 (class 2604 OID 24627037)
 -- Name: news id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1454,7 +1194,7 @@ ALTER TABLE ONLY public.news ALTER COLUMN id SET DEFAULT nextval('public.news_id
 
 
 --
--- TOC entry 2895 (class 2604 OID 24625754)
+-- TOC entry 2837 (class 2604 OID 24627049)
 -- Name: nome id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1462,23 +1202,7 @@ ALTER TABLE ONLY public.nome ALTER COLUMN id SET DEFAULT nextval('public.nome_id
 
 
 --
--- TOC entry 2896 (class 2604 OID 24625755)
--- Name: nome groupid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nome ALTER COLUMN groupid SET DEFAULT nextval('public.nome_groupid_seq'::regclass);
-
-
---
--- TOC entry 2897 (class 2604 OID 24625756)
--- Name: nome vendorid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nome ALTER COLUMN vendorid SET DEFAULT nextval('public.nome_vendorid_seq'::regclass);
-
-
---
--- TOC entry 2898 (class 2604 OID 24625764)
+-- TOC entry 2838 (class 2604 OID 24627057)
 -- Name: org id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1486,7 +1210,7 @@ ALTER TABLE ONLY public.org ALTER COLUMN id SET DEFAULT nextval('public.org_id_s
 
 
 --
--- TOC entry 2899 (class 2604 OID 24625774)
+-- TOC entry 2839 (class 2604 OID 24627065)
 -- Name: places id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1494,15 +1218,7 @@ ALTER TABLE ONLY public.places ALTER COLUMN id SET DEFAULT nextval('public.place
 
 
 --
--- TOC entry 2900 (class 2604 OID 24625775)
--- Name: places orgid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.places ALTER COLUMN orgid SET DEFAULT nextval('public.places_orgid_seq'::regclass);
-
-
---
--- TOC entry 2901 (class 2604 OID 24625790)
+-- TOC entry 2840 (class 2604 OID 24627076)
 -- Name: places_users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1510,23 +1226,7 @@ ALTER TABLE ONLY public.places_users ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 2902 (class 2604 OID 24625791)
--- Name: places_users placesid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.places_users ALTER COLUMN placesid SET DEFAULT nextval('public.places_users_placesid_seq'::regclass);
-
-
---
--- TOC entry 2903 (class 2604 OID 24625792)
--- Name: places_users userid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.places_users ALTER COLUMN userid SET DEFAULT nextval('public.places_users_userid_seq'::regclass);
-
-
---
--- TOC entry 2904 (class 2604 OID 24625804)
+-- TOC entry 2841 (class 2604 OID 24627084)
 -- Name: repair id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1534,23 +1234,7 @@ ALTER TABLE ONLY public.repair ALTER COLUMN id SET DEFAULT nextval('public.repai
 
 
 --
--- TOC entry 2905 (class 2604 OID 24625805)
--- Name: repair kntid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.repair ALTER COLUMN kntid SET DEFAULT nextval('public.repair_kntid_seq'::regclass);
-
-
---
--- TOC entry 2906 (class 2604 OID 24625806)
--- Name: repair eqid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.repair ALTER COLUMN eqid SET DEFAULT nextval('public.repair_eqid_seq'::regclass);
-
-
---
--- TOC entry 2907 (class 2604 OID 24625819)
+-- TOC entry 2842 (class 2604 OID 24627095)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1558,15 +1242,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 2908 (class 2604 OID 24625820)
--- Name: users orgid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users ALTER COLUMN orgid SET DEFAULT nextval('public.users_orgid_seq'::regclass);
-
-
---
--- TOC entry 2911 (class 2604 OID 24625841)
+-- TOC entry 2844 (class 2604 OID 24627111)
 -- Name: users_profile id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1574,15 +1250,7 @@ ALTER TABLE ONLY public.users_profile ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 2912 (class 2604 OID 24625842)
--- Name: users_profile usersid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users_profile ALTER COLUMN usersid SET DEFAULT nextval('public.users_profile_usersid_seq'::regclass);
-
-
---
--- TOC entry 2909 (class 2604 OID 24625830)
+-- TOC entry 2843 (class 2604 OID 24627103)
 -- Name: usersroles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1590,15 +1258,7 @@ ALTER TABLE ONLY public.usersroles ALTER COLUMN id SET DEFAULT nextval('public.u
 
 
 --
--- TOC entry 2910 (class 2604 OID 24625831)
--- Name: usersroles userid; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.usersroles ALTER COLUMN userid SET DEFAULT nextval('public.usersroles_userid_seq'::regclass);
-
-
---
--- TOC entry 2913 (class 2604 OID 24625850)
+-- TOC entry 2845 (class 2604 OID 24627121)
 -- Name: vendor id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1606,192 +1266,192 @@ ALTER TABLE ONLY public.vendor ALTER COLUMN id SET DEFAULT nextval('public.vendo
 
 
 --
--- TOC entry 3082 (class 0 OID 24625602)
--- Dependencies: 198
+-- TOC entry 3016 (class 0 OID 24626904)
+-- Dependencies: 197
 -- Data for Name: cloud_dirs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3084 (class 0 OID 24625610)
--- Dependencies: 200
+-- TOC entry 3018 (class 0 OID 24626912)
+-- Dependencies: 199
 -- Data for Name: cloud_files; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3086 (class 0 OID 24625618)
--- Dependencies: 202
+-- TOC entry 3020 (class 0 OID 24626920)
+-- Dependencies: 201
 -- Data for Name: config; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3088 (class 0 OID 24625632)
--- Dependencies: 204
+-- TOC entry 3022 (class 0 OID 24626934)
+-- Dependencies: 203
 -- Data for Name: config_common; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3090 (class 0 OID 24625640)
--- Dependencies: 206
+-- TOC entry 3024 (class 0 OID 24626942)
+-- Dependencies: 205
 -- Data for Name: contract; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3094 (class 0 OID 24625664)
--- Dependencies: 210
+-- TOC entry 3028 (class 0 OID 24626966)
+-- Dependencies: 209
 -- Data for Name: eq_param; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3092 (class 0 OID 24625651)
--- Dependencies: 208
+-- TOC entry 3026 (class 0 OID 24626953)
+-- Dependencies: 207
 -- Data for Name: equipment; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3096 (class 0 OID 24625672)
--- Dependencies: 212
+-- TOC entry 3030 (class 0 OID 24626974)
+-- Dependencies: 211
 -- Data for Name: files_contract; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3098 (class 0 OID 24625680)
--- Dependencies: 214
+-- TOC entry 3032 (class 0 OID 24626982)
+-- Dependencies: 213
 -- Data for Name: group_nome; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3100 (class 0 OID 24625691)
--- Dependencies: 216
+-- TOC entry 3034 (class 0 OID 24626993)
+-- Dependencies: 215
 -- Data for Name: group_param; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3102 (class 0 OID 24625699)
--- Dependencies: 218
+-- TOC entry 3036 (class 0 OID 24627001)
+-- Dependencies: 217
 -- Data for Name: knt; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3104 (class 0 OID 24625710)
--- Dependencies: 220
+-- TOC entry 3038 (class 0 OID 24627012)
+-- Dependencies: 219
 -- Data for Name: mailq; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3107 (class 0 OID 24625723)
--- Dependencies: 223
+-- TOC entry 3040 (class 0 OID 24627023)
+-- Dependencies: 221
 -- Data for Name: move; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3109 (class 0 OID 24625735)
--- Dependencies: 225
+-- TOC entry 3042 (class 0 OID 24627034)
+-- Dependencies: 223
 -- Data for Name: news; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3113 (class 0 OID 24625751)
--- Dependencies: 229
+-- TOC entry 3044 (class 0 OID 24627046)
+-- Dependencies: 225
 -- Data for Name: nome; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3115 (class 0 OID 24625761)
--- Dependencies: 231
+-- TOC entry 3046 (class 0 OID 24627054)
+-- Dependencies: 227
 -- Data for Name: org; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3118 (class 0 OID 24625771)
--- Dependencies: 234
+-- TOC entry 3048 (class 0 OID 24627062)
+-- Dependencies: 229
 -- Data for Name: places; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3122 (class 0 OID 24625787)
--- Dependencies: 238
+-- TOC entry 3050 (class 0 OID 24627073)
+-- Dependencies: 231
 -- Data for Name: places_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3126 (class 0 OID 24625801)
--- Dependencies: 242
+-- TOC entry 3052 (class 0 OID 24627081)
+-- Dependencies: 233
 -- Data for Name: repair; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3129 (class 0 OID 24625816)
--- Dependencies: 245
+-- TOC entry 3054 (class 0 OID 24627092)
+-- Dependencies: 235
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3135 (class 0 OID 24625838)
--- Dependencies: 251
+-- TOC entry 3058 (class 0 OID 24627108)
+-- Dependencies: 239
 -- Data for Name: users_profile; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3132 (class 0 OID 24625827)
--- Dependencies: 248
+-- TOC entry 3056 (class 0 OID 24627100)
+-- Dependencies: 237
 -- Data for Name: usersroles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3137 (class 0 OID 24625847)
--- Dependencies: 253
+-- TOC entry 3060 (class 0 OID 24627118)
+-- Dependencies: 241
 -- Data for Name: vendor; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
 
 --
--- TOC entry 3178 (class 0 OID 0)
--- Dependencies: 197
+-- TOC entry 3090 (class 0 OID 0)
+-- Dependencies: 196
 -- Name: cloud_dirs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1799,8 +1459,8 @@ SELECT pg_catalog.setval('public.cloud_dirs_id_seq', 1, false);
 
 
 --
--- TOC entry 3179 (class 0 OID 0)
--- Dependencies: 199
+-- TOC entry 3091 (class 0 OID 0)
+-- Dependencies: 198
 -- Name: cloud_files_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1808,8 +1468,8 @@ SELECT pg_catalog.setval('public.cloud_files_id_seq', 1, false);
 
 
 --
--- TOC entry 3180 (class 0 OID 0)
--- Dependencies: 203
+-- TOC entry 3092 (class 0 OID 0)
+-- Dependencies: 202
 -- Name: config_common_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1817,8 +1477,8 @@ SELECT pg_catalog.setval('public.config_common_id_seq', 1, false);
 
 
 --
--- TOC entry 3181 (class 0 OID 0)
--- Dependencies: 201
+-- TOC entry 3093 (class 0 OID 0)
+-- Dependencies: 200
 -- Name: config_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1826,8 +1486,8 @@ SELECT pg_catalog.setval('public.config_id_seq', 1, false);
 
 
 --
--- TOC entry 3182 (class 0 OID 0)
--- Dependencies: 205
+-- TOC entry 3094 (class 0 OID 0)
+-- Dependencies: 204
 -- Name: contract_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1835,8 +1495,8 @@ SELECT pg_catalog.setval('public.contract_id_seq', 1, false);
 
 
 --
--- TOC entry 3183 (class 0 OID 0)
--- Dependencies: 209
+-- TOC entry 3095 (class 0 OID 0)
+-- Dependencies: 208
 -- Name: eq_param_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1844,8 +1504,8 @@ SELECT pg_catalog.setval('public.eq_param_id_seq', 1, false);
 
 
 --
--- TOC entry 3184 (class 0 OID 0)
--- Dependencies: 207
+-- TOC entry 3096 (class 0 OID 0)
+-- Dependencies: 206
 -- Name: equipment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1853,8 +1513,8 @@ SELECT pg_catalog.setval('public.equipment_id_seq', 1, false);
 
 
 --
--- TOC entry 3185 (class 0 OID 0)
--- Dependencies: 211
+-- TOC entry 3097 (class 0 OID 0)
+-- Dependencies: 210
 -- Name: files_contract_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1862,8 +1522,8 @@ SELECT pg_catalog.setval('public.files_contract_id_seq', 1, false);
 
 
 --
--- TOC entry 3186 (class 0 OID 0)
--- Dependencies: 213
+-- TOC entry 3098 (class 0 OID 0)
+-- Dependencies: 212
 -- Name: group_nome_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1871,8 +1531,8 @@ SELECT pg_catalog.setval('public.group_nome_id_seq', 1, false);
 
 
 --
--- TOC entry 3187 (class 0 OID 0)
--- Dependencies: 215
+-- TOC entry 3099 (class 0 OID 0)
+-- Dependencies: 214
 -- Name: group_param_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1880,8 +1540,8 @@ SELECT pg_catalog.setval('public.group_param_id_seq', 1, false);
 
 
 --
--- TOC entry 3188 (class 0 OID 0)
--- Dependencies: 217
+-- TOC entry 3100 (class 0 OID 0)
+-- Dependencies: 216
 -- Name: knt_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1889,8 +1549,8 @@ SELECT pg_catalog.setval('public.knt_id_seq', 1, false);
 
 
 --
--- TOC entry 3189 (class 0 OID 0)
--- Dependencies: 219
+-- TOC entry 3101 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: mailq_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1898,17 +1558,8 @@ SELECT pg_catalog.setval('public.mailq_id_seq', 1, false);
 
 
 --
--- TOC entry 3190 (class 0 OID 0)
--- Dependencies: 222
--- Name: move_eqid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.move_eqid_seq', 1, false);
-
-
---
--- TOC entry 3191 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3102 (class 0 OID 0)
+-- Dependencies: 220
 -- Name: move_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1916,8 +1567,8 @@ SELECT pg_catalog.setval('public.move_id_seq', 1, false);
 
 
 --
--- TOC entry 3192 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3103 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: news_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1925,17 +1576,8 @@ SELECT pg_catalog.setval('public.news_id_seq', 1, false);
 
 
 --
--- TOC entry 3193 (class 0 OID 0)
--- Dependencies: 227
--- Name: nome_groupid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.nome_groupid_seq', 1, false);
-
-
---
--- TOC entry 3194 (class 0 OID 0)
--- Dependencies: 226
+-- TOC entry 3104 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: nome_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1943,17 +1585,8 @@ SELECT pg_catalog.setval('public.nome_id_seq', 1, false);
 
 
 --
--- TOC entry 3195 (class 0 OID 0)
--- Dependencies: 228
--- Name: nome_vendorid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.nome_vendorid_seq', 1, false);
-
-
---
--- TOC entry 3196 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 3105 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: org_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1961,8 +1594,8 @@ SELECT pg_catalog.setval('public.org_id_seq', 1, false);
 
 
 --
--- TOC entry 3197 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3106 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: places_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1970,17 +1603,8 @@ SELECT pg_catalog.setval('public.places_id_seq', 1, false);
 
 
 --
--- TOC entry 3198 (class 0 OID 0)
--- Dependencies: 233
--- Name: places_orgid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.places_orgid_seq', 1, false);
-
-
---
--- TOC entry 3199 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 3107 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: places_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -1988,35 +1612,8 @@ SELECT pg_catalog.setval('public.places_users_id_seq', 1, false);
 
 
 --
--- TOC entry 3200 (class 0 OID 0)
--- Dependencies: 236
--- Name: places_users_placesid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.places_users_placesid_seq', 1, false);
-
-
---
--- TOC entry 3201 (class 0 OID 0)
--- Dependencies: 237
--- Name: places_users_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.places_users_userid_seq', 1, false);
-
-
---
--- TOC entry 3202 (class 0 OID 0)
--- Dependencies: 241
--- Name: repair_eqid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.repair_eqid_seq', 1, false);
-
-
---
--- TOC entry 3203 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3108 (class 0 OID 0)
+-- Dependencies: 232
 -- Name: repair_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2024,17 +1621,8 @@ SELECT pg_catalog.setval('public.repair_id_seq', 1, false);
 
 
 --
--- TOC entry 3204 (class 0 OID 0)
--- Dependencies: 240
--- Name: repair_kntid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.repair_kntid_seq', 1, false);
-
-
---
--- TOC entry 3205 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 3109 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2042,17 +1630,8 @@ SELECT pg_catalog.setval('public.users_id_seq', 1, false);
 
 
 --
--- TOC entry 3206 (class 0 OID 0)
--- Dependencies: 244
--- Name: users_orgid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.users_orgid_seq', 1, false);
-
-
---
--- TOC entry 3207 (class 0 OID 0)
--- Dependencies: 249
+-- TOC entry 3110 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: users_profile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2060,17 +1639,8 @@ SELECT pg_catalog.setval('public.users_profile_id_seq', 1, false);
 
 
 --
--- TOC entry 3208 (class 0 OID 0)
--- Dependencies: 250
--- Name: users_profile_usersid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.users_profile_usersid_seq', 1, false);
-
-
---
--- TOC entry 3209 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 3111 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: usersroles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2078,17 +1648,8 @@ SELECT pg_catalog.setval('public.usersroles_id_seq', 1, false);
 
 
 --
--- TOC entry 3210 (class 0 OID 0)
--- Dependencies: 247
--- Name: usersroles_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.usersroles_userid_seq', 1, false);
-
-
---
--- TOC entry 3211 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 3112 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: vendor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2096,7 +1657,7 @@ SELECT pg_catalog.setval('public.vendor_id_seq', 1, false);
 
 
 --
--- TOC entry 2915 (class 2606 OID 24625607)
+-- TOC entry 2847 (class 2606 OID 24626909)
 -- Name: cloud_dirs cloud_dirs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2105,7 +1666,7 @@ ALTER TABLE ONLY public.cloud_dirs
 
 
 --
--- TOC entry 2917 (class 2606 OID 24625615)
+-- TOC entry 2849 (class 2606 OID 24626917)
 -- Name: cloud_files cloud_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2114,7 +1675,7 @@ ALTER TABLE ONLY public.cloud_files
 
 
 --
--- TOC entry 2921 (class 2606 OID 24625637)
+-- TOC entry 2853 (class 2606 OID 24626939)
 -- Name: config_common config_common_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2123,7 +1684,7 @@ ALTER TABLE ONLY public.config_common
 
 
 --
--- TOC entry 2919 (class 2606 OID 24625629)
+-- TOC entry 2851 (class 2606 OID 24626931)
 -- Name: config config_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2132,7 +1693,7 @@ ALTER TABLE ONLY public.config
 
 
 --
--- TOC entry 2923 (class 2606 OID 24625648)
+-- TOC entry 2855 (class 2606 OID 24626950)
 -- Name: contract contract_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2141,7 +1702,7 @@ ALTER TABLE ONLY public.contract
 
 
 --
--- TOC entry 2927 (class 2606 OID 24625669)
+-- TOC entry 2859 (class 2606 OID 24626971)
 -- Name: eq_param eq_param_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2150,7 +1711,7 @@ ALTER TABLE ONLY public.eq_param
 
 
 --
--- TOC entry 2925 (class 2606 OID 24625661)
+-- TOC entry 2857 (class 2606 OID 24626963)
 -- Name: equipment equipment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2159,7 +1720,7 @@ ALTER TABLE ONLY public.equipment
 
 
 --
--- TOC entry 2929 (class 2606 OID 24625677)
+-- TOC entry 2861 (class 2606 OID 24626979)
 -- Name: files_contract files_contract_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2168,7 +1729,7 @@ ALTER TABLE ONLY public.files_contract
 
 
 --
--- TOC entry 2931 (class 2606 OID 24625688)
+-- TOC entry 2863 (class 2606 OID 24626990)
 -- Name: group_nome group_nome_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2177,7 +1738,7 @@ ALTER TABLE ONLY public.group_nome
 
 
 --
--- TOC entry 2933 (class 2606 OID 24625696)
+-- TOC entry 2865 (class 2606 OID 24626998)
 -- Name: group_param group_param_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2186,7 +1747,7 @@ ALTER TABLE ONLY public.group_param
 
 
 --
--- TOC entry 2935 (class 2606 OID 24625707)
+-- TOC entry 2867 (class 2606 OID 24627009)
 -- Name: knt knt_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2195,7 +1756,7 @@ ALTER TABLE ONLY public.knt
 
 
 --
--- TOC entry 2937 (class 2606 OID 24625718)
+-- TOC entry 2869 (class 2606 OID 24627020)
 -- Name: mailq mailq_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2204,7 +1765,7 @@ ALTER TABLE ONLY public.mailq
 
 
 --
--- TOC entry 2939 (class 2606 OID 24625732)
+-- TOC entry 2871 (class 2606 OID 24627031)
 -- Name: move move_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2213,7 +1774,7 @@ ALTER TABLE ONLY public.move
 
 
 --
--- TOC entry 2941 (class 2606 OID 24625744)
+-- TOC entry 2873 (class 2606 OID 24627043)
 -- Name: news news_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2222,7 +1783,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 2943 (class 2606 OID 24625758)
+-- TOC entry 2875 (class 2606 OID 24627051)
 -- Name: nome nome_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2231,7 +1792,7 @@ ALTER TABLE ONLY public.nome
 
 
 --
--- TOC entry 2945 (class 2606 OID 24625766)
+-- TOC entry 2877 (class 2606 OID 24627059)
 -- Name: org org_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2240,7 +1801,7 @@ ALTER TABLE ONLY public.org
 
 
 --
--- TOC entry 2947 (class 2606 OID 24625780)
+-- TOC entry 2879 (class 2606 OID 24627070)
 -- Name: places places_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2249,7 +1810,7 @@ ALTER TABLE ONLY public.places
 
 
 --
--- TOC entry 2949 (class 2606 OID 24625794)
+-- TOC entry 2881 (class 2606 OID 24627078)
 -- Name: places_users places_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2258,7 +1819,7 @@ ALTER TABLE ONLY public.places_users
 
 
 --
--- TOC entry 2951 (class 2606 OID 24625811)
+-- TOC entry 2883 (class 2606 OID 24627089)
 -- Name: repair repair_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2267,7 +1828,7 @@ ALTER TABLE ONLY public.repair
 
 
 --
--- TOC entry 2953 (class 2606 OID 24625822)
+-- TOC entry 2885 (class 2606 OID 24627097)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2276,7 +1837,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2957 (class 2606 OID 24625844)
+-- TOC entry 2889 (class 2606 OID 24627113)
 -- Name: users_profile users_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2285,7 +1846,16 @@ ALTER TABLE ONLY public.users_profile
 
 
 --
--- TOC entry 2955 (class 2606 OID 24625833)
+-- TOC entry 2891 (class 2606 OID 24627115)
+-- Name: users_profile users_profile_usersid_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users_profile
+    ADD CONSTRAINT users_profile_usersid_key UNIQUE (usersid);
+
+
+--
+-- TOC entry 2887 (class 2606 OID 24627105)
 -- Name: usersroles usersroles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2294,7 +1864,7 @@ ALTER TABLE ONLY public.usersroles
 
 
 --
--- TOC entry 2959 (class 2606 OID 24625855)
+-- TOC entry 2893 (class 2606 OID 24627126)
 -- Name: vendor vendor_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2302,7 +1872,7 @@ ALTER TABLE ONLY public.vendor
     ADD CONSTRAINT vendor_pkey PRIMARY KEY (id);
 
 
--- Completed on 2020-03-26 13:18:31
+-- Completed on 2020-03-27 22:58:05
 
 --
 -- PostgreSQL database dump complete

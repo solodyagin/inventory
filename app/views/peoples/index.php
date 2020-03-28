@@ -50,8 +50,8 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 			var caption = 'Набор прав сотрудника "' + $list1.jqGrid('getCell', id, 'fio') + '"';
 			$list2.jqGrid('setCaption', caption);
 			$list2.jqGrid('setGridParam', {
-				url: 'route/deprecated/server/users/usersroles.php?userid=' + id + '&orgid=' + defaultorgid,
-				editurl: 'route/deprecated/server/users/usersroles.php?userid=' + id + '&orgid=' + defaultorgid
+				url: 'roles/list?userid=' + id + '&orgid=' + defaultorgid,
+				editurl: 'roles/change?userid=' + id + '&orgid=' + defaultorgid
 			}).trigger('reloadGrid');
 		},
 		autowidth: true,
@@ -65,8 +65,8 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 		loadComplete: function () {
 			$list2.jqGrid('setCaption', 'Набор прав сотрудника');
 			$list2.jqGrid('setGridParam', {
-				url: 'route/deprecated/server/users/usersroles.php?userid=',
-				editurl: 'route/deprecated/server/users/usersroles.php?userid='
+				url: 'roles/list?userid=0',
+				editurl: 'roles/change?userid=0'
 			}).trigger('reloadGrid');
 		}
 	});
@@ -158,11 +158,11 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 	$list2.jqGrid({
 		autowidth: true,
-		url: 'route/deprecated/server/users/usersroles.php?userid=0',
+		url: 'roles/list?userid=0',
 		datatype: 'json',
 		colNames: ['Id', 'Право', 'Действия'],
 		colModel: [
-			{name: 'places_users.id', index: 'places_users.id', width: 55, fixed: true},
+			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'role', index: 'role', width: 200, editable: true, edittype: 'select', editoptions: {
 					editrules: {required: true},
 					dataUrl: 'route/deprecated/server/users/getlistroles.php?orgid=' + defaultorgid
@@ -172,7 +172,7 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 		rowNum: 10,
 		rowList: [10, 20, 30],
 		pager: '#pager2',
-		sortname: 'id',
+		sortname: 'role',
 		viewrecords: true,
 		sortorder: 'asc',
 		caption: 'Набор прав сотрудника'

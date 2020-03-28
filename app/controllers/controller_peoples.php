@@ -157,10 +157,10 @@ TXT;
 				$responce->rows[$i]['id'] = $row['id'];
 				$mode = ($row['mode'] == '1') ? 'Да' : 'Нет';
 				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
-				$responce->rows[$i]['cell'] = array(
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+				$responce->rows[$i]['cell'] = [
+					"<i class=\"fa $ic\"></i>",
 					$row['id'], $row['orgname'], $row['fio'], $row['login'], 'скрыто', $row['email'], $mode
-				);
+				];
 				$i++;
 			}
 		} catch (PDOException $ex) {
@@ -220,10 +220,6 @@ TXT;
 				}
 				break;
 		}
-	}
-
-	function usersroles() {
-		//
 	}
 
 }
