@@ -65,7 +65,7 @@ if (($user->mode == 1) || $user->TestRights[1]) {
 			$tmpuser->telephonenumber = '';
 			$tmpuser->homephone = '';
 			$tmpuser->jpegphoto = '';
-			$tmpuser->Add(GetRandomId(60), $orgid, $login, $pass, $email, $mode);
+			$tmpuser->Add(getRandomId(60), $orgid, $login, $pass, $email, $mode);
 		}
 	}
 

@@ -47,12 +47,11 @@ $user = User::getInstance();
 		<script src="templates/<?= $cfg->theme; ?>/js/bootstrap.min.js"></script>
 		<script src="templates/<?= $cfg->theme; ?>/js/common.js"></script>
 		<script>
-			defaultorgid = <?= $cfg->defaultorgid; ?>;
-			theme = '<?= $cfg->theme; ?>';
-			defaultuserid = <?= ($user->id != '') ? $user->id : '-1'; ?>;
+			var defaultorgid = <?= $cfg->defaultorgid; ?>,
+					theme = '<?= $cfg->theme; ?>',
+					defaultuserid = <?= ($user->id != '') ? $user->id : '-1'; ?>;
 
-			var bootstrapButton = $.fn.button.noConflict();
-			$.fn.bootstrapBtn = bootstrapButton;
+			$.fn.bootstrapBtn = $.fn.button.noConflict();
 
 			$.jgrid.defaults.width = 780;
 			$.jgrid.defaults.responsive = true;

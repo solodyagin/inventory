@@ -30,7 +30,7 @@ class Controller_Cloud extends Controller {
 			exit;
 		}
 		/* Проверка: назначены ли права? */
-		if ($user->isAdmin() || $user->TestRights([1,3,4,6])) {
+		if ($user->isAdmin() || $user->TestRights([1, 3, 4, 6])) {
 			$this->view->generate('cloud/index', $cfg->theme, $data);
 		} else {
 			$this->view->generate('restricted', $cfg->theme, $data);
@@ -44,7 +44,7 @@ class Controller_Cloud extends Controller {
 	function addfolder() {
 		$user = User::getInstance();
 		/* Проверка: может ли пользователь добавлять? */
-		($user->isAdmin() || $user->TestRights([1,4])) or die('У вас не хватает прав на добавление!');
+		($user->isAdmin() || $user->TestRights([1, 4])) or die('У вас не хватает прав на добавление!');
 		$foldername = (isset(Router::$params['foldername'])) ? Router::$params['foldername'] : '';
 		if (!empty($foldername)) {
 			$sql = 'INSERT INTO cloud_dirs (parent, name) VALUES (0, :foldername)';
@@ -63,7 +63,7 @@ class Controller_Cloud extends Controller {
 	function delfolder() {
 		$user = User::getInstance();
 		/* Проверка: может ли пользователь удалять? */
-		($user->isAdmin() || $user->TestRights([1,6])) or die('У вас не хватает прав на удаление!');
+		($user->isAdmin() || $user->TestRights([1, 6])) or die('У вас не хватает прав на удаление!');
 		$folderkey = (isset(Router::$params['folderkey'])) ? Router::$params['folderkey'] : '';
 		if (!empty($folderkey)) {
 			$sql = 'DELETE FROM cloud_dirs WHERE id = :folderkey';
@@ -102,7 +102,7 @@ class Controller_Cloud extends Controller {
 	 */
 	function gettree() {
 		$user = User::getInstance();
-		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
+		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		echo '[';
 		/* Получаем корневые папки */
 		$sql = 'SELECT * FROM cloud_dirs WHERE parent = 0';
@@ -128,7 +128,7 @@ class Controller_Cloud extends Controller {
 
 	function download() {
 		$user = User::getInstance();
-		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
+		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$id = (isset(Router::$params['id'])) ? Router::$params['id'] : '';
 		is_numeric($id) or die('Переданы неправильные параметры');
 		$filename = '';
@@ -205,7 +205,7 @@ class Controller_Cloud extends Controller {
 		$cloud_dirs_id = GetDef('cloud_dirs_id');
 		if ($oper == '') {
 			/* Проверка: может ли пользователь просматривать? */
-			($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
+			($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 			/* Готовим ответ */
 			$responce = new stdClass();
 			$responce->page = 0;
@@ -232,38 +232,53 @@ class Controller_Cloud extends Controller {
 			$responce->page = $page;
 			$responce->total = $total_pages;
 			$responce->records = $count;
-			$sql = <<<TXT
-SELECT   *
-FROM     cloud_files
-WHERE    cloud_dirs_id = :cloud_dirs_id
-ORDER BY $sidx $sord
-LIMIT    $start, $limit
-TXT;
 			try {
-				$i = 0;
+				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+					case 'mysql':
+						$sql = <<<TXT
+SELECT * FROM cloud_files
+WHERE cloud_dirs_id = :cloud_dirs_id
+ORDER BY $sidx $sord
+LIMIT $start, $limit
+TXT;
+						break;
+					case 'pgsql':
+						$sql = <<<TXT
+SELECT * FROM cloud_files
+WHERE cloud_dirs_id = :cloud_dirs_id
+ORDER BY $sidx $sord
+OFFSET $start LIMIT $limit
+TXT;
+						break;
+				}
 				$arr = DB::prepare($sql)->execute([':cloud_dirs_id' => $cloud_dirs_id])->fetchAll();
+				$i = 0;
 				foreach ($arr as $row) {
-					$responce->rows[$i]['id'] = $row['id'];
+					$rowid = $row['id'];
+					$responce->rows[$i]['id'] = $rowid;
 					switch (pathinfo($row['filename'], PATHINFO_EXTENSION)) {
 						case 'jpeg':
 						case 'jpg':
 						case 'png':
-							$ico = '<i class="fa fa-file-image-o" aria-hidden="true"></i>';
+							$ico = 'fa-file-image';
 							break;
 						case 'xls':
 						case 'ods':
-							$ico = '<i class="fa a-file-excel-o" aria-hidden="true"></i>';
+							$ico = 'fa-file-excel';
 							break;
 						case 'doc':
 						case 'odt':
-							$ico = '<i class="fa fa-file-word-o" aria-hidden="true"></i>';
+							$ico = 'fa-file-word';
+							break;
+						case 'pdf':
+							$ico = 'fa-file-pdf';
 							break;
 						default:
-							$ico = '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>';
+							$ico = 'fa-file';
 					}
-					$ico = '<a target="_blank" href="cloud/download?id=' . $row['id'] . '">' . $ico . '</a>';
+					$ico = "<a target=\"_blank\" href=\"cloud/download?id=$rowid\"><i class=\"fas $ico\"></i></a>";
 					$title = $row['title'];
-					$responce->rows[$i]['cell'] = array($row['id'], $ico, $title, $row['dt'], humanSize($row['sz']));
+					$responce->rows[$i]['cell'] = [$rowid, $ico, $title, $row['dt'], humanSize($row['sz'])];
 					$i++;
 				}
 			} catch (PDOException $ex) {
@@ -274,7 +289,7 @@ TXT;
 
 		if ($oper == 'edit') {
 			/* Проверка: может ли пользователь редактировать? */
-			($user->isAdmin() || $user->TestRights([1,5])) or die('Для редактирования не хватает прав!');
+			($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования не хватает прав!');
 			$sql = 'UPDATE cloud_files SET title = :title WHERE id = :id';
 			try {
 				DB::prepare($sql)->execute([':title' => $title, ':id' => $id]);
@@ -286,7 +301,7 @@ TXT;
 
 		if ($oper == 'del') {
 			/* Проверка: может ли пользователь удалять? */
-			($user->isAdmin() || $user->TestRights([1,6])) or die('Для удаления не хватает прав!');
+			($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления не хватает прав!');
 			$sql = 'DELETE FROM cloud_files WHERE id = :id';
 			try {
 				DB::prepare($sql)->execute([':id' => $id]);
@@ -300,7 +315,7 @@ TXT;
 	function movefolder() {
 		$user = User::getInstance();
 		/* Проверяем может ли пользователь редактировать? */
-		($user->isAdmin() || $user->TestRights([1,5])) or die('Для редактирования не хватает прав!');
+		($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования не хватает прав!');
 		$nodekey = GetDef('nodekey');
 		$srnodekey = GetDef('srnodekey');
 		$sql = 'UPDATE cloud_dirs SET parent = :nodekey WHERE id = :srnodekey';
@@ -314,13 +329,13 @@ TXT;
 	function uploadfiles() {
 		$user = User::getInstance();
 		/* Проверяем: может ли пользователь добавлять файлы? */
-		($user->isAdmin() || $user->TestRights([1,4])) or die('Недостаточно прав');
+		($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
 		$selectedkey = PostDef('selectedkey');
 		$orig_file = $_FILES['filedata']['name'];
 		$dis = ['.htaccess']; # Запрещённые для загрузки файлы
 		$rs = ['msg' => 'error']; # Ответ по умолчанию, если пойдёт что-то не так
 		if (!in_array($orig_file, $dis)) {
-			$userfile_name = GetRandomId(8) . '.' . pathinfo($orig_file, PATHINFO_EXTENSION);
+			$userfile_name = guid() . '.' . pathinfo($orig_file, PATHINFO_EXTENSION);
 			$src = $_FILES['filedata']['tmp_name'];
 			$dst = SITE_ROOT . '/files/' . $userfile_name;
 			$res = move_uploaded_file($src, $dst);
@@ -328,17 +343,26 @@ TXT;
 				$rs['msg'] = $userfile_name;
 				$sz = filesize($dst);
 				if ($selectedkey != '') {
-					$sql = <<<TXT
-INSERT INTO cloud_files
-            (id,cloud_dirs_id,title,filename,dt,sz)
-VALUES      (NULL, :selectedkey, :orig_file, :userfile_name, NOW(), :sz)
-TXT;
 					try {
+						switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+							case 'mysql':
+								$sql = <<<TXT
+INSERT INTO cloud_files (id, cloud_dirs_id, title, filename, dt, sz)
+VALUES (NULL, :selectedkey, :orig_file, :userfile_name, NOW(), :sz)
+TXT;
+								break;
+							case 'pgsql':
+								$sql = <<<TXT
+INSERT INTO cloud_files (cloud_dirs_id, title, filename, dt, sz)
+VALUES (:selectedkey, :orig_file, :userfile_name, NOW(), :sz)
+TXT;
+								break;
+						}
 						DB::prepare($sql)->execute([
-								':selectedkey' => $selectedkey,
-								':orig_file' => $orig_file,
-								':userfile_name' => $userfile_name,
-								':sz' => $sz
+							':selectedkey' => $selectedkey,
+							':orig_file' => $orig_file,
+							':userfile_name' => $userfile_name,
+							':sz' => $sz
 						]);
 					} catch (PDOException $ex) {
 						throw new DBException('Не могу добавить файл', 0, $ex);

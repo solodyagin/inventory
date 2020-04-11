@@ -19,7 +19,7 @@ class User extends BaseUser {
 
 	use Singleton;
 
-	# Пользователь вошёл ?
+	/* Пользователь вошёл ? */
 	private $is_logged = false;
 
 	/**
@@ -73,9 +73,9 @@ SQL;
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка при получении данных пользователя', 0, $ex);
 		}
-		# Устанавливаем Cookie
+		/* Устанавливаем Cookie */
 		if ($this->is_logged) {
-			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/');
+			setcookie('inventory_id', $this->randomid, strtotime('+30 days'), '/');
 		}
 		return $this->is_logged;
 	}
@@ -85,13 +85,13 @@ SQL;
 	 * @return boolean
 	 */
 	function loginByCookie() {
-		$this->randomid = filter_input(INPUT_COOKIE, 'user_randomid_w3');
+		$this->randomid = filter_input(INPUT_COOKIE, 'inventory_id');
 		$this->is_logged = !empty($this->randomid) && $this->getByRandomId($this->randomid);
 		if ($this->is_logged) {
 			$this->UpdateLastdt($this->id); # Обновляем дату последнего входа пользователя
-			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/'); # Устанавливаем Cookie
+			setcookie('inventory_id', $this->randomid, strtotime('+30 days'), '/'); # Устанавливаем Cookie
 		} else {
-			setcookie('user_randomid_w3', '', 1, '/'); # Удаляем cookie
+			setcookie('inventory_id', '', 1, '/'); # Удаляем cookie
 		}
 		return $this->is_logged;
 	}
@@ -100,8 +100,8 @@ SQL;
 		$this->is_logged = false;
 		$this->id = '';
 		$this->randomid = '';
-		# Удаляем cookie
-		setcookie('user_randomid_w3', '', 1, '/');
+		/* Удаляем cookie */
+		setcookie('inventory_id', '', 1, '/');
 //		foreach ($_COOKIE as $key => $value) {
 //			setcookie($key, '', 1, '/');
 //		}

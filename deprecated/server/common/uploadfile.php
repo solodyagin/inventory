@@ -21,7 +21,7 @@ $uploaddir = SITE_ROOT . '/photos/';
 $userfile_name = basename($_FILES['filedata']['name']);
 $len = strlen($userfile_name);
 $ext_file = substr($userfile_name, $len - 4, $len);
-$tmp = GetRandomId(20);
+$tmp = getRandomDigits(20);
 $userfile_name = $tmp . $ext_file;
 $uploadfile = $uploaddir . $userfile_name;
 

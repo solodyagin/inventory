@@ -106,7 +106,7 @@ INSERT INTO public.config (ad, theme, sitename, smtpauth, sendemail, version) VA
 SQL2;
 	}
 	$sth = $dbh->prepare($sql);
-	$sth->execute([':version' => SITE_VERSION]);
+	$sth->execute([':version' => 'UNUSED']);
 
 	/* Создаём организацию */
 	if ($dbDriver == 'mysql') {
@@ -137,7 +137,7 @@ SQL4;
 	}
 	$sth = $dbh->prepare($sql);
 	$sth->execute([
-		':randomid' => GetRandomId(),
+		':randomid' => getRandomId(),
 		':login' => $login,
 		':password' => $password,
 		':salt' => $salt

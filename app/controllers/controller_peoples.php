@@ -53,9 +53,8 @@ class Controller_Peoples extends Controller {
 	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
-		// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
+		/* Разрешаем при наличии ролей "Полный доступ" и "Просмотр" */
 		($user->isAdmin() || $user->TestRights([1, 3])) or die('Недостаточно прав');
-
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -64,7 +63,6 @@ class Controller_Peoples extends Controller {
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
 		$filters = GetDef('filters');
-
 		$flt = json_decode($filters, true);
 		$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
 		$where = '';
@@ -79,13 +77,11 @@ class Controller_Peoples extends Controller {
 		if ($where != '') {
 			$where = 'WHERE ' . $where;
 		}
-
-		// Готовим ответ
+		/* Готовим ответ */
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-
 		try {
 			$sql = 'SELECT COUNT(*) cnt FROM users';
 			$row = DB::prepare($sql)->execute()->fetch();
@@ -96,7 +92,6 @@ class Controller_Peoples extends Controller {
 		if ($count == 0) {
 			jsonExit($responce);
 		}
-
 		$total_pages = ceil($count / $limit);
 		if ($page > $total_pages) {
 			$page = $total_pages;
@@ -105,11 +100,9 @@ class Controller_Peoples extends Controller {
 		if ($start < 0) {
 			jsonExit($responce);
 		}
-
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-
 		try {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
@@ -181,7 +174,7 @@ TXT;
 		switch ($oper) {
 			case 'edit':
 				/* Проверяем может ли пользователь редактировать? */
-				(($user->mode == 1) || $user->TestRights([1])) or die('Недостаточно прав');
+				($user->isAdmin() || $user->TestRights([1])) or die('Недостаточно прав');
 				$imode = ($mode == 'Да') ? '1' : '0';
 				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 					case 'mysql':
@@ -205,15 +198,15 @@ TXT;
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRights([1])) or die('Для удаления недостаточно прав');
-				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
-					case 'mysql':
-						$sql = 'UPDATE users SET active = NOT active WHERE id = :id';
-						break;
-					case 'pgsql':
-						$sql = 'UPDATE users SET active = active # 1 WHERE id = :id';
-						break;
-				}
 				try {
+					switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+						case 'mysql':
+							$sql = 'UPDATE users SET active = NOT active WHERE id = :id';
+							break;
+						case 'pgsql':
+							$sql = 'UPDATE users SET active = active # 1 WHERE id = :id';
+							break;
+					}
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу пометить на удаление пользователя', 0, $ex);

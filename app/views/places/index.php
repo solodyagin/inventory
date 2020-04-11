@@ -22,7 +22,11 @@
 			{name: 'active', index: 'active', width: 10},
 			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'opgroup', index: 'opgroup', width: 100, editable: true},
-			{name: 'name', index: 'name', width: 200, editable: true},
+			{name: 'name', index: 'name', width: 200, editable: true,
+				unformat: function (cellvalue, options, cell) {
+					return $(cell).attr('title');
+				}
+			},
 			{name: 'comment', index: 'comment', width: 200, editable: true},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],
