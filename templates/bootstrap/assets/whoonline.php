@@ -16,7 +16,10 @@
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $crd = date('Y-m-d H:i:s');
-$sql = <<<TXT
+try {
+	switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+		case 'mysql':
+			$sql = <<<TXT
 SELECT
 		UNIX_TIMESTAMP(:crd) - UNIX_TIMESTAMP(lastdt) AS res,
 		users_profile.fio AS fio,
@@ -24,7 +27,18 @@ SELECT
 FROM users
 	INNER JOIN users_profile ON users_profile.usersid = users.id
 TXT;
-try {
+			break;
+		case 'pgsql':
+			$sql = <<<TXT
+SELECT
+		TRUNC(EXTRACT(EPOCH from (CURRENT_TIMESTAMP - lastdt))) res,
+		users_profile.fio fio,
+		users_profile.jpegphoto
+FROM users
+	INNER JOIN users_profile ON users_profile.usersid = users.id;
+TXT;
+			break;
+	}
 	$arr = DB::prepare($sql)->execute([':crd' => $crd])->fetchAll();
 	foreach ($arr as $row) {
 		$res = $row['res'];

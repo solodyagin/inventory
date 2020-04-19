@@ -180,7 +180,14 @@ TXT;
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления недостаточно прав');
-				$sql = 'UPDATE nome SET active = NOT active WHERE id = :id';
+				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+					case 'mysql':
+						$sql = 'UPDATE nome SET active = NOT active WHERE id = :id';
+						break;
+					case 'pgsql':
+						$sql = 'UPDATE nome SET active = active # 1 WHERE id = :id';
+						break;
+				}
 				try {
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {

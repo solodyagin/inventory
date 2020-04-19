@@ -42,9 +42,9 @@
 		autowidth: true,
 		pager: '#pager1',
 		sortname: 'id',
+		sortorder: 'asc',
 		scroll: 1,
 		viewrecords: true,
-		sortorder: 'asc',
 		editurl: 'places/change?orgid=' + defaultorgid,
 		caption: 'Помещения',
 		onSelectRow: function (id) {
@@ -62,13 +62,13 @@
 				editurl: 'places/listsub'
 			}).trigger('reloadGrid');
 		}
-	}).navGrid('#pager1', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
+	});
+	$list1.jqGrid('navGrid', '#pager1', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
 	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 
 	$list2.jqGrid({
-		height: 100,
 		autowidth: true,
-		url: 'places/listsub',
+		//url: 'places/listsub',
 		datatype: 'json',
 		colNames: ['Id', 'Сотрудник', 'Действия'],
 		colModel: [
@@ -83,9 +83,10 @@
 		rowList: [10, 20, 50],
 		pager: '#pager2',
 		sortname: 'places_users.id',
-		viewrecords: true,
 		sortorder: 'asc',
+		viewrecords: true,
 		caption: 'Рабочие места'
-	}).navGrid('#pager2', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
+	});
+	$list2.jqGrid('navGrid', '#pager2', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
 	$list2.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 </script>

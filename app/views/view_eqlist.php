@@ -101,8 +101,8 @@ if (!$user->isAdmin() && !$user->TestRights([1,3,4,5,6])):
 		}
 
 		function LoadMoveInfoTable(ids) {
-			var sUrl = 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids;
-			$('#tbl_move').jqGrid('setGridParam', {url: sUrl});
+			var sUrl = 'moveinfo/list?eqid=' + ids;
+			//$('#tbl_move').jqGrid('setGridParam', {url: sUrl});
 			$('#tbl_move').jqGrid({
 				url: sUrl,
 				datatype: 'json',

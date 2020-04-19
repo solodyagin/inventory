@@ -157,6 +157,9 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 		$dtendgar = '';
 		echo "<script>dtendgar='$dtendgar';</script>";
 	}
+	if ($photo == '') {
+		$photo = 'noimage.jpg';
+	}
 	?>
 	<div class="container-fluid">
 		<div class="row">
@@ -379,7 +382,7 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 
 		function GetListNome(groupid, vendorid, nmd) {
 			$.ajax({
-				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
+				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + (vendorid || '')+ '&nomeid=' + nmd,
 				success: function (answ) {
 					$('#snomes').html(answ);
 					UpdateChosen();
@@ -389,7 +392,7 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 
 		function GetListVendors(groupid, vendorid) {
 			$.ajax({
-				url: 'route/deprecated/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
+				url: 'route/deprecated/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + (vendorid || ''),
 				success: function (answ) {
 					$('#svendors').html(answ);
 					GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
@@ -430,7 +433,6 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 
 		// выбираем производителя по группе
 		$('#sgroupname').on('change', function (evt, params) {
-			console.log('--обработка выбора группы номенклатуры');
 			$('#svendors').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
 			GetListVendors($('#sgroupname :selected').val()); // перегружаем список vendors
 		});

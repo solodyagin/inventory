@@ -15,11 +15,17 @@
 /* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-class Controller_Config extends Controller {
+class Controller_Settings extends Controller {
 
 	function index() {
+		$user = User::getInstance();
 		$cfg = Config::getInstance();
-		$this->view->generate('view_config', $cfg->theme);
+		$data['section'] = 'Настройка / Настройка системы';
+		if ($user->isAdmin()) {
+			$this->view->generate('settings/index', $cfg->theme, $data);
+		} else {
+			$this->view->generate('restricted', $cfg->theme, $data);
+		}
 	}
 
 	function save() {
@@ -52,7 +58,7 @@ class Controller_Config extends Controller {
 			$err[] = 'Что-то пошло не так!';
 		}
 		/* Подключаем шаблон */
-		$this->view->generate('view_config', $cfg->theme);
+		$this->index();
 	}
 
 }

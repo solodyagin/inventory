@@ -12,21 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $groupid = GetDef('groupid', '1');
-$vendorid = GetDef('vendorid', '1');
+$vendorid = GetDef('vendorid', 1);
+if ($vendorid == '') {
+	$vendorid = 1;
+}
 $nomeid = GetDef('nomeid');
 
 echo '<select class="chosen-select" name="snomeid" id="snomeid">';
 
-$sql = 'SELECT id, name FROM nome WHERE groupid = :groupid AND vendorid = :vendorid';
 try {
-	$arr = DB::prepare($sql)->execute(array(
+	$sql = 'SELECT id, name FROM nome WHERE groupid = :groupid AND vendorid = :vendorid';
+	$arr = DB::prepare($sql)->execute([
 				':groupid' => $groupid,
 				':vendorid' => $vendorid
-			))->fetchAll();
+			])->fetchAll();
 	foreach ($arr as $row) {
 		$rid = $row['id'];
 		$rname = $row['name'];

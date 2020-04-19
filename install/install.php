@@ -176,5 +176,6 @@ $rewrite_base = "/";
 
 $file = SITE_ROOT . '/app/config.php';
 file_put_contents($file, $data, LOCK_EX) or die('Ошибка записи в файл: /app/config.php');
+chmod($file, 0664);
 
 exit('ok');
