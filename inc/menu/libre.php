@@ -21,5 +21,5 @@ $this->Add('libre', '<i class="fas fa-users"></i> Сотрудники', 'Сот
 $this->Add('libre', '<i class="fas fa-location-arrow"></i> Помещения', 'Помещения', 10, 'libre/places', 'places');
 $this->Add('libre', '<i class="fas fa-cogs"></i> Контрагенты', 'Контрагенты', 10, 'libre/knt', 'knt');
 $this->Add('libre', '<i class="fas fa-cubes"></i> Производители', 'Производители', 10, 'libre/vendors', 'vendors');
-$this->Add('libre', '<i class="fas fa-object-group"></i> Группы номенклатуры', 'Группы номенклатуры', 10, 'libre/tmcgroup', 'tmcgroup');
+$this->Add('libre', '<i class="fas fa-object-group"></i> Группы номенклатуры', 'Группы номенклатуры', 10, 'libre/nomegroups', 'nomegroups');
 $this->Add('libre', '<i class="fab fa-empire"></i> Номенклатура', 'Номенклатура', 10, 'libre/nome', 'nome');

@@ -42,8 +42,8 @@
 		scroll: 1,
 		pager: '#pager1',
 		sortname: 'fio',
-		viewrecords: true,
 		sortorder: 'asc',
+		viewrecords: true,
 		editurl: 'peoples/change',
 		caption: 'Справочник сотрудников',
 		loadComplete: function () {
@@ -54,7 +54,6 @@
 			}).trigger('reloadGrid');
 		}
 	});
-
 	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 	$list1.jqGrid('navGrid', '#pager1', {edit: false, add: false, del: false, search: false});
 	$list1.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
@@ -157,8 +156,8 @@
 		rowList: [10, 20, 30],
 		pager: '#pager2',
 		sortname: 'role',
-		viewrecords: true,
 		sortorder: 'asc',
+		viewrecords: true,
 		caption: 'Набор прав доступа сотрудника'
 	}).navGrid('#pager2', {add: true, edit: false, del: false, search: false}, {}, addOptions, {}, {multipleSearch: false}, {closeOnEscape: true});
 </script>

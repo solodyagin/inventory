@@ -21,18 +21,18 @@ class Controller_Nome extends Controller {
 		$user = User::getInstance();
 		$cfg = Config::getInstance();
 		$data['section'] = 'Справочники / Номенклатура';
-		if ($user->isAdmin() || $user->TestRights([1,4,5,6])) {
+		if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) {
 			$this->view->generate('nome/index', $cfg->theme, $data);
 		} else {
 			$this->view->generate('restricted', $cfg->theme, $data);
 		}
 	}
 
-	/* Для работы jqGrid */
+	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
 		/* Проверяем может ли пользователь просматривать? */
-		($user->isAdmin() || $user->TestRights([1,3,4,5,6])) or die('Недостаточно прав');
+		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -63,8 +63,8 @@ class Controller_Nome extends Controller {
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-		$sql = 'SELECT COUNT(*) AS cnt FROM nome';
 		try {
+			$sql = 'SELECT COUNT(*) cnt FROM nome';
 			$row = DB::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -84,31 +84,48 @@ class Controller_Nome extends Controller {
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-		$sql = <<<TXT
-SELECT     nome.id         AS nomeid,
-           group_nome.name AS groupname,
-           vendor.name     AS vendorname,
-           nome.name       AS nomename,
-           nome.active     AS nomeactive
-FROM       nome
-INNER JOIN group_nome
-ON         group_nome.id = nome.groupid
-INNER JOIN vendor
-ON         nome.vendorid = vendor.id
-$where
-ORDER BY   $sidx $sord
-LIMIT      $start, $limit
-TXT;
 		try {
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<TXT
+SELECT nome.id nomeid,
+  group_nome.name groupname,
+  vendor.name vendorname,
+  nome.name nomename,
+  nome.active nomeactive
+FROM nome
+  INNER JOIN group_nome ON group_nome.id = nome.groupid
+  INNER JOIN vendor ON nome.vendorid = vendor.id
+$where
+ORDER BY $sidx $sord
+LIMIT $start, $limit
+TXT;
+					break;
+				case 'pgsql':
+					$sql = <<<TXT
+SELECT nome.id nomeid,
+  group_nome.name groupname,
+  vendor.name vendorname,
+  nome.name nomename,
+  nome.active nomeactive
+FROM nome
+  INNER JOIN group_nome ON group_nome.id = nome.groupid
+  INNER JOIN vendor ON nome.vendorid = vendor.id
+$where
+ORDER BY $sidx $sord
+OFFSET $start LIMIT $limit
+TXT;
+					break;
+			}
 			$arr = DB::prepare($sql)->execute()->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['nomeid'];
-				$ic = ($row['nomeactive'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
-				$responce->rows[$i]['cell'] = array(
-						"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-						$row['nomeid'], $row['groupname'], $row['vendorname'], $row['nomename']
-				);
+				$ic = ($row['nomeactive'] == '1') ? 'fa-check-circle' : 'fa-ban';
+				$responce->rows[$i]['cell'] = [
+					"<i class=\"fas $ic\"></i>",
+					$row['nomeid'], $row['groupname'], $row['vendorname'], $row['nomename']
+				];
 				$i++;
 			}
 		} catch (PDOException $ex) {
@@ -117,7 +134,7 @@ TXT;
 		jsonExit($responce);
 	}
 
-	/* Для работы jqGrid (editurl) */
+	/** Для работы jqGrid (editurl) */
 	function change() {
 		$user = User::getInstance();
 		$oper = PostDef('oper');
@@ -139,10 +156,10 @@ TXT;
 //				break;
 			case 'edit':
 				/* Проверяем может ли пользователь редактировать? */
-				($user->isAdmin() || $user->TestRights([1,5])) or die('Для редактирования недостаточно прав');
+				($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования недостаточно прав');
 				/* Есть ли уже такая запись? */
-				$sql = 'SELECT COUNT(*) AS cnt FROM nome WHERE name = :name';
 				try {
+					$sql = 'SELECT COUNT(*) cnt FROM nome WHERE name = :name';
 					$row = DB::prepare($sql)->execute([':name' => $nomename])->fetch();
 					$count = ($row) ? $row['cnt'] : 0;
 				} catch (PDOException $ex) {
@@ -152,8 +169,8 @@ TXT;
 					$sql = 'UPDATE nome SET name = :name WHERE id = :id';
 					try {
 						DB::prepare($sql)->execute([
-								':name' => $nomename,
-								':id' => $id
+							':name' => $nomename,
+							':id' => $id
 						]);
 					} catch (PDOException $ex) {
 						throw new DBException('Не могу обновить данные по номенклатуре (2)', 0, $ex);
@@ -162,7 +179,7 @@ TXT;
 				break;
 			case 'del':
 				/* Проверяем может ли пользователь удалять? */
-				($user->isAdmin() || $user->TestRights([1,6])) or die('Для удаления недостаточно прав');
+				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления недостаточно прав');
 				$sql = 'UPDATE nome SET active = NOT active WHERE id = :id';
 				try {
 					DB::prepare($sql)->execute([':id' => $id]);

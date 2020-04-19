@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $step = GetDef('step');
@@ -32,8 +32,8 @@ if ($namenome == '') {
 	$err[] = 'Не задано наименование!';
 }
 
-# Есть ли уже такая запись?
-$sql = 'SELECT COUNT(*) AS cnt FROM nome WHERE name = :name';
+/* Есть ли уже такая запись? */
+$sql = 'SELECT COUNT(*) cnt FROM nome WHERE name = :name';
 try {
 	$row = DB::prepare($sql)->execute([':name' => $namenome])->fetch();
 	$count = ($row) ? $row['cnt'] : 0;
@@ -60,8 +60,8 @@ if (count($err) == 0) {
 	}
 	if ($step == 'add') {
 		$sql = <<<TXT
-INSERT INTO nome (id, groupid, vendorid, name, active)
-VALUES (NULL, :groupid, :vendorid, :name, '1')
+INSERT INTO nome (groupid, vendorid, name, active)
+VALUES (:groupid, :vendorid, :name, '1')
 TXT;
 		try {
 			DB::prepare($sql)->execute([

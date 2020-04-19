@@ -50,9 +50,10 @@
 		onSelectRow: function (id) {
 			var caption = 'Рабочие места в помещении "' + $list1.jqGrid('getCell', id, 'name') + '"';
 			$list2.jqGrid('setCaption', caption);
-			$list2.jqGrid('setGridParam', {url: 'places/listsub?placesid=' + id + '&orgid=' + defaultorgid});
-			$list2.jqGrid('setGridParam', {editurl: 'places/changesub?placesid=' + id + '&orgid=' + defaultorgid});
-			$list2.trigger('reloadGrid');
+			$list2.jqGrid('setGridParam', {
+				url: 'places/listsub?placesid=' + id + '&orgid=' + defaultorgid,
+				editurl: 'places/changesub?placesid=' + id + '&orgid=' + defaultorgid
+			}).trigger('reloadGrid');
 		},
 		loadComplete: function () {
 			$list2.jqGrid('setCaption', 'Рабочие места');
