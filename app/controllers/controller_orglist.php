@@ -79,10 +79,9 @@ class Controller_Orglist extends Controller {
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
-				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
+				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
-					$row['id'],
+					"<i class=\"fas $ic\"></i>",
 					$row['name']
 				];
 				$i++;

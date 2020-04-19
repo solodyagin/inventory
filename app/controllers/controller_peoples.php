@@ -151,7 +151,7 @@ TXT;
 				$mode = ($row['mode'] == '1') ? 'Да' : 'Нет';
 				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-					"<i class=\"fa $ic\"></i>",
+					"<i class=\"fas $ic\"></i>",
 					$row['id'], $row['orgname'], $row['fio'], $row['login'], 'скрыто', $row['email'], $mode
 				];
 				$i++;

@@ -9,11 +9,11 @@
 </div>
 <script>
 	$('#list1').jqGrid({
-		url: 'route/deprecated/server/tmc/libre_vendor.php',
+		url: 'vendors/list',
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Имя', 'Комментарий', 'Действия'],
 		colModel: [
-			{name: 'active', index: 'active', width: 20},
+			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'name', index: 'name', width: 200, editable: true},
 			{name: 'comment', index: 'comment', width: 200, editable: true},
@@ -25,8 +25,8 @@
 		scroll: 1,
 		viewrecords: true,
 		sortorder: 'asc',
-		editurl: 'route/deprecated/server/tmc/libre_vendor.php',
-		//caption: 'Справочник производителей'
+		editurl: 'vendors/change',
+		caption: 'Справочник производителей'
 	});
 	var addOptions = {
 		top: 0, left: 0, width: 500

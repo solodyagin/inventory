@@ -71,11 +71,11 @@ try {
 		$sth->execute();
 		if ($row = $sth->fetch()) {
 			if ($row['cnt'] == 0) {
-				$dbh->exec('CREATE EXTENSION pgcrypto');
+//				$dbh->exec('CREATE EXTENSION pgcrypto');
 			}
 		}
-		$dbh->exec("DROP DATABASE IF EXISTS $dbName");
-		$dbh->exec("CREATE DATABASE $dbName");
+//		$dbh->exec("DROP DATABASE IF EXISTS $dbName");
+//		$dbh->exec("CREATE DATABASE $dbName");
 	}
 
 	$dbh = null;

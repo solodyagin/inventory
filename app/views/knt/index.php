@@ -61,15 +61,15 @@ $cfg = Config::getInstance();
 	$list1.jqGrid({
 		url: 'knt/list',
 		datatype: 'json',
-		colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Покупатель', 'Продавец', 'Контролировать', 'ERPCode', 'Комментарий', 'Действия'],
+		colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Потребитель', 'Поставщик', 'Контролировать', 'ERPCode', 'Комментарий', 'Действия'],
 		colModel: [
 			{name: 'active', index: 'active', width: 20, search: false},
 			{name: 'id', index: 'id', width: 55, search: false, hidden: true},
 			{name: 'name', index: 'name', width: 200, editable: true},
 			{name: 'inn', index: 'inn', width: 100, editable: true},
 			{name: 'kpp', index: 'kpp', width: 100, editable: true, hidden: true},
-			{name: 'bayer', index: 'bayer', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}, search: false, hidden: true},
-			{name: 'supplier', index: 'supplier', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}, search: false, hidden: true},
+			{name: 'bayer', index: 'bayer', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}, search: false},
+			{name: 'supplier', index: 'supplier', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}, search: false},
 			{name: 'dog', index: 'dog', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}, search: false},
 			{name: 'erpcode', index: 'erpcode', width: 100, editable: true, search: false, hidden: true},
 			{name: 'comment', index: 'comment', width: 200, editable: true},
@@ -91,7 +91,7 @@ $cfg = Config::getInstance();
 				datatype: 'json',
 				colNames: [' ', 'Id', 'Номер', 'Название', 'Начало', 'Конец', 'Рабочий', 'Комментарий', 'Действия'],
 				colModel: [
-					{name: 'active', index: 'active', width: 20},
+					{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 					{name: 'id', index: 'id', width: 55, hidden: true},
 					{name: 'num', index: 'num', width: 50, editable: true},
 					{name: 'name', index: 'name', width: 100, editable: true},

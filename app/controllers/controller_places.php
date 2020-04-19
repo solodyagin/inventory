@@ -98,9 +98,9 @@ TXT;
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
-				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
+				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+					"<i class=\"fas $ic\"></i>",
 					$row['id'],
 					$row['opgroup'],
 					$row['name'],
