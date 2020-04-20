@@ -101,11 +101,20 @@ TEXT;
 	}
 });
 
+/* Загружаем все что нужно для работы движка */
+include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
+
+$bytes = bin2hex(random_bytes(10));
+DB::prepare("ALTER TABLE config ADD COLUMN IF NOT EXISTS inventory_id VARCHAR(20) NOT NULL DEFAULT '$bytes'")->execute();
+
 /* Получаем настройки из базы */
 $cfg->loadFromDB();
 
-/* Загружаем все что нужно для работы движка */
-include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
+/* Обновляем БД */
+if (strtotime($cfg->version) < strtotime(SITE_VERSION)) {
+
+}
+DB::prepare('UPDATE config SET version = :version')->execute([':version' => SITE_VERSION]);
 
 /* Аутентифицируем пользователя по кукам */
 $user = User::getInstance();

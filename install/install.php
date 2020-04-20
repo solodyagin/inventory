@@ -57,19 +57,21 @@ try {
 	if (/* $dbh->getAttribute(PDO::ATTR_DRIVER_NAME) */$dbDriver == 'mysql') {
 		$dbh->exec("CREATE DATABASE IF NOT EXISTS $dbName") or die('Ошибка создания базы: ' . implode('<br>', $dbh->errorInfo()));
 	} else {
-//		$sql = "SELECT COUNT(*) cnt FROM pg_catalog.pg_database WHERE datname = :name";
-//		$sth = $dbh->prepare($sql);
-//		$sth->execute([':name' => $dbName]);
-//		if ($row = $sth->fetch()) {
-//			if ($row['cnt'] == 0) {
-//				die("База данных '$dbName' не найдена");
-//			}
-//		}
+		$sql = "SELECT COUNT(*) cnt FROM pg_catalog.pg_database WHERE datname = :name";
+		$sth = $dbh->prepare($sql);
+		$sth->execute([':name' => $dbName]);
+		$row = $sth->fetch();
+		if ($row) {
+			if ($row['cnt'] == 0) {
+				die("База данных '$dbName' не найдена");
+			}
+		}
 		/* Подключаем необходимое расширение "pgcrypto" */
 		$sql = "SELECT COUNT(*) cnt FROM pg_available_extensions WHERE name='pgcrypto' AND installed_version IS NOT NULL";
 		$sth = $dbh->prepare($sql);
 		$sth->execute();
-		if ($row = $sth->fetch()) {
+		$row = $sth->fetch();
+		if ($row) {
 			if ($row['cnt'] == 0) {
 //				$dbh->exec('CREATE EXTENSION pgcrypto');
 			}
@@ -106,7 +108,7 @@ INSERT INTO public.config (ad, theme, sitename, smtpauth, sendemail, version) VA
 SQL2;
 	}
 	$sth = $dbh->prepare($sql);
-	$sth->execute([':version' => 'UNUSED']);
+	$sth->execute([':version' => SITE_VERSION]);
 
 	/* Создаём организацию */
 	if ($dbDriver == 'mysql') {

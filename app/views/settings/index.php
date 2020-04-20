@@ -19,10 +19,12 @@ $cfg = Config::getInstance();
 ?>
 <form action="settings/save" method="post" name="form1" target="_self" class="form-horizontal">
 	<div class="container-fluid">
+
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="alert alert-info">
-					Версия программы: Inventory v<?= SITE_VERSION; ?>
+					Inventory ID: <?= $cfg->inventory_id; ?><br>
+					Версия программы: v<?= SITE_VERSION; ?>
 				</div>
 			</div>
 		</div>

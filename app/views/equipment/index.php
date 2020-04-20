@@ -219,21 +219,21 @@ $cfg = Config::getInstance();
 			subGridRowExpanded: function (subgrid_id, row_id) {
 				var subgrid_table_id = subgrid_id + '_t',
 						pager_id = 'p_' + subgrid_table_id;
-				$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id + '" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
+				$('#' + subgrid_id).html('<table id="' + subgrid_table_id + '" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
 				$('#' + subgrid_table_id).jqGrid({
 					url: 'route/deprecated/server/equipment/paramlist.php?eqid=' + row_id,
 					datatype: 'json',
 					colNames: ['Id', 'Наименование', 'Параметр', ''],
 					colModel: [
-						{name: 'id', index: 'num', width: 60, key: true},
-						{name: 'name', index: 'item', width: 150},
-						{name: 'param', index: 'qty', width: 310, editable: true},
+						{name: 'id', index: 'id', width: 60, hidden: true},
+						{name: 'pname', index: 'pname', width: 150},
+						{name: 'pparam', index: 'pparam', width: 310, editable: true},
 						{name: 'myac', width: 80, fixed: true, sortable: false, resize: false,
 							formatter: 'actions', formatoptions: {keys: true}}
 					],
 					editurl: 'route/deprecated/server/equipment/paramlist.php?eqid=' + row_id,
 					pager: pager_id,
-					sortname: 'name',
+					sortname: 'pname',
 					sortorder: 'asc',
 					scroll: 1,
 					height: 'auto'

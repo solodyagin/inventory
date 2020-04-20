@@ -46,24 +46,49 @@ class Controller_Equipment extends Controller {
 		$flt = json_decode($filters, true);
 		$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
 		$where = '';
-		for ($i = 0; $i < $cnt; $i++) {
-			$field = $flt['rules'][$i]['field'];
-			if ($field == 'org.name') {
-				$field = 'org.id';
-			}
-			$data = $flt['rules'][$i]['data'];
-			if ($data != '-1') {
-				if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
-					$where = $where . "($field = '$data')";
-				} else {
-					$where = $where . "($field LIKE '%$data%')";
+		switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			case 'mysql':
+				for ($i = 0; $i < $cnt; $i++) {
+					$field = $flt['rules'][$i]['field'];
+					if ($field == 'org.name') {
+						$field = 'org.id';
+					}
+					$data = $flt['rules'][$i]['data'];
+					if ($data != '-1') {
+						if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
+							$where = $where . "($field = '$data')";
+						} else {
+							$where = $where . "($field LIKE '%$data%')";
+						}
+					} else {
+						$where = $where . "($field LIKE '%%')";
+					}
+					if ($i < ($cnt - 1)) {
+						$where = $where . ' AND ';
+					}
 				}
-			} else {
-				$where = $where . "($field LIKE '%%')";
-			}
-			if ($i < ($cnt - 1)) {
-				$where = $where . ' AND ';
-			}
+				break;
+			case 'pgsql':
+				for ($i = 0; $i < $cnt; $i++) {
+					$field = $flt['rules'][$i]['field'];
+					if ($field == 'org.name') {
+						$field = 'org.id';
+					}
+					$data = $flt['rules'][$i]['data'];
+					if ($data != '-1') {
+						if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
+							$where = $where . "($field = '$data')";
+						} else {
+							$where = $where . "($field::text LIKE '%$data%')";
+						}
+					} else {
+						$where = $where . "($field::text LIKE '%%')";
+					}
+					if ($i < ($cnt - 1)) {
+						$where = $where . ' AND ';
+					}
+				}
+				break;
 		}
 		if ($where == '') {
 			$where = "WHERE equipment.orgid='$sorgider'";

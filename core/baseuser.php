@@ -53,9 +53,11 @@ class BaseUser {
 	 */
 	function TestRights($roles) {
 		$sr = implode(',', array_map('intval', $roles));
-		$sql = "SELECT COUNT(*) FROM usersroles WHERE userid = :id AND role IN ($sr)";
+		$sql = "SELECT COUNT(*) AS cnt FROM usersroles WHERE userid = :id AND role IN ($sr)";
 		try {
-			return (DB::prepare($sql)->execute([':id' => $this->id])->fetchColumn() > 0);
+			$row = DB::prepare($sql)->execute([':id' => $this->id])->fetch();
+			$cnt = ($row) ? $row['cnt'] : 0;
+			return $cnt > 0;
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.TestRights', 0, $ex);
 		}

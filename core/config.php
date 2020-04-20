@@ -39,7 +39,8 @@ class Config {
 	public $smtpport, $smtpusername, $smtppass; # SMTP порт,пользователь,пароль пользователя для входа
 	public $emailreplyto; # Куда слать ответы
 	public $sendemail; # А вообще будем посылать почту?
-	public $version; # Версия платформы
+	public $version; # Версия структуры БД
+	public $inventory_id; # Inventory ID
 	public $defaultorgid; # Организация "по умолчанию". Выбирается или по кукисам или первая из списка организаций
 	public $urlsite; # Где находится сайт http://
 	public $navbar = []; # Навигационная последовательность
@@ -82,6 +83,7 @@ class Config {
 				$this->emailreplyto = stripslashes($row['emailreplyto']); # куда слать ответы
 				$this->sendemail = $row['sendemail'];  # а вообще будем посылать почту?
 				$this->version = $row['version'];
+				$this->inventory_id = $row['inventory_id'];
 				$this->urlsite = $row['urlsite'];
 				$this->fontsize = (isset($_COOKIE['fontsize'])) ? $_COOKIE['fontsize'] : '12px';
 			}
