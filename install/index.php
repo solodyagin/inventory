@@ -56,8 +56,8 @@ if ($action == 'install') {
 					<div id="error" class="alert alert-danger" style="display:none"></div>
 				</div>
 				<div class="col-sm-6">
-					<div class="panel panel-primary">
-						<div class="panel-heading">Установка "Учёт оргтехники в организации"</div>
+					<div class="panel panel-default">
+						<div class="panel-heading">Установка Inventory v<?= SITE_VERSION; ?> (учёт оргтехники в организации)</div>
 						<div class="panel-body" id="prim">
 							<form class="form-horizontal" id="myform" name="myform" action="?action=install" method="post" target="_self">
 								<div class="form-group">
@@ -65,7 +65,7 @@ if ($action == 'install') {
 									<div class="col-sm-8">
 										<select id="dbdriver" name="dbdriver" class="form-control">
 											<option value="mysql">MySQL</option>
-											<option value="pgsql">PostgreSQL</option>
+											<option value="pgsql">PostgreSQL (в разработке)</option>
 										</select>
 									</div>
 								</div>
@@ -73,7 +73,7 @@ if ($action == 'install') {
 									<label class="control-label col-sm-4" for="dbhost">Сервер:</label>
 									<div class="col-sm-8">
 										<input type="text" class="form-control" name="dbhost" id="dbhost" placeholder="localhost" value="localhost"
-											   data-toggle="tooltip" data-html="true" data-placement="right" title="Для Docker укажите <strong>mysql</strong>">
+											   data-toggle="tooltip" data-html="true" data-placement="right" title="Для запуска в Docker введите: <strong>mysql</strong>">
 									</div>
 								</div>
 								<div class="form-group">
