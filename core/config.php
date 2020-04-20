@@ -52,12 +52,12 @@ class Config {
 		$res = include_once(SITE_ROOT . '/app/config.php');
 		if ($res) {
 			$this->debug = $debug; # Режим отладки
-			$this->db_driver = $db_driver;
-			$this->db_host = $db_host; # Хост БД
-			$this->db_user = $db_user; # Пользователь БД
-			$this->db_pass = $db_pass; # Пароль пользователя БД
-			$this->db_name = $db_base; # Имя базы
-			$this->db_char = $db_char; # Кодировка базы
+			$this->db_driver = $db_driver ?? 'mysql';
+			$this->db_host = $db_host ?? $mysql_host; # Хост БД
+			$this->db_user = $db_user ?? $mysql_user; # Пользователь БД
+			$this->db_pass = $db_pass ?? $mysql_pass; # Пароль пользователя БД
+			$this->db_name = $db_base ?? $mysql_base; # Имя базы
+			$this->db_char = $db_char ?? $mysql_char; # Кодировка базы
 			$this->rewrite_base = $rewrite_base; # Размещение системы относительно корня сайта
 		}
 		return $res;
