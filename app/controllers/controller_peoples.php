@@ -69,7 +69,14 @@ class Controller_Peoples extends Controller {
 		for ($i = 0; $i < $cnt; $i++) {
 			$field = $flt['rules'][$i]['field'];
 			$data = $flt['rules'][$i]['data'];
-			$where .= "($field LIKE '%$data%')";
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$where .= "($field LIKE '%$data%')";
+					break;
+				case 'pgsql':
+					$where .= "($field::text LIKE '%$data%')";
+					break;
+			}
 			if ($i < ($cnt - 1)) {
 				$where .= ' AND ';
 			}
@@ -83,7 +90,13 @@ class Controller_Peoples extends Controller {
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
-			$sql = 'SELECT COUNT(*) cnt FROM users';
+			$sql = <<<TXT
+SELECT COUNT(*) cnt
+FROM users u
+	INNER JOIN org o ON o.id = u.orgid
+	INNER JOIN users_profile p ON p.usersid = u.id
+$where
+TXT;
 			$row = DB::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -107,22 +120,20 @@ class Controller_Peoples extends Controller {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
-SELECT	u.`id`,
-		o.`name` `orgname`,
-		p.`fio`,
-		u.`login`,
-		u.`password`,
-		u.`email`,
-		u.`mode`,
-		u.`active`
-FROM	`users` u
-	INNER JOIN `org` o
-		ON o.`id` = u.`orgid`
-	INNER JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
+SELECT u.id,
+	o.name AS orgname,
+	p.fio,
+	u.login,
+	u.password,
+	u.email,
+	u.mode,
+	u.active
+FROM users u
+	INNER JOIN org o ON o.id = u.orgid
+	INNER JOIN users_profile p ON p.usersid = u.id
 $where
-ORDER BY	$sidx $sord
-LIMIT		$start, $limit
+ORDER BY $sidx $sord
+LIMIT $start, $limit
 TXT;
 					break;
 				case 'pgsql':

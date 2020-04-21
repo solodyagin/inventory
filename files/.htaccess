@@ -1,4 +1,4 @@
-Options All -ExecCGI -Indexes -Includes FollowSymLinks
+Options All -ExecCGI -Indexes -Includes -FollowSymLinks
 
 #php_flag engine off
 
