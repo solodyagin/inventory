@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Model {
@@ -26,7 +26,7 @@ class Model {
 	}
 
 	function getData() {
-
+		
 	}
 
 }

@@ -52,35 +52,24 @@ $cfg = Config::getInstance();
 	</div>
 </div>
 <script>
-	$('#orgs').change(function () {
-		var exdate = new Date();
-		exdate.setDate(exdate.getDate() + 365);
-		orgid = $('#orgs :selected').val();
-		defaultorgid = orgid;
-		document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
-		$.jgrid.gridUnload('#tbl_equpment');
-		LoadTable();
-	});
-
 	function LoadTable() {
-		var table = $('#tbl_equpment');
-		table.jqGrid({
-			url: 'route/deprecated/server/equipment/equipment.php?sorgider=' + defaultorgid,
+		var $tblEquipment = $('#tbl_equpment'),
+				$dlgAddEdit = $('#pg_add_edit');
+		$tblEquipment.jqGrid({
+			url: 'equipment/list?sorgider=' + defaultorgid,
 			datatype: 'json',
-			colNames: [' ', 'Id', 'IP', 'Помещение', 'Номенклатура', 'Группа', 'В пути',
-				'Производитель', 'Имя по бухгалтерии', 'Сер.№', 'Инв.№',
-				'Штрихкод', 'Организация', 'Мат.отв.', 'Оприходовано', 'Стоимость',
-				'Тек. стоимость', 'ОС', 'Списано', 'Карта', 'Комментарий', 'Ремонт',
-				'Гар.срок', 'Поставщик', 'Действия'],
+			colNames: [' ', 'Id', 'IP', 'Помещение', 'Номенклатура', 'Группа', 'В пути', 'Производитель', 'Имя по бухгалтерии', 'Сер.№', 'Инв.№',
+				'Штрихкод', 'Организация', 'Мат.отв.', 'Оприходовано', 'Стоимость', 'Тек. стоимость', 'ОС', 'Списано', 'Карта', 'Комментарий',
+				'Ремонт', 'Гар.срок', 'Поставщик', 'Действия'],
 			colModel: [
-				{name: 'active', index: 'active', width: 20, search: false, frozen: true, fixed: true},
+				{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 				{name: 'equipment.id', index: 'equipment.id', width: 55, search: false, frozen: true, hidden: true, fixed: true},
 				{name: 'ip', index: 'ip', width: 100, hidden: true, fixed: true},
 				{name: 'placesid', index: 'placesid', width: 155, stype: 'select', frozen: true, fixed: true,
-					searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistplaces.php?addnone=true'}},
+					searchoptions: {dataUrl: 'equipment/getlistplaces?addnone=true'}},
 				{name: 'nomename', index: 'getvendorandgroup.nomename', width: 135, frozen: true},
 				{name: 'getvendorandgroup.groupname', index: 'getvendorandgroup.grnomeid', width: 100, stype: 'select', fixed: true,
-					searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlistgroupname.php?addnone=true'}},
+					searchoptions: {dataUrl: 'equipment/getlistgroupname?addnone=true'}},
 				{name: 'tmcgo', index: 'tmcgo', width: 80, search: true, stype: 'select', fixed: true,
 					searchoptions: {dataUrl: 'route/deprecated/server/equipment/getlisttmcgo.php?addnone=true'},
 					formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: 'Yes:No'}, editable: true, hiddem: true
@@ -111,161 +100,147 @@ $cfg = Config::getInstance();
 					formatoptions: {keys: true}, search: false}
 			],
 			gridComplete: function () {
-				table.loadCommonParam('tbleq');
+				$tblEquipment.loadCommonParam('tbleq');
 			},
 			resizeStop: function () {
-				table.saveCommonParam('tbleq');
+				$tblEquipment.saveCommonParam('tbleq');
 			},
 			onSelectRow: function (ids) {
-				$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
-				$('#tbl_move').jqGrid('setGridParam', {url: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids});
-				$('#tbl_move').jqGrid({
-					url: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids,
-					datatype: 'json',
-					colNames: ['Id', 'Дата', 'Организация', 'Помещение',
-						'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', '',
-						'Комментарий', ''],
-					colModel: [
-						{name: 'id', index: 'id', width: 25, hidden: true},
-						{name: 'dt', index: 'dt', width: 95},
-						{name: 'orgname1', index: 'orgname1', width: 120, hidden: true},
-						{name: 'place1', index: 'place1', width: 80},
-						{name: 'user1', index: 'user1', width: 90},
-						{name: 'orgname2', index: 'orgname2', width: 120, hidden: true},
-						{name: 'place2', index: 'place2', width: 80},
-						{name: 'user2', index: 'user2', width: 90},
-						{name: 'name', index: 'name', width: 90, hidden: true},
-						{name: 'comment', index: 'comment', width: 200, editable: true},
-						{name: 'myac', width: 60, fixed: true, sortable: false, resize: false,
-							formatter: 'actions', formatoptions: {keys: true}}
-					],
-					autowidth: true,
-					pager: '#mv_nav',
-					sortname: 'dt',
-					scroll: 1,
-					shrinkToFit: true,
-					viewrecords: true,
-					height: 200,
-					sortorder: 'asc',
-					editurl: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=' + ids,
-					caption: 'История перемещений'
-				}).trigger('reloadGrid');
-				$('#tbl_move').jqGrid('destroyGroupHeader');
-				$('#tbl_move').jqGrid('setGroupHeaders', {
-					useColSpanStyle: true,
-					groupHeaders: [
-						{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
-						{startColumnName: 'orgname2', numberOfColumns: 3, titleText: 'Куда'}
-					]
-				});
-				$.jgrid.gridUnload('#tbl_rep');
-				$('#tbl_rep').jqGrid('setGridParam', {url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids});
-				$('#tbl_rep').jqGrid({
-					url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
-					datatype: 'json',
-					colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', ''],
-					colModel: [
-						{name: 'id', index: 'id', width: 25, editable: false},
-						{name: 'dt', index: 'dt', width: 95, editable: true, sorttype: 'date', editoptions: {size: 20,
-								dataInit: function (el) {
-									vl = $(el).val();
-									$(el).datepicker();
-									$(el).datepicker('option', 'dateFormat', 'dd.mm.yy');
-									$(el).datepicker('setDate', vl);
+				if (ids) {
+					$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
+					$('#tbl_move').jqGrid('setGridParam', {url: 'moveinfo/list?eqid=' + ids});
+					$('#tbl_move').jqGrid({
+						url: 'moveinfo/list?eqid=' + ids,
+						datatype: 'json',
+						colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', '', 'Комментарий', ''],
+						colModel: [
+							{name: 'id', index: 'id', width: 25, hidden: true},
+							{name: 'dt', index: 'dt', width: 95},
+							{name: 'orgname1', index: 'orgname1', width: 120, hidden: true},
+							{name: 'place1', index: 'place1', width: 80},
+							{name: 'user1', index: 'user1', width: 90},
+							{name: 'orgname2', index: 'orgname2', width: 120, hidden: true},
+							{name: 'place2', index: 'place2', width: 80},
+							{name: 'user2', index: 'user2', width: 90},
+							{name: 'name', index: 'name', width: 90, hidden: true},
+							{name: 'comment', index: 'comment', width: 200, editable: true},
+							{name: 'myac', width: 60, fixed: true, sortable: false, resize: false,
+								formatter: 'actions', formatoptions: {keys: true}}
+						],
+						autowidth: true,
+						pager: '#mv_nav',
+						sortname: 'dt',
+						scroll: 1,
+						shrinkToFit: true,
+						viewrecords: true,
+						height: 200,
+						sortorder: 'asc',
+						editurl: 'moveinfo/change?eqid=' + ids,
+						caption: 'История перемещений'
+					}).trigger('reloadGrid');
+					$('#tbl_move').jqGrid('destroyGroupHeader');
+					$('#tbl_move').jqGrid('setGroupHeaders', {
+						useColSpanStyle: true,
+						groupHeaders: [
+							{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
+							{startColumnName: 'orgname2', numberOfColumns: 3, titleText: 'Куда'}
+						]
+					});
+					$.jgrid.gridUnload('#tbl_rep');
+					$('#tbl_rep').jqGrid('setGridParam', {url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids});
+					$('#tbl_rep').jqGrid({
+						url: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
+						datatype: 'json',
+						colNames: ['Id', 'Дата начала', 'Дата окончания', 'Организация', 'Стоимость', 'Комментарий', 'Статус', ''],
+						colModel: [
+							{name: 'id', index: 'id', width: 25, editable: false},
+							{name: 'dt', index: 'dt', width: 95, editable: true, sorttype: 'date', editoptions: {size: 20,
+									dataInit: function (el) {
+										vl = $(el).val();
+										$(el).datepicker();
+										$(el).datepicker('option', 'dateFormat', 'dd.mm.yy');
+										$(el).datepicker('setDate', vl);
+									}}
+							},
+							{name: 'dtend', index: 'dtend', width: 95, editable: true, editoptions: {size: 20,
+									dataInit: function (el) {
+										vl = $(el).val();
+										$(el).datepicker();
+										$(el).datepicker('option', 'dateFormat', 'dd.mm.yy');
+										$(el).datepicker('setDate', vl);
+									}}
+							},
+							{name: 'kntname', index: 'kntname', width: 120},
+							{name: 'cost', index: 'cost', width: 80, editable: true, editoptions: {size: 20,
+									dataInit: function (el) {
+										$(el).focus();
+									}}
+							},
+							{name: 'comment', index: 'comment', width: 200, editable: true},
+							{name: 'status', index: 'status', width: 80, editable: true, edittype: 'select',
+								editoptions: {value: '1:Ремонт;0:Сделано'}},
+							{name: 'myac', width: 60, fixed: true, sortable: false, resize: false, formatter: 'actions',
+								formatoptions: {keys: true,
+									afterSave: function () {
+										$tblEquipment.jqGrid().trigger('reloadGrid');
+									}
 								}}
-						},
-						{name: 'dtend', index: 'dtend', width: 95, editable: true, editoptions: {size: 20,
-								dataInit: function (el) {
-									vl = $(el).val();
-									$(el).datepicker();
-									$(el).datepicker('option', 'dateFormat', 'dd.mm.yy');
-									$(el).datepicker('setDate', vl);
-								}}
-						},
-						{name: 'kntname', index: 'kntname', width: 120},
-						{name: 'cost', index: 'cost', width: 80, editable: true, editoptions: {size: 20,
-								dataInit: function (el) {
-									$(el).focus();
-								}}
-						},
-						{name: 'comment', index: 'comment', width: 200, editable: true},
-						{name: 'status', index: 'status', width: 80, editable: true, edittype: 'select',
-							editoptions: {value: '1:Ремонт;0:Сделано'}},
-						{name: 'myac', width: 60, fixed: true, sortable: false, resize: false, formatter: 'actions',
-							formatoptions: {keys: true,
-								afterSave: function () {
-									table.jqGrid().trigger('reloadGrid');
-								}
-							}}
-					],
-					autowidth: true,
-					pager: '#rp_nav',
-					sortname: 'dt',
-					scroll: 1,
-					viewrecords: true,
-					height: 200,
-					sortorder: 'asc',
-					editurl: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
-					caption: 'История ремонтов'
-				}).trigger('reloadGrid');
-				$('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
-				$('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
-					caption: '<i class="fas fa-exclamation-triangle"></i>',
-					title: 'Отдать в ремонт',
-					buttonicon: 'none',
-					onClickButton: function () {
-						var id = table.jqGrid('getGridParam', 'selrow');
-						if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
-							table.jqGrid('getRowData', id);
-							$('#pg_add_edit').dialog({
-								autoOpen: false,
-								height: 380,
-								width: 620,
-								modal: true,
-								title: 'Ремонт имущества'
-							}).dialog('open');
-							$('#pg_add_edit').load('route/deprecated/client/view/equipment/repair.php?step=add&eqid=' + id);
-						} else {
-							$().toastmessage('showWarningToast', 'Выберите оргтехнику для ремонта!');
+						],
+						autowidth: true,
+						pager: '#rp_nav',
+						sortname: 'dt',
+						scroll: 1,
+						viewrecords: true,
+						height: 200,
+						sortorder: 'asc',
+						editurl: 'route/deprecated/server/equipment/getrepinfo.php?eqid=' + ids,
+						caption: 'История ремонтов'
+					}).trigger('reloadGrid');
+					$('#tbl_rep').jqGrid('navGrid', '#rp_nav', {edit: false, add: false, del: false, search: false});
+					$('#tbl_rep').jqGrid('navButtonAdd', '#rp_nav', {
+						caption: '<i class="fas fa-exclamation-triangle"></i>',
+						title: 'Отдать в ремонт',
+						buttonicon: 'none',
+						onClickButton: function () {
+							var id = $tblEquipment.jqGrid('getGridParam', 'selrow');
+							if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
+								$tblEquipment.jqGrid('getRowData', id);
+								$dlgAddEdit.dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
+								$dlgAddEdit.load('route/deprecated/client/view/equipment/repair.php?step=add&eqid=' + id, function () {
+									$dlgAddEdit.dialog('open');
+								});
+							} else {
+								$().toastmessage('showWarningToast', 'Выберите оргтехнику для ремонта!');
+							}
 						}
-					}
-				});
+					});
+				}
 			},
 			subGridRowExpanded: function (subgrid_id, row_id) {
-				// we pass two parameters
-				// subgrid_id is a id of the div tag created whitin a table data
-				// the id of this elemenet is a combination of the "sg_" + id of the row
-				// the row_id is the id of the row
-				// If we wan to pass additinal parameters to the url we can use
-				// a method getRowData(row_id) - which returns associative array in type name-value
-				// here we can easy construct the flowing
-				var subgrid_table_id, pager_id;
-				subgrid_table_id = subgrid_id + '_t';
-				pager_id = 'p_' + subgrid_table_id;
-				$('#' + subgrid_id).html('<table border="1" id="' + subgrid_table_id + '" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
+				var subgrid_table_id = subgrid_id + '_t',
+						pager_id = 'p_' + subgrid_table_id;
+				$('#' + subgrid_id).html('<table id="' + subgrid_table_id + '" class="scroll"></table><div id="' + pager_id + '" class="scroll"></div>');
 				$('#' + subgrid_table_id).jqGrid({
 					url: 'route/deprecated/server/equipment/paramlist.php?eqid=' + row_id,
 					datatype: 'json',
 					colNames: ['Id', 'Наименование', 'Параметр', ''],
 					colModel: [
-						{name: 'id', index: 'num', width: 60, key: true},
-						{name: 'name', index: 'item', width: 150},
-						{name: 'param', index: 'qty', width: 310, editable: true},
+						{name: 'id', index: 'id', width: 60, hidden: true},
+						{name: 'pname', index: 'pname', width: 150},
+						{name: 'pparam', index: 'pparam', width: 310, editable: true},
 						{name: 'myac', width: 80, fixed: true, sortable: false, resize: false,
 							formatter: 'actions', formatoptions: {keys: true}}
 					],
 					editurl: 'route/deprecated/server/equipment/paramlist.php?eqid=' + row_id,
 					pager: pager_id,
-					sortname: 'name',
+					sortname: 'pname',
 					sortorder: 'asc',
 					scroll: 1,
 					height: 'auto'
 				});
 			},
 			subGridRowColapsed: function (subgrid_id, row_id) {
-				// this function is called before removing the data
-				var subgrid_table_id;
-				subgrid_table_id = subgrid_id + '_t';
+				var subgrid_table_id = subgrid_id + '_t';
 				$('#' + subgrid_table_id).remove();
 			},
 			subGrid: true,
@@ -277,22 +252,22 @@ $cfg = Config::getInstance();
 			rowNum: 40,
 			viewrecords: true,
 			sortorder: 'asc',
-			editurl: 'route/deprecated/server/equipment/equipment.php?sorgider=' + defaultorgid,
+			editurl: 'equipment/change?sorgider=' + defaultorgid,
 			caption: 'Оргтехника'
 		});
-		table.jqGrid('setGridHeight', $(window).innerHeight() /*- 285*/ / 2);
-		table.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
-		table.jqGrid('bindKeys', '');
-		table.jqGrid('navGrid', '#pg_nav', {edit: false, add: false, del: false, search: false});
-		table.jqGrid('setFrozenColumns');
-		table.jqGrid('navButtonAdd', '#pg_nav', {
+		$tblEquipment.jqGrid('setGridHeight', $(window).innerHeight() / 2);
+		$tblEquipment.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
+		$tblEquipment.jqGrid('bindKeys', '');
+		$tblEquipment.jqGrid('navGrid', '#pg_nav', {edit: false, add: false, del: false, search: false});
+		$tblEquipment.jqGrid('setFrozenColumns');
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
 			caption: '<i class="fas fa-tag"></i>',
 			title: 'Выбор колонок',
 			buttonicon: 'none',
 			onClickButton: function () {
-				table.jqGrid('columnChooser', {
+				$tblEquipment.jqGrid('columnChooser', {
 					done: function () {
-						table.saveCommonParam('tbleq');
+						$tblEquipment.saveCommonParam('tbleq');
 					},
 					width: 550,
 					dialog_opts: {
@@ -306,84 +281,82 @@ $cfg = Config::getInstance();
 				});
 			}
 		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
 			caption: '<i class="fas fa-plus-circle"></i>',
 			title: 'Добавить',
 			buttonicon: 'none',
 			onClickButton: function () {
-				$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
-				$('#pg_add_edit').dialog('open');
-				$('#pg_add_edit').load('route/deprecated/client/view/equipment/equipment.php?step=add&id=');
+				$dlgAddEdit.dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
+				$dlgAddEdit.load('route/deprecated/client/view/equipment/equipment.php?step=add&id=', function () {
+					$dlgAddEdit.dialog('open');
+				});
 			}
 		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
 			caption: '<i class="fas fa-edit"></i>',
 			title: 'Редактировать',
 			buttonicon: 'none',
 			onClickButton: function () {
-				var gsr = table.jqGrid('getGridParam', 'selrow');
+				var gsr = $tblEquipment.jqGrid('getGridParam', 'selrow');
 				if (gsr) {
-					$('#pg_add_edit').dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
-					$('#pg_add_edit').dialog('open');
-					$('#pg_add_edit').load('route/deprecated/client/view/equipment/equipment.php?step=edit&id=' + gsr);
-				} else {
-					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
-				}
-			}
-		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
-			caption: '<i class="fas fa-arrows-alt"></i>',
-			title: 'Переместить',
-			buttonicon: 'none',
-			onClickButton: function () {
-				var gsr = table.jqGrid('getGridParam', 'selrow');
-				if (gsr) {
-					$('#pg_add_edit').dialog({
-						height: 440,
-						width: 620,
-						modal: true,
-						title: 'Перемещение имущества',
-						open: function () {
-							$(this).load('route/deprecated/client/view/equipment/move.php?id=' + gsr);
-						}
+					$dlgAddEdit.dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
+					$dlgAddEdit.load('route/deprecated/client/view/equipment/equipment.php?step=edit&id=' + gsr, function () {
+						$dlgAddEdit.dialog('open');
 					});
 				} else {
 					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 				}
 			}
 		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
-			caption: '<i class="fas fa-exclamation-triangle"></i>',
-			title: 'Отдать в ремонт',
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
+			caption: '<i class="fas fa-arrows-alt"></i>',
+			title: 'Переместить',
 			buttonicon: 'none',
 			onClickButton: function () {
-				var id = table.jqGrid('getGridParam', 'selrow');
-				if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
-					table.jqGrid('getRowData', id);
-					$('#pg_add_edit').dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
-					$('#pg_add_edit').dialog('open');
-					$('#pg_add_edit').load('route/deprecated/client/view/equipment/repair.php?step=add&eqid=' + id);
+				var gsr = $tblEquipment.jqGrid('getGridParam', 'selrow');
+				if (gsr) {
+					$dlgAddEdit.dialog({autoOpen: false, height: 440, width: 620, modal: true, title: 'Перемещение имущества'});
+					$dlgAddEdit.load('route/deprecated/client/view/equipment/move.php?id=' + gsr, function () {
+						$dlgAddEdit.dialog('open');
+					});
 				} else {
 					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 				}
 			}
 		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
+			caption: '<i class="fas fa-exclamation-triangle"></i>',
+			title: 'Отдать в ремонт',
+			buttonicon: 'none',
+			onClickButton: function () {
+				var id = $tblEquipment.jqGrid('getGridParam', 'selrow');
+				if (id) { // если выбрана строка ТМЦ который уже в ремонте, открываем список с фильтром по этому ТМЦ
+					$tblEquipment.jqGrid('getRowData', id);
+					$dlgAddEdit.dialog({autoOpen: false, height: 380, width: 620, modal: true, title: 'Ремонт имущества'});
+					$dlgAddEdit.load('route/deprecated/client/view/equipment/repair.php?step=add&eqid=' + id, function () {
+						$dlgAddEdit.dialog('open');
+					});
+				} else {
+					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+				}
+			}
+		});
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
 			caption: '<i class="fas fa-table"></i>',
 			title: 'Вывести штрихкоды',
 			buttonicon: 'none',
 			onClickButton: function () {
-				var gsr = table.jqGrid('getGridParam', 'selrow');
+				var gsr = $tblEquipment.jqGrid('getGridParam', 'selrow');
 				if (gsr) {
 					var s;
-					s = table.jqGrid('getGridParam', 'selarrrow');
+					s = $tblEquipment.jqGrid('getGridParam', 'selarrrow');
 					newWin = window.open('route/inc/ean13print.php?mass=' + s, 'printWindow');
 				} else {
 					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
 				}
 			}
 		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
 			caption: '<i class="fas fa-book"></i>',
 			title: 'Отчеты',
 			buttonicon: 'none',
@@ -391,7 +364,7 @@ $cfg = Config::getInstance();
 				newWin2 = window.open('report', 'printWindow2');
 			}
 		});
-		table.jqGrid('navButtonAdd', '#pg_nav', {
+		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
 			caption: '<i class="fas fa-save"></i>',
 			title: 'Экспорт XML',
 			buttonicon: 'none',
@@ -399,7 +372,7 @@ $cfg = Config::getInstance();
 				newWin2 = window.open('route/deprecated/server/equipment/export_xml.php', 'printWindow4');
 			}
 		});
-		table.jqGrid('setFrozenColumns');
+		$tblEquipment.jqGrid('setFrozenColumns');
 	}
 
 	function GetListUsers(orgid, userid) {
@@ -411,9 +384,20 @@ $cfg = Config::getInstance();
 	}
 
 	$(function () {
+		$('#orgs').change(function () {
+			var exdate = new Date();
+			exdate.setDate(exdate.getDate() + 365);
+			orgid = $('#orgs :selected').val();
+			defaultorgid = orgid;
+			document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
+			$.jgrid.gridUnload('#tbl_equpment');
+			LoadTable();
+		});
+
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);
 		}
+
 		LoadTable();
 	});
 </script>

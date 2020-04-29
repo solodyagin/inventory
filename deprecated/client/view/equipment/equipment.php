@@ -18,6 +18,11 @@ $cfg = Config::getInstance();
 ?>
 <link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/upload.css">
 <link href="js/jcrop/jquery.Jcrop.min.css" rel="stylesheet">
+<style>
+	#binv, #bshtr {
+		font: initial;
+	}
+</style>
 <script>
 	var examples = [];
 	$(function () {
@@ -60,7 +65,7 @@ $id = GetDef('id');
 
 $user = User::getInstance();
 
-if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
+if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 	echo "<script>orgid='';</script>";
 	echo "<script>placesid='';</script>";
 	echo "<script>userid='';</script>";
@@ -157,36 +162,17 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 		$dtendgar = '';
 		echo "<script>dtendgar='$dtendgar';</script>";
 	}
+	if ($photo == '') {
+		$photo = 'noimage.jpg';
+	}
 	?>
-	<div class="container-fluid">
+	<form role="form" id="myForm" class="form-horizontal" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
+		<div id="messenger"></div>
 		<div class="row">
-			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
-				<div class="row-fluid">
-					<div class="col-xs-4 col-md-4 col-sm-4">
-						<div class="form-group">
-							<label>Когда/Куда/Кому:</label><br>
-							<input class="form-control" name="dtpost" id="dtpost" value="<?= $dtpost; ?>">
-							<div id="sorg">
-								<select class="chosen-select" name="sorgid" id="sorgid">
-									<?php
-									$morgs = GetArrayOrgs();
-									for ($i = 0; $i < count($morgs); $i++) {
-										$nid = $morgs[$i]['id'];
-										$sl = ($nid == $orgid) ? 'selected' : '';
-										echo "<option value=\"$nid\" $sl>{$morgs[$i]['name']}</option>";
-									}
-									?>
-								</select>
-							</div>
-							<div id="splaces">идет загрузка..</div>
-							<div id="susers">идет загрузка..</div>
-							<input title="Серийный номер" class="form-control" placeholder="Серийный номер" name="sernum" value="<?= $sernum; ?>">
-							<input title="Статический IP" class="form-control" placeholder="Статический IP" name="ip" id="ip" value="<?= $ip; ?>">
-						</div>
-					</div>
-					<div class="col-xs-4 col-md-4 col-sm-4">
-						<label>От кого/Что:</label><br>
+			<div class="col-sm-8">
+				<div class="form-group">
+					<label class="col-xs-3 control-label">От кого:</label>
+					<div class="col-xs-9">
 						<select class="chosen-select" name="kntid" id="kntid">
 							<?php
 							$morgs = GetArrayKnt();
@@ -197,6 +183,11 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 							}
 							?>
 						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-3 control-label">Что:</label>
+					<div class="col-xs-9">
 						<div id="sgroups">
 							<select class="chosen-select" name="sgroupname" id="sgroupname">
 								<?php
@@ -215,77 +206,133 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 						</div>
 						<div id="svendors">идет загрузка..</div>
 						<div id="snomes">идет загрузка..</div>
-						<input title="Инвентарный номер" class="form-control" placeholder="Инвентарный номер" id="invnum" name="invnum" value="<?= $invnum; ?>">
-						<button class="form-control btn btn-primary" name="binv" id="binv">Создать</button>
-						<div class="checkbox">
-							<label>
-								<?php $ch = ($os == '1') ? 'checked' : ''; ?>
-								<input type="checkbox" name="os" value="1" <?= $ch; ?>> Основные ср-ва
-							</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-3 control-label">Куда:</label>
+					<div class="col-xs-9">
+						<div id="sorg">
+							<select class="chosen-select" name="sorgid" id="sorgid">
+								<?php
+								$morgs = GetArrayOrgs();
+								for ($i = 0; $i < count($morgs); $i++) {
+									$nid = $morgs[$i]['id'];
+									$sl = ($nid == $orgid) ? 'selected' : '';
+									echo "<option value=\"$nid\" $sl>{$morgs[$i]['name']}</option>";
+								}
+								?>
+							</select>
+						</div>
+						<div id="splaces">идет загрузка..</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-3 control-label">Кому:</label>
+					<div class="col-xs-9">
+						<div id="susers">идет загрузка..</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-3 control-label">Когда:</label>
+					<div class="col-xs-9">
+						<input class="form-control" name="dtpost" id="dtpost" value="<?= $dtpost; ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-4 control-label">Статический IP:</label>
+					<div class="col-xs-8">
+						<input class="form-control" name="ip" id="ip" value="<?= $ip; ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-4 control-label">Серийный номер:</label>
+					<div class="col-xs-8">
+						<input class="form-control" name="sernum" value="<?= $sernum; ?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-4 control-label">Инвентарный номер:</label>
+					<div class="col-xs-8">
+						<div class="input-group">
+							<input class="form-control" id="invnum" name="invnum" value="<?= $invnum; ?>">
+							<span class="input-group-btn">
+								<button class="btn btn-default" name="binv" id="binv"><i class="fas fa-dice"></i></button>
+							</span>
 						</div>
 					</div>
-					<div class="col-xs-4 col-md-4 col-sm-4">
-						<label>Гарантия до:</label><br>
-						<input  class="form-control"  name="dtendgar" id="dtendgar" value="<?= $dtendgar; ?>">
+				</div>
+				<div class="form-group">
+					<label class="col-xs-4 control-label">Комментарий:</label>
+					<div class="col-xs-8">
+						<textarea class="form-control" name="comment" rows="4"><?= $comment; ?></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div id="userpic" class="userpic">
+					<div class="js-preview userpic__preview thumbnail">
+						<img src="photos/<?= $photo; ?>">
+					</div>
+					<div class="btn btn-success js-fileapi-wrapper">
+						<div class="js-browse">
+							<span class="btn-txt">Сменить фото</span>
+							<input type="file" name="filedata">
+						</div>
+						<div class="js-upload" style="display:none;">
+							<div class="progress progress-success"><div class="js-progress bar"></div></div>
+							<span class="btn-txt">Загружаем</span>
+						</div>
+					</div>
+				</div>
+				<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
+				<label>Гарантия до:</label>
+				<input class="form-control"  name="dtendgar" id="dtendgar" value="<?= $dtendgar; ?>">
+				<?php
+				$buhname = htmlspecialchars($buhname);
+				?>
+				<input title="Имя по бухгалтерии" class="form-control" placeholder="Имя по бухгалтерии" name="buhname" value="<?= $buhname; ?>">
+				<input title="Стоимость покупки" class="form-control" name="cost" value="<?= $cost; ?>" placeholder="Начальная стоимость" >
+				<input title="Текущая стоимость" class="form-control" name="currentcost" value="<?= $currentcost; ?>" placeholder="Текущая стоимость">
+				<div class="input-group">
+					<input title="Штрихкод" class="form-control" placeholder="Штрихкод" name="shtrihkod" id="shtrihkod" value="<?= $shtrihkod; ?>">
+					<span class="input-group-btn">
+						<button class="btn btn-default" name="bshtr" id="bshtr"><i class="fas fa-dice"></i></button>
+					</span>
+				</div>
+				<div class="checkbox">
+					<label>
+						<?php $ch = ($os == '1') ? 'checked' : ''; ?>
+						<input type="checkbox" name="os" value="1" <?= $ch; ?>> Основные ср-ва
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
 						<?php
-						$buhname = htmlspecialchars($buhname);
+						$ch = ($mode == '1') ? 'checked' : '';
 						?>
-						<input title="Имя по бухгалтерии" class="form-control" placeholder="Имя по бухгалтерии" name="buhname" value="<?= $buhname; ?>">
-						<input title="Стоимость покупки" class="form-control" name="cost" value="<?= $cost; ?>" placeholder="Начальная стоимость" >
-						<input title="Текущая стоимость" class="form-control" name="currentcost" value="<?= $currentcost; ?>" placeholder="Текущая стоимость">
-						<input title="Штрихкод" class="form-control" placeholder="Штрихкод" name="shtrihkod" id="shtrihkod" value="<?= $shtrihkod; ?>">
-						<button class="form-control btn btn-primary" name="bshtr" id="bshtr">Создать</button>
-						<div class="checkbox">
-							<label>
-								<?php
-								$ch = ($mode == '1') ? 'checked' : '';
-								?>
-								<input type="checkbox" name="mode" value="1" <?= $ch; ?>> Списано
-							</label>
-							<label>
-								<?php
-								$ch = ($mapyet == '1') ? 'checked' : '';
-								?>
-								<input type="checkbox" name="mapyet" value="1" <?= $ch; ?>> Есть на карте
-							</label>
-						</div>
-					</div>
+						<input type="checkbox" name="mode" value="1" <?= $ch; ?>> Списано
+					</label>
 				</div>
-				<div class="row-fluid">
-					<div class="col-xs-4 col-md-4 col-sm-4">
-						<div id="userpic" class="userpic">
-							<div class="js-preview userpic__preview thumbnail">
-								<img src="photos/<?= $photo; ?>">
-							</div>
-							<div class="btn btn-success js-fileapi-wrapper">
-								<div class="js-browse">
-									<span class="btn-txt">Сменить фото</span>
-									<input type="file" name="filedata">
-								</div>
-								<div class="js-upload" style="display:none;">
-									<div class="progress progress-success"><div class="js-progress bar"></div></div>
-									<span class="btn-txt">Загружаем</span>
-								</div>
-							</div>
-						</div>
-						<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
-					</div>
-					<div class="col-xs-8 col-md-8 col-sm-8">
-						<textarea class="form-control" name="comment" rows="8"><?= $comment; ?></textarea>
-						<div align="center">
-							<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">
-						</div>
-					</div>
+				<div class="checkbox">
+					<label>
+						<?php
+						$ch = ($mapyet == '1') ? 'checked' : '';
+						?>
+						<input type="checkbox" name="mapyet" value="1" <?= $ch; ?>> Есть на карте
+					</label>
 				</div>
-			</form>
+				<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">
+			</div>	
 		</div>
-	</div>
+	</form>
+
 	<div id="popup" class="popup" style="display:none;">
 		<div class="popup__body"><div class="js-img"></div></div>
 		<div style="margin:0 0 5px;text-align:center;">
 			<div class="js-upload btn btn_browse btn_browse_small">Загрузить</div>
 		</div>
 	</div>
+
 	<script>
 		examples.push(function () {
 			$('#userpic').fileapi({
@@ -379,7 +426,7 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 
 		function GetListNome(groupid, vendorid, nmd) {
 			$.ajax({
-				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + vendorid + '&nomeid=' + nmd,
+				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + (vendorid || '') + '&nomeid=' + nmd,
 				success: function (answ) {
 					$('#snomes').html(answ);
 					UpdateChosen();
@@ -389,7 +436,7 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 
 		function GetListVendors(groupid, vendorid) {
 			$.ajax({
-				url: 'route/deprecated/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + vendorid,
+				url: 'route/deprecated/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + (vendorid || ''),
 				success: function (answ) {
 					$('#svendors').html(answ);
 					GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
@@ -430,7 +477,6 @@ if ($user->isAdmin() || $user->TestRights([1,4,5,6])):
 
 		// выбираем производителя по группе
 		$('#sgroupname').on('change', function (evt, params) {
-			console.log('--обработка выбора группы номенклатуры');
 			$('#svendors').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
 			GetListVendors($('#sgroupname :selected').val()); // перегружаем список vendors
 		});

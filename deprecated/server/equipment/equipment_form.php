@@ -12,21 +12,20 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 include_once(SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php');
 
 function SendEmailByPlaces($plid, $title, $txt) {
-	$sql = <<<TXT
-SELECT userid AS uid,users.email AS email
-FROM   places_users
-       INNER JOIN users
-               ON users.id = places_users.userid
-WHERE  places_users.placesid = $plid
-       AND users.email <> ''
-TXT;
 	try {
+		$sql = <<<TXT
+SELECT userid uid,
+  users.email email
+FROM places_users
+  INNER JOIN users ON users.id = places_users.userid
+WHERE places_users.placesid = $plid AND users.email <> ''
+TXT;
 		$arr = DB::prepare($sql)->execute()->fetchAll();
 		foreach ($arr as $row) {
 			smtpmail($row['email'], $title, $txt);
@@ -46,7 +45,7 @@ $suserid = PostDef('suserid');
 
 $user = User::getInstance();
 
-if (($user->isAdmin() || $user->TestRights([1,4,5,6])) && ($step != '')) {
+if (($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) && ($step != '')) {
 	if ($step != 'move') {
 		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
 		$dtendgar = DateToMySQLDateTime2(PostDef('dtendgar') . ' 00:00:00');
@@ -110,15 +109,14 @@ if (($user->isAdmin() || $user->TestRights([1,4,5,6])) && ($step != '')) {
 
 	if ($step == 'add') {
 		if (count($err) == 0) {
-			$sql = <<<TXT
-INSERT INTO equipment
-            (id,orgid,placesid,usersid,nomeid,buhname,datepost,cost,currentcost,sernum,invnum,shtrihkod,os,mode,comment,
-             active,ip,mapyet,photo,kntid,dtendgar,repair,mapx,mapy,mapmoved)
-VALUES      (NULL,:sorgid,:splaces,:suserid,:snomeid,:buhname,:dtpost,:cost,:currentcost,:sernum,
-             :invnum,:shtrihkod,:os,:mode,:comment,'1',:ip,:mapyet,:picphoto,:kntid,:dtendgar,0,'','',0)
-TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				$sql = <<<TXT
+INSERT INTO equipment (orgid, placesid, usersid, nomeid, buhname, datepost, cost, currentcost, sernum, invnum, shtrihkod, os, mode, comment,
+  active, ip, mapyet, photo, kntid, dtendgar, repair, mapx, mapy, mapmoved)
+VALUES (:sorgid, :splaces, :suserid, :snomeid, :buhname, :dtpost, :cost, :currentcost, :sernum, :invnum, :shtrihkod, :os, :mode, :comment,
+  '1', :ip, :mapyet, :picphoto, :kntid, :dtendgar, 0, '', '', 0)
+TXT;
+				DB::prepare($sql)->execute([
 					':sorgid' => $sorgid,
 					':splaces' => $splaces,
 					':suserid' => $suserid,
@@ -138,7 +136,7 @@ TXT;
 					':picphoto' => $picphoto,
 					':kntid' => $kntid,
 					':dtendgar' => $dtendgar
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог добавить номенклатуру', 0, $ex);
 			}
@@ -153,29 +151,29 @@ TXT;
 	if ($step == 'edit') {
 		if (count($err) == 0) {
 			$id = GetDef('id');
-			$sql = <<<TXT
-UPDATE	equipment
-SET		usersid = :usersid,
-		nomeid = :nomeid,
-		buhname = :buhname,
-		datepost = :datepost,
-		cost = :cost,
-		currentcost = :currentcost,
-		sernum = :sernum,
-		invnum = :invnum,
-		shtrihkod = :shtrihkod,
-		os = :os,
-		mode = :mode,
-		comment = :comment,
-		photo = :photo,
-		ip = :ip,
-		mapyet = :mapyet,
-		kntid = :kntid,
-		dtendgar = :dtendgar
-WHERE	id = :id
-TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				$sql = <<<TXT
+UPDATE equipment
+SET usersid = :usersid,
+  nomeid = :nomeid,
+  buhname = :buhname,
+  datepost = :datepost,
+  cost = :cost,
+  currentcost = :currentcost,
+  sernum = :sernum,
+  invnum = :invnum,
+  shtrihkod = :shtrihkod,
+  os = :os,
+  mode = :mode,
+  comment = :comment,
+  photo = :photo,
+  ip = :ip,
+  mapyet = :mapyet,
+  kntid = :kntid,
+  dtendgar = :dtendgar
+WHERE id = :id
+TXT;
+				DB::prepare($sql)->execute([
 					':usersid' => $suserid,
 					':nomeid' => $snomeid,
 					':buhname' => $buhname,
@@ -194,7 +192,7 @@ TXT;
 					':kntid' => $kntid,
 					':dtendgar' => $dtendgar,
 					':id' => $id
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог изменить номенклатуру', 0, $ex);
 			}
@@ -206,30 +204,24 @@ TXT;
 			$id = GetDef('id');
 			$etmc = new Equipment();
 			$etmc->GetById($id);
-			$sql = <<<TXT
-UPDATE equipment
-SET    tmcgo = :tmcgo, mapmoved = 1, orgid = :sorgid, placesid = :splaces, usersid = :suserid
-WHERE  id = :id
-TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				$sql = "UPDATE equipment SET tmcgo = :tmcgo, mapmoved = 1, orgid = :sorgid, placesid = :splaces, usersid = :suserid WHERE id = :id";
+				DB::prepare($sql)->execute([
 					':tmcgo' => $tmcgo,
 					':sorgid' => $sorgid,
 					':splaces' => $splaces,
 					':suserid' => $suserid,
 					':id' => $id
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог изменить регистр номенклатуры - перемещение', 0, $ex);
 			}
-			$sql = <<<TXT
-INSERT INTO move
-            (id, eqid, dt, orgidfrom, orgidto, placesidfrom, placesidto, useridfrom, useridto, comment)
-VALUES      (NULL, :eqid, NOW(), :orgidfrom, :orgidto, :placesidfrom, :placesidto, :useridfrom, :useridto,
-             :comment)
-TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				$sql = <<<TXT
+INSERT INTO move (eqid, dt, orgidfrom, orgidto, placesidfrom, placesidto, useridfrom, useridto, comment)
+VALUES (:eqid, NOW(), :orgidfrom, :orgidto, :placesidfrom, :placesidto, :useridfrom, :useridto, :comment)
+TXT;
+				DB::prepare($sql)->execute([
 					':eqid' => $id,
 					':orgidfrom' => $etmc->orgid,
 					':orgidto' => $sorgid,
@@ -238,7 +230,7 @@ TXT;
 					':useridfrom' => $etmc->usersid,
 					':useridto' => $suserid,
 					':comment' => $comment
-				));
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Не смог добавить перемещение', 0, $ex);
 			}

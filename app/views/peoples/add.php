@@ -21,14 +21,15 @@ $cfg = Config::getInstance();
 		var fields = ['login', 'pass', 'email'];
 		$('form').submit(function () {
 			var error = 0;
-			$('form').find(':input').each(function () {
+			$(this).find(':input').each(function () {
+				var $input = $(this);
 				for (var i = 0; i < fields.length; i++) {
-					if ($(this).attr('name') === fields[i]) {
-						if (!$(this).val()) {
+					if ($input.attr('name') === fields[i]) {
+						if (!$input.val()) {
 							error = 1;
-							$(this).parent().addClass('has-error');
+							$input.parent().addClass('has-error');
 						} else {
-							$(this).parent().removeClass('has-error');
+							$input.parent().removeClass('has-error');
 						}
 					}
 				}

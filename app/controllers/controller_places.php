@@ -68,26 +68,39 @@ class Controller_Places extends Controller {
 		$responce->total = $total_pages;
 		$responce->records = $count;
 		try {
-			$sql = <<<TXT
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<TXT
 SELECT id, opgroup, name, comment, active
 FROM places
 WHERE orgid = :orgid
-ORDER BY :sidx :sord
+ORDER BY $sidx $sord
 LIMIT :start, :limit
 TXT;
+					break;
+				case 'pgsql':
+					$sql = <<<TXT
+SELECT id, opgroup, name, comment, active
+FROM places
+WHERE orgid = :orgid
+ORDER BY $sidx $sord
+OFFSET :start LIMIT :limit
+TXT;
+					break;
+			}
 			$stmt = DB::prepare($sql);
 			$stmt->bindValue(':orgid', $orgid, PDO::PARAM_INT);
-			$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
-			$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
+			//$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
+			//$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
 			$stmt->bindValue(':start', $start, PDO::PARAM_INT);
 			$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 			$arr = $stmt->execute()->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
-				$ic = ($row['active'] == '1') ? 'fa-check-circle-o' : 'fa-ban';
+				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
-					"<i class=\"fa $ic\" aria-hidden=\"true\"></i>",
+					"<i class=\"fas $ic\"></i>",
 					$row['id'],
 					$row['opgroup'],
 					$row['name'],
@@ -116,8 +129,8 @@ TXT;
 				($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
 				try {
 					$sql = <<<TXT
-INSERT INTO places (id, orgid, opgroup, name, comment, active)
-VALUES (null, :orgid, :opgroup, :name, :comment, 1)
+INSERT INTO places (orgid, opgroup, name, comment, active)
+VALUES (:orgid, :opgroup, :name, :comment, 1)
 TXT;
 					DB::prepare($sql)->execute([
 						':orgid' => $orgid,
@@ -148,7 +161,14 @@ TXT;
 				/* Проверяем может ли пользователь удалять? */
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
 				try {
-					$sql = 'UPDATE places SET active = NOT active WHERE id = :id';
+					switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+						case 'mysql':
+							$sql = 'UPDATE places SET active = NOT active WHERE id = :id';
+							break;
+						case 'pgsql':
+							$sql = 'UPDATE places SET active = active # 1 WHERE id = :id';
+							break;
+					}
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу пометить на удаление помещение', 0, $ex);
@@ -169,7 +189,7 @@ TXT;
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
-		$placesid = GetDef('placesid');
+		$placesid = GetDef('placesid', 0);
 		/* Готовим ответ */
 		$responce = new stdClass();
 		$responce->page = 0;
@@ -197,22 +217,40 @@ TXT;
 		$responce->total = $total_pages;
 		$responce->records = $count;
 		try {
-			$sql = <<<TXT
-SELECT	places_users.id AS plid,
-		placesid,
-		userid,
-		users_profile.fio AS name
-FROM	places_users
-	INNER JOIN users_profile
-		ON users_profile.usersid = userid
-WHERE	placesid = :placesid
-ORDER BY :sidx :sord
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<TXT
+SELECT
+	places_users.id AS plid,
+	placesid,
+	userid,
+	users_profile.fio AS name
+FROM places_users
+	INNER JOIN users_profile ON users_profile.usersid = userid
+WHERE placesid = :placesid
+ORDER BY $sidx $sord
 LIMIT :start, :limit
 TXT;
+					break;
+				case 'pgsql':
+					$sql = <<<TXT
+SELECT
+	places_users.id AS plid,
+	placesid,
+	userid,
+	users_profile.fio AS name
+FROM places_users
+	INNER JOIN users_profile ON users_profile.usersid = userid
+WHERE placesid = :placesid
+ORDER BY $sidx $sord
+OFFSET :start LIMIT :limit
+TXT;
+					break;
+			}
 			$stmt = DB::prepare($sql);
 			$stmt->bindValue(':placesid', $placesid, PDO::PARAM_INT);
-			$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
-			$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
+			//$stmt->bindValue(':sidx', $sidx, PDO::PARAM_STR);
+			//$stmt->bindValue(':sord', $sord, PDO::PARAM_STR);
 			$stmt->bindValue(':start', $start, PDO::PARAM_INT);
 			$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 			$arr = $stmt->execute()->fetchAll();
@@ -246,11 +284,11 @@ TXT;
 					die();
 				}
 				try {
-					$sql = 'select count(*) cnt from places_users where placesid = :placesid and userid = :userid';
+					$sql = 'SELECT COUNT(*) cnt FROM places_users WHERE placesid = :placesid AND userid = :userid';
 					$row = DB::prepare($sql)->execute([':placesid' => $placesid, ':userid' => $name])->fetch();
 					$count = ($row) ? $row['cnt'] : 0;
 					if ($count == 0) {
-						$sql = 'INSERT INTO places_users (id, placesid, userid) VALUES (null, :placesid, :userid)';
+						$sql = 'INSERT INTO places_users (placesid, userid) VALUES (:placesid, :userid)';
 						DB::prepare($sql)->execute([':placesid' => $placesid, ':userid' => $name]);
 					}
 				} catch (PDOException $ex) {

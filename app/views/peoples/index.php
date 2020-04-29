@@ -1,19 +1,3 @@
-<?php
-/*
- * WebUseOrg3 - учёт оргтехники в организации
- * Лицензия: GPL-3.0
- * Разработчик: Грибов Павел
- * Сайт: http://грибовы.рф
- */
-/*
- * Inventory - учёт оргтехники в организации
- * Лицензия: GPL-3.0
- * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
- */
-
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
-?>
 <div class="container-fluid">
 	<h4>Справочники / Сотрудники</h4>
 	<div class="row">
@@ -32,16 +16,16 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 	var $list1 = $('#list1'), $list2 = $('#list2');
 
 	$list1.jqGrid({
-		url: 'route/deprecated/server/users/libre_users.php?org_status=list',
+		url: 'peoples/list',
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'Пароль', 'E-mail', 'Администратор', 'Действия'],
 		colModel: [
-			{name: 'active', index: 'active', width: 15, search: false},
+			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'usersid', index: 'u.id', width: 55, hidden: true},
 			{name: 'orgname', index: 'o.name', width: 60},
 			{name: 'fio', index: 'fio', width: 45},
 			{name: 'login', index: 'login', width: 45, editable: true},
-			{name: 'pass', index: 'pass', width: 30, editable: true, edittype: 'password', search: false},
+			{name: 'pass', index: 'pass', width: 30, editable: true, edittype: 'password', sortable: false, search: false},
 			{name: 'email', index: 'email', width: 30, editable: true},
 			{name: 'mode', index: 'mode', width: 30, editable: true, edittype: 'checkbox', editoptions: {value: 'Да:Нет'}, search: false},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
@@ -50,33 +34,32 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 			var caption = 'Набор прав сотрудника "' + $list1.jqGrid('getCell', id, 'fio') + '"';
 			$list2.jqGrid('setCaption', caption);
 			$list2.jqGrid('setGridParam', {
-				url: 'route/deprecated/server/users/usersroles.php?userid=' + id + '&orgid=' + defaultorgid,
-				editurl: 'route/deprecated/server/users/usersroles.php?userid=' + id + '&orgid=' + defaultorgid
+				url: 'roles/list?userid=' + id + '&orgid=' + defaultorgid,
+				editurl: 'roles/change?userid=' + id + '&orgid=' + defaultorgid
 			}).trigger('reloadGrid');
 		},
 		autowidth: true,
 		scroll: 1,
 		pager: '#pager1',
-		sortname: 'id',
-		viewrecords: true,
+		sortname: 'fio',
 		sortorder: 'asc',
-		editurl: 'route/deprecated/server/users/libre_users.php?org_status=edit',
+		viewrecords: true,
+		editurl: 'peoples/change',
 		caption: 'Справочник сотрудников',
 		loadComplete: function () {
-			$list2.jqGrid('setCaption', 'Набор прав сотрудника');
+			$list2.jqGrid('setCaption', 'Набор прав доступа сотрудника');
 			$list2.jqGrid('setGridParam', {
-				url: 'route/deprecated/server/users/usersroles.php?userid=',
-				editurl: 'route/deprecated/server/users/usersroles.php?userid='
+				url: 'roles/list?userid=0',
+				editurl: 'roles/change?userid=0'
 			}).trigger('reloadGrid');
 		}
 	});
-
 	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 	$list1.jqGrid('navGrid', '#pager1', {edit: false, add: false, del: false, search: false});
 	$list1.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 
 	$list1.jqGrid('navButtonAdd', '#pager1', {
-		caption: '<i class="fa fa-tag"></i>',
+		caption: '<i class="fas fa-tag"></i>',
 		title: 'Выбор колонок',
 		buttonicon: 'none',
 		onClickButton: function () {
@@ -158,11 +141,11 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 	$list2.jqGrid({
 		autowidth: true,
-		url: 'route/deprecated/server/users/usersroles.php?userid=',
+		url: 'roles/list?userid=0',
 		datatype: 'json',
-		colNames: ['Id', 'Право', 'Действия'],
+		colNames: ['Id', 'Право доступа', 'Действия'],
 		colModel: [
-			{name: 'places_users.id', index: 'places_users.id', width: 55, fixed: true},
+			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'role', index: 'role', width: 200, editable: true, edittype: 'select', editoptions: {
 					editrules: {required: true},
 					dataUrl: 'route/deprecated/server/users/getlistroles.php?orgid=' + defaultorgid
@@ -172,9 +155,9 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 		rowNum: 10,
 		rowList: [10, 20, 30],
 		pager: '#pager2',
-		sortname: 'id',
-		viewrecords: true,
+		sortname: 'role',
 		sortorder: 'asc',
-		caption: 'Набор прав сотрудника'
+		viewrecords: true,
+		caption: 'Набор прав доступа сотрудника'
 	}).navGrid('#pager2', {add: true, edit: false, del: false, search: false}, {}, addOptions, {}, {multipleSearch: false}, {closeOnEscape: true});
 </script>

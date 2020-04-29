@@ -28,7 +28,11 @@ class DB {
 				PDO::ATTR_EMULATE_PREPARES => true,
 				PDO::ATTR_STATEMENT_CLASS => ['myPDOStatement'],
 			];
-			$dsn = "mysql:host={$cfg->db_host};dbname={$cfg->db_name};charset={$cfg->db_char}";
+			if ($cfg->db_driver == 'mysql') {
+				$dsn = "{$cfg->db_driver}:host={$cfg->db_host};dbname={$cfg->db_name};charset={$cfg->db_char}";
+			} else {
+				$dsn = "{$cfg->db_driver}:host={$cfg->db_host};dbname={$cfg->db_name}";
+			}
 			self::$instance = new PDO($dsn, $cfg->db_user, $cfg->db_pass, $opt);
 		}
 		return self::$instance;
@@ -38,9 +42,18 @@ class DB {
 		return call_user_func_array([self::getInstance(), $method], $args);
 	}
 
-	final private function __construct() {}
-	final private function __clone() {}
-	final private function __wakeup() {}
+	final private function __construct() {
+		// Override
+	}
+
+	final private function __clone() {
+		// Override
+	}
+
+	final private function __wakeup() {
+		// Override
+	}
+
 }
 
 class myPDOStatement extends PDOStatement {
@@ -57,5 +70,5 @@ class myPDOStatement extends PDOStatement {
 }
 
 class DBException extends Exception {
-
+	
 }

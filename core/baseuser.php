@@ -53,9 +53,11 @@ class BaseUser {
 	 */
 	function TestRights($roles) {
 		$sr = implode(',', array_map('intval', $roles));
-		$sql = "SELECT COUNT(*) FROM usersroles WHERE userid = :id AND role IN ($sr)";
+		$sql = "SELECT COUNT(*) AS cnt FROM usersroles WHERE userid = :id AND role IN ($sr)";
 		try {
-			return (DB::prepare($sql)->execute([':id' => $this->id])->fetchColumn() > 0);
+			$row = DB::prepare($sql)->execute([':id' => $this->id])->fetch();
+			$cnt = ($row) ? $row['cnt'] : 0;
+			return $cnt > 0;
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.TestRights', 0, $ex);
 		}
@@ -67,9 +69,9 @@ class BaseUser {
 	 */
 	function UpdateLastdt($id) {
 		$lastdt = date('Y-m-d H:i:s');
-		$sql = 'UPDATE `users` SET `lastdt` = :lastdt WHERE `id` = :id';
+		$sql = 'UPDATE users SET lastdt = :lastdt WHERE id = :id';
 		try {
-			DB::prepare($sql)->execute(array(':lastdt' => $lastdt, ':id' => $id));
+			DB::prepare($sql)->execute([':lastdt' => $lastdt, ':id' => $id]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.UpdateLastdt', 0, $ex);
 		}
@@ -81,43 +83,60 @@ class BaseUser {
 	function Update() {
 		try {
 			$sql = <<<TXT
-UPDATE	`users`
-SET		`orgid` = :orgid, `login` = :login, `password` = :password, `salt` = :salt,
-		`email` = :email, `mode` = :mode, `active` = :active
-WHERE	`id` = :id
+UPDATE users
+SET orgid = :orgid, login = :login, password = :password, salt = :salt,
+  email = :email, mode = :mode, active = :active
+WHERE id = :id
 TXT;
-			DB::prepare($sql)->execute(array(
-					':orgid' => $this->orgid,
-					':login' => $this->login,
-					':password' => $this->password,
-					':salt' => $this->salt,
-					':email' => $this->email,
-					':mode' => $this->mode,
-					':active' => $this->active,
-					':id' => $this->id
-			));
+			DB::prepare($sql)->execute([
+				':orgid' => $this->orgid,
+				':login' => $this->login,
+				':password' => $this->password,
+				':salt' => $this->salt,
+				':email' => $this->email,
+				':mode' => $this->mode,
+				':active' => $this->active,
+				':id' => $this->id
+			]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.Update (1)', 0, $ex);
 		}
 		try {
-			$sql = <<<TXT
-INSERT INTO `users_profile` (`usersid`, `fio`, `telephonenumber`, `homephone`, `jpegphoto`, `post`)
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<TXT
+INSERT INTO users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
 VALUES (:usersid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
 ON DUPLICATE KEY UPDATE
-	`fio` = :fio,
-	`telephonenumber` = :telephonenumber,
-	`homephone` = :homephone,
-	`jpegphoto` = :jpegphoto,
-	`post` = :post
+  fio = :fio,
+  telephonenumber = :telephonenumber,
+  homephone = :homephone,
+  jpegphoto = :jpegphoto,
+  post = :post
 TXT;
-			DB::prepare($sql)->execute(array(
-					':usersid' => $this->id,
-					':fio' => $this->fio,
-					':telephonenumber' => $this->telephonenumber,
-					':homephone' => $this->homephone,
-					':jpegphoto' => $this->jpegphoto,
-					':post' => $this->post
-			));
+					break;
+				case 'pgsql':
+					$sql = <<<TXT
+INSERT INTO users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
+VALUES (:usersid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
+ON CONFLICT(usersid) DO UPDATE SET
+  fio = :fio,
+  telephonenumber = :telephonenumber,
+  homephone = :homephone,
+  jpegphoto = :jpegphoto,
+  post = :post
+TXT;
+					break;
+			}
+
+			DB::prepare($sql)->execute([
+				':usersid' => $this->id,
+				':fio' => $this->fio,
+				':telephonenumber' => $this->telephonenumber,
+				':homephone' => $this->homephone,
+				':jpegphoto' => $this->jpegphoto,
+				':post' => $this->post
+			]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.Update (2)', 0, $ex);
 		}
@@ -131,16 +150,15 @@ TXT;
 	 */
 	function select($where, $params) {
 		try {
-			$row = DB::prepare(<<<SQL
-SELECT	p.*,
-		u.*,
-		u.`id` sid
-FROM	`users` u
-	LEFT JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-WHERE	{$where}
-SQL
-							)->execute($params)->fetch();
+			$sql = <<<SQL
+SELECT p.*,
+  u.*,
+  u.id sid
+FROM users u
+  LEFT JOIN users_profile p ON p.usersid = u.id
+WHERE $where
+SQL;
+			$row = DB::prepare($sql)->execute($params)->fetch();
 			if ($row) {
 				$this->id = $row['sid'];
 				$this->randomid = $row['randomid'];
@@ -171,7 +189,7 @@ SQL
 	 * @return boolean
 	 */
 	function getByLogin($login) {
-		return $this->select('u.`login` = :login', array(':login' => $login));
+		return $this->select('u.login = :login', [':login' => $login]);
 	}
 
 	/**
@@ -180,7 +198,7 @@ SQL
 	 * @return boolean
 	 */
 	function getById($id) {
-		return $this->select('u.`id` = :id', array(':id' => $id));
+		return $this->select('u.id = :id', [':id' => $id]);
 	}
 
 	/**
@@ -189,7 +207,7 @@ SQL
 	 * @return boolean
 	 */
 	function getByRandomId($randomid) {
-		return $this->select('u.`randomid` = :randomid', array(':randomid' => $randomid));
+		return $this->select('u.randomid = :randomid', [':randomid' => $randomid]);
 	}
 
 	/**
@@ -198,9 +216,9 @@ SQL
 	 * @return boolean
 	 */
 	function getByRandomIdNoProfile($randomid) {
-		$sql = 'SELECT * FROM `users` WHERE `randomid` = :randomid';
+		$sql = 'SELECT * FROM users WHERE randomid = :randomid';
 		try {
-			$row = DB::prepare($sql)->execute(array(':randomid' => $randomid))->fetch();
+			$row = DB::prepare($sql)->execute([':randomid' => $randomid])->fetch();
 			if ($row) {
 				$this->id = $row['id'];
 				$this->randomid = $row['randomid'];
@@ -239,20 +257,19 @@ SQL
 		$this->email = $email;
 		$this->mode = $mode;
 		$sql = <<<TXT
-INSERT INTO `users`
-		(`randomid`, `orgid`, `login`, `password`, `salt`, `email`, `mode`, `lastdt`, `active`)
-VALUES	(:randomid, :orgid, :login, :password, :salt, :email, :mode, NOW(), 1)
+INSERT INTO users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
+VALUES (:randomid, :orgid, :login, :password, :salt, :email, :mode, NOW(), 1)
 TXT;
 		try {
-			DB::prepare($sql)->execute(array(
-					':randomid' => $this->randomid,
-					':orgid' => $this->orgid,
-					':login' => $this->login,
-					':password' => $this->password,
-					':salt' => $this->salt,
-					':email' => $this->email,
-					':mode' => $this->mode
-			));
+			DB::prepare($sql)->execute([
+				':randomid' => $this->randomid,
+				':orgid' => $this->orgid,
+				':login' => $this->login,
+				':password' => $this->password,
+				':salt' => $this->salt,
+				':email' => $this->email,
+				':mode' => $this->mode
+			]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения User.Add', 0, $ex);
 		}
@@ -262,19 +279,18 @@ TXT;
 		if ($zx->getByRandomIdNoProfile($this->randomid)) {
 			// добавляю профиль
 			$sql = <<<TXT
-INSERT INTO `users_profile`
-		(`usersid`, `fio`, `telephonenumber`, `homephone`, `jpegphoto`, `post`)
-VALUES	(:userid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
+INSERT INTO users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
+VALUES (:userid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
 TXT;
 			try {
-				DB::prepare($sql)->execute(array(
-						':userid' => $zx->id,
-						':fio' => $this->fio,
-						':telephonenumber' => $this->telephonenumber,
-						':homephone' => $this->homephone,
-						':jpegphoto' => $this->jpegphoto,
-						':post' => $this->post
-				));
+				DB::prepare($sql)->execute([
+					':userid' => $zx->id,
+					':fio' => $this->fio,
+					':telephonenumber' => $this->telephonenumber,
+					':homephone' => $this->homephone,
+					':jpegphoto' => $this->jpegphoto,
+					':post' => $this->post
+				]);
 			} catch (PDOException $ex) {
 				throw new DBException('Ошибка выполнения User.Add', 0, $ex);
 			}

@@ -12,14 +12,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class User extends BaseUser {
 
 	use Singleton;
 
-	# Пользователь вошёл ?
+	/* Пользователь вошёл ? */
 	private $is_logged = false;
 
 	/**
@@ -29,16 +29,31 @@ class User extends BaseUser {
 	 * @return boolean
 	 */
 	function loginByDB($login, $password) {
+		$cfg = Config::getInstance();
 		$this->is_logged = false;
-		$sql = <<<TXT
-SELECT	p.*, u.*, u.`id` sid
-FROM	`users` u
-	LEFT JOIN `users_profile` p
-		ON p.`usersid` = u.`id`
-WHERE	u.`login` = :login AND
-		u.`password` = SHA1(CONCAT(SHA1(:pass), u.`salt`))
-TXT;
 		try {
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<SQL
+SELECT p.*, u.*, u.id sid
+FROM users u
+	LEFT JOIN users_profile p ON p.usersid = u.id
+WHERE u.login = :login AND
+	u.password = SHA1(CONCAT(SHA1(:pass), u.salt))
+SQL;
+					break;
+				case 'pgsql':
+$sql = <<<SQL
+SELECT p.*,
+	u.*,
+	u.id sid
+FROM users u
+	LEFT JOIN users_profile p ON p.usersid = u.id
+WHERE u.login = :login AND
+	u.password = SHA1(CONCAT(SHA1(:pass), u.salt::text))
+SQL;
+					break;
+			}
 			$row = DB::prepare($sql)->execute([':login' => $login, ':pass' => $password])->fetch();
 			if ($row) {
 				$this->is_logged = true;
@@ -61,9 +76,9 @@ TXT;
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка при получении данных пользователя', 0, $ex);
 		}
-		# Устанавливаем Cookie
+		/* Устанавливаем Cookie */
 		if ($this->is_logged) {
-			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/');
+			setcookie("inventory_{$cfg->inventory_id}", $this->randomid, strtotime('+30 days'), '/');
 		}
 		return $this->is_logged;
 	}
@@ -73,23 +88,25 @@ TXT;
 	 * @return boolean
 	 */
 	function loginByCookie() {
-		$this->randomid = filter_input(INPUT_COOKIE, 'user_randomid_w3');
+		$cfg = Config::getInstance();
+		$this->randomid = filter_input(INPUT_COOKIE, "inventory_{$cfg->inventory_id}");
 		$this->is_logged = !empty($this->randomid) && $this->getByRandomId($this->randomid);
 		if ($this->is_logged) {
 			$this->UpdateLastdt($this->id); # Обновляем дату последнего входа пользователя
-			setcookie('user_randomid_w3', $this->randomid, strtotime('+30 days'), '/'); # Устанавливаем Cookie
+			setcookie("inventory_{$cfg->inventory_id}", $this->randomid, strtotime('+30 days'), '/'); # Устанавливаем Cookie
 		} else {
-			setcookie('user_randomid_w3', '', 1, '/'); # Удаляем cookie
+			setcookie("inventory_{$cfg->inventory_id}", '', 1, '/'); # Удаляем cookie
 		}
 		return $this->is_logged;
 	}
 
 	function logout() {
+		$cfg = Config::getInstance();
 		$this->is_logged = false;
 		$this->id = '';
 		$this->randomid = '';
-		# Удаляем cookie
-		setcookie('user_randomid_w3', '', 1, '/');
+		/* Удаляем cookie */
+		setcookie("inventory_{$cfg->inventory_id}", '', 1, '/');
 //		foreach ($_COOKIE as $key => $value) {
 //			setcookie($key, '', 1, '/');
 //		}

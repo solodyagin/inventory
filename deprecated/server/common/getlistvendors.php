@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $groupid = GetDef('groupid', '1');
@@ -23,16 +23,16 @@ echo '<select class="chosen-select" name="svendid" id="svendid">';
 if ($addnone == 'true') {
 	echo '<option value="-1">не выбрано</option>';
 }
-$sql = <<<TXT
-SELECT vendorid,vendor.name,COUNT(nome.id)
-FROM   nome
-       INNER JOIN vendor
-               ON vendor.id = vendorid
-WHERE  groupid = :groupid
-GROUP  BY vendorid
-TXT;
 try {
-	$arr = DB::prepare($sql)->execute(array(':groupid' => $groupid))->fetchAll();
+	$sql = <<<TXT
+SELECT vendorid,
+  vendor.name
+FROM nome
+  INNER JOIN vendor ON vendor.id = vendorid
+WHERE groupid = :groupid
+GROUP BY vendorid, vendor.name
+TXT;
+	$arr = DB::prepare($sql)->execute([':groupid' => $groupid])->fetchAll();
 	foreach ($arr as $row) {
 		$sl = ($row['vendorid'] == $vendorid) ? 'selected' : '';
 		echo "<option value=\"{$row['vendorid']}\" $sl>{$row['name']}</option>";

@@ -98,16 +98,41 @@ function check_LDAP_user($username, $password, $ladpserver, $domain1, $domain2) 
 }
 
 /**
- * Получает случайный идентификатор длинной $n
+ * Получает случайный идентификатор длиной $n
  * @param integer $n
  * @return string
  */
-function GetRandomId($n = 60) {
-	$id = '';
-	for ($i = 1; $i <= $n; $i++) {
-		$id .= chr(rand(48, 56));
+function getRandomId($n = 60) {
+	$arr = ['a', 'b', 'c', 'd', 'e', 'f',
+		'g', 'h', 'i', 'j', 'k', 'l',
+		'm', 'n', 'o', 'p', 'r', 's',
+		't', 'u', 'v', 'x', 'y', 'z',
+		'A', 'B', 'C', 'D', 'E', 'F',
+		'G', 'H', 'I', 'J', 'K', 'L',
+		'M', 'N', 'O', 'P', 'R', 'S',
+		'T', 'U', 'V', 'X', 'Y', 'Z',
+		'1', '2', '3', '4', '5', '6',
+		'7', '8', '9', '0'];
+	$res = '';
+	for ($i = 0; $i < $n; $i++) {
+		// Вычисляем случайный индекс массива
+		$index = rand(0, count($arr) - 1);
+		$res .= $arr[$index];
 	}
-	return $id;
+	return $res;
+}
+
+/**
+ * Получает строку со случайными цифрами длиной $n
+ * @param integer $n
+ * @return string
+ */
+function getRandomDigits($n = 60) {
+	$res = '';
+	for ($i = 0; $i < $n; $i++) {
+		$res .= chr(rand(48, 56));
+	}
+	return $res;
 }
 
 /**
@@ -408,4 +433,14 @@ function humanSize($sz) {
 	$units = array('Б', 'КБ', 'МБ', 'ГБ', 'ТБ');
 	$power = $sz > 0 ? floor(log($sz, 1024)) : 0;
 	return number_format($sz / pow(1024, $power), 2, ',', ' ') . ' ' . $units[$power];
+}
+
+function guid() {
+	if (function_exists('com_create_guid') === true) {
+		return trim(com_create_guid(), '{}');
+	}
+	$data = openssl_random_pseudo_bytes(16);
+	$data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+	$data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+	return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }

@@ -15,7 +15,7 @@
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Группа', 'Производитель', 'Наименование', ''],
 		colModel: [
-			{name: 'active', index: 'active', width: 20, search: false},
+			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'nomeid', index: 'nomeid', width: 55, hidden: true},
 			{name: 'group_nome.name', index: 'group_nome.name', width: 200},
 			{name: 'vendor.name', index: 'vendor.name', width: 200},

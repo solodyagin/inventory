@@ -11,7 +11,7 @@
  */
 
 $('#tbl_move').jqGrid({
-	url: 'route/deprecated/server/equipment/getmoveinfo.php?eqid=',
+	url: 'moveinfo/list?eqid=',
 	datatype: 'json',
 	colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'Оргтехника', 'Комментарий'],
 	colModel: [

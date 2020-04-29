@@ -19,10 +19,14 @@
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Подразделение', 'Наименование', 'Комментарий', 'Действия'],
 		colModel: [
-			{name: 'active', index: 'active', width: 10},
+			{name: 'active', index: 'active', width: 20},
 			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'opgroup', index: 'opgroup', width: 100, editable: true},
-			{name: 'name', index: 'name', width: 200, editable: true},
+			{name: 'name', index: 'name', width: 200, editable: true,
+				unformat: function (cellvalue, options, cell) {
+					return $(cell).attr('title');
+				}
+			},
 			{name: 'comment', index: 'comment', width: 200, editable: true},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],
@@ -38,17 +42,18 @@
 		autowidth: true,
 		pager: '#pager1',
 		sortname: 'id',
+		sortorder: 'asc',
 		scroll: 1,
 		viewrecords: true,
-		sortorder: 'asc',
 		editurl: 'places/change?orgid=' + defaultorgid,
 		caption: 'Помещения',
 		onSelectRow: function (id) {
 			var caption = 'Рабочие места в помещении "' + $list1.jqGrid('getCell', id, 'name') + '"';
 			$list2.jqGrid('setCaption', caption);
-			$list2.jqGrid('setGridParam', {url: 'places/listsub?placesid=' + id + '&orgid=' + defaultorgid});
-			$list2.jqGrid('setGridParam', {editurl: 'places/changesub?placesid=' + id + '&orgid=' + defaultorgid});
-			$list2.trigger('reloadGrid');
+			$list2.jqGrid('setGridParam', {
+				url: 'places/listsub?placesid=' + id + '&orgid=' + defaultorgid,
+				editurl: 'places/changesub?placesid=' + id + '&orgid=' + defaultorgid
+			}).trigger('reloadGrid');
 		},
 		loadComplete: function () {
 			$list2.jqGrid('setCaption', 'Рабочие места');
@@ -57,13 +62,13 @@
 				editurl: 'places/listsub'
 			}).trigger('reloadGrid');
 		}
-	}).navGrid('#pager1', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
+	});
+	$list1.jqGrid('navGrid', '#pager1', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
 	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 
 	$list2.jqGrid({
-		height: 100,
 		autowidth: true,
-		url: 'places/listsub',
+		//url: 'places/listsub',
 		datatype: 'json',
 		colNames: ['Id', 'Сотрудник', 'Действия'],
 		colModel: [
@@ -78,9 +83,10 @@
 		rowList: [10, 20, 50],
 		pager: '#pager2',
 		sortname: 'places_users.id',
-		viewrecords: true,
 		sortorder: 'asc',
+		viewrecords: true,
 		caption: 'Рабочие места'
-	}).navGrid('#pager2', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
+	});
+	$list2.jqGrid('navGrid', '#pager2', {add: true, edit: false, del: false, search: false}, {}, {}, {}, {multipleSearch: false}, {closeOnEscape: true});
 	$list2.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 </script>

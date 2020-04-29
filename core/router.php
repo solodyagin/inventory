@@ -12,14 +12,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 class Router {
 
 	public static $params = []; # Переданные в url GET-параметры
 
-	static function start() {
+	static function dispatch() {
 		$cfg = Config::getInstance();
 
 		$uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
@@ -28,7 +28,7 @@ class Router {
 		}
 		list($path, $args) = array_pad(explode('?', $uri, 2), 2, null);
 
-		# Получаем параметры
+		/* Получаем параметры */
 		$query = parse_url($uri, PHP_URL_QUERY);
 		if (!empty($query)) {
 			parse_str($query, self::$params);
@@ -39,17 +39,17 @@ class Router {
 		$controller_name = (!empty($routes[0])) ? ucfirst(strtolower($routes[0])) : 'Main';
 		$action_name = strtolower(((!empty($routes[1])) ? $routes[1] : 'index'));
 
-		# Добавляем префикс
+		/* Добавляем префикс */
 		$controller_name = 'Controller_' . $controller_name;
 		if (!class_exists($controller_name)) {
 			throw new Exception("Undefined controller {$controller_name} referenced");
 			//self::redirect('error404');
 		}
 
-		# Создаем контроллер
+		/* Создаем контроллер */
 		$controller = new $controller_name();
 
-		# Вызываем действие контроллера
+		/* Вызываем действие контроллера */
 		if (method_exists($controller, $action_name)) {
 			$controller->$action_name();
 		} else {

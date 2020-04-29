@@ -12,7 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+/* Запрещаем прямой вызов скрипта. */
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 /**
@@ -36,19 +36,19 @@ class Mod {
 	function Register($name, $comment, $copy) {
 		try {
 			$sql = 'SELECT COUNT(*) FROM config_common WHERE nameparam = :modname';
-			$cnt = DB::prepare($sql)->execute(array(':modname' => "modulename_$name"))->fetchColumn();
+			$cnt = DB::prepare($sql)->execute([':modname' => "modulename_$name"])->fetchColumn();
 			if ($cnt == 0) {
 				// записываем что такой модуль вообще есть, но не активен
-				$sql = "INSERT INTO config_common (id, nameparam, valueparam) VALUES (null, :modname, '0')";
-				DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
+				$sql = "INSERT INTO config_common (nameparam, valueparam) VALUES (:modname, '0')";
+				DB::prepare($sql)->execute([':modname' => "modulename_$name"]);
 
 				// записываем его $comment
-				$sql = "INSERT INTO config_common (id, nameparam, valueparam) VALUES (null, :modcomment, :comment)";
-				DB::prepare($sql)->execute(array(':modcomment' => "modulecomment_$name", ':comment' => $comment));
+				$sql = "INSERT INTO config_common (nameparam, valueparam) VALUES (:modcomment, :comment)";
+				DB::prepare($sql)->execute([':modcomment' => "modulecomment_$name", ':comment' => $comment]);
 
 				// записываем его $copy
-				$sql = 'INSERT INTO config_common (id, nameparam, valueparam) VALUES (null, :modcopy, :copy)';
-				DB::prepare($sql)->execute(array(':modcopy' => "modulecopy_$name", ':copy' => $copy));
+				$sql = 'INSERT INTO config_common (nameparam, valueparam) VALUES (:modcopy, :copy)';
+				DB::prepare($sql)->execute([':modcopy' => "modulecopy_$name", ':copy' => $copy]);
 			}
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения Mod.Register', 0, $ex);
@@ -62,13 +62,13 @@ class Mod {
 	function UnRegister($name) {
 		try {
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modname';
-			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
+			DB::prepare($sql)->execute([':modname' => "modulename_$name"]);
 
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modcomment';
-			DB::prepare($sql)->execute(array(':modcomment' => "modulecomment_$name"));
+			DB::prepare($sql)->execute([':modcomment' => "modulecomment_$name"]);
 
 			$sql = 'DELETE FROM config_common WHERE nameparam = :modcopy';
-			DB::prepare($sql)->execute(array(':modcopy' => "modulecopy_$name"));
+			DB::prepare($sql)->execute([':modcopy' => "modulecopy_$name"]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения Mod.UnRegister', 0, $ex);
 		}
@@ -81,7 +81,7 @@ class Mod {
 	function Activate($name) {
 		try {
 			$sql = "UPDATE config_common SET valueparam = '1' WHERE nameparam = :modname";
-			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
+			DB::prepare($sql)->execute([':modname' => "modulename_$name"]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения Mod.Activate', 0, $ex);
 		}
@@ -94,7 +94,7 @@ class Mod {
 	function DeActivate($name) {
 		try {
 			$sql = "UPDATE config_common SET valueparam = '0' WHERE nameparam = :modname";
-			DB::prepare($sql)->execute(array(':modname' => "modulename_$name"));
+			DB::prepare($sql)->execute([':modname' => "modulename_$name"]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения Mod.DeActivate', 0, $ex);
 		}
@@ -109,7 +109,7 @@ class Mod {
 		$active = false;
 		try {
 			$sql = 'SELECT * FROM config_common WHERE nameparam = :modname';
-			$row = DB::prepare($sql)->execute(array(':modname' => "modulename_$name"))->fetch();
+			$row = DB::prepare($sql)->execute([':modname' => "modulename_$name"])->fetch();
 			if ($row) {
 				$active = ($row['valueparam'] == '1');
 			}

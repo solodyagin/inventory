@@ -95,16 +95,44 @@ TEXT;
 Uncaught exception: "$class" with message "$message"
 Stack trace: {$exception->getTraceAsString()}
 Thrown in "{$exception->getFile()}" on line {$exception->getLine()}
+--
 TEXT;
 		error_log($log);
 	}
 });
 
+/* Загружаем все что нужно для работы движка */
+include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
+
+try {
+	$bytes = bin2hex(random_bytes(10));
+	switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+		case 'mysql':
+			$sql = "SELECT COUNT(*) cnt FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='config' AND COLUMN_NAME='inventory_id'";
+			$row = DB::prepare($sql)->execute()->fetch();
+			$cnt = ($row) ? $row['cnt'] : 0;
+			if ($cnt == 0) {
+				$sql = "ALTER TABLE config ADD COLUMN inventory_id VARCHAR(20) NOT NULL DEFAULT '$bytes'";
+				DB::prepare($sql)->execute();
+			}
+			break;
+		case 'pgsql':
+			$sql = "ALTER TABLE config ADD COLUMN IF NOT EXISTS inventory_id VARCHAR(20) NOT NULL DEFAULT '$bytes'";
+			DB::prepare($sql)->execute();
+			break;
+	}
+} catch (PDOException $ex) {
+	throw DBException('Ошибка при добавлении поля "inventory_id"', 0, $ex);
+}
+
 /* Получаем настройки из базы */
 $cfg->loadFromDB();
 
-/* Загружаем все что нужно для работы движка */
-include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
+/* Обновляем БД */
+if (strtotime($cfg->version) < strtotime(SITE_VERSION)) {
+	
+}
+DB::prepare('UPDATE config SET version = :version')->execute([':version' => SITE_VERSION]);
 
 /* Аутентифицируем пользователя по кукам */
 $user = User::getInstance();
@@ -171,4 +199,4 @@ $gmenu = new Menu();
 $gmenu->GetFromFiles(SITE_ROOT . '/inc/menu');
 
 /* Запускаем маршрутизатор */
-Router::start();
+Router::dispatch();
