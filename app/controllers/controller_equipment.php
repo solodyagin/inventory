@@ -79,10 +79,10 @@ class Controller_Equipment extends Controller {
 						if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
 							$where = $where . "($field = '$data')";
 						} else {
-							$where = $where . "($field::text LIKE '%$data%')";
+							$where = $where . "($field::text ILIKE '%$data%')";
 						}
 					} else {
-						$where = $where . "($field::text LIKE '%%')";
+						$where = $where . "($field::text ILIKE '%%')";
 					}
 					if ($i < ($cnt - 1)) {
 						$where = $where . ' AND ';

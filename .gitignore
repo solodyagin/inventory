@@ -15,5 +15,8 @@
 /photos/**/*.jpg
 !/photos/noimage.jpg
 
+# Ignore .htaccess
+/.htaccess
+
 # But not ignore .gitkeep file for hold empty directories
 !.gitkeep

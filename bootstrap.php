@@ -199,4 +199,4 @@ $gmenu = new Menu();
 $gmenu->GetFromFiles(SITE_ROOT . '/inc/menu');
 
 /* Запускаем маршрутизатор */
-Router::start();
+Router::dispatch();

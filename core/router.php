@@ -19,7 +19,7 @@ class Router {
 
 	public static $params = []; # Переданные в url GET-параметры
 
-	static function start() {
+	static function dispatch() {
 		$cfg = Config::getInstance();
 
 		$uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
