@@ -16,7 +16,7 @@
 	$list1.jqGrid({
 		url: 'knt/list',
 		datatype: 'json',
-		colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Покупатель', 'Продавец', 'К.договор', 'ERPCode', 'Комментарий', 'Действия'],
+		colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Потребитель', 'Поставщик', 'К.договор', 'ERPCode', 'Комментарий', 'Действия'],
 		colModel: [
 			{name: 'active', index: 'active', width: 20, search: false, hidden: true},
 			{name: 'id', index: 'id', width: 55, search: false, hidden: true},

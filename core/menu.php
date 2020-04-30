@@ -12,15 +12,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace Core;
 
 /**
  * Класс для работы с меню
  */
 class Menu {
 
-	var $arr_menu = array(); // Массив где хранится меню
+	var $arr_menu = []; // Массив где хранится меню
 	var $count = 0;
 
 	/* структура массива:
@@ -74,7 +73,7 @@ class Menu {
 	}
 
 	function GetList($parents) {
-		$res = array();
+		$res = [];
 		foreach ($this->arr_menu as $value) {
 			if ($parents == $value['parents']) {
 				$res[] = $value;

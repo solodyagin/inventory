@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Ping extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Инструменты / Проверка доступности';
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('ping/index', $cfg->theme, $data);
+			$this->view->renderTemplate('ping/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 

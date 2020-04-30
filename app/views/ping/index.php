@@ -7,7 +7,7 @@
 </div>
 <script>
 	$('#test_ping').click(function () {
-		$('#ping_add').html('<img src="templates/' + theme + '/img/loading.gif">');
+		$('#ping_add').html('<img src="public/img/loading.gif">');
 		$('#ping_add').load('route/deprecated/server/common/ping.php?orgid=' + defaultorgid);
 	});
 </script>

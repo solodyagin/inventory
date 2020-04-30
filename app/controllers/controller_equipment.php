@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Equipment extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Журнал / Имущество';
 		if ($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) {
-			$this->view->generate('equipment/index', $cfg->theme, $data);
+			$this->view->renderTemplate('equipment/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
@@ -41,7 +46,7 @@ class Controller_Equipment extends Controller {
 		$sord = GetDef('sord');
 		$cfg = Config::getInstance();
 		$sorgider = GetDef('sorgider', $cfg->defaultorgid);
-		/* Получаем наложенные поисковые фильтры */
+		// Получаем наложенные поисковые фильтры
 		$filters = GetDef('filters');
 		$flt = json_decode($filters, true);
 		$cnt = is_array($flt['rules']) ? count($flt['rules']) : 0;
@@ -56,15 +61,15 @@ class Controller_Equipment extends Controller {
 					$data = $flt['rules'][$i]['data'];
 					if ($data != '-1') {
 						if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
-							$where = $where . "($field = '$data')";
+							$where .= "($field = '$data')";
 						} else {
-							$where = $where . "($field LIKE '%$data%')";
+							$where .= "($field like '%$data%')";
 						}
 					} else {
-						$where = $where . "($field LIKE '%%')";
+						$where .= "($field like '%%')";
 					}
 					if ($i < ($cnt - 1)) {
-						$where = $where . ' AND ';
+						$where .= ' and ';
 					}
 				}
 				break;
@@ -77,30 +82,30 @@ class Controller_Equipment extends Controller {
 					$data = $flt['rules'][$i]['data'];
 					if ($data != '-1') {
 						if (($field == 'placesid') || ($field == 'getvendorandgroup.grnomeid')) {
-							$where = $where . "($field = '$data')";
+							$where .= "($field = '$data')";
 						} else {
-							$where = $where . "($field::text ILIKE '%$data%')";
+							$where .= "($field::text ilike '%$data%')";
 						}
 					} else {
-						$where = $where . "($field::text ILIKE '%%')";
+						$where .= "($field::text ilike '%%')";
 					}
 					if ($i < ($cnt - 1)) {
-						$where = $where . ' AND ';
+						$where .= ' and ';
 					}
 				}
 				break;
 		}
 		if ($where == '') {
-			$where = "WHERE equipment.orgid='$sorgider'";
+			$where = "where equipment.orgid='$sorgider'";
 		} else {
-			$where = "WHERE $where AND equipment.orgid='$sorgider'";
+			$where = "where $where and equipment.orgid='$sorgider'";
 		}
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-		$sql = 'SELECT COUNT(*) cnt FROM equipment';
+		$sql = 'select count(*) cnt from equipment';
 		try {
 			$row = DB::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
@@ -125,7 +130,7 @@ class Controller_Equipment extends Controller {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
-SELECT equipment.dtendgar,
+select equipment.dtendgar,
   tmcgo,
   knt.name kntname,
   getvendorandgroup.grnomeid,
@@ -151,29 +156,29 @@ SELECT equipment.dtendgar,
   equipment.comment eqcomment,
   equipment.active eqactive,
   equipment.repair eqrepair
-FROM equipment
-  INNER JOIN (
-    SELECT nome.groupid grnomeid,
+from equipment
+  inner join (
+    select nome.groupid grnomeid,
       nome.id nomeid,
       vendor.name vendorname,
       group_nome.name groupname,
       nome.name nomename
-    FROM nome
-      INNER JOIN group_nome ON nome.groupid = group_nome.id
-      INNER JOIN vendor ON nome.vendorid = vendor.id
-  ) AS getvendorandgroup ON getvendorandgroup.nomeid = equipment.nomeid
-  INNER JOIN org ON org.id = equipment.orgid
-  INNER JOIN places ON places.id = equipment.placesid
-  INNER JOIN users_profile ON users_profile.usersid = equipment.usersid
-  LEFT JOIN knt ON knt.id = equipment.kntid
+    from nome
+      inner join group_nome on nome.groupid = group_nome.id
+      inner join vendor on nome.vendorid = vendor.id
+  ) as getvendorandgroup on getvendorandgroup.nomeid = equipment.nomeid
+  inner join org on org.id = equipment.orgid
+  inner join places on places.id = equipment.placesid
+  inner join users_profile on users_profile.usersid = equipment.usersid
+  left join knt on knt.id = equipment.kntid
 $where
-ORDER BY $sidx $sord
-LIMIT $start, $limit
+order by $sidx $sord
+limit $start, $limit
 TXT;
 					break;
 				case 'pgsql':
 					$sql = <<<TXT
-SELECT equipment.dtendgar,
+select equipment.dtendgar,
   tmcgo,
   knt.name kntname,
   getvendorandgroup.grnomeid,
@@ -199,24 +204,24 @@ SELECT equipment.dtendgar,
   equipment.comment eqcomment,
   equipment.active eqactive,
   equipment.repair eqrepair
-FROM equipment
-  INNER JOIN (
-    SELECT nome.groupid grnomeid,
+from equipment
+  inner join (
+    select nome.groupid grnomeid,
       nome.id nomeid,
       vendor.name vendorname,
       group_nome.name groupname,
       nome.name nomename
-    FROM nome
-      INNER JOIN group_nome ON nome.groupid = group_nome.id
-      INNER JOIN vendor ON nome.vendorid = vendor.id
-  ) AS getvendorandgroup ON getvendorandgroup.nomeid = equipment.nomeid
-  INNER JOIN org ON org.id = equipment.orgid
-  INNER JOIN places ON places.id = equipment.placesid
-  INNER JOIN users_profile ON users_profile.usersid = equipment.usersid
-  LEFT JOIN knt ON knt.id = equipment.kntid
+    from nome
+      inner join group_nome on nome.groupid = group_nome.id
+      inner join vendor on nome.vendorid = vendor.id
+  ) as getvendorandgroup on getvendorandgroup.nomeid = equipment.nomeid
+  inner join org on org.id = equipment.orgid
+  inner join places on places.id = equipment.placesid
+  inner join users_profile on users_profile.usersid = equipment.usersid
+  left join knt on knt.id = equipment.kntid
 $where
-ORDER BY $sidx $sord
-OFFSET $start LIMIT $limit
+order by $sidx $sord
+offset $start limit $limit
 TXT;
 					break;
 			}
@@ -276,21 +281,17 @@ TXT;
 		$id = PostDef('id');
 		switch ($oper) {
 			case 'add':
-				/* Проверка: может ли пользователь добавлять? */
+				// Проверка: может ли пользователь добавлять?
 				($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
 				try {
-					$sql = 'INSERT INTO places (orgid, name, comment, active) VALUES (:orgid, :name, :comment, 1)';
-					DB::prepare($sql)->execute([
-						':orgid' => $orgid,
-						':name' => $name,
-						':comment' => $comment
-					]);
+					$sql = 'insert into places (orgid, name, comment, active) values (:orgid, :name, :comment, 1)';
+					DB::prepare($sql)->execute([':orgid' => $orgid, ':name' => $name, ':comment' => $comment]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не смог добавить оргтехнику!', 0, $ex);
 				}
 				break;
 			case 'edit':
-				/* Проверка: может ли пользователь редактировать? */
+				// Проверка: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Недостаточно прав');
 				$os = ($os == 'Yes') ? 1 : 0;
 				$tmcgo = ($tmcgo == 'Yes') ? 1 : 0;
@@ -298,10 +299,10 @@ TXT;
 				$mapyet = ($mapyet == 'Yes') ? 1 : 0;
 				try {
 					$sql = <<<TXT
-UPDATE equipment
-SET buhname = :buhname, sernum = :sernum, invnum = :invnum, shtrihkod = :shtrihkod, cost = :cost,
-  currentcost = :currentcost, os = :os, mode = :mode, mapyet = :mapyet, comment = :comment, tmcgo = :tmcgo
-WHERE id = :id
+update equipment
+set buhname = :buhname, sernum = :sernum, invnum = :invnum, shtrihkod = :shtrihkod, cost = :cost,
+	currentcost = :currentcost, os = :os, mode = :mode, mapyet = :mapyet, comment = :comment, tmcgo = :tmcgo
+where id = :id
 TXT;
 					DB::prepare($sql)->execute([
 						':buhname' => $buhname,
@@ -322,15 +323,15 @@ TXT;
 				}
 				break;
 			case 'del':
-				/* Проверяем может ли пользователь удалять? */
+				// Проверяем: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
 				try {
 					switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 						case 'mysql':
-							$sql = 'UPDATE equipment SET active = NOT active WHERE id = :id';
+							$sql = 'update equipment set active = not active where id = :id';
 							break;
 						case'pgsql':
-							$sql = 'UPDATE equipment SET active = active # 1 WHERE id = :id';
+							$sql = 'update equipment set active = active # 1 where id = :id';
 							break;
 					}
 					DB::prepare($sql)->execute([':id' => $id]);
@@ -356,10 +357,10 @@ TXT;
 			try {
 				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 					case 'mysql':
-						$sql = 'SELECT * FROM places WHERE orgid = :orgid AND active = 1 ORDER BY BINARY(opgroup), BINARY(name)';
+						$sql = 'select * from places where orgid = :orgid and active = 1 order by binary(opgroup), binary(name)';
 						break;
 					case 'pgsql':
-						$sql = 'SELECT * FROM places WHERE orgid = :orgid AND active = 1 ORDER BY opgroup, name';
+						$sql = 'select * from places where orgid = :orgid and active = 1 order by opgroup, name';
 						break;
 				}
 				$arr = DB::prepare($sql)->execute([':orgid' => $orgid])->fetchAll();
@@ -398,10 +399,10 @@ TXT;
 			try {
 				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 					case 'mysql':
-						$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY BINARY(name)';
+						$sql = 'select * from group_nome where active = 1 order by binary(name)';
 						break;
 					case 'pgsql':
-						$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
+						$sql = 'select * from group_nome where active = 1 order by name';
 						break;
 				}
 				$arr = DB::prepare($sql)->execute()->fetchAll();

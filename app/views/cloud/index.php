@@ -11,24 +11,17 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
-
-/*
- * Хранилище документов
- */
-
 $user = User::getInstance();
 $cfg = Config::getInstance();
 ?>
-<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/upload.css">
-<link rel="stylesheet" href="js/skin/ui.dynatree.css">
-<script src="js/jquery.dynatree.min.js"></script>
-<script src="js/FileAPI/FileAPI.min.js"></script>
-<script src="js/FileAPI/FileAPI.exif.js"></script>
-<script src="js/jquery.fileapi.min.js"></script>
-<script src="js/jcrop/jquery.Jcrop.min.js"></script>
-<script src="js/statics/jquery.modal.js"></script>
+<link rel="stylesheet" href="public/css/upload.css">
+<link rel="stylesheet" href="public/js/skin/ui.dynatree.css">
+<script src="public/js/jquery.dynatree.min.js"></script>
+<script src="public/js/FileAPI/FileAPI.min.js"></script>
+<script src="public/js/FileAPI/FileAPI.exif.js"></script>
+<script src="public/js/jquery.fileapi.min.js"></script>
+<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
+<script src="public/js/statics/jquery.modal.js"></script>
 <div class="container-fluid">
 	<h4><?= $section; ?></h4>
 	<div class="row">
@@ -125,13 +118,13 @@ $cfg = Config::getInstance();
 				$('#simple-btn').fileapi('data', {'selectedkey': selectedkey});
 				$("#simple-btn").css('visibility', 'visible');
 			},
-			onLazyRead: function (node) {
+			/*onLazyRead: function (node) {
 				// Mockup a slow reqeuest ...
 				node.appendAjax({
 					url: 'sample-data2.json',
 					debugLazyDelay: 750 // don't do this in production code
 				});
-			},
+			},*/
 			dnd: {
 				onDragStart: function (node) {
 					/** This function MUST be defined to enable dragging for the tree.

@@ -12,15 +12,21 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_ContractFiles extends Controller {
 
 	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
-		/* Проверяем может ли пользователь просматривать? */
+		// Проверяем: может ли пользователь просматривать?
 		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
@@ -30,13 +36,13 @@ class Controller_ContractFiles extends Controller {
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
 		$idcontract = GetDef('idcontract');
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
-			$sql = 'SELECT COUNT(*) cnt FROM files_contract WHERE idcontract = :idcontract';
+			$sql = 'select count(*) cnt from files_contract where idcontract = :idcontract';
 			$row = DB::prepare($sql)->execute([':idcontract' => $idcontract])->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -60,18 +66,18 @@ class Controller_ContractFiles extends Controller {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
-SELECT * FROM files_contract
-WHERE idcontract = :idcontract
-ORDER BY $sidx $sord
-LIMIT $start, $limit
+select * from files_contract
+where idcontract = :idcontract
+order by $sidx $sord
+limit $start, $limit
 TXT;
 					break;
 				case 'pgsql':
 					$sql = <<<TXT
-SELECT * FROM files_contract
-WHERE idcontract = :idcontract
-ORDER BY $sidx $sord
-OFFSET $start LIMIT $limit
+select * from files_contract
+where idcontract = :idcontract
+order by $sidx $sord
+offset $start limit $limit
 TXT;
 					break;
 			}
@@ -104,9 +110,9 @@ TXT;
 		$name = PostDef('filename');
 		switch ($oper) {
 			case 'edit':
-				/* Проверка: может ли пользователь редактировать? */
+				// Проверка: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования не хватает прав!');
-				$sql = 'UPDATE files_contract SET userfreandlyfilename = :name WHERE id = :id';
+				$sql = 'update files_contract set userfreandlyfilename = :name where id = :id';
 				try {
 					DB::prepare($sql)->execute([':name' => $name, ':id' => $id]);
 				} catch (PDOException $ex) {
@@ -114,10 +120,10 @@ TXT;
 				}
 				break;
 			case 'del':
-				/* Проверяем может ли пользователь удалять? */
+				// Проверяем: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления не хватает прав!');
 				try {
-					$sql = 'DELETE FROM files_contract WHERE id = :id';
+					$sql = 'delete from files_contract where id = :id';
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не смог удалить файл', 0, $ex);
@@ -129,12 +135,12 @@ TXT;
 	/** Загрузка отсканированного документа */
 	function upload() {
 		$user = User::getInstance();
-		/* Проверяем: может ли пользователь добавлять файлы? */
+		// Проверяем: может ли пользователь добавлять файлы?
 		($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
 		$contractid = PostDef('contractid');
 		$orig_file = $_FILES['filedata']['name'];
-		$dis = ['.htaccess']; # Запрещённые для загрузки файлы
-		$rs = ['msg' => 'error']; # Ответ по умолчанию, если пойдёт что-то не так
+		$dis = ['.htaccess']; // Запрещённые для загрузки файлы
+		$rs = ['msg' => 'error']; // Ответ по умолчанию, если пойдёт что-то не так
 		if (!in_array($orig_file, $dis)) {
 			$userfile_name = guid() . '.' . pathinfo($orig_file, PATHINFO_EXTENSION);
 			$src = $_FILES['filedata']['tmp_name'];
@@ -147,22 +153,18 @@ TXT;
 						switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 							case 'mysql':
 								$sql = <<<TXT
-INSERT INTO files_contract (id, idcontract, filename, userfreandlyfilename)
-VALUES (NULL, :contractid, :userfile_name, :orig_file)
+insert into files_contract (id, idcontract, filename, userfreandlyfilename)
+values (null, :contractid, :userfile_name, :orig_file)
 TXT;
 								break;
 							case 'pgsql':
 								$sql = <<<TXT
-INSERT INTO files_contract (idcontract, filename, userfreandlyfilename)
-VALUES (:contractid, :userfile_name, :orig_file)
+insert into files_contract (idcontract, filename, userfreandlyfilename)
+values (:contractid, :userfile_name, :orig_file)
 TXT;
 								break;
 						}
-						DB::prepare($sql)->execute([
-							':contractid' => $contractid,
-							':userfile_name' => $userfile_name,
-							':orig_file' => $orig_file
-						]);
+						DB::prepare($sql)->execute([':contractid' => $contractid, ':userfile_name' => $userfile_name, ':orig_file' => $orig_file]);
 					} catch (PDOException $ex) {
 						throw new DBException('Не могу добавить файл', 0, $ex);
 					}
@@ -179,7 +181,7 @@ TXT;
 		$id = (isset(Router::$params['id'])) ? Router::$params['id'] : '';
 		is_numeric($id) or die('Переданы неправильные параметры');
 		$filename = '';
-		$sql = 'SELECT * FROM files_contract WHERE id = :id';
+		$sql = 'select * from files_contract where id = :id';
 		try {
 			$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
@@ -189,11 +191,11 @@ TXT;
 			throw new DBException('Ошибка получения файла из базы', 0, $ex);
 		}
 		(!empty($filename) && file_exists($filename) && is_file($filename)) or die('Файл не найден');
-		/* Органичение скорости скачивания - 10.0 MB/s */
+		// Органичение скорости скачивания - 10.0 MB/s
 		$download_rate = 10.0;
 		$size = filesize($filename);
 		$name = rawurldecode($row['userfreandlyfilename']);
-		/* Decrease CPU usage extreme. */
+		// Decrease CPU usage extreme.
 		@ob_end_clean();
 		header('Content-Type: application/octet-stream');
 		header('Content-Disposition: attachment; filename="' . $name . '"');
@@ -201,7 +203,7 @@ TXT;
 		header('Accept-Ranges: bytes');
 		header('Cache-control: private');
 		header('Pragma: private');
-		/* Multipart-download and resume-download. */
+		// Multipart-download and resume-download.
 		if (isset($_SERVER['HTTP_RANGE'])) {
 			list($a, $range) = explode('=', $_SERVER['HTTP_RANGE']);
 			str_replace($range, '-', $range);
@@ -216,7 +218,7 @@ TXT;
 			header("Content-Range: bytes 0-$size2/$size");
 		}
 		$chunksize = round($download_rate * 1048576);
-		/* Flush content. */
+		// Flush content.
 		flush();
 		if ($fp = @fopen($filename, 'rb')) {
 			flock($fp, LOCK_SH);
@@ -225,9 +227,9 @@ TXT;
 			}
 			while (!feof($fp) and ( connection_status() == 0)) {
 				echo fread($fp, $chunksize);
-				/* Flush the content to the browser. */
+				// Flush the content to the browser.
 				flush();
-				/* Decrease download speed. */
+				// Decrease download speed.
 				sleep(1);
 			}
 			flock($fp, LOCK_UN);

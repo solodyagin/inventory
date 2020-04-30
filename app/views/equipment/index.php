@@ -11,17 +11,15 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
 $cfg = Config::getInstance();
 ?>
 <div class="container-fluid">
 	<h4><?= $section; ?></h4>
 	<div class="row">
 		<div class="col-md-3 col-sm-3">
-			<select class="chosen-select form-control" name="orgs" id="orgs">
+			<select id="orgs" class="chosen-select form-control">
 				<?php
-				$morgs = GetArrayOrgs(); # список активных организаций
+				$morgs = GetArrayOrgs(); // список активных организаций
 				for ($i = 0; $i < count($morgs); $i++) {
 					$idorg = $morgs[$i]['id'];
 					$nameorg = $morgs[$i]['name'];

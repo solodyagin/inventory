@@ -15,9 +15,10 @@ Wiki: [http://грибовы.рф/wiki/doku.php/start](http://xn--90acbu5aj5f.xn
   - extension=php_gd2.dll
   - extension=php_ldap.dll
   - extension=php_pdo_mysql.dll
+  - extension=php_pdo_pgsql.dll
   - extension=php_xmlrpc.dll
   - extension=php_xml.dll
-3. MySQL или MariaDB, PostgreSQL (в разработке)
+3. MySQL/MariaDB или PostgreSQL
 
 ### Установка
 

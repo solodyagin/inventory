@@ -12,8 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace Core;
 
 /**
  * Класс для работы с пользовательскими настройками
@@ -27,14 +26,14 @@ class CConfig {
 	 */
 	function GetByParam($nameparam) {
 		$resz = '';
-		$sql = 'SELECT * FROM config_common WHERE nameparam = :nameparam';
 		try {
-			$row = DB::prepare($sql)->execute(array(':nameparam' => $nameparam))->fetch();
+			$sql = 'select * from config_common where nameparam = :nameparam';
+			$row = DB::prepare($sql)->execute([':nameparam' => $nameparam])->fetch();
 			if ($row) {
 				$resz = $row['valueparam'];
 			} else {
-				$sql = "INSERT INTO config_common (nameparam, valueparam) VALUES (:nameparam, '')";
-				DB::prepare($sql)->execute(array(':nameparam' => $nameparam));
+				$sql = "insert into config_common (nameparam, valueparam) values (:nameparam, '')";
+				DB::prepare($sql)->execute([':nameparam' => $nameparam]);
 			}
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения CConfig.GetByParam', 0, $ex);
@@ -48,15 +47,15 @@ class CConfig {
 	 * @param type $valueparam - значение параметра
 	 */
 	function SetByParam($nameparam, $valueparam) {
-		$sql = 'SELECT * FROM config_common WHERE nameparam = :nameparam';
 		try {
-			$row = DB::prepare($sql)->execute(array(':nameparam' => $nameparam))->fetch();
+			$sql = 'select * from config_common where nameparam = :nameparam';
+			$row = DB::prepare($sql)->execute([':nameparam' => $nameparam])->fetch();
 			if ($row) {
-				$sql = 'UPDATE config_common SET valueparam = :valueparam WHERE nameparam = :nameparam';
+				$sql = 'update config_common set valueparam = :valueparam where nameparam = :nameparam';
 			} else {
-				$sql = 'INSERT INTO config_common (nameparam, valueparam) VALUES (:nameparam, :valueparam)';
+				$sql = 'insert into config_common (nameparam, valueparam) values (:nameparam, :valueparam)';
 			}
-			DB::prepare($sql)->execute(array(':nameparam' => $nameparam, ':valueparam' => $valueparam));
+			DB::prepare($sql)->execute([':nameparam' => $nameparam, ':valueparam' => $valueparam]);
 		} catch (PDOException $ex) {
 			throw new DBException('Ошибка выполнения CConfig.SetByParam', 0, $ex);
 		}

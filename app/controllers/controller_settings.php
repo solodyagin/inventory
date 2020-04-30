@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Settings extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Настройка / Настройка системы';
 		if ($user->isAdmin()) {
-			$this->view->generate('settings/index', $cfg->theme, $data);
+			$this->view->renderTemplate('settings/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
@@ -43,21 +48,21 @@ class Controller_Settings extends Controller {
 		$cfg->domain2 = filter_input(INPUT_POST, 'form_cfg_domain2');
 		$cfg->theme = filter_input(INPUT_POST, 'form_cfg_theme_sl');
 		$cfg->emailadmin = filter_input(INPUT_POST, 'form_emailadmin');
-		$cfg->smtphost = filter_input(INPUT_POST, 'form_smtphost'); # Сервер SMTP
-		$cfg->smtpauth = filter_input(INPUT_POST, 'form_smtpauth', FILTER_VALIDATE_INT, $opt); # Требуется аутентификация?
-		$cfg->smtpport = filter_input(INPUT_POST, 'form_smtpport'); # SMTP порт
-		$cfg->smtpusername = filter_input(INPUT_POST, 'form_smtpusername');  # SMTP имя пользователя для входа
-		$cfg->smtppass = filter_input(INPUT_POST, 'form_smtppass'); # SMTP пароль пользователя для входа
-		$cfg->emailreplyto = filter_input(INPUT_POST, 'form_emailreplyto');  # Куда слать ответы
-		$cfg->urlsite = filter_input(INPUT_POST, 'urlsite');  # А где сайт находится?
-		$cfg->sendemail = filter_input(INPUT_POST, 'form_sendemail', FILTER_VALIDATE_INT, $opt); # А вообще будем посылать почту?
+		$cfg->smtphost = filter_input(INPUT_POST, 'form_smtphost'); // Сервер SMTP
+		$cfg->smtpauth = filter_input(INPUT_POST, 'form_smtpauth', FILTER_VALIDATE_INT, $opt); // Требуется аутентификация?
+		$cfg->smtpport = filter_input(INPUT_POST, 'form_smtpport'); // SMTP порт
+		$cfg->smtpusername = filter_input(INPUT_POST, 'form_smtpusername');  // SMTP имя пользователя для входа
+		$cfg->smtppass = filter_input(INPUT_POST, 'form_smtppass'); // SMTP пароль пользователя для входа
+		$cfg->emailreplyto = filter_input(INPUT_POST, 'form_emailreplyto');  // Куда слать ответы
+		$cfg->urlsite = filter_input(INPUT_POST, 'urlsite');  // А где сайт находится?
+		$cfg->sendemail = filter_input(INPUT_POST, 'form_sendemail', FILTER_VALIDATE_INT, $opt); // А вообще будем посылать почту?
 		$res = $cfg->saveToDB();
 		if ($res) {
 			$ok[] = 'Успешно сохранено!';
 		} else {
 			$err[] = 'Что-то пошло не так!';
 		}
-		/* Подключаем шаблон */
+		// Подключаем шаблон
 		$this->index();
 	}
 

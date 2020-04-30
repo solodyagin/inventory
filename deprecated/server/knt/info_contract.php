@@ -16,23 +16,36 @@
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $kntid = GetDef('kntid');
-
-$sql = 'SELECT * FROM knt WHERE id = :id AND active = 1';
 try {
-	$row = DB::prepare($sql)->execute(array(':id' => $kntid))->fetch();
+	$sql = 'select * from knt where id = :id and active = 1';
+	$row = DB::prepare($sql)->execute([':id' => $kntid])->fetch();
 	if ($row) {
 		if ($row['dog'] == '1') {
 			echo "<div class=\"alert alert-success\">Контрагент: {$row['name']}<br>";
-			$sql = <<<TXT
-SELECT * FROM contract
-WHERE kntid = :kntid
-	AND work = 1
-	AND datestart <= CURDATE()
-	AND dateend >= CURDATE()
-	AND active = 1
-TXT;
 			try {
-				$arr2 = DB::prepare($sql)->execute(array(':kntid' => $kntid))->fetchAll();
+				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+					case 'mysql':
+						$sql = <<<TXT
+select * from contract
+where kntid = :kntid
+	and work = 1
+	and datestart <= curdate()
+	and dateend >= curdate()
+	and active = 1
+TXT;
+						break;
+					case 'pgsql':
+						$sql = <<<TXT
+select * from contract
+where kntid = :kntid
+	and work = 1
+	and datestart <= current_date
+	and dateend >= current_date
+	and active = 1
+TXT;
+						break;
+				}
+				$arr2 = DB::prepare($sql)->execute([':kntid' => $kntid])->fetchAll();
 				$dogcount = count($arr2);
 				foreach ($arr2 as $row2) {
 					echo '<div class="well"><span class="label label-info">Активный договор:</span><br>';
@@ -41,16 +54,12 @@ TXT;
 					$dt2 = MySQLDateToDate($row2['dateend']);
 					echo "Срок действия с $dt1 по $dt2<br>";
 					echo "Файлы: ";
-
 					$idcontract = $row2['id'];
-
-					$sql = 'SELECT * FROM files_contract WHERE idcontract = :idcontract';
 					try {
-						$arr3 = DB::prepare($sql)->execute(array(':idcontract' => $idcontract))->fetchAll();
+						$sql = 'select * from files_contract where idcontract = :idcontract';
+						$arr3 = DB::prepare($sql)->execute([':idcontract' => $idcontract])->fetchAll();
 						foreach ($arr3 as $row3) {
-							$fn1 = $row3['filename'];
-							$fn2 = $row3['userfreandlyfilename'];
-							echo "<a target=\"_blank\" href=\"files/$fn1\">$fn2</a>; ";
+							echo "<a target=\"_blank\" href=\"contractfiles/download?id={$row3['id']}\">{$row3['userfreandlyfilename']}</a>; ";
 						}
 					} catch (PDOException $ex) {
 						throw new DBException('Не могу выбрать список файлов', 0, $ex);

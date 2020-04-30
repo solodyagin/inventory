@@ -16,13 +16,13 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 $userid = GetDef('userid');
 ?>
-<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/upload.css">
-<link rel="stylesheet" href="js/jcrop/jquery.Jcrop.min.css">
+<link rel="stylesheet" href="public/css/upload.css">
+<link rel="stylesheet" href="public/js/jcrop/jquery.Jcrop.min.css">
 <script>
 	var examples = [];
 	$(document).ready(function () {
 		$('#myForm').ajaxForm(function (msg) {
-			if (msg != 'ok') {
+			if (msg !== 'ok') {
 				$('#messenger').html(msg);
 			} else {
 				$('#add_edit').html('');
@@ -152,11 +152,11 @@ if ($user->isAdmin()):
 			staticPath: './FileAPI/'
 		};
 	</script>
-	<script src="js/FileAPI/FileAPI.min.js"></script>
-	<script src="js/FileAPI/FileAPI.exif.js"></script>
-	<script src="js/jquery.fileapi.min.js"></script>
-	<script src="js/jcrop/jquery.Jcrop.min.js"></script>
-	<script src="js/statics/jquery.modal.js"></script>
+	<script src="public/js/FileAPI/FileAPI.min.js"></script>
+	<script src="public/js/FileAPI/FileAPI.exif.js"></script>
+	<script src="public/js/jquery.fileapi.min.js"></script>
+	<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
+	<script src="public/js/statics/jquery.modal.js"></script>
 	<script>
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);

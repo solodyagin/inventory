@@ -37,7 +37,7 @@ if ($step == 'edit') {
 	$id = '';
 }
 ?>
-<script src="js/tinymce/jquery.tinymce.min.js"></script>
+<script src="public/js/tinymce/jquery.tinymce.min.js"></script>
 <script>
 	$('#pg_add_edit').dialog({
 		close: function () {
@@ -82,7 +82,7 @@ if ($step == 'edit') {
 			$('.textarea').tinymce().hide();
 		}
 		$('textarea').tinymce({
-			script_url: 'js/tinymce/tinymce.min.js',
+			script_url: 'public/js/tinymce/tinymce.min.js',
 			theme: 'modern',
 			mode: 'none',
 			'theme_advanced_buttons3_add': 'code',

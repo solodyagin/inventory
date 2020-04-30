@@ -65,7 +65,7 @@ unset($tmpuser);
 		font: initial;
 	}
 </style>
-<script src="js/jquery.passgen.min.js"></script>
+<script src="public/js/jquery.passgen.min.js"></script>
 <script>
 	$(function () {
 		$('#pass_gen').click(function () {

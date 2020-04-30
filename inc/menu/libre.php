@@ -16,7 +16,7 @@
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 $this->Add('main', '<i class="fas fa-list-ul"></i> Справочники', 'Справочники', 10, 'libre', '');
-$this->Add('libre', '<i class="fas fa-sitemap"></i> Список организаций', 'Список организаций', 10, 'libre/orglist', 'orglist');
+$this->Add('libre', '<i class="fas fa-sitemap"></i> Список организаций', 'Список организаций', 10, 'libre/orgs', 'orgs');
 $this->Add('libre', '<i class="fas fa-users"></i> Сотрудники', 'Сотрудники', 10, 'libre/peoples', 'peoples');
 $this->Add('libre', '<i class="fas fa-location-arrow"></i> Помещения', 'Помещения', 10, 'libre/places', 'places');
 $this->Add('libre', '<i class="fas fa-cogs"></i> Контрагенты', 'Контрагенты', 10, 'libre/knt', 'knt');

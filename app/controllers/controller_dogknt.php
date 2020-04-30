@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Dogknt extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Инструменты / Контроль договоров';
-		if ($user->isAdmin() || $user->TestRights([1,3,4,5,6])) {
-			$this->view->generate('dogknt/index', $cfg->theme, $data);
+		if ($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) {
+			$this->view->renderTemplate('dogknt/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 

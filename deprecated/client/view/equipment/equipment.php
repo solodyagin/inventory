@@ -16,8 +16,8 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
 ?>
-<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/upload.css">
-<link href="js/jcrop/jquery.Jcrop.min.css" rel="stylesheet">
+<link rel="stylesheet" href="public/css/upload.css">
+<link href="public/js/jcrop/jquery.Jcrop.min.css" rel="stylesheet">
 <style>
 	#binv, #bshtr {
 		font: initial;
@@ -419,11 +419,6 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 			UpdateChosen();
 		}
 
-		function GetListGroups(groupid) {
-			$('#sgroups').load('route/deprecated/server/common/getlistgroupname.php?groupid=' + groupid);
-			UpdateChosen();
-		}
-
 		function GetListNome(groupid, vendorid, nmd) {
 			$.ajax({
 				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + (vendorid || '') + '&nomeid=' + nmd,
@@ -500,11 +495,11 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 			staticPath: './FileAPI/'
 		};
 	</script>
-	<script src="js/FileAPI/FileAPI.min.js"></script>
-	<script src="js/FileAPI/FileAPI.exif.js"></script>
-	<script src="js/jquery.fileapi.min.js"></script>
-	<script src="js/jcrop/jquery.Jcrop.min.js"></script>
-	<script src="js/statics/jquery.modal.js"></script>
+	<script src="public/js/FileAPI/FileAPI.min.js"></script>
+	<script src="public/js/FileAPI/FileAPI.exif.js"></script>
+	<script src="public/js/jquery.fileapi.min.js"></script>
+	<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
+	<script src="public/js/statics/jquery.modal.js"></script>
 	<script>
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);

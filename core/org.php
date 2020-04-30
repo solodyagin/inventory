@@ -12,8 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace Core;
 
 class Org {
 
@@ -27,7 +26,7 @@ class Org {
 	 * @param type $id
 	 */
 	function GetById($id) {
-		$sql = 'SELECT * FROM org WHERE id = :id';
+		$sql = 'select * from org where id = :id';
 		try {
 			$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {

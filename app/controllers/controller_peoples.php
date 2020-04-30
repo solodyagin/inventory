@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Peoples extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Справочники / Сотрудники';
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('peoples/index', $cfg->theme, $data);
+			$this->view->renderTemplate('peoples/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
@@ -32,10 +37,10 @@ class Controller_Peoples extends Controller {
 	function add() {
 		$user = User::getInstance();
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('peoples/add', '');
+			$this->view->render('peoples/add');
 		} else {
 			$data['section'] = 'Справочники / Сотрудники';
-			$this->view->generate('restricted', '', $data);
+			$this->view->render('restricted', $data);
 		}
 	}
 
@@ -43,17 +48,17 @@ class Controller_Peoples extends Controller {
 	function edit() {
 		$user = User::getInstance();
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('peoples/edit', '');
+			$this->view->render('peoples/edit');
 		} else {
 			$data['section'] = 'Справочники / Сотрудники';
-			$this->view->generate('restricted', '', $data);
+			$this->view->render('restricted', $data);
 		}
 	}
 
 	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
-		/* Разрешаем при наличии ролей "Полный доступ" и "Просмотр" */
+		// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
 		($user->isAdmin() || $user->TestRights([1, 3])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
@@ -71,30 +76,30 @@ class Controller_Peoples extends Controller {
 			$data = $flt['rules'][$i]['data'];
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
-					$where .= "($field LIKE '%$data%')";
+					$where .= "($field like '%$data%')";
 					break;
 				case 'pgsql':
-					$where .= "($field::text LIKE '%$data%')";
+					$where .= "($field::text ilike '%$data%')";
 					break;
 			}
 			if ($i < ($cnt - 1)) {
-				$where .= ' AND ';
+				$where .= ' and ';
 			}
 		}
 		if ($where != '') {
-			$where = 'WHERE ' . $where;
+			$where = 'where ' . $where;
 		}
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
 			$sql = <<<TXT
-SELECT COUNT(*) cnt
-FROM users u
-	INNER JOIN org o ON o.id = u.orgid
-	INNER JOIN users_profile p ON p.usersid = u.id
+select count(*) cnt
+from users u
+	inner join org o on o.id = u.orgid
+	inner join users_profile p on p.usersid = u.id
 $where
 TXT;
 			$row = DB::prepare($sql)->execute()->fetch();
@@ -120,25 +125,26 @@ TXT;
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
-SELECT u.id,
-	o.name AS orgname,
+select
+	u.id,
+	o.name as orgname,
 	p.fio,
 	u.login,
 	u.password,
 	u.email,
 	u.mode,
 	u.active
-FROM users u
-	INNER JOIN org o ON o.id = u.orgid
-	INNER JOIN users_profile p ON p.usersid = u.id
+from users u
+	inner join org o on o.id = u.orgid
+	inner join users_profile p on p.usersid = u.id
 $where
-ORDER BY $sidx $sord
-LIMIT $start, $limit
+order by $sidx $sord
+limit $start, $limit
 TXT;
 					break;
 				case 'pgsql':
 					$sql = <<<TXT
-SELECT
+select
 	u.id,
 	o.name orgname,
 	p.fio,
@@ -147,12 +153,12 @@ SELECT
 	u.email,
 	u.mode,
 	u.active
-FROM users u
-	INNER JOIN org o ON o.id = u.orgid
-	INNER JOIN users_profile p ON p.usersid = u.id
+from users u
+	inner join org o on o.id = u.orgid
+	inner join users_profile p on p.usersid = u.id
 $where
-ORDER BY $sidx $sord
-OFFSET $start LIMIT $limit
+order by $sidx $sord
+offset $start limit $limit
 TXT;
 			}
 			$arr = DB::prepare($sql)->execute()->fetchAll();
@@ -184,38 +190,33 @@ TXT;
 		$mode = PostDef('mode');
 		switch ($oper) {
 			case 'edit':
-				/* Проверяем может ли пользователь редактировать? */
+				// Проверяем: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1])) or die('Недостаточно прав');
 				$imode = ($mode == 'Да') ? '1' : '0';
 				switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 					case 'mysql':
-						$ps = ($pass != 'скрыто') ? "`password`=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
+						$ps = ($pass != 'скрыто') ? "`password`=sha1(concat(sha1('$pass'), salt))," : '';
 						break;
 					case 'pgsql':
-						$ps = ($pass != 'скрыто') ? "password=SHA1(CONCAT(SHA1('$pass'), salt::text))," : '';
+						$ps = ($pass != 'скрыто') ? "password=sha1(concat(sha1('$pass'), salt::text))," : '';
 						break;
 				}
-				$sql = "UPDATE users SET mode = :mode, login = :login, $ps email = :email WHERE id = :id";
+				$sql = "update users set mode = :mode, login = :login, $ps email = :email where id = :id";
 				try {
-					DB::prepare($sql)->execute([
-						':mode' => $imode,
-						':login' => $login,
-						':email' => $email,
-						':id' => $id
-					]);
+					DB::prepare($sql)->execute([':mode' => $imode, ':login' => $login, ':email' => $email, ':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по пользователю', 0, $ex);
 				}
 			case 'del':
-				/* Проверяем может ли пользователь удалять? */
+				// Проверяем: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1])) or die('Для удаления недостаточно прав');
 				try {
 					switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 						case 'mysql':
-							$sql = 'UPDATE users SET active = NOT active WHERE id = :id';
+							$sql = 'update users set active = not active where id = :id';
 							break;
 						case 'pgsql':
-							$sql = 'UPDATE users SET active = active # 1 WHERE id = :id';
+							$sql = 'update users set active = active # 1 where id = :id';
 							break;
 					}
 					DB::prepare($sql)->execute([':id' => $id]);

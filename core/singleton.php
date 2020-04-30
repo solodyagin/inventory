@@ -12,8 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace Core;
 
 trait Singleton {
 

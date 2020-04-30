@@ -12,8 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace Core;
 
 class Controller {
 
@@ -25,8 +24,8 @@ class Controller {
 	}
 
 	function index() {
-		$view_name = 'view_' . strtolower(str_replace('Controller_', '', get_class($this)));
-		$this->view->generate($view_name, '');
+		$view_name = strtolower(str_replace('Controller_', '', get_class($this))) . '/index';
+		$this->view->render($view_name);
 	}
 
 }

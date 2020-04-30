@@ -12,22 +12,20 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта */
+// Запрещаем прямой вызов скрипта
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$err = []; # Массив с сообщениями об ошибках для показа пользователю при генерации страницы
-$ok = []; # Массив с информационными сообщениями для показа пользователю при генерации страницы
-
-/* Некоторые установки */
-date_default_timezone_set('Europe/Moscow'); # Временная зона по умолчанию
-
-/* Если нет файла конфигурации, то запускаем инсталлятор */
+$err = []; // Массив с сообщениями об ошибках для показа пользователю при генерации страницы
+$ok = []; // Массив с информационными сообщениями для показа пользователю при генерации страницы
+// Некоторые установки
+date_default_timezone_set('Europe/Moscow'); // Временная зона по умолчанию
+// Если нет файла конфигурации, то запускаем инсталлятор
 if (!is_file(SITE_ROOT . '/app/config.php')) {
 	header('Location: install/index.php');
 	die();
 }
 
-$time_start = microtime(true); # Засекаем время начала выполнения скрипта
+$time_start = microtime(true); // Засекаем время начала выполнения скрипта
 
 /**
  * Функция автоматической загрузки классов
@@ -58,11 +56,11 @@ function __autoload($class) {
 	require_once $filename;
 }
 
-/* Получаем настройки из файла конфигурации */
+// Получаем настройки из файла конфигурации
 $cfg = Config::getInstance();
 $cfg->loadFromFile();
 
-/* Задаём обработчик исключений */
+// Задаём обработчик исключений
 error_reporting(E_ALL);
 set_error_handler(function ($level, $message, $file, $line) {
 	if (error_reporting() !== 0) { // to keep the @ operator working
@@ -101,23 +99,23 @@ TEXT;
 	}
 });
 
-/* Загружаем все что нужно для работы движка */
-include_once SITE_ROOT . '/inc/functions.php'; # Загружаем функции
+// Загружаем все, что нужно для работы движка
+include_once SITE_ROOT . '/inc/functions.php'; // Загружаем функции
 
 try {
 	$bytes = bin2hex(random_bytes(10));
 	switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 		case 'mysql':
-			$sql = "SELECT COUNT(*) cnt FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='config' AND COLUMN_NAME='inventory_id'";
+			$sql = "select count(*) cnt from information_schema.columns where table_name='config' and column_name='inventory_id'";
 			$row = DB::prepare($sql)->execute()->fetch();
 			$cnt = ($row) ? $row['cnt'] : 0;
 			if ($cnt == 0) {
-				$sql = "ALTER TABLE config ADD COLUMN inventory_id VARCHAR(20) NOT NULL DEFAULT '$bytes'";
+				$sql = "alter table config add column inventory_id varchar(20) not null default '$bytes'";
 				DB::prepare($sql)->execute();
 			}
 			break;
 		case 'pgsql':
-			$sql = "ALTER TABLE config ADD COLUMN IF NOT EXISTS inventory_id VARCHAR(20) NOT NULL DEFAULT '$bytes'";
+			$sql = "alter table config add column if not exists inventory_id varchar(20) not null default '$bytes'";
 			DB::prepare($sql)->execute();
 			break;
 	}
@@ -125,16 +123,18 @@ try {
 	throw DBException('Ошибка при добавлении поля "inventory_id"', 0, $ex);
 }
 
-/* Получаем настройки из базы */
+// Получаем настройки из базы
 $cfg->loadFromDB();
 
-/* Обновляем БД */
+// Обновляем БД
 if (strtotime($cfg->version) < strtotime(SITE_VERSION)) {
-	
+	if ($cfg->version == '2020-04-20') {
+		DB::prepare('update config set theme = :theme')->execute([':theme' => 'cerulean']);
+	}
+	DB::prepare('update config set version = :version')->execute([':version' => SITE_VERSION]);
 }
-DB::prepare('UPDATE config SET version = :version')->execute([':version' => SITE_VERSION]);
 
-/* Аутентифицируем пользователя по кукам */
+// Аутентифицируем пользователя по кукам
 $user = User::getInstance();
 $user->loginByCookie();
 
@@ -148,20 +148,20 @@ if (strpos($uri, $cfg->rewrite_base) === 0) {
 	$uri = substr($uri, strlen($cfg->rewrite_base));
 }
 if (strpos($uri, 'route') === 0) {
-	# Удаляем лишнее
+	// Удаляем лишнее
 	$uri = substr($uri, 5);
-	# Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
+	// Получаем путь до скрипта ($route) и переданные ему параметры ($PARAMS)
 	list($route, $p) = array_pad(explode('?', $uri, 2), 2, null);
 	if ($p) {
 		parse_str($p, $PARAMS);
 	}
-	# Разрешаем подключать php-скрипты только из каталогов /controller и /inc
+	// Разрешаем подключать php-скрипты только из каталогов /controller и /inc
 	if ((!preg_match('#^(/deprecated)|(/inc)#', $route)) || (strpos($route, '..') !== false)) {
 		die("Запрещён доступ к '$route'");
 	}
-	# Подключаем запрашиваемый скрипт
+	// Подключаем запрашиваемый скрипт
 	if (is_file(SITE_ROOT . $route)) {
-		# Разрешаем доступ только выполнившим вход пользователям
+		// Разрешаем доступ только выполнившим вход пользователям
 		if ($user->id == '') {
 			die('Доступ ограничен');
 		}
@@ -173,19 +173,19 @@ if (strpos($uri, 'route') === 0) {
 }
 
 
-/* Загружаем сторонние классы */
-include_once SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php'; # Класс управления почтой
+// Загружаем сторонние классы
+include_once SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php'; // Класс управления почтой
 
 /*
  * смотрим почту в очереди и отправляем одно письмо за раз
  * после чего очередь сокращаем на 1 письмо
  */
 try {
-	$row = DB::prepare('SELECT * FROM mailq LIMIT 1')->execute()->fetch();
+	$row = DB::prepare('select * from mailq limit 1')->execute()->fetch();
 	if ($row) {
 		mailq($row['to'], $row['title'], $row['btxt']);
 		try {
-			DB::prepare('DELETE FROM mailq WHERE id = :id')->execute([':id' => $row['id']]);
+			DB::prepare('delete from mailq where id = :id')->execute([':id' => $row['id']]);
 		} catch (PDOException $ex) {
 			$err[] = 'Не получилось удалить сообщение из очереди ' . $ex->getMessage();
 		}
@@ -194,9 +194,9 @@ try {
 	$err[] = 'Не получилось прочитать очередь сообщений ' . $ex->getMessage();
 }
 
-/* Инициализируем заполнение меню */
+// Инициализируем заполнение меню
 $gmenu = new Menu();
 $gmenu->GetFromFiles(SITE_ROOT . '/inc/menu');
 
-/* Запускаем маршрутизатор */
+// Запускаем маршрутизатор
 Router::dispatch();

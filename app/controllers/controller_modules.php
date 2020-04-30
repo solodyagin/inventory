@@ -12,25 +12,30 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Modules extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Настройка / Подключенные модули';
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('modules/index', $cfg->theme, $data);
+			$this->view->renderTemplate('modules/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
 	function list() {
 		$user = User::getInstance();
-		/* Проверка: может ли пользователь просматривать? */
+		// Проверка: может ли пользователь просматривать?
 		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
@@ -39,12 +44,12 @@ class Controller_Modules extends Controller {
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-		$sql = "SELECT COUNT(*) AS cnt FROM config_common WHERE nameparam LIKE 'modulename_%'";
+		$sql = "select count(*) as cnt from config_common where nameparam like 'modulename_%'";
 		try {
 			$row = DB::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
@@ -68,38 +73,38 @@ class Controller_Modules extends Controller {
 		switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 			case 'mysql':
 				$sql = <<<TXT
-SELECT	t1.id id,
-		SUBSTR(t1.nameparam, 12) AS name,
-		t2.valueparam AS comment,
-		t3.valueparam AS copy,
-		t1.valueparam AS active
-FROM	config_common t1
-	LEFT JOIN config_common t2
-		ON (SUBSTR(t2.nameparam, 15) = SUBSTR(t1.nameparam, 12) AND
-			t2.nameparam LIKE "modulecomment_%")
-	LEFT JOIN config_common t3
-		ON (SUBSTR(t3.nameparam, 12) = SUBSTR(t1.nameparam, 12) AND
-			t3.nameparam LIKE "modulecopy_%")
-WHERE	t1.nameparam LIKE "modulename_%"
-ORDER BY $sidx $sord
-LIMIT	:start, :limit
+select	t1.id id,
+		substr(t1.nameparam, 12) as name,
+		t2.valueparam as comment,
+		t3.valueparam as copy,
+		t1.valueparam as active
+from	config_common t1
+	left join config_common t2
+		on (substr(t2.nameparam, 15) = substr(t1.nameparam, 12) and
+			t2.nameparam like "modulecomment_%")
+	left join config_common t3
+		on (substr(t3.nameparam, 12) = substr(t1.nameparam, 12) and
+			t3.nameparam like "modulecopy_%")
+where	t1.nameparam like "modulename_%"
+order by $sidx $sord
+limit	:start, :limit
 TXT;
 				break;
 			case 'pgsql':
-				$sql = <<<TXT
-SELECT
+				$sql = <<<txt
+select
   t1.id id,
-  SUBSTR(t1.nameparam, 12) AS name,
-  t2.valueparam AS comment,
-  t3.valueparam AS copy,
-  t1.valueparam AS active
-FROM config_common t1
-  LEFT JOIN config_common t2 ON (SUBSTR(t2.nameparam, 15) = SUBSTR(t1.nameparam, 12) AND t2.nameparam LIKE 'modulecomment_%')
-  LEFT JOIN config_common t3 ON (SUBSTR(t3.nameparam, 12) = SUBSTR(t1.nameparam, 12) AND t3.nameparam LIKE 'modulecopy_%')
-WHERE t1.nameparam LIKE 'modulename_%'
-ORDER BY $sidx $sord
-OFFSET :start LIMIT :limit
-TXT;
+  substr(t1.nameparam, 12) as name,
+  t2.valueparam as comment,
+  t3.valueparam as copy,
+  t1.valueparam as active
+from config_common t1
+  left join config_common t2 on (substr(t2.nameparam, 15) = substr(t1.nameparam, 12) and t2.nameparam like 'modulecomment_%')
+  left join config_common t3 on (substr(t3.nameparam, 12) = substr(t1.nameparam, 12) and t3.nameparam like 'modulecopy_%')
+where t1.nameparam like 'modulename_%'
+order by $sidx $sord
+offset :start limit :limit
+txt;
 				break;
 		}
 		try {
@@ -125,10 +130,10 @@ TXT;
 		$id = PostDef('id');
 		switch ($oper) {
 			case 'edit':
-				/* Проверка: может ли пользователь редактировать? */
+				// Проверка: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Недостаточно прав');
 				$active = PostDef('active');
-				$sql = 'UPDATE config_common SET valueparam = :active WHERE id = :id';
+				$sql = 'update config_common set valueparam = :active where id = :id';
 				try {
 					DB::prepare($sql)->execute([':active' => $active, ':id' => $id]);
 				} catch (PDOException $ex) {
@@ -136,14 +141,14 @@ TXT;
 				}
 				break;
 			case 'del':
-				/* Проверка: может ли пользователь удалять? */
+				// Проверка: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
-				$sql = 'SELECT * FROM config_common WHERE id = :id';
+				$sql = 'select * from config_common where id = :id';
 				try {
 					$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
 					if ($row) {
 						$modname = explode('_', $row['nameparam'])[1];
-						DB::prepare("DELETE FROM config_common WHERE nameparam LIKE 'module%_$modname'")->execute();
+						DB::prepare("delete from config_common where nameparam like 'module%_$modname'")->execute();
 					}
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу удалить модуль', 0, $ex);

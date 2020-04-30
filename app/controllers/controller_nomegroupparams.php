@@ -12,15 +12,21 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_NomeGroupParams extends Controller {
 
 	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
-		/* Проверяем может ли пользователь просматривать? */
+		// Проверяем: может ли пользователь просматривать?
 		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
@@ -33,13 +39,13 @@ class Controller_NomeGroupParams extends Controller {
 		if ($groupid == '') {
 			$groupid = PostDef('groupid');
 		}
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
-			$sql = 'SELECT COUNT(*) cnt FROM group_param WHERE groupid = :groupid';
+			$sql = 'select count(*) cnt from group_param where groupid = :groupid';
 			$row = DB::prepare($sql)->execute([':groupid' => $groupid])->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -62,10 +68,10 @@ class Controller_NomeGroupParams extends Controller {
 		try {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
-					$sql = "SELECT id, name, active FROM group_param WHERE groupid = :groupid ORDER BY $sidx $sord LIMIT $start, $limit";
+					$sql = "select id, name, active from group_param where groupid = :groupid order by $sidx $sord limit $start, $limit";
 					break;
 				case 'pgsql':
-					$sql = "SELECT id, name, active FROM group_param WHERE groupid = :groupid ORDER BY $sidx $sord OFFSET $start LIMIT $limit";
+					$sql = "select id, name, active from group_param where groupid = :groupid order by $sidx $sord offset $start limit $limit";
 					break;
 			}
 			$arr = DB::prepare($sql)->execute([':groupid' => $groupid])->fetchAll();
@@ -97,38 +103,38 @@ class Controller_NomeGroupParams extends Controller {
 		$name = PostDef('name');
 		switch ($oper) {
 			case 'add':
-				/* Проверяем может ли пользователь добавлять? */
+				// Проверяем: может ли пользователь добавлять?
 				($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
 				if (($groupid == '') || ($name == '')) {
 					die('Переданы не все параметры');
 				}
 				try {
-					$sql = 'INSERT INTO group_param (groupid, name, active) VALUES (:groupid, :name, 1)';
+					$sql = 'insert into group_param (groupid, name, active) values (:groupid, :name, 1)';
 					DB::prepare($sql)->execute([':groupid' => $groupid, ':name' => $name]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу добавить параметр группы', 0, $ex);
 				}
 				break;
 			case 'edit':
-				/* Проверяем может ли пользователь редактировать? */
+				// Проверяем: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Недостаточно прав');
 				try {
-					$sql = 'UPDATE group_param SET name = :name WHERE id = :id';
+					$sql = 'update group_param set name = :name where id = :id';
 					DB::prepare($sql)->execute([':name' => $name, ':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по группе', 0, $ex);
 				}
 				break;
 			case 'del':
-				/* Проверяем может ли пользователь удалять? */
+				// Проверяем: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
 				try {
 					switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 						case 'mysql':
-							$sql = 'UPDATE group_param SET active = NOT active WHERE id = :id';
+							$sql = 'update group_param set active = not active where id = :id';
 							break;
 						case 'pgsql':
-							$sql = 'UPDATE group_param SET active = active # 1 WHERE id = :id';
+							$sql = 'update group_param set active = active # 1 where id = :id';
 							break;
 					}
 					DB::prepare($sql)->execute([':id' => $id]);

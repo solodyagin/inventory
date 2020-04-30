@@ -11,15 +11,11 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
-
 $user = User::getInstance();
 $cfg = Config::getInstance();
 ?>
 <form action="settings/save" method="post" name="form1" target="_self" class="form-horizontal">
 	<div class="container-fluid">
-
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="alert alert-info">
@@ -28,7 +24,6 @@ $cfg = Config::getInstance();
 				</div>
 			</div>
 		</div>
-
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="panel panel-default">
@@ -56,18 +51,17 @@ $cfg = Config::getInstance();
 					</div>
 					<div class="panel-body">
 						<div class="form-group">
-							<label for="form_cfg_theme" class="col-sm-2 control-label">Текущий шаблон:</label>
-							<div class="col-sm-2">
-								<input type="text" class="form-control" name="form_cfg_theme" id="form_cfg_theme" readonly="readonly" value="<?= $cfg->theme; ?>">
-							</div>
-							<label for="form_cfg_theme_sl" class="col-sm-2 control-label">Выберите шаблон:</label>
-							<div class="col-sm-6">
+							<label for="form_cfg_theme_sl" class="col-sm-3 control-label">Выберите тему:</label>
+							<div class="col-sm-9">
 								<select class="form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
 									<?php
-									$arr_themes = GetArrayFilesInDir(SITE_ROOT . '/templates');
-									for ($i = 0; $i < count($arr_themes); $i++) {
-										$sl = ($arr_themes[$i] == $cfg->theme) ? 'selected' : '';
-										echo "<option value=\"$arr_themes[$i]\" $sl>$arr_themes[$i]</option>";
+									$themes = GetArrayFilesInDir(SITE_ROOT . '/public/themes');
+									for ($i = 0; $i < count($themes); $i++) {
+										if ($themes[$i] == 'fonts') {
+											continue;
+										}
+										$sl = ($themes[$i] == $cfg->theme) ? 'selected' : '';
+										echo "<option value=\"{$themes[$i]}\" $sl>{$themes[$i]}</option>";
 									}
 									?>
 								</select>
@@ -138,12 +132,17 @@ $cfg = Config::getInstance();
 				</div>
 			</div>
 		</div>
-
 		<div class="row">
 			<div class="col-sm-12">
 				<button class="btn btn-primary" type="submit" name="Submit">Сохранить изменения</button>
 			</div>
 		</div>
-
 	</div>
 </form>
+<script>
+	$(function () {
+		$('#form_cfg_theme_sl').change(function () {
+			$('#bs_theme').attr('href', 'public/themes/' + $(this).val() + '/bootstrap.min.css');
+		});
+	});
+</script>

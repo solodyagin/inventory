@@ -14,7 +14,7 @@
 /* Объявляем глобальные переменные */
 define('SITE_EXEC', true);
 define('SITE_ROOT', dirname(dirname(__FILE__)));
-define('SITE_VERSION', '2020-04-20');
+define('SITE_VERSION', '2020-05-01');
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -42,12 +42,12 @@ if ($action == 'install') {
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Учёт оргтехники в организации</title>
-		<link rel="icon" type="image/png" href="../favicon.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="images/favicon.png" sizes="16x16">
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<script src="js/jquery-1.11.0.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
-		<script src="../js/jquery.form.js"></script>
+		<script src="js/jquery.form.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid">

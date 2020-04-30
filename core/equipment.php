@@ -12,8 +12,7 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace Core;
 
 class Equipment {
 
@@ -46,7 +45,6 @@ class Equipment {
 	 * Обновляем профиль работника с текущими данными (все что заполнено)
 	 * @param type $id
 	 */
-
 	function GetById($id) {
 		$sql = <<<TXT
 SELECT equipment.comment,equipment.mapyet,equipment.mapmoved,equipment.mapx,equipment.mapy,equipment.ip,equipment.photo,

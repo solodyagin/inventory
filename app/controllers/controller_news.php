@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_News extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Журналы / Новости';
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('news/index', $cfg->theme, $data);
+			$this->view->renderTemplate('news/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
@@ -46,13 +51,9 @@ class Controller_News extends Controller {
 				$err[] = 'Нет текста новости!';
 			}
 			if (count($err) == 0) {
-				$sql = 'INSERT INTO news (id, dt, title, body) VALUES (NULL, :dtpost, :title, :txt)';
+				$sql = 'insert into news (dt, title, body) values (:dtpost, :title, :txt)';
 				try {
-					DB::prepare($sql)->execute([
-							':dtpost' => $dtpost,
-							':title' => $title,
-							':txt' => $txt
-					]);
+					DB::prepare($sql)->execute([':dtpost' => $dtpost, ':title' => $title, ':txt' => $txt]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не смог добавить новость!', 0, $ex);
 				}
@@ -81,14 +82,9 @@ class Controller_News extends Controller {
 			if (count($err) == 0) {
 				$newsid = GetDef('newsid');
 				if ($newsid != '') {
-					$sql = 'UPDATE news SET dt = :dtpost, title= :title, body= :txt WHERE id = :newsid';
+					$sql = 'update news set dt = :dtpost, title = :title, body = :txt where id = :newsid';
 					try {
-						DB::prepare($sql)->execute([
-								':dtpost' => $dtpost,
-								':title' => $title,
-								':txt' => $txt,
-								':newsid' => $newsid
-						]);
+						DB::prepare($sql)->execute([':dtpost' => $dtpost, ':title' => $title, ':txt' => $txt, ':newsid' => $newsid]);
 					} catch (PDOException $ex) {
 						throw new DBException('Не смог отредактировать новость!', 0, $ex);
 					}
@@ -103,7 +99,7 @@ class Controller_News extends Controller {
 		$newsid = (isset($_GET['id'])) ? $_GET['id'] : '1';
 		$data = ['news_dt' => '', 'news_title' => '', 'news_body' => ''];
 		if ($newsid != '') {
-			$sql = 'SELECT * FROM news WHERE id= :newsid';
+			$sql = 'select * from news where id=:newsid';
 			try {
 				$row = DB::prepare($sql)->execute([':newsid' => $newsid])->fetch();
 				if ($row) {
@@ -115,16 +111,22 @@ class Controller_News extends Controller {
 				throw new DBException('Не могу выбрать список новостей!', 0, $ex);
 			}
 		}
-		$cfg = Config::getInstance();
-		$this->view->generate('news/read', $cfg->theme, $data);
+		$this->view->renderTemplate('news/read', $data);
 	}
 
 	/** Получение списка новостей из виджета на главной странице */
 	function getnews() {
 		$num = filter_input(INPUT_POST, 'num', FILTER_VALIDATE_INT, ['options' => ['default' => 0]]);
 		$rz = 0;
-		$sql = "SELECT * FROM news ORDER BY dt DESC LIMIT :num, 4";
 		try {
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = 'select * from news order by dt desc limit :num, 4';
+					break;
+				case 'pgsql':
+					$sql = 'select * from news order by dt desc offset :num limit 4';
+					break;
+			}
 			$stmt = DB::prepare($sql);
 			$stmt->bindValue(':num', (int) $num, PDO::PARAM_INT);
 			$arr = $stmt->execute()->fetchAll();
@@ -143,14 +145,14 @@ class Controller_News extends Controller {
 			throw new DBException('Не могу выбрать список новостей', 0, $ex);
 		}
 		if ($rz == 0) {
-			echo 'error';
+			echo '';
 		}
 	}
 
 	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
-		/* Проверяем может ли пользователь просматривать? */
+		// Проверяем: может ли пользователь просматривать?
 		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
@@ -159,13 +161,13 @@ class Controller_News extends Controller {
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
-		$sql = 'SELECT COUNT(*) AS cnt FROM news';
 		try {
+			$sql = 'SELECT COUNT(*) AS cnt FROM news';
 			$row = DB::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -185,13 +187,20 @@ class Controller_News extends Controller {
 		$responce->page = $page;
 		$responce->total = $total_pages;
 		$responce->records = $count;
-		$sql = "SELECT * FROM news ORDER BY $sidx $sord LIMIT $start, $limit";
 		try {
+			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = "select * from news order by $sidx $sord limit $start, $limit";
+					break;
+				case 'pgsql':
+					$sql = "select * from news order by $sidx $sord offset $start limit $limit";
+					break;
+			}
 			$arr = DB::prepare($sql)->execute()->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['id'];
-				$responce->rows[$i]['cell'] = array($row['id'], $row['dt'], $row['title'], $row['stiker']);
+				$responce->rows[$i]['cell'] = [$row['id'], $row['dt'], $row['title'], $row['stiker']];
 				$i++;
 			}
 		} catch (PDOException $ex) {
@@ -209,23 +218,19 @@ class Controller_News extends Controller {
 		$stiker = PostDef('stiker');
 		switch ($oper) {
 			case 'edit':
-				/* Проверяем может ли пользователь редактировать? */
+				// Проверяем: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Для редактирования недостаточно прав');
-				$sql = 'UPDATE news SET title = :title, stiker = :stiker WHERE id = :id';
+				$sql = 'update news set title = :title, stiker = :stiker where id = :id';
 				try {
-					DB::prepare($sql)->execute([
-							':title' => $title,
-							':stiker' => $stiker,
-							':id' => $id
-					]);
+					DB::prepare($sql)->execute([':title' => $title, ':stiker' => $stiker, ':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить заголовок новости', 0, $ex);
 				}
 				break;
 			case 'del':
-				/* Проверяем может ли пользователь удалять? */
+				// Проверяем: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Для удаления недостаточно прав');
-				$sql = 'DELETE FROM news WHERE id = :id';
+				$sql = 'delete from news where id = :id';
 				try {
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {

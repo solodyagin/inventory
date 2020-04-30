@@ -12,26 +12,31 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_NomeGroups extends Controller {
 
 	function index() {
 		$user = User::getInstance();
-		$cfg = Config::getInstance();
 		$data['section'] = 'Справочники / Группы номенклатуры';
 		if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) {
-			$this->view->generate('nomegroups/index', $cfg->theme, $data);
+			$this->view->renderTemplate('nomegroups/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
 	/** Для работы jqGrid */
 	function list() {
 		$user = User::getInstance();
-		/* Проверяем может ли пользователь просматривать? */
+		// Проверяем: может ли пользователь просматривать?
 		($user->isAdmin() || $user->TestRights([1, 3, 4, 5, 6])) or die('Недостаточно прав');
 		$page = GetDef('page', 1);
 		if ($page == 0) {
@@ -40,13 +45,13 @@ class Controller_NomeGroups extends Controller {
 		$limit = GetDef('rows');
 		$sidx = GetDef('sidx', '1');
 		$sord = GetDef('sord');
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
-			$sql = 'SELECT COUNT(*) cnt FROM group_nome';
+			$sql = 'select count(*) cnt from group_nome';
 			$row = DB::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -69,10 +74,10 @@ class Controller_NomeGroups extends Controller {
 		try {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
-					$sql = "SELECT id, name, comment, active FROM group_nome ORDER BY $sidx $sord LIMIT $start, $limit";
+					$sql = "select id, name, comment, active from group_nome order by $sidx $sord limit $start, $limit";
 					break;
 				case 'pgsql':
-					$sql = "SELECT id, name, comment, active FROM group_nome ORDER BY $sidx $sord OFFSET $start LIMIT $limit";
+					$sql = "select id, name, comment, active from group_nome order by $sidx $sord offset $start limit $limit";
 					break;
 			}
 			$arr = DB::prepare($sql)->execute()->fetchAll();
@@ -101,10 +106,10 @@ class Controller_NomeGroups extends Controller {
 		$comment = PostDef('comment');
 		switch ($oper) {
 			case 'add':
-				/* Проверяем может ли пользователь добавлять? */
+				// Проверяем: может ли пользователь добавлять?
 				($user->isAdmin() || $user->TestRights([1, 4])) or die('Недостаточно прав');
 				try {
-					$sql = 'INSERT INTO group_nome (name, comment, active) VALUES (:name, :comment, 1)';
+					$sql = 'insert into group_nome (name, comment, active) values (:name, :comment, 1)';
 					DB::prepare($sql)->execute([
 						':name' => $name,
 						':comment' => $comment
@@ -114,29 +119,25 @@ class Controller_NomeGroups extends Controller {
 				}
 				break;
 			case 'edit':
-				/* Проверяем может ли пользователь редактировать? */
+				// Проверяем: может ли пользователь редактировать?
 				($user->isAdmin() || $user->TestRights([1, 5])) or die('Недостаточно прав');
 				try {
-					$sql = 'UPDATE group_nome SET name = :name, comment = :comment WHERE id = :id';
-					DB::prepare($sql)->execute([
-						':name' => $name,
-						':comment' => $comment,
-						':id' => $id
-					]);
+					$sql = 'update group_nome set name = :name, comment = :comment where id = :id';
+					DB::prepare($sql)->execute([':name' => $name, ':comment' => $comment, ':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу обновить данные по группе', 0, $ex);
 				}
 				break;
 			case 'del':
-				/* Проверяем может ли пользователь удалять? */
+				// Проверяем: может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1, 6])) or die('Недостаточно прав');
 				try {
 					switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 						case 'mysql':
-							$sql = 'UPDATE group_nome SET active = NOT active WHERE id = :id';
+							$sql = 'update group_nome set active = not active where id = :id';
 							break;
 						case 'pgsql':
-							$sql = 'UPDATE group_nome SET active = active # 1 WHERE id = :id';
+							$sql = 'update group_nome set active = active # 1 where id = :id';
 							break;
 					}
 					DB::prepare($sql)->execute([':id' => $id]);
@@ -145,9 +146,9 @@ class Controller_NomeGroups extends Controller {
 				}
 				try {
 					$sql = <<<TXT
-UPDATE group_param
-SET active = (SELECT active FROM group_nome WHERE id = :id)
-WHERE groupid = :id
+update group_param
+set active = (select active from group_nome where id = :id)
+where groupid = :id
 TXT;
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {

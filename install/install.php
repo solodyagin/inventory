@@ -12,14 +12,13 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
 //ini_set('error_reporting', E_ALL);
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
-
-/* Запускаем установщик при условии, что файл настроек отсутствует */
+// Запускаем установщик при условии, что файл настроек отсутствует.
 if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
@@ -38,7 +37,7 @@ $orgName = PostDef('orgname');
 $login = PostDef('login');
 $pass = PostDef('pass');
 
-/* Загружаем скрипт создания таблиц */
+// Загружаем скрипт создания таблиц.
 $text = file_get_contents(SITE_ROOT . "/install/$dbDriver.scheme.sql");
 if (!$text) {
 	die("Ошибка открытия файла /install/$dbDriver.scheme.sql");
@@ -53,11 +52,11 @@ $opt = [
 try {
 	$dbh = new PDO("$dbDriver:host=$dbHost", $dbUser, $dbPass, $opt);
 
-	/* Создаём БД */
+	// Создаём БД
 	if (/* $dbh->getAttribute(PDO::ATTR_DRIVER_NAME) */$dbDriver == 'mysql') {
-		$dbh->exec("CREATE DATABASE IF NOT EXISTS $dbName") or die('Ошибка создания базы: ' . implode('<br>', $dbh->errorInfo()));
+		$dbh->exec("create database if not exists $dbName") or die('Ошибка создания базы: ' . implode('<br>', $dbh->errorInfo()));
 	} else {
-		$sql = "SELECT COUNT(*) cnt FROM pg_catalog.pg_database WHERE datname = :name";
+		$sql = "select count(*) cnt from pg_catalog.pg_database where datname = :name";
 		$sth = $dbh->prepare($sql);
 		$sth->execute([':name' => $dbName]);
 		$row = $sth->fetch();
@@ -66,8 +65,8 @@ try {
 				die("База данных '$dbName' не найдена");
 			}
 		}
-		/* Подключаем необходимое расширение "pgcrypto" */
-		$sql = "SELECT COUNT(*) cnt FROM pg_available_extensions WHERE name='pgcrypto' AND installed_version IS NOT NULL";
+		// Подключаем необходимое расширение "pgcrypto"
+		$sql = "select count(*) cnt from pg_available_extensions where name='pgcrypto' and installed_version is not null";
 		$sth = $dbh->prepare($sql);
 		$sth->execute();
 		$row = $sth->fetch();
@@ -82,7 +81,7 @@ try {
 
 	$dbh = null;
 
-	/* Переподключаемся к СУБД */
+	// Переподключаемся к СУБД
 	$dbh = new PDO("$dbDriver:host=$dbHost;dbname=$dbName", $dbUser, $dbPass, $opt);
 } catch (PDOException $ex) {
 	die('Ошибка БД: ' . $ex->getMessage());
@@ -97,64 +96,59 @@ try {
 //	}
 	$dbh->exec($text);
 
-	/* Создаём настройки в БД */
+	// Создаём настройки в БД
 	if ($dbDriver == 'mysql') {
 		$sql = <<<SQL1
-INSERT INTO config (ad, theme, sitename, smtpauth, sendemail, version) VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
+insert into config (ad, theme, sitename, smtpauth, sendemail, version) values (0, 'cerulean', 'Inventory - Учёт оргтехники', 0, 0, :version)
 SQL1;
 	} else {
 		$sql = <<<SQL2
-INSERT INTO public.config (ad, theme, sitename, smtpauth, sendemail, version) VALUES (0, 'bootstrap', 'Inventory - Учёт оргтехники', 0, 0, :version)
+insert into public.config (ad, theme, sitename, smtpauth, sendemail, version) VALUES (0, 'cerulean', 'Inventory - Учёт оргтехники', 0, 0, :version)
 SQL2;
 	}
 	$sth = $dbh->prepare($sql);
 	$sth->execute([':version' => SITE_VERSION]);
 
-	/* Создаём организацию */
+	// Создаём организацию
 	if ($dbDriver == 'mysql') {
-		$sql = 'INSERT INTO org (name, active) VALUES (:orgname, 1)';
+		$sql = 'insert into org (name, active) values (:orgname, 1)';
 	} else {
-		$sql = 'INSERT INTO public.org (name, active) VALUES (:orgname, 1)';
+		$sql = 'insert into public.org (name, active) values (:orgname, 1)';
 	}
 	$sth = $dbh->prepare($sql);
 	$sth->execute([':orgname' => $orgName]);
 
-	/* Создаём администратора */
+	// Создаём администратора
 	$salt = generateSalt();
 	$password = sha1(sha1($pass) . $salt);
 	if ($dbDriver == 'mysql') {
 		$sql = <<<SQL3
-INSERT INTO users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
-VALUES (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, NOW(), 1)
-ON DUPLICATE KEY UPDATE
+insert into users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
+values (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, now(), 1)
+on duplicate key update
 	randomid = :randomid,
 	password = :password,
 	salt = :salt
 SQL3;
 	} else {
 		$sql = <<<SQL4
-INSERT INTO public.users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
-VALUES (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, NOW(), 1)
+insert into public.users (randomid, orgid, login, password, salt, email, mode, lastdt, active)
+values (:randomid, 1, :login, :password, :salt, 'admin@localhost', 1, now(), 1)
 SQL4;
 	}
 	$sth = $dbh->prepare($sql);
-	$sth->execute([
-		':randomid' => getRandomId(),
-		':login' => $login,
-		':password' => $password,
-		':salt' => $salt
-	]);
+	$sth->execute([':randomid' => getRandomId(), ':login' => $login, ':password' => $password, ':salt' => $salt]);
 
-	/* Создаём профиль администратора */
+	// Создаём профиль администратора
 	if ($dbDriver == 'mysql') {
 		$sql = <<<SQL5
-INSERT INTO users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
-VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')
+insert into users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
+values (1, 'Администратор', 'Системный администратор', '', '2000', '')
 SQL5;
 	} else {
 		$sql = <<<SQL6
-INSERT INTO public.users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
-VALUES (1, 'Администратор', 'sysadmin', '', '2000', '')
+insert into public.users_profile (usersid, fio, post, telephonenumber, homephone, jpegphoto)
+values (1, 'Администратор', 'Системный администратор', '', '2000', '')
 SQL6;
 	}
 	$dbh->exec($sql);

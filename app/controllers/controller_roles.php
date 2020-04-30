@@ -12,8 +12,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Roles extends Controller {
 
@@ -22,8 +28,6 @@ class Controller_Roles extends Controller {
 		$user = User::getInstance();
 		// Разрешаем при наличии ролей "Полный доступ" и "Просмотр"
 		($user->isAdmin() || $user->TestRights([1, 3])) or die('Недостаточно прав');
-
-		// Параметры
 		$page = GetDef('page', 1);
 		if ($page == 0) {
 			$page = 1;
@@ -33,7 +37,6 @@ class Controller_Roles extends Controller {
 		$sord = GetDef('sord');
 		$role = PostDef('role');
 		$userid = GetDef('userid');
-
 		// Роли
 		$roles = [
 			'1' => 'Полный доступ',
@@ -46,14 +49,13 @@ class Controller_Roles extends Controller {
 			'8' => 'Манипуляции с деньгами',
 			'9' => 'Редактирование карт'
 		];
-
 		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
-			$sql = 'SELECT COUNT(*) AS cnt FROM usersroles WHERE userid = :userid';
+			$sql = 'select count(*) as cnt from usersroles where userid = :userid';
 			$row = DB::prepare($sql)->execute([':userid' => $userid])->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -77,27 +79,30 @@ class Controller_Roles extends Controller {
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
-SELECT * FROM usersroles
-WHERE userid = :userid
-ORDER BY $sidx $sord
-LIMIT $start, $limit
+select *
+from usersroles
+where userid = :userid
+order by $sidx $sord
+limit $start, $limit
 TXT;
 					break;
 				case 'pgsql':
 					$sql = <<<TXT
-SELECT * FROM usersroles
-WHERE userid = :userid
-ORDER BY $sidx $sord
-OFFSET $start LIMIT $limit
+select *
+from usersroles
+where userid = :userid
+order by $sidx $sord
+offset $start limit $limit
 TXT;
 					break;
 			}
 			$arr = DB::prepare($sql)->execute([':userid' => $userid])->fetchAll();
 			$i = 0;
 			foreach ($arr as $row) {
-				$responce->rows[$i]['id'] = $row['id'];
+				$rowid = $row['id'];
+				$responce->rows[$i]['id'] = $rowid;
 				$role = $roles[$row['role']];
-				$responce->rows[$i]['cell'] = [$row['id'], $role];
+				$responce->rows[$i]['cell'] = [$rowid, $role];
 				$i++;
 			}
 		} catch (PDOException $ex) {
@@ -118,11 +123,11 @@ TXT;
 				// Только с полными правами можно добавлять роль!
 				($user->isAdmin() || $user->TestRights([1])) or die('Недостаточно прав');
 				try {
-					$sql = 'SELECT COUNT(*) cnt FROM usersroles WHERE userid = :userid AND role = :role';
+					$sql = 'select count(*) cnt from usersroles where userid = :userid and role = :role';
 					$row = DB::prepare($sql)->execute([':userid' => $userid, ':role' => $role])->fetch();
 					$count = ($row) ? $row['cnt'] : 0;
 					if ($count == 0) {
-						$sql = 'INSERT INTO usersroles (userid, role) VALUES (:userid, :role)';
+						$sql = 'insert into usersroles (userid, role) values (:userid, :role)';
 						DB::prepare($sql)->execute([':userid' => $userid, ':role' => $role]);
 					}
 				} catch (PDOException $ex) {
@@ -133,7 +138,7 @@ TXT;
 				// Проверяем может ли пользователь удалять?
 				($user->isAdmin() || $user->TestRights([1])) or die('Для удаления недостаточно прав');
 				try {
-					$sql = 'DELETE FROM usersroles WHERE id = :id';
+					$sql = 'delete from usersroles where id = :id';
 					DB::prepare($sql)->execute([':id' => $id]);
 				} catch (PDOException $ex) {
 					throw new DBException('Не могу удалить роль пользователя', 0, $ex);

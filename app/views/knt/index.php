@@ -16,12 +16,12 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 $cfg = Config::getInstance();
 ?>
-<link rel="stylesheet" href="templates/<?= $cfg->theme; ?>/css/upload.css">
-<script src="js/FileAPI/FileAPI.min.js"></script>
-<script src="js/FileAPI/FileAPI.exif.js"></script>
-<script src="js/jquery.fileapi.min.js"></script>
-<script src="js/jcrop/jquery.Jcrop.min.js"></script>
-<script src="js/statics/jquery.modal.js"></script>
+<link rel="stylesheet" href="public/css/upload.css">
+<script src="public/js/FileAPI/FileAPI.min.js"></script>
+<script src="public/js/FileAPI/FileAPI.exif.js"></script>
+<script src="public/js/jquery.fileapi.min.js"></script>
+<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
+<script src="public/js/statics/jquery.modal.js"></script>
 <div class="container-fluid">
 	<h4><?= $section; ?></h4>
 	<div class="row">
@@ -77,94 +77,19 @@ $cfg = Config::getInstance();
 		],
 		autowidth: true,
 		pager: '#pager1',
-		sortname: 'id',
+		sortname: 'name',
+		sortorder: 'asc',
 		scroll: 1,
 		viewrecords: true,
-		sortorder: 'asc',
 		editurl: 'knt/change',
 		caption: 'Справочник контрагентов',
 		onSelectRow: function (ids) {
 			$list3.css('visibility', 'hidden');
 			$btnUpload.css('visibility', 'hidden');
-			$list2.jqGrid({
+			$list2.jqGrid('setGridParam', {
 				url: 'contracts/list?idknt=' + ids,
-				datatype: 'json',
-				colNames: [' ', 'Id', 'Номер', 'Название', 'Начало', 'Конец', 'Рабочий', 'Комментарий', 'Действия'],
-				colModel: [
-					{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
-					{name: 'id', index: 'id', width: 55, hidden: true},
-					{name: 'num', index: 'num', width: 50, editable: true},
-					{name: 'name', index: 'name', width: 100, editable: true},
-					{name: 'datestart', index: 'datestart', width: 100, editable: true, editoptions:
-								{
-									dataInit: function (el) {
-										$(el).datepicker({
-											dateFormat: 'dd.mm.yy',
-											weekStart: 1,
-											dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-											monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-										});
-									}
-								}
-					},
-					{name: 'dateend', index: 'dateend', width: 100, editable: true, editoptions:
-								{
-									dataInit: function (el) {
-										$(el).datepicker({
-											dateFormat: 'dd.mm.yy',
-											weekStart: 1,
-											dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-											monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-										});
-									}
-								}
-					},
-					{name: 'work', index: 'work', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}},
-					{name: 'comment', index: 'comment', width: 200, editable: true},
-					{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
-				],
-				autowidth: true,
-				pager: '#pager2',
-				sortname: 'id',
-				scroll: 1,
-				viewrecords: true,
-				sortorder: 'asc',
-				editurl: 'contracts/change?idknt=' + ids,
-				caption: 'Заключенные договора',
-				onSelectRow: function (ids) {
-					$list3.css('visibility', 'visible');
-					$btnUpload.css('visibility', 'visible');
-					$btnUpload.fileapi('data', {'contractid': ids});
-					$list3.jqGrid({
-						url: 'contractfiles/list?idcontract=' + ids,
-						datatype: 'json',
-						colNames: ['Id', 'Имя файла', 'Действия'],
-						colModel: [
-							{name: 'id', index: 'id', width: 55, hidden: true},
-							{name: 'filename', index: 'filename', editable: true,
-								formatter: function (cellvalue, options, rowObject) {
-									return '<a target="_blank" href="contractfiles/download?id=' + options.rowId + '">' + cellvalue + '</a>';
-								},
-								unformat: function (cellvalue, options, cell) {
-									return $('a', cell).text();
-								}
-							},
-							{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
-						],
-						autowidth: true,
-						height: 100,
-						pager: '#pager3',
-						sortname: 'id',
-						scroll: 1,
-						viewrecords: true,
-						sortorder: 'asc',
-						editurl: 'contractfiles/change?idcontract=' + ids,
-						caption: 'Прикрепленные файлы'
-					}).trigger('reloadGrid');
-					$list3.jqGrid('navGrid', '#pager3', {edit: false, add: false, del: false, search: false});
-				}
+				editurl: 'contracts/change?idknt=' + ids
 			}).trigger('reloadGrid');
-			$list2.jqGrid('navGrid', '#pager2', {edit: true, add: true, del: false, search: false}, {}, addOptions, {}, {multipleSearch: false}, {closeOnEscape: true});
 		}
 	});
 	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 3);
@@ -195,6 +120,92 @@ $cfg = Config::getInstance();
 			});
 		}
 	});
+
+	$list2.jqGrid({
+		//url: 'contracts/list?idknt=' + ids,
+		datatype: 'json',
+		colNames: [' ', 'Id', 'Номер', 'Название', 'Начало', 'Конец', 'Рабочий', 'Комментарий', 'Действия'],
+		colModel: [
+			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
+			{name: 'id', index: 'id', width: 55, hidden: true},
+			{name: 'num', index: 'num', width: 50, editable: true},
+			{name: 'name', index: 'name', width: 100, editable: true},
+			{name: 'datestart', index: 'datestart', width: 100, editable: true, editoptions:
+						{
+							dataInit: function (el) {
+								$(el).datepicker({
+									dateFormat: 'dd.mm.yy',
+									weekStart: 1,
+									dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+									monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+								});
+							}
+						}
+			},
+			{name: 'dateend', index: 'dateend', width: 100, editable: true, editoptions:
+						{
+							dataInit: function (el) {
+								$(el).datepicker({
+									dateFormat: 'dd.mm.yy',
+									weekStart: 1,
+									dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+									monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+								});
+							}
+						}
+			},
+			{name: 'work', index: 'work', width: 50, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}},
+			{name: 'comment', index: 'comment', width: 200, editable: true},
+			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
+		],
+		autowidth: true,
+		pager: '#pager2',
+		sortname: 'id',
+		scroll: 1,
+		viewrecords: true,
+		sortorder: 'asc',
+		//editurl: 'contracts/change?idknt=' + ids,
+		caption: 'Заключенные договора',
+		onSelectRow: function (ids) {
+			$list3.css('visibility', 'visible');
+			$btnUpload.css('visibility', 'visible');
+			$btnUpload.fileapi('data', {'contractid': ids});
+			$list3.jqGrid('setGridParam', {
+				url: 'contractfiles/list?idcontract=' + ids,
+				editurl: 'contractfiles/change?idcontract=' + ids
+			}).trigger('reloadGrid');
+		}
+	});
+	$list2.jqGrid('navGrid', '#pager2', {edit: true, add: true, del: false, search: false}, {}, addOptions, {}, {multipleSearch: false}, {closeOnEscape: true});
+
+	$list3.jqGrid({
+		//url: 'contractfiles/list?idcontract=' + ids,
+		datatype: 'json',
+		colNames: ['Id', 'Имя файла', 'Действия'],
+		colModel: [
+			{name: 'id', index: 'id', width: 55, hidden: true},
+			{name: 'filename', index: 'filename', editable: true,
+				formatter: function (cellvalue, options, rowObject) {
+					return '<a target="_blank" href="contractfiles/download?id=' + options.rowId + '">' + cellvalue + '</a>';
+				},
+				unformat: function (cellvalue, options, cell) {
+					return $('a', cell).text();
+				}
+			},
+			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
+		],
+		autowidth: true,
+		height: 100,
+		pager: '#pager3',
+		sortname: 'id',
+		scroll: 1,
+		viewrecords: true,
+		sortorder: 'asc',
+		//editurl: 'contractfiles/change?idcontract=' + ids,
+		caption: 'Прикрепленные файлы'
+	});
+	$list3.jqGrid('navGrid', '#pager3', {edit: false, add: false, del: false, search: false});
+
 	$btnUpload.fileapi({
 		url: 'contractfiles/upload',
 		data: {'geteqid': 0},

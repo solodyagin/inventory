@@ -12,14 +12,19 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Main extends Controller {
 
 	function index() {
-		$cfg = Config::getInstance();
-		$this->view->generate('view_main', $cfg->theme);
+		$this->view->renderTemplate('main/index');
 	}
 
 }

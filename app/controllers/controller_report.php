@@ -12,19 +12,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+//namespace App\Controllers;
+//use Core\Controller;
+//use Core\Config;
+//use Core\Router;
+//use Core\User;
+//use Core\DB;
+//use \PDOException;
+//use Core\DBException;
 
 class Controller_Report extends Controller {
 
 	function index() {
-		$cfg = Config::getInstance();
 		$user = User::getInstance();
 		$data['section'] = 'Отчёты / Имущество';
 		if ($user->isAdmin() || $user->TestRights([1])) {
-			$this->view->generate('report/index', $cfg->theme, $data);
+			$this->view->renderTemplate('report/index', $data);
 		} else {
-			$this->view->generate('restricted', $cfg->theme, $data);
+			$this->view->renderTemplate('restricted', $data);
 		}
 	}
 
@@ -46,59 +51,59 @@ class Controller_Report extends Controller {
 		$mode = GetDef('mode');
 		$where = '';
 		if ($curuserid != '-1') {
-			$where .= " AND equipment.usersid = '$curuserid'";
+			$where .= " and equipment.usersid = '$curuserid'";
 		}
 		if ($curplid != '-1') {
-			$where .= " AND equipment.placesid = '$curplid'";
+			$where .= " and equipment.placesid = '$curplid'";
 		}
 		if ($curorgid != '-1') {
-			$where .= " AND equipment.orgid = '$curorgid'";
+			$where .= " and equipment.orgid = '$curorgid'";
 		}
 		if ($os == 'true') {
-			$where .= " AND equipment.os = 1";
+			$where .= " and equipment.os = 1";
 		}
 		if ($repair == 'true') {
-			$where .= " AND equipment.repair = 1";
+			$where .= " and equipment.repair = 1";
 		}
 		if ($mode == 'true') {
-			$where .= " AND equipment.mode = 1";
+			$where .= " and equipment.mode = 1";
 		}
 		if ($tpo == '2') {
-			$where .= " AND equipment.mode = 0  AND equipment.os = 0";
+			$where .= " and equipment.mode = 0  and equipment.os = 0";
 		}
-		/* Готовим ответ */
+		// Готовим ответ
 		$responce = new stdClass();
 		$responce->page = 0;
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
 			$sql = <<<TXT
-SELECT
-	places.name AS plname,
+select
+	places.name as plname,
 	res.*
-FROM places
-	INNER JOIN (
-		SELECT
-			name AS namenome,
+from places
+	inner join (
+		select
+			name as namenome,
 			eq.*
-		FROM nome
-			INNER JOIN (
-				SELECT
-					equipment.id AS eqid,
-					equipment.placesid AS plid,
-					equipment.nomeid AS nid,
-					equipment.buhname AS bn,
-					equipment.cost AS cs,
-					equipment.currentcost AS curc,
+		from nome
+			inner join (
+				select
+					equipment.id as eqid,
+					equipment.placesid as plid,
+					equipment.nomeid as nid,
+					equipment.buhname as bn,
+					equipment.cost as cs,
+					equipment.currentcost as curc,
 					equipment.invnum,
 					equipment.sernum,
 					equipment.shtrihkod,
 					equipment.mode,
 					equipment.os
-				FROM equipment
-				WHERE equipment.active = 1 $where
-			) AS eq ON nome.id = eq.nid
-	) AS res ON places.id = res.plid
+				from equipment
+				where equipment.active = 1 $where
+			) as eq on nome.id = eq.nid
+	) as res on places.id = res.plid
 TXT;
 			$rows = DB::prepare($sql)->execute()->fetchAll();
 			$count = ($rows) ? count($rows) : 0;
@@ -123,80 +128,80 @@ TXT;
 			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
-SELECT
-	name AS grname,
+select
+	name as grname,
 	res2.*
-FROM group_nome
-	INNER JOIN (
-		SELECT
-			places.name AS plname,
+from group_nome
+	inner join (
+		select
+			places.name as plname,
             res.*
-			FROM places
-				INNER JOIN (
-					SELECT
-						name AS namenome,
-						nome.groupid AS grpid,
+			from places
+				inner join (
+					select
+						name as namenome,
+						nome.groupid as grpid,
 						eq.*
-					FROM nome
-						INNER JOIN (
-							SELECT
-								equipment.id AS eqid,
-								equipment.placesid AS plid,
-								equipment.nomeid AS nid,
-								equipment.buhname AS bn,
-								equipment.cost AS cs,
-								equipment.currentcost AS curc,
+					from nome
+						inner join (
+							select
+								equipment.id as eqid,
+								equipment.placesid as plid,
+								equipment.nomeid as nid,
+								equipment.buhname as bn,
+								equipment.cost as cs,
+								equipment.currentcost as curc,
 								equipment.invnum,
 								equipment.sernum,
 								equipment.shtrihkod,
 								equipment.mode,
 								equipment.os
-							FROM equipment
-							WHERE equipment.active = 1 $where
-						) AS eq ON nome.id = eq.nid
-				) AS res ON places.id = res.plid
-			) AS res2 ON group_nome.id = res2.grpid
-ORDER BY $sidx $sord
-LIMIT $start, $limit
+							from equipment
+							where equipment.active = 1 $where
+						) as eq on nome.id = eq.nid
+				) as res on places.id = res.plid
+			) as res2 on group_nome.id = res2.grpid
+order by $sidx $sord
+limit $start, $limit
 TXT;
 					break;
 				case 'pgsql':
 					$sql = <<<TXT
-SELECT
-	name AS grname,
+select
+	name as grname,
 	res2.*
-FROM group_nome
-	INNER JOIN (
-		SELECT
-			places.name AS plname,
+from group_nome
+	inner join (
+		select
+			places.name as plname,
             res.*
-			FROM places
-				INNER JOIN (
-					SELECT
-						name AS namenome,
-						nome.groupid AS grpid,
+			from places
+				inner join (
+					select
+						name as namenome,
+						nome.groupid as grpid,
 						eq.*
-					FROM nome
-						INNER JOIN (
-							SELECT
-								equipment.id AS eqid,
-								equipment.placesid AS plid,
-								equipment.nomeid AS nid,
-								equipment.buhname AS bn,
-								equipment.cost AS cs,
-								equipment.currentcost AS curc,
+					from nome
+						inner join (
+							select
+								equipment.id as eqid,
+								equipment.placesid as plid,
+								equipment.nomeid as nid,
+								equipment.buhname as bn,
+								equipment.cost as cs,
+								equipment.currentcost as curc,
 								equipment.invnum,
 								equipment.sernum,
 								equipment.shtrihkod,
 								equipment.mode,
 								equipment.os
-							FROM equipment
-							WHERE equipment.active = 1 $where
-						) AS eq ON nome.id = eq.nid
-				) AS res ON places.id = res.plid
-			) AS res2 ON group_nome.id = res2.grpid
-ORDER BY $sidx $sord
-OFFSET $start LIMIT $limit
+							from equipment
+							where equipment.active = 1 $where
+						) as eq on nome.id = eq.nid
+				) as res on places.id = res.plid
+			) as res2 on group_nome.id = res2.grpid
+order by $sidx $sord
+offset $start limit $limit
 TXT;
 					break;
 			}

@@ -57,7 +57,7 @@ $cfg = Config::getInstance();
 		font: initial;
 	}
 </style>
-<script src="js/jquery.passgen.min.js"></script>
+<script src="public/js/jquery.passgen.min.js"></script>
 <script>
 	$(function () {
 		$('#pass').val($.passGen());
