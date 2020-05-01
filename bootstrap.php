@@ -128,10 +128,15 @@ $cfg->loadFromDB();
 
 // Обновляем БД
 if (strtotime($cfg->version) < strtotime(SITE_VERSION)) {
-	if ($cfg->version == '2020-04-20') {
-		DB::prepare('update config set theme = :theme')->execute([':theme' => 'cerulean']);
+	try {
+		if ($cfg->version == '2020-04-20') {
+			DB::prepare('update config set theme = :theme')->execute([':theme' => 'cerulean']);
+			$cfg->theme = 'cerulean'; // Применение темы
+		}
+		DB::prepare('update config set version = :version')->execute([':version' => SITE_VERSION]);
+	} catch (PDOException $ex) {
+		throw DBException('Ошибка обновления БД', 0, $ex);
 	}
-	DB::prepare('update config set version = :version')->execute([':version' => SITE_VERSION]);
 }
 
 // Аутентифицируем пользователя по кукам
