@@ -11,8 +11,13 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-$cfg = Config::getInstance();
-$user = User::getInstance();
+namespace app\views;
+
+use core\config;
+use core\user;
+
+$cfg = config::getInstance();
+$user = user::getInstance();
 ?>
 <!DOCTYPE html>
 <html lang="ru-RU">
@@ -45,7 +50,7 @@ $user = User::getInstance();
 		<script>
 			var defaultorgid = <?= $cfg->defaultorgid; ?>,
 					theme = '<?= $cfg->theme; ?>',
-					defaultuserid = <?= ($user->id != '') ? $user->id : '-1'; ?>;
+					defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
 
 			$.fn.bootstrapBtn = $.fn.button.noConflict();
 
@@ -91,19 +96,19 @@ $user = User::getInstance();
 					<ul class="nav navbar-nav">
 						<?php
 
-						function PutMenu($par) {
+						function putMenu($par) {
 							global $gmenu;
-							$list = $gmenu->GetList($par);
+							$list = $gmenu->getList($par);
 							foreach ($list as $key => $pmenu) {
 								$nm = $pmenu['name'];
 								$path = $pmenu['path'];
 								$uid = $pmenu['uid'];
 								$url = ($path == '') ? 'javascript:void(0);' : "$path";
-								if (count($gmenu->GetList($uid)) > 0) {
+								if (count($gmenu->getList($uid)) > 0) {
 									echo '<li class="dropdown">';
 									echo "<a href=\"$url\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">$nm <span class=\"caret\"></span></a>";
 									echo '<ul class="dropdown-menu">';
-									PutMenu($uid);
+									putMenu($uid);
 									echo '</ul>';
 								} else {
 									echo '<li>';
@@ -113,7 +118,7 @@ $user = User::getInstance();
 							}
 						}
 
-						PutMenu('main');
+						putMenu('main');
 						unset($mm);
 						?>
 					</ul>

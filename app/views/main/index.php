@@ -11,13 +11,24 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-$cfg = Config::getInstance();
-$user = User::getInstance();
+namespace app\views;
 
-$morgs = GetArrayOrgs(); // список активных организаций
-$mod = new Mod();  // обьявляем переменную для работы с классом модуля
-$mod->Register('news', 'Модуль новостей', 'Грибов Павел');
-$mod->Register('stiknews', 'Закрепленные новости', 'Грибов Павел');
+use PDO;
+use PDOException;
+use core\config;
+use core\db;
+use core\dbexception;
+use core\mod;
+use core\user;
+use core\utils;
+
+$cfg = config::getInstance();
+$user = user::getInstance();
+
+$morgs = utils::getArrayOrgs(); // список активных организаций
+$mod = new mod();  // обьявляем переменную для работы с классом модуля
+$mod->register('news', 'Модуль новостей', 'Грибов Павел');
+$mod->register('stiknews', 'Закрепленные новости', 'Грибов Павел');
 $mod->Register('lastmoved', 'Последние перемещения оргтехники', 'Грибов Павел');
 $mod->Register('whoonline', 'Кто на сайте?', 'Грибов Павел');
 $mod->Register('commits-widget', 'Виджет разработки на github.com на главной странице', 'Солодягин Сергей');
@@ -31,7 +42,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 					<h4 class="panel-title">Пользователь</h4>
 				</div>
 				<div class="panel-body">
-					<?php include_once SITE_ROOT . "/app/views/login.php"; # форма входа или профиль ?>
+					<?php include_once SITE_ROOT . "/app/views/login.php"; # форма входа или профиль  ?>
 				</div>
 			</div>
 			<!-- [/Панель входа] -->
@@ -94,7 +105,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 			<div class="row">
 				<div class="col-xs-12 col-md-7 col-sm-7">
 					<!-- [Новости] -->
-					<?php if ($mod->IsActive('news')): ?>
+					<?php if ($mod->isActive('news')): ?>
 						<div class="panel panel-info">
 							<div class="panel-heading">
 								<h4 class="panel-title">Новости, обьявления</h4>
@@ -134,8 +145,8 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 				<div class="col-xs-12 col-md-5 col-sm-5">
 					<!-- [Закреплённые новости] -->
 					<?php
-					if ($mod->IsActive('stiknews')) {
-						$stiker = GetStiker();
+					if ($mod->isActive('stiknews')) {
+						$stiker = utils::getStiker();
 						if ($stiker['title'] != '') {
 							?>
 							<div class="panel panel-info">
@@ -150,7 +161,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 					?>
 					<!-- [/Закреплённые новости] -->
 					<!-- [Виджет разработки] -->
-					<?php if ($mod->IsActive('commits-widget') && $user->isAdmin()): ?>
+					<?php if ($mod->isActive('commits-widget') && $user->isAdmin()): ?>
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h4 class="panel-title">Разработка</h4>
@@ -166,7 +177,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 			<div class="row">
 				<div class="col-xs-12 col-md-12 col-sm-12">
 					<!-- [Последние перемещения оргтехники] -->
-					<?php if ($mod->IsActive('lastmoved') && ($user->id != '')): ?>
+					<?php if ($mod->isActive('lastmoved') && $user->isLogged()): ?>
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h4 class="panel-title">Последние перемещения оргтехники</h4>
@@ -214,7 +225,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 					<?php endif; ?>
 					<!-- [/Последние перемещения оргтехники] -->
 					<!-- [Кто онлайн] -->
-					<?php if ($mod->IsActive('whoonline')): ?>
+					<?php if ($mod->isActive('whoonline')): ?>
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<h4 class="panel-title">Кто онлайн</h4>
@@ -223,7 +234,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 								<?php
 								$crd = date('Y-m-d H:i:s');
 								try {
-									switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+									switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 										case 'mysql':
 											$sql = <<<TXT
 select
@@ -245,7 +256,7 @@ where trunc(extract(epoch from (current_timestamp - lastdt))) < 600
 TXT;
 											break;
 									}
-									$arr = DB::prepare($sql)->execute([':crd' => $crd])->fetchAll();
+									$arr = db::prepare($sql)->execute([':crd' => $crd])->fetchAll();
 									foreach ($arr as $row) {
 										$fio = $row['fio'];
 										$jpegphoto = $row['jpegphoto'];
@@ -261,7 +272,7 @@ TXT;
 TXT;
 									}
 								} catch (PDOException $ex) {
-									throw new DBException('Не могу выбрать список заходов пользователей!', 0, $ex);
+									throw new dbexception('Не могу выбрать список заходов пользователей!', 0, $ex);
 								}
 								?>
 							</div>

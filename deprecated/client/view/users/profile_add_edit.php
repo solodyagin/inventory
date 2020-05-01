@@ -11,31 +11,36 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$userid = GetDef('userid');
+use core\baseuser;
+use core\request;
+use core\user;
+
+$req = request::getInstance();
+$userid = $req->get('userid');
 ?>
 <link rel="stylesheet" href="public/css/upload.css">
 <link rel="stylesheet" href="public/js/jcrop/jquery.Jcrop.min.css">
 <script>
 	var examples = [];
-	$(document).ready(function () {
+	$(function () {
 		$('#myForm').ajaxForm(function (msg) {
 			if (msg !== 'ok') {
 				$('#messenger').html(msg);
 			} else {
 				$('#add_edit').html('');
 				$('#add_edit').dialog('destroy');
-				jQuery('#list2').jqGrid().trigger('reloadGrid');
+				$('#list2').jqGrid().trigger('reloadGrid');
 			}
 		});
 	});
 </script>
 <?php
-$user = User::getInstance();
+$user = user::getInstance();
 if ($user->isAdmin()):
-	$tmpuser = new BaseUser();
+	$tmpuser = new baseuser();
 	$tmpuser->getById($userid);
 	$id = $tmpuser->id;
 	$fio = $tmpuser->fio;
@@ -51,24 +56,24 @@ if ($user->isAdmin()):
 	<div class="container-fluid">
 		<div class="row">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_profile_users_form.php?<?= "userid=$userid"; ?>" method="post" name="form1" target="_self">
+			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_profile_users_form.php?userid=<?= $userid; ?>" method="post" name="form1" target="_self">
 				<div class="row-fluid">
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<div class="form-group">
 							<label for="fio">ФИО</label>
-							<input class="form-control" placeholder="ФИО" name="fio" id="fio" value="<?php echo $fio; ?>">
+							<input class="form-control" placeholder="ФИО" name="fio" id="fio" value="<?= $fio; ?>">
 							<label for="post">Должность</label>
-							<input class="form-control" placeholder="Должность" name="post" id="post" value="<?php echo $post; ?>">
+							<input class="form-control" placeholder="Должность" name="post" id="post" value="<?= $post; ?>">
 							<label for="phone1">Сотовый:</label>
-							<input class="form-control" placeholder="Сотовый телефон" name="phone1" id="phone1" value="<?php echo $phone1; ?>">
+							<input class="form-control" placeholder="Сотовый телефон" name="phone1" id="phone1" value="<?= $phone1; ?>">
 							<label for="phone2">Стационарный:</label>
-							<input class="form-control" placeholder="Стационарный телефон" name="phone2" id="phone2" value="<?php echo $phone2; ?>">
+							<input class="form-control" placeholder="Стационарный телефон" name="phone2" id="phone2" value="<?= $phone2; ?>">
 						</div>
 					</div>
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<div id="userpic" class="userpic">
 							<div class="js-preview userpic__preview thumbnail">
-								<img src="photos/<?php echo $photo; ?>">
+								<img src="photos/<?= $photo; ?>">
 							</div>
 							<div class="btn btn-success js-fileapi-wrapper">
 								<div class="js-browse">
@@ -81,7 +86,7 @@ if ($user->isAdmin()):
 								</div>
 							</div>
 						</div>
-						<input name="picname" id="picname" type="hidden" value="<?php echo $photo; ?>">
+						<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
 					</div>
 				</div>
 				<div class="form-group">
@@ -163,31 +168,25 @@ if ($user->isAdmin()):
 		}
 		jQuery(function ($) {
 			var $blind = $('.splash__blind');
-			$('.splash')
-					.mouseenter(function () {
-						$('.splash__blind', this)
-								.animate({top: -10}, 'fast', 'easeInQuad')
-								.animate({top: 0}, 'slow', 'easeOutBounce')
-								;
-					})
-					.click(function () {
-						$(this).off();
-						if (!FileAPI.support.media) {
-							$blind.animate({top: -$(this).height()}, 'slow', 'easeOutQuart');
-						}
-						FileAPI.Camera.publish($('.splash__cam'), function (err, cam) {
-							if (err) {
-								alert('Unfortunately, your browser does not support webcam.');
-							} else {
-								$blind.animate({top: -$(this).height()}, 'slow', 'easeOutQuart');
-							}
-						});
-					});
+			$('.splash').mouseenter(function () {
+				$('.splash__blind', this).animate({top: -10}, 'fast', 'easeInQuad').animate({top: 0}, 'slow', 'easeOutBounce');
+			}).click(function () {
+				$(this).off();
+				if (!FileAPI.support.media) {
+					$blind.animate({top: -$(this).height()}, 'slow', 'easeOutQuart');
+				}
+				FileAPI.Camera.publish($('.splash__cam'), function (err, cam) {
+					if (err) {
+						alert('Unfortunately, your browser does not support webcam.');
+					} else {
+						$blind.animate({top: -$(this).height()}, 'slow', 'easeOutQuart');
+					}
+				});
+			});
 
 			$('.example').each(function () {
 				var $example = $(this);
-				$('<div></div>')
-						.append('<div data-code="javascript"><pre><code>' + $.trim(_getCode($example.find('script'))) + '</code></pre></div>')
+				$('<div></div>').append('<div data-code="javascript"><pre><code>' + $.trim(_getCode($example.find('script'))) + '</code></pre></div>')
 						.append('<div data-code="html" style="display: none"><pre><code>' + $.trim(_getCode($example.find('.example__left'), true)) + '</code></pre></div>')
 						.appendTo($example.find('.example__right'))
 						.find('[data-code]').each(function () {
@@ -201,20 +200,11 @@ if ($user->isAdmin()):
 
 			$('body').on('click', '[data-tab]', function (evt) {
 				evt.preventDefault();
-
-				var el = evt.currentTarget;
-				var tab = $.attr(el, 'data-tab');
-				var $example = $(el).closest('.example');
-
-				$example
-						.find('[data-tab]')
-						.removeClass('active')
-						.filter('[data-tab="' + tab + '"]')
-						.addClass('active')
-						.end()
-						.end()
-						.find('[data-code]')
-						.hide()
+				var el = evt.currentTarget,
+						tab = $.attr(el, 'data-tab');
+				$(el).closest('.example').find('[data-tab]').removeClass('active')
+						.filter('[data-tab="' + tab + '"]').addClass('active').end()
+						.find('[data-code]').hide()
 						.filter('[data-code="' + tab + '"]').show();
 			});
 
@@ -225,19 +215,12 @@ if ($user->isAdmin()):
 				if (!all) {
 					code = code.slice(1, -2);
 				}
-
 				var tabSize = (code[0].match(/^\t+/) || [''])[0].length;
-
-				return $('<div/>')
-						.text($.map(code, function (line) {
-							return line.substr(tabSize).replace(/\t/g, '   ');
-						}).join('\n'))
-						.prop('innerHTML')
-						.replace(/ disabled=""/g, '')
-						.replace(/&amp;lt;%/g, '<% ').replace(/%&amp;gt;/g, ' %>');
+				return $('<div/>').text($.map(code, function (line) {
+					return line.substr(tabSize).replace(/\t/g, '   ');
+				}).join('\n')).prop('innerHTML').replace(/ disabled=""/g, '').replace(/&amp;lt;%/g, '<% ').replace(/%&amp;gt;/g, ' %>');
 			}
 
-			// Init examples
 			FileAPI.each(examples, function (fn) {
 				fn();
 			});

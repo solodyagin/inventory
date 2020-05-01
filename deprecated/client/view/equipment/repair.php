@@ -11,11 +11,15 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$eqid = GetDef('eqid');
-$step = GetDef('step');
+use core\request;
+use core\utils;
+
+$req = request::getInstance();
+$eqid = $req->get('eqid');
+$step = $req->get('step');
 ?>
 <script>
 	$(function () {
@@ -61,9 +65,9 @@ $step = GetDef('step');
 			<div class="form-group">
 				<select class="chosen-select" name="kntid" id="kntid">
 					<?php
-					$morgs = GetArrayKnt();
-					for ($i = 0; $i < count($morgs); $i++) {
-						echo "<option value=\"{$morgs[$i]['id']}\">{$morgs[$i]['name']}</option>";
+					$knts = utils::getArrayKnt();
+					for ($i = 0; $i < count($knts); $i++) {
+						echo "<option value=\"{$knts[$i]['id']}\">{$knts[$i]['name']}</option>";
 					}
 					?>
 				</select>
@@ -96,15 +100,21 @@ $step = GetDef('step');
 	</div>
 </div>
 <script>
-	$('#dtpost').datepicker();
-	$('#dtpost').datepicker('option', 'dateFormat', 'dd.mm.yy');
-	$('#dtpost').datepicker('setDate', '0');
-	$('#dt').datepicker();
-	$('#dt').datepicker('option', 'dateFormat', 'dd.mm.yy');
-	$('#dt').datepicker('setDate', '0');
+	var $dtpost = $('#dtpost'),
+			$dt = $('#dt');
+
+	$dtpost.datepicker();
+	$dtpost.datepicker('option', 'dateFormat', 'dd.mm.yy');
+	$dtpost.datepicker('setDate', '0');
+
+	$dt.datepicker();
+	$dt.datepicker('option', 'dateFormat', 'dd.mm.yy');
+	$dt.datepicker('setDate', '0');
+
 	$('#status').change(function () {
-		$('#dt').datepicker('show');
+		$dt.datepicker('show');
 	});
+
 	for (var selector in config) {
 		$(selector).chosen({width: '100%'});
 		$(selector).chosen(config[selector]);

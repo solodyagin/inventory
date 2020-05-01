@@ -12,20 +12,37 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class Controller {
+/**
+ * Базовый контроллер
+ */
+abstract class controller {
 
+	/**
+	 * Модель
+	 */
 	public $model;
+
+	/**
+	 * Вид
+	 */
 	public $view;
 
-	function __construct() {
-		$this->view = new View();
+	/**
+	 * Конструктор класса
+	 * @param string $moduleName
+	 * @return void 
+	 */
+	public function __construct($moduleName) {
+		$this->view = new view($moduleName);
 	}
 
-	function index() {
-		$view_name = strtolower(str_replace('Controller_', '', get_class($this))) . '/index';
-		$this->view->render($view_name);
+	/**
+	 * Действие, вызываемое по умолчанию
+	 */
+	public function index() {
+		
 	}
 
 }

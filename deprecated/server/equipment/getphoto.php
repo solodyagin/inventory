@@ -14,13 +14,19 @@
 // Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$eqid = GetDef('eqid');
+//use PDOException;
+use core\db;
+use core\dbexception;
+use core\request;
+
+$req = request::getInstance();
+$eqid = $req->get('eqid');
 try {
 	$sql = 'select * from equipment where id = :eqid';
-	$row = DB::prepare($sql)->execute([':eqid' => $eqid])->fetch();
+	$row = db::prepare($sql)->execute([':eqid' => $eqid])->fetch();
 	$photo = ($row) ? $row['photo'] : '';
 } catch (PDOException $ex) {
-	throw new DBException('Не могу выбрать список фото!', 0, $ex);
+	throw new dbexception('Не могу выбрать список фото!', 0, $ex);
 }
 ?>
 <div class="thumbnail">

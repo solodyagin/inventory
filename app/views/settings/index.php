@@ -11,8 +11,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-$user = User::getInstance();
-$cfg = Config::getInstance();
+namespace app\views;
+
+use core\user;
+use core\config;
+use core\utils;
+
+$user = user::getInstance();
+$cfg = config::getInstance();
 ?>
 <form action="settings/save" method="post" name="form1" target="_self" class="form-horizontal">
 	<div class="container-fluid">
@@ -55,7 +61,7 @@ $cfg = Config::getInstance();
 							<div class="col-sm-9">
 								<select class="form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
 									<?php
-									$themes = GetArrayFilesInDir(SITE_ROOT . '/public/themes');
+									$themes = utils::getArrayFilesInDir(SITE_ROOT . '/public/themes');
 									for ($i = 0; $i < count($themes); $i++) {
 										if ($themes[$i] == 'fonts') {
 											continue;

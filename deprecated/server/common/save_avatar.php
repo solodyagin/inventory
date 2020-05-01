@@ -12,12 +12,16 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$photo = GetDef('photo');
+use core\baseuser;
+use core\request;
 
-$us = new BaseUser();
+$req = request::getInstance();
+$photo = $req->get('photo');
+
+$us = new baseuser();
 $us->getById($user->id);
 $us->jpegphoto = $photo;
-$us->Update();
+$us->update();

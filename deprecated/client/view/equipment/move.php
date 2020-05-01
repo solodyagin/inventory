@@ -11,28 +11,34 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$user = User::getInstance();
+use core\equipment;
+use core\request;
+use core\user;
+use core\utils;
 
-$id = GetDef('id');
+$user = user::getInstance();
 
-$tmptmc = new Equipment();
-$tmptmc->GetById($id);
-$dtpost = MySQLDateTimeToDateTime($tmptmc->datepost);
+$req = request::getInstance();
+$id = $req->get('id');
+
+$tmptmc = new equipment();
+$tmptmc->getById($id);
+$dtpost = utils::MySQLDateTimeToDateTime($tmptmc->datepost);
 
 $orgid = $tmptmc->orgid;
 $placesid = $tmptmc->placesid;
 $userid = $tmptmc->usersid;
 ?>
 <script>
-	var orgid = '<?= $user->orgid; ?>';
-	var placesid = '';
-	var userid = '<?= $user->id; ?>';
-	var orgid1 = '<?= $tmptmc->orgid; ?>';
-	var placesid1 = '<?= $tmptmc->placesid; ?>';
-	var userid1 = '<?= $tmptmc->usersid; ?>';
+	var orgid = '<?= $user->orgid; ?>',
+			placesid = '',
+			userid = '<?= $user->id; ?>',
+			orgid1 = '<?= $tmptmc->orgid; ?>',
+			placesid1 = '<?= $tmptmc->placesid; ?>',
+			userid1 = '<?= $tmptmc->usersid; ?>';
 
 	$(function () {
 		$('#myForm').ajaxForm(function (msg) {
@@ -57,7 +63,7 @@ $userid = $tmptmc->usersid;
 						<div id="sorg">
 							<select class="chosen-select" name="sorgid" id="sorgid">
 								<?php
-								$morgs = GetArrayOrgs();
+								$morgs = utils::getArrayOrgs();
 								for ($i = 0; $i < count($morgs); $i++) {
 									$nid = $morgs[$i]['id'];
 									$sl = ($nid == $user->orgid) ? 'selected' : '';
@@ -97,25 +103,29 @@ $userid = $tmptmc->usersid;
 			$(selector).chosen(config[selector]);
 		}
 	}
+
 	function getListUsers(orgid, userid) {
 		$.get('route/deprecated/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid, function (data) {
 			$('#susers').html(data);
 			updateChosen();
 		});
 	}
+
 	function getListPlaces(orgid, placesid) {
 		$.get('route/deprecated/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid, function (data) {
 			$('#splaces').html(data);
 			updateChosen();
 		});
 	}
+
 	$('#sorgid').click(function () {
-		$('#splaces').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
-		$('#susers').html = 'идет загрузка...';
+		$('#splaces').html('идет загрузка...');
+		$('#susers').html('идет загрузка...');
 		getListPlaces($('#sorgid :selected').val(), ''); // перегружаем список помещений организации
 		getListUsers($('#sorgid :selected').val(), ''); // перегружаем пользователей организации
 		updateChosen();
 	});
+
 	getListUsers(orgid, userid1);
 	getListPlaces(orgid, placesid1);
 	updateChosen();

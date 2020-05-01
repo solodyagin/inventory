@@ -12,32 +12,33 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$groupid = GetDef('groupid', '1');
-$vendorid = GetDef('vendorid', 1);
+//use PDOException;
+use core\db;
+use core\dbexception;
+use core\request;
+
+$req = request::getInstance();
+$groupid = $req->get('groupid', '1');
+$vendorid = $req->get('vendorid', 1);
 if ($vendorid == '') {
 	$vendorid = 1;
 }
-$nomeid = GetDef('nomeid');
+$nomeid = $req->get('nomeid');
 
 echo '<select class="chosen-select" name="snomeid" id="snomeid">';
-
 try {
-	$sql = 'SELECT id, name FROM nome WHERE groupid = :groupid AND vendorid = :vendorid';
-	$arr = DB::prepare($sql)->execute([
-				':groupid' => $groupid,
-				':vendorid' => $vendorid
-			])->fetchAll();
-	foreach ($arr as $row) {
+	$sql = 'select id, name from nome where groupid = :groupid and vendorid = :vendorid';
+	$rows = db::prepare($sql)->execute([':groupid' => $groupid, ':vendorid' => $vendorid])->fetchAll();
+	foreach ($rows as $row) {
 		$rid = $row['id'];
 		$rname = $row['name'];
 		$sl = ($rid == $nomeid) ? 'selected' : '';
 		echo "<option value=\"$rid\" $sl>$rname</option>";
 	}
 } catch (PDOException $ex) {
-	throw new DBException('Не могу выбрать список номенклатуры', 0, $ex);
+	throw new dbexception('Не могу выбрать список номенклатуры', 0, $ex);
 }
-
 echo '</select>';

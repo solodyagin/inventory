@@ -12,11 +12,13 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class Config {
+use PDOException;
 
-	use Singleton;
+class config {
+
+	use singleton;
 
 	public $debug; // Режим отладки
 	public $db_driver; // mysql, pgsql
@@ -64,7 +66,7 @@ class Config {
 
 	function loadFromDB() {
 		try {
-			$row = DB::prepare('select * from config')->execute()->fetch();
+			$row = db::prepare('select * from config')->execute()->fetch();
 			if ($row) {
 				$this->ad = $row['ad'];
 				$this->domain1 = $row['domain1'];
@@ -88,13 +90,13 @@ class Config {
 			if (isset($_COOKIE['defaultorgid'])) {
 				$this->defaultorgid = $_COOKIE['defaultorgid'];
 			} else {
-				$row = DB::prepare('SELECT * FROM org WHERE active = 1 ORDER BY id ASC LIMIT 1')->execute()->fetch();
+				$row = db::prepare('select * from org where active = 1 order by id asc limit 1')->execute()->fetch();
 				if ($row) {
 					$this->defaultorgid = $row['id'];
 				}
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Config.loadFromDB()', 0, $ex);
+			throw new dbexception('Ошибка выполнения config.loadFromDB()', 0, $ex);
 		}
 	}
 
@@ -118,7 +120,7 @@ set ad = :ad,
 	urlsite = :urlsite
 TXT;
 		try {
-			DB::prepare($sql)->execute([
+			db::prepare($sql)->execute([
 				':ad' => $this->ad,
 				':domain1' => $this->domain1,
 				':domain2' => $this->domain2,

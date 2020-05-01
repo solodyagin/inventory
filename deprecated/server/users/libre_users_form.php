@@ -12,29 +12,36 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$err = array();
+use core\baseuser;
+use core\request;
+use core\user;
+use core\utils;
+
+$err = [];
 
 // Требуются полные права!
-if (($user->mode == 1) || $user->TestRights[1]) {
+$user = user::getInstance();
+if ($user->isAdmin() || $user->testRights[1]) {
 	// Получаем переменные, проверяем на правильность заполнения
-	$step = GetDef('step');
-	$orgid = PostDef('orgid');
+	$req = request::getInstance();
+	$step = $req->get('step');
+	$orgid = $req->get('orgid');
 	if ($orgid == '') {
 		$err[] = 'Не выбрана организация!';
 	}
-	$login = PostDef('login');
+	$login = $req->get('login');
 	if ($login == '') {
 		$err[] = 'Не задан логин!';
 	}
-	$pass = PostDef('pass');
-	$email = PostDef('email');
+	$pass = $req->get('pass');
+	$email = $req->get('email');
 	if ($email == '') {
 		$err[] = 'Не задан E-mail!';
 	}
-	$mode = PostDef('mode');
+	$mode = $req->get('mode');
 	if ($mode == '') {
 		$err[] = 'Не задан режим!';
 	}
@@ -42,53 +49,49 @@ if (($user->mode == 1) || $user->TestRights[1]) {
 		$err[] = 'Не верно указан E-mail';
 	}
 
+	// Добавляем пользователя
 	if ($step == 'add') {
 		if ($pass == '') { // пароль не может быть пустым при добавлении пользователя
 			$err[] = 'Не задан пароль!';
 		}
-		if (DoubleLogin($login) != 0) {
+		if (utils::doubleLogin($login) != 0) {
 			$err[] = 'Такой логин уже есть в базе!';
 		}
-		if (DoubleEmail($email) != 0) {
+		if (utils::doubleEmail($email) != 0) {
 			$err[] = 'Такой E-mail уже есть в базе!';
 		}
-	}
-	/* Закончили всяческие проверки */
-
-	// Добавляем пользователя
-	if ($step == 'add') {
 		if (count($err) == 0) {
-			$tmpuser = new BaseUser();
+			$tmpuser = new baseuser();
 			$tmpuser->active = 1;
 			$tmpuser->fio = $login;
 			$tmpuser->post = '';
 			$tmpuser->telephonenumber = '';
 			$tmpuser->homephone = '';
 			$tmpuser->jpegphoto = '';
-			$tmpuser->Add(getRandomId(60), $orgid, $login, $pass, $email, $mode);
+			$tmpuser->add(utils::getRandomId(60), $orgid, $login, $pass, $email, $mode);
 		}
 	}
 
 	// Редактируем пользователя
 	if ($step == 'edit') {
 		if (count($err) == 0) {
-			$id = GetDef('id');
-			$ps = ($pass != '') ? " password=SHA1(CONCAT(SHA1('$pass'), salt))," : '';
+			$id = $req->get('id');
+			$ps = ($pass != '') ? " password=sha1(concat(sha1('$pass'), salt))," : '';
 			$sql = <<<TXT
-UPDATE users
-SET orgid = :orgid, login = :login, $ps email = :email, mode = :mode
-WHERE id = :id
+update users
+set orgid = :orgid, login = :login, $ps email = :email, mode = :mode
+where id = :id
 TXT;
 			try {
-				DB::prepare($sql)->execute(array(
+				db::prepare($sql)->execute([
 					':orgid' => $orgid,
 					':login' => $login,
 					':email' => $email,
 					':mode' => $mode,
 					':id' => $id
-				));
+				]);
 			} catch (PDOException $ex) {
-				throw new DBException('Не могу обновить данные по пользователю', 0, $ex);
+				throw new dbexception('Не могу обновить данные по пользователю', 0, $ex);
 			}
 		}
 	}
@@ -100,7 +103,5 @@ if (count($err) == 0) {
 	echo 'ok';
 } else {
 	echo '<script>$("#messenger").addClass("alert alert-danger");</script>';
-	for ($i = 0; $i < count($err); $i++) {
-		echo "$err[$i]<br>";
-	}
+	echo implode('<br>', $err);
 }

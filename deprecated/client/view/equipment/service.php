@@ -11,22 +11,29 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$eqid = GetDef('eqid');
-$step = GetDef('step');
+use PDOException;
+use core\db;
+use core\dbexception;
+use core\request;
+use core\utils;
+
+$req = request::getInstance();
+$eqid = $req->get('eqid');
+$step = $req->get('step');
 
 if ($step == 'edit') {
-	$sql = 'SELECT * FROM repair WHERE id = :eqid';
 	try {
-		$row = DB::prepare($sql)->execute([':eqid' => $eqid])->fetch();
+		$sql = 'select * from repair where id = :eqid';
+		$row = db::prepare($sql)->execute([':eqid' => $eqid])->fetch();
 		if ($row) {
 			$kntid = $row['kntid'];
 			$cost = $row['cost'];
-			$dtpost = MySQLDateTimeToDateTimeNoTime($row['dt']);
+			$dtpost = utils::MySQLDateTimeToDateTimeNoTime($row['dt']);
 			echo "<script>dtpost='$dtpost';</script>";
-			$dt = MySQLDateTimeToDateTimeNoTime($row['dtend']);
+			$dt = utils::MySQLDateTimeToDateTimeNoTime($row['dtend']);
 			echo "<script>dt='$dt';step='edit';</script>";
 			$comment = $row['comment'];
 			$status = $row['status'];
@@ -35,20 +42,47 @@ if ($step == 'edit') {
 			$doc = $row['doc'];
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не получилось выбрать список ремонтов', 0, $ex);
+		throw new dbexception('Не получилось выбрать список ремонтов', 0, $ex);
 	}
 } else {
 	$kntid = '-1';
 	$cost = '0.0';
 	$dtpost = '';
-	echo "<script>dtpost='$dtpost';</script>";
 	$dt = '';
-	echo "<script>dt='$dt';step='add';</script>";
 	$comment = '';
 	$status = '1';
 	$userfrom = '-1';
 	$userto = '-1';
 	$doc = '';
+	echo <<<TXT
+<script>
+	var dtpost='$dtpost',
+		dt='$dt',
+		step='add';
+</script>
+TXT;
+}
+
+$optionsUsers = '<option value="-1">Не выбрано</option>';
+try {
+	$sql = <<<TXT
+select
+	users.id,
+	users.login,
+	users_profile.fio
+from users
+	inner join users_profile on users.id = users_profile.usersid
+where users.active = 1
+order by users.login
+TXT;
+	$rows = db::prepare($sql)->execute()->fetchAll();
+	foreach ($rows as $row) {
+		$rowid = $row['id'];
+		$sl = ($rowid == $userfrom) ? 'selected' : '';
+		$optUsers .= "<option value=\"$rowid\" $sl>{$row['fio']}</option>";
+	}
+} catch (PDOException $ex) {
+	throw new dbexception('Не могу выбрать список пользователей', 0, $ex);
 }
 ?>
 <script>
@@ -95,7 +129,7 @@ if ($step == 'edit') {
 				<div id="sorg1">
 					<select class="chosen-select" name="kntid" id="kntid">
 						<?php
-						$morgs = GetArrayKnt();
+						$morgs = utils::getArrayKnt();
 						for ($i = 0; $i < count($morgs); $i++) {
 							$nid = $morgs[$i]['id'];
 							$sl = ($nid == $kntid) ? 'selected' : '';
@@ -117,51 +151,13 @@ if ($step == 'edit') {
 						<label>Отправитель:</label>
 						<div id="susers1">
 							<select class="chosen-select"name="suserid1" id="suserid1">
-								<option value="-1">Не выбрано</option>
-								<?php
-								$sql = <<<TXT
-SELECT users.id,users.login,users_profile.fio
-FROM   users
-       INNER JOIN users_profile
-               ON users.id = users_profile.usersid
-WHERE  users.active = 1
-ORDER  BY users.login
-TXT;
-								try {
-									$arr = DB::prepare($sql)->execute()->fetchAll();
-									foreach ($arr as $row) {
-										$sl = ($row['id'] == $userfrom) ? 'selected' : '';
-										echo "<option value=\"{$row['id']}\" $sl>{$row['fio']}</option>";
-									}
-								} catch (PDOException $ex) {
-									throw new DBException('Не могу выбрать список пользователей', 0, $ex);
-								}
-								?>
+								<?= $optionsUsers; ?>
 							</select>
 						</div>
 						<label>Получатель:</label>
 						<div id="susers2">
 							<select class="chosen-select" name="suserid2" id="suserid2">
-								<option value="-1">Не выбрано</option>
-								<?php
-								$sql = <<<TXT
-SELECT users.id,users.login,users_profile.fio
-FROM   users
-       INNER JOIN users_profile
-               ON users.id = users_profile.usersid
-WHERE  users.active = 1
-ORDER  BY users.login
-TXT;
-								try {
-									$arr = DB::prepare($sql)->execute()->fetchAll();
-									foreach ($arr as $row) {
-										$sl = ($row['id'] == $userto) ? 'selected' : '';
-										echo "<option value=\"{$row['id']}\" $sl>{$row['fio']}</option>";
-									}
-								} catch (PDOException $ex) {
-									throw new DBException('Не могу выбрать список пользователей', 0, $ex);
-								}
-								?>
+								<?= $optionsUsers; ?>
 							</select>
 						</div>
 						<label>Статус:</label>
@@ -185,31 +181,31 @@ TXT;
 	</div>
 </div>
 <script>
-	function UpdateChosen() {
-		for (var selector in config) {
-			$(selector).chosen({width: '100%'});
-			$(selector).chosen(config[selector]);
-		}
+	var $dt = $('#dt'),
+			$dtpost = $('#dtpost');
+
+	$dt.datepicker();
+	$dt.datepicker('option', 'dateFormat', 'dd.mm.yy');
+	if (step !== 'edit') {
+		$dt.datepicker('setDate', '0');
+	} else {
+		$dt.datepicker('setDate', dt);
 	}
 
-	$('#dt').datepicker();
-	$('#dt').datepicker('option', 'dateFormat', 'dd.mm.yy');
+	$dtpost.datepicker();
+	$dtpost.datepicker('option', 'dateFormat', 'dd.mm.yy');
 	if (step !== 'edit') {
-		$('#dt').datepicker('setDate', '0');
+		$dtpost.datepicker('setDate', '0');
 	} else {
-		$('#dt').datepicker('setDate', dt);
-	}
-
-	$('#dtpost').datepicker();
-	$('#dtpost').datepicker('option', 'dateFormat', 'dd.mm.yy');
-	if (step !== 'edit') {
-		$('#dtpost').datepicker('setDate', '0');
-	} else {
-		$('#dtpost').datepicker('setDate', dtpost);
+		$dtpost.datepicker('setDate', dtpost);
 	}
 
 	$('#status').change(function () {
-		$('#dt').datepicker('show');
+		$dt.datepicker('show');
 	});
-	UpdateChosen();
+
+	for (var selector in config) {
+		$(selector).chosen({width: '100%'});
+		$(selector).chosen(config[selector]);
+	}
 </script>

@@ -11,7 +11,12 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-$cfg = Config::getInstance();
+namespace app\views;
+
+use core\config;
+use core\utils;
+
+$cfg = config::getInstance();
 ?>
 <div class="container-fluid">
 	<h4><?= $section; ?></h4>
@@ -19,7 +24,7 @@ $cfg = Config::getInstance();
 		<div class="col-md-3 col-sm-3">
 			<select id="orgs" class="chosen-select form-control">
 				<?php
-				$morgs = GetArrayOrgs(); // список активных организаций
+				$morgs = utils::getArrayOrgs(); // список активных организаций
 				for ($i = 0; $i < count($morgs); $i++) {
 					$idorg = $morgs[$i]['id'];
 					$nameorg = $morgs[$i]['name'];
@@ -50,7 +55,7 @@ $cfg = Config::getInstance();
 	</div>
 </div>
 <script>
-	function LoadTable() {
+	function loadTable() {
 		var $tblEquipment = $('#tbl_equpment'),
 				$dlgAddEdit = $('#pg_add_edit');
 		$tblEquipment.jqGrid({
@@ -373,14 +378,6 @@ $cfg = Config::getInstance();
 		$tblEquipment.jqGrid('setFrozenColumns');
 	}
 
-	function GetListUsers(orgid, userid) {
-		$('#susers').load('route/deprecated/server/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
-	}
-
-	function GetListPlaces(orgid, placesid) {
-		$('#splaces').load('route/deprecated/server/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
-	}
-
 	$(function () {
 		$('#orgs').change(function () {
 			var exdate = new Date();
@@ -389,13 +386,13 @@ $cfg = Config::getInstance();
 			defaultorgid = orgid;
 			document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
 			$.jgrid.gridUnload('#tbl_equpment');
-			LoadTable();
+			loadTable();
 		});
 
 		for (var selector in config) {
 			$(selector).chosen(config[selector]);
 		}
 
-		LoadTable();
+		loadTable();
 	});
 </script>

@@ -12,39 +12,56 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
+//use DOMDocument;
+use core\db;
+use core\dbexception;
+
 // Создает XML-строку и XML-документ при помощи DOM
-$dom = new DomDocument('1.0', 'UTF-8');
+$dom = new DOMDocument('1.0', 'UTF-8');
 
 $orguse = $dom->appendChild($dom->createElement('orguse'));
-
-$sql = <<<TXT
-SELECT equipment.id AS eqid,equipment.orgid AS eqorgid,org.name AS orgname,getvendorandgroup.vendorname AS vname,
-       getvendorandgroup.groupname AS grnome,places.name AS placesname,users.login AS userslogin,
-       getvendorandgroup.nomename AS nomenamez,buhname,sernum,invnum,shtrihkod,datepost,cost,currentcost,os,
-       equipment.mode AS eqmode,equipment.comment AS eqcomment,equipment.active AS eqactive
-FROM   equipment
-       INNER JOIN (SELECT nome.id AS nomeid,vendor.name AS vendorname,group_nome.name AS groupname,nome.name AS nomename
-                   FROM   nome
-                          INNER JOIN group_nome
-                                  ON nome.groupid = group_nome.id
-                          INNER JOIN vendor
-                                  ON nome.vendorid = vendor.id) AS getvendorandgroup
-               ON getvendorandgroup.nomeid = equipment.nomeid
-       INNER JOIN org
-               ON org.id = equipment.orgid
-       INNER JOIN places
-               ON places.id = equipment.placesid
-       INNER JOIN users
-               ON users.id = equipment.usersid
-WHERE  equipment.active = 1
-TXT;
-
 try {
-	$arr = DB::prepare($sql)->execute()->fetchAll();
-	foreach ($arr as $row) {
+	$sql = <<<TXT
+select
+	equipment.id as eqid,
+	equipment.orgid as eqorgid,
+	org.name as orgname,
+	getvendorandgroup.vendorname as vname,
+	getvendorandgroup.groupname as grnome,
+	places.name as placesname,
+	users.login as userslogin,
+	getvendorandgroup.nomename as nomenamez,
+	buhname,sernum,
+	invnum,
+	shtrihkod,
+	datepost,
+	cost,
+	currentcost,
+	os,
+	equipment.mode as eqmode,
+	equipment.comment as eqcomment,
+	equipment.active as eqactive
+from equipment
+	inner join (
+		select
+			nome.id as nomeid,
+			vendor.name as vendorname,
+			group_nome.name as groupname,
+			nome.name as nomename
+		from nome
+			inner join group_nome on nome.groupid = group_nome.id
+			inner join vendor on nome.vendorid = vendor.id
+	) as getvendorandgroup on getvendorandgroup.nomeid = equipment.nomeid
+	inner join org on org.id = equipment.orgid
+	inner join places on places.id = equipment.placesid
+	inner join users on users.id = equipment.usersid
+where equipment.active = 1
+TXT;
+	$rows = db::prepare($sql)->execute()->fetchAll();
+	foreach ($rows as $row) {
 		$orgtehnika = $orguse->appendChild($dom->createElement('orgtehnika'));
 		$orgid = $orgtehnika->appendChild($dom->createElement('orgid'));
 		$orgid->appendChild($dom->createTextNode("$row[eqorgid]"));
@@ -64,7 +81,7 @@ try {
 		$os->appendChild($dom->createTextNode("$row[os]"));
 	}
 } catch (PDOException $ex) {
-	throw new DBException('Не получилось выбрать список оргтехники', 0, $ex);
+	throw new dbexception('Не получилось выбрать список оргтехники', 0, $ex);
 }
 
 $dom->formatOutput = true; // установка атрибута formatOutput

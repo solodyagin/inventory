@@ -18,24 +18,33 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 //ini_set('error_reporting', E_ALL);
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
+
 // Запускаем установщик при условии, что файл настроек отсутствует.
 if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
 
-require_once SITE_ROOT . '/inc/functions.php';
+function generateSalt() {
+	$salt = '';
+	$length = rand(5, 10); // длина соли (от 5 до 10 сомволов)
+	for ($i = 0; $i < $length; $i++) {
+		$salt .= chr(rand(33, 126)); // символ из ASCII-table
+	}
+	return $salt;
+}
 
 $dbDriver = filter_input(INPUT_POST, 'dbdriver', FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '/^(mysql|pgsql)$/']]);
 if ($dbDriver === false) {
 	die('Ошибка: неверный параметр dbdriver');
 }
-$dbHost = PostDef('dbhost');
-$dbName = PostDef('dbname');
-$dbUser = PostDef('dbuser');
-$dbPass = PostDef('dbpass');
-$orgName = PostDef('orgname');
-$login = PostDef('login');
-$pass = PostDef('pass');
+
+$dbHost = filter_input(INPUT_GET, 'dbhost');
+$dbName = filter_input(INPUT_GET, 'dbname');
+$dbUser = filter_input(INPUT_GET, 'dbuser');
+$dbPass = filter_input(INPUT_GET, 'dbpass');
+$orgName = filter_input(INPUT_GET, 'orgname');
+$login = filter_input(INPUT_GET, 'login');
+$pass = filter_input(INPUT_GET, 'pass');
 
 // Загружаем скрипт создания таблиц.
 $text = file_get_contents(SITE_ROOT . "/install/$dbDriver.scheme.sql");

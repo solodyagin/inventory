@@ -12,9 +12,11 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class Equipment {
+use PDOException;
+
+class equipment {
 
 	var $id; // уникальный идентификатор
 	var $orgid; // какой организации принадлежит
@@ -45,7 +47,7 @@ class Equipment {
 	 * Обновляем профиль работника с текущими данными (все что заполнено)
 	 * @param type $id
 	 */
-	function GetById($id) {
+	function getById($id) {
 		$sql = <<<TXT
 SELECT equipment.comment,equipment.mapyet,equipment.mapmoved,equipment.mapx,equipment.mapy,equipment.ip,equipment.photo,
        equipment.nomeid,getvendorandgroup.grnomeid,equipment.id AS eqid,equipment.orgid AS eqorgid,org.name AS orgname,
@@ -73,7 +75,7 @@ FROM   equipment
 WHERE  equipment.id = :id
 TXT;
 		try {
-			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
 				$this->id = $row['eqid'];
 				$this->orgid = $row['eqorgid'];
@@ -101,7 +103,7 @@ TXT;
 				$this->tmcname = $row['nomename'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Equipment.GetById', 0, $ex);
+			throw new dbexception('Ошибка выполнения equipment.getById', 0, $ex);
 		}
 	}
 

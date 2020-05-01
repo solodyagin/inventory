@@ -12,11 +12,13 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class User extends BaseUser {
+use PDOException;
 
-	use Singleton;
+class user extends baseuser {
+
+	use singleton;
 
 	// Пользователь вошёл?
 	private $is_logged = false;
@@ -27,11 +29,11 @@ class User extends BaseUser {
 	 * @param string $password
 	 * @return boolean
 	 */
-	function loginByDB($login, $password) {
-		$cfg = Config::getInstance();
+	public function loginByDB($login, $password) {
+		$cfg = config::getInstance();
 		$this->is_logged = false;
 		try {
-			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<SQL
 select
@@ -57,7 +59,7 @@ where u.login = :login and
 SQL;
 					break;
 			}
-			$row = DB::prepare($sql)->execute([':login' => $login, ':pass' => $password])->fetch();
+			$row = db::prepare($sql)->execute([':login' => $login, ':pass' => $password])->fetch();
 			if ($row) {
 				$this->is_logged = true;
 				$this->id = $row['sid'];
@@ -77,7 +79,7 @@ SQL;
 				$this->post = $row['post'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка при получении данных пользователя', 0, $ex);
+			throw new dbexception('Ошибка при получении данных пользователя', 0, $ex);
 		}
 		// Устанавливаем Cookie
 		if ($this->is_logged) {
@@ -90,12 +92,12 @@ SQL;
 	 * Аутентифицирует по кукам
 	 * @return boolean
 	 */
-	function loginByCookie() {
-		$cfg = Config::getInstance();
+	public function loginByCookie() {
+		$cfg = config::getInstance();
 		$this->randomid = filter_input(INPUT_COOKIE, "inventory_{$cfg->inventory_id}");
 		$this->is_logged = !empty($this->randomid) && $this->getByRandomId($this->randomid);
 		if ($this->is_logged) {
-			$this->UpdateLastdt($this->id); // Обновляем дату последнего входа пользователя
+			$this->updateLastDt($this->id); // Обновляем дату последнего входа пользователя
 			setcookie("inventory_{$cfg->inventory_id}", $this->randomid, strtotime('+30 days'), '/'); // Устанавливаем Cookie
 		} else {
 			setcookie("inventory_{$cfg->inventory_id}", '', 1, '/'); // Удаляем cookie
@@ -103,8 +105,8 @@ SQL;
 		return $this->is_logged;
 	}
 
-	function logout() {
-		$cfg = Config::getInstance();
+	public function logout() {
+		$cfg = config::getInstance();
 		$this->is_logged = false;
 		$this->id = '';
 		$this->randomid = '';
@@ -119,7 +121,7 @@ SQL;
 	 * Пользователь аутентифицирован?
 	 * @return boolean
 	 */
-	function isLogged() {
+	public function isLogged() {
 		return ($this->is_logged);
 	}
 

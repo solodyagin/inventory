@@ -11,20 +11,20 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Объявляем глобальные переменные */
+// Объявляем глобальные переменные
 define('SITE_EXEC', true);
 define('SITE_ROOT', dirname(dirname(__FILE__)));
 define('SITE_VERSION', '2020-05-01');
 
 header('Content-Type: text/html; charset=utf-8');
 
-/* Проверяем версию PHP */
+// Проверяем версию PHP
 define('SITE_MINIMUM_PHP', '7.0.22');
 if (version_compare(PHP_VERSION, SITE_MINIMUM_PHP, '<')) {
 	die('Для запуска этой версии Inventory хост должен использовать PHP ' . SITE_MINIMUM_PHP . ' или выше!');
 }
 
-/* Запускаем установщик при условии, что файл настроек отсутствует */
+// Запускаем установщик при условии, что файл настроек отсутствует
 if (file_exists(SITE_ROOT . '/app/config.php')) {
 	die('Система уже установлена.<br>Если желаете переустановить, то удалите файл /app/config.php');
 }
@@ -32,7 +32,7 @@ if (file_exists(SITE_ROOT . '/app/config.php')) {
 $action = filter_input(INPUT_GET, 'action');
 if ($action == 'install') {
 	require_once SITE_ROOT . '/install/install.php';
-	die();
+	exit;
 }
 ?>
 <!DOCTYPE HTML>
@@ -65,7 +65,7 @@ if ($action == 'install') {
 									<div class="col-sm-8">
 										<select id="dbdriver" name="dbdriver" class="form-control">
 											<option value="mysql">MySQL</option>
-											<option value="pgsql">PostgreSQL (в разработке)</option>
+											<option value="pgsql">PostgreSQL</option>
 										</select>
 									</div>
 								</div>
@@ -126,8 +126,8 @@ if ($action == 'install') {
 		<script>
 			$(function () {
 				var $error = $('#error'),
-					$dbuser = $('#dbuser'),
-					fields = ['dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass'];
+						$dbuser = $('#dbuser'),
+						fields = ['dbhost', 'dbname', 'dbuser', 'orgname', 'login', 'pass'];
 				$('form').submit(function () {
 					$error.hide();
 					var error = 0;
@@ -162,7 +162,7 @@ if ($action == 'install') {
 					container: 'body'
 				});
 				$('#dbdriver').change(function () {
-					switch($(this).find(':selected').val()) {
+					switch ($(this).find(':selected').val()) {
 						case 'mysql':
 							$dbuser.val('root');
 							break;

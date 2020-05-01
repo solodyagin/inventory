@@ -12,30 +12,40 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$page = GetDef('page', 1);
+//use PDO;
+//use PDOException;
+//use stdClass;
+use core\baseuser;
+use core\db;
+use core\dbexception;
+use core\request;
+use core\utils;
+
+$req = request::getInstance();
+$page = $req->get('page', 1);
 if ($page == 0) {
 	$page = 1;
 }
-$limit = GetDef('rows');
-$sidx = GetDef('sidx', '1');
-$sord = GetDef('sord');
-$oper = PostDef('oper');
-$id = PostDef('id');
-$eqid = GetDef('eqid');
-$comment = PostDef('comment');
-$dt = PostDef('dt', '10.10.2014 00:00:00');
-$dtend = PostDef('dtend', '10.10.2014 00:00:00');
-$status = PostDef('status', '1');
-$doc = PostDef('doc');
+$limit = $req->get('rows');
+$sidx = $req->get('sidx', '1');
+$sord = $req->get('sord');
+$oper = $req->get('oper');
+$id = $req->get('id');
+$eqid = $req->get('eqid');
+$comment = $req->get('comment');
+$dt = $req->get('dt', '10.10.2014 00:00:00');
+$dtend = $req->get('dtend', '10.10.2014 00:00:00');
+$status = $req->get('status', '1');
+$doc = $req->get('doc');
 
-// если не задано ТМЦ по которому показываем перемещения, то тогда просто листаем последние
+// если не задано ТМЦ, по которому показываем перемещения, то тогда просто листаем последние
 if ($eqid == '') {
 	$where = '';
 } else {
-	$where = "WHERE repair.eqid = '$eqid'";
+	$where = "where repair.eqid=$eqid";
 }
 
 if ($oper == '') {
@@ -44,57 +54,78 @@ if ($oper == '') {
 	$responce->page = 0;
 	$responce->total = 0;
 	$responce->records = 0;
-
-	$sql = 'SELECT COUNT(*) AS cnt FROM repair';
 	try {
-		$row = DB::prepare($sql)->execute()->fetch();
+		$sql = "select count(*) as cnt from repair $where";
+		$row = db::prepare($sql)->execute()->fetch();
 		$count = ($row) ? $row['cnt'] : 0;
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выбрать список ремонтов (1)', 0, $ex);
+		throw new dbexception('Не могу выбрать список ремонтов (1)', 0, $ex);
 	}
 	if ($count == 0) {
-		jsonExit($responce);
+		utils::jsonExit($responce);
 	}
-
 	$total_pages = ceil($count / $limit);
 	if ($page > $total_pages) {
 		$page = $total_pages;
 	}
 	$start = $limit * $page - $limit;
 	if ($start < 0) {
-		jsonExit($responce);
+		utils::jsonExit($responce);
 	}
-
 	$responce->page = $page;
 	$responce->total = $total_pages;
 	$responce->records = $count;
-
-	$sql = <<<TXT
-SELECT     repair.id,
-           repair.userfrom,
-           repair.userto,
-           repair.doc,
-           repair.dt,
-           repair.dtend,
-           repair.kntid,
-           knt.name,
-           repair.cost,
-           repair.comment,
-           repair.status
-FROM       repair
-INNER JOIN knt
-ON         knt.id = repair.kntid
-$where
-ORDER BY   $sidx $sord
-LIMIT      $start, $limit
-TXT;
 	try {
-		$arr = DB::prepare($sql)->execute()->fetchAll();
+		switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			case 'mysql':
+				$sql = <<<TXT
+select
+	repair.id,
+	repair.userfrom,
+	repair.userto,
+	repair.doc,
+	repair.dt,
+	repair.dtend,
+	repair.kntid,
+	knt.name,
+	repair.cost,
+	repair.comment,
+	repair.status
+from repair
+	inner join knt on knt.id = repair.kntid
+$where
+order by $sidx $sord
+limit $start, $limit
+TXT;
+				break;
+			case 'pgsql':
+				$sql = <<<TXT
+select
+	repair.id,
+	repair.userfrom,
+	repair.userto,
+	repair.doc,
+	repair.dt,
+	repair.dtend,
+	repair.kntid,
+	knt.name,
+	repair.cost,
+	repair.comment,
+	repair.status
+from repair
+	inner join knt on knt.id = repair.kntid
+$where
+order by $sidx $sord
+offset $start limit $limit
+TXT;
+				break;
+		}
+		$arr = db::prepare($sql)->execute()->fetchAll();
 		$i = 0;
 		foreach ($arr as $row) {
 			$responce->rows[$i]['id'] = $row['id'];
-			$dt = MySQLDateToDate($row['dt']);
-			$dtend = MySQLDateToDate($row['dtend']);
+			$dt = utils::MySQLDateToDate($row['dt']);
+			$dtend = utils::MySQLDateToDate($row['dtend']);
 			switch ($row['status']) {
 				case '0':
 					$st = 'Работает';
@@ -109,7 +140,7 @@ TXT;
 					$st = 'Списать';
 					break;
 			}
-			$zz = new BaseUser();
+			$zz = new baseuser();
 			if ($row['userto'] != '-1') {
 				$zz->getById($row['userto']);
 				$row['userto'] = $zz->fio;
@@ -122,48 +153,50 @@ TXT;
 			} else {
 				$row['userfrom'] = 'не задано';
 			}
-			$responce->rows[$i]['cell'] = array($row['id'], $dt, $dtend, $row['name'],
+			$responce->rows[$i]['cell'] = [
+				$row['id'], $dt, $dtend, $row['name'],
 				$row['cost'], $row['comment'], $st, $row['userfrom'],
-				$row['userto'], $row['doc']);
+				$row['userto'], $row['doc']
+			];
 			$i++;
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выбрать список ремонтов (2)', 0, $ex);
+		throw new dbexception('Не могу выбрать список ремонтов (2)', 0, $ex);
 	}
-	jsonExit($responce);
+	utils::jsonExit($responce);
 }
 
 if ($oper == 'edit') {
-	$dt = DateToMySQLDateTime2($dt . ' 00:00:00');
-	$dtend = DateToMySQLDateTime2($dtend . ' 00:00:00');
-	$sql = <<<TXT
-UPDATE repair
-SET    comment = :comment, dt = :dt, dtend = :dtend, status = :status, doc = :doc
-WHERE  id = :id
-TXT;
+	$dt = utils::DateToMySQLDateTime2($dt . ' 00:00:00');
+	$dtend = utils::DateToMySQLDateTime2($dtend . ' 00:00:00');
 	try {
-		DB::prepare($sql)->execute(array(
+		$sql = <<<TXT
+update repair
+set comment = :comment, dt = :dt, dtend = :dtend, status = :status, doc = :doc
+where id = :id
+TXT;
+		db::prepare($sql)->execute([
 			':comment' => $comment,
 			':dt' => $dt,
 			':dtend' => $dtend,
 			':status' => $status,
 			':doc' => $doc,
 			':id' => $id
-		));
+		]);
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу обновить статус ремонта ТМЦ', 0, $ex);
+		throw new dbexception('Не могу обновить статус ремонта ТМЦ', 0, $ex);
 	}
-	ReUpdateRepairEq();
+	utils::reUpdateRepairEq();
 	exit;
 }
 
 if ($oper == 'del') {
-	$sql = 'DELETE FROM repair WHERE id = :id';
 	try {
-		DB::prepare($sql)->execute(array(':id' => $id));
+		$sql = 'delete from repair where id = :id';
+		db::prepare($sql)->execute([':id' => $id]);
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу удалить запись о ремонте', 0, $ex);
+		throw new dbexception('Не могу удалить запись о ремонте', 0, $ex);
 	}
-	ReUpdateRepairEq();
+	utils::reUpdateRepairEq();
 	exit;
 }

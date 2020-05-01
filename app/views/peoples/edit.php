@@ -11,13 +11,18 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+namespace app\views;
 
-$id = GetDef('id');
-$cfg = Config::getInstance();
+use core\baseuser;
+use core\config;
+use core\request;
+use core\utils;
 
-$tmpuser = new BaseUser();
+$req = request::getInstance();
+$id = $req->get('id');
+$cfg = config::getInstance();
+
+$tmpuser = new baseuser();
 $tmpuser->getById($id);
 $orgid = $tmpuser->orgid;
 $login = $tmpuser->login;
@@ -90,7 +95,7 @@ unset($tmpuser);
 		<div class="col-sm-10">
 			<select class="chosen-select form-control" name="orgid" id="orgid">
 				<?php
-				$morgs = GetArrayOrgs();
+				$morgs = utils::getArrayOrgs();
 				for ($i = 0; $i < count($morgs); $i++) {
 					$id = $morgs[$i]['id'];
 					$sl = ($id == $cfg->defaultorgid) ? 'selected' : '';

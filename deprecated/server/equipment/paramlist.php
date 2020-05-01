@@ -12,108 +12,117 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$id = GetDef('eqid');
+//use PDOException;
+//use stdClass;
+use core\db;
+use core\dbexception;
+use core\request;
+use core\utils;
+
+$req = request::getInstance();
+$id = $req->get('eqid');
 if ($id == '') {
-	$id = PostDef('eqid');
+	$id = $req->get('eqid');
 }
-$oper = PostDef('oper');
-$param = PostDef('pparam');
-$paramid = PostDef('id');
+$oper = $req->get('oper');
+$param = $req->get('pparam');
+$paramid = $req->get('id');
 
 if ($oper == '') {
 	$responce = new stdClass();
-
 	// Получаем группу номенклатуры
-	$sql = <<<TXT
-SELECT equipment.id,
-	nome.id AS nomeid,
-	nome.groupid AS groupid
-FROM equipment
-	INNER JOIN nome ON nome.id = equipment.nomeid
-WHERE (equipment.id = :id)
-	AND (nome.active = 1)
-TXT;
 	try {
-		$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
+		$sql = <<<TXT
+select
+	equipment.id,
+	nome.id as nomeid,
+	nome.groupid as groupid
+from equipment
+	inner join nome on nome.id = equipment.nomeid
+where equipment.id = :id
+	and nome.active = 1
+TXT;
+		$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 		$groupid = ($row) ? $row['groupid'] : '';
 	} catch (PDOException $ex) {
-		throw new DBException('Не получилось найти группу', 0, $ex);
+		throw new dbexception('Не получилось найти группу', 0, $ex);
 	}
 	if ($groupid == '') {
 		die('Нет параметров у группы!');
 	}
 
 	// Получаем список параметров группы
-	$sql = 'SELECT id, name FROM group_param WHERE (groupid = :groupid) AND (active = 1)';
 	try {
-		$arr = DB::prepare($sql)->execute([':groupid' => $groupid])->fetchAll();
+		$sql = 'select id, name from group_param where groupid = :groupid and active = 1';
+		$arr = db::prepare($sql)->execute([':groupid' => $groupid])->fetchAll();
 		foreach ($arr as $row) {
 			$paramid = $row['id'];
 			$name = $row['name'];
 			// Проверяем, если какого-то параметра нет, то добавляем его в основную таблицу, связанную с оргтехникой
-			$sql = 'SELECT id FROM eq_param WHERE (grpid = :grpid) AND (eqid = :eqid) AND (paramid = :paramid)';
+			$sql = 'select id from eq_param where grpid = :grpid and eqid = :eqid and paramid = :paramid';
 			try {
-				$arr2 = DB::prepare($sql)->execute([':grpid' => $groupid, ':eqid' => $id, ':paramid' => $paramid])->fetchAll();
+				$arr2 = db::prepare($sql)->execute([':grpid' => $groupid, ':eqid' => $id, ':paramid' => $paramid])->fetchAll();
 				$cnt = count($arr2);
 			} catch (PDOException $ex) {
-				throw new DBException('Не получилось выбрать существующие параметры', 0, $ex);
+				throw new dbexception('Не получилось выбрать существующие параметры', 0, $ex);
 			}
 			// Если параметра нет, то добавляем...
 			if ($cnt == 0) {
-				$sql = "INSERT INTO eq_param (grpid, paramid, eqid, param) VALUES (:grpid, :paramid, :eqid, '')";
+				$sql = "insert into eq_param (grpid, paramid, eqid, param) values (:grpid, :paramid, :eqid, '')";
 				try {
-					DB::prepare($sql)->execute([':grpid' => $groupid, ':paramid' => $paramid, ':eqid' => $id]);
+					db::prepare($sql)->execute([':grpid' => $groupid, ':paramid' => $paramid, ':eqid' => $id]);
 				} catch (PDOException $ex) {
-					throw new DBException('Не смог добавить параметр', 0, $ex);
+					throw new dbexception('Не смог добавить параметр', 0, $ex);
 				}
 			}
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не получилось найти параметры', 0, $ex);
+		throw new dbexception('Не получилось найти параметры', 0, $ex);
 	}
 
 	// Получаем список параметров конкретной позиции
-	$sql = <<<TXT
-SELECT eq_param.id AS pid,
-	group_param.name AS pname,
-	eq_param.param AS pparam
-FROM eq_param
-	INNER JOIN group_param ON group_param.id = eq_param.paramid
-WHERE eqid = :eqid
-TXT;
 	try {
-		$arr = DB::prepare($sql)->execute([':eqid' => $id])->fetchAll();
+		$sql = <<<TXT
+select
+	eq_param.id as pid,
+	group_param.name as pname,
+	eq_param.param as pparam
+from eq_param
+	inner join group_param on group_param.id = eq_param.paramid
+where eqid = :eqid
+TXT;
+		$rows = db::prepare($sql)->execute([':eqid' => $id])->fetchAll();
 		$i = 0;
-		foreach ($arr as $row) {
+		foreach ($rows as $row) {
 			$responce->rows[$i]['id'] = $row['pid'];
 			$responce->rows[$i]['cell'] = [$row['pid'], $row['pname'], $row['pparam']];
 			$i++;
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не получилось найти параметры', 0, $ex);
+		throw new dbexception('Не получилось найти параметры', 0, $ex);
 	}
-	jsonExit($responce);
+	utils::jsonExit($responce);
 }
 
 if ($oper == 'edit') {
-	$sql = 'UPDATE eq_param SET param = :param WHERE id = :id';
 	try {
-		DB::prepare($sql)->execute([':param' => $param, ':id' => $paramid]);
+		$sql = 'update eq_param set param = :param where id = :id';
+		db::prepare($sql)->execute([':param' => $param, ':id' => $paramid]);
 	} catch (PDOException $ex) {
-		throw new DBException('Не смог изменить параметр', 0, $ex);
+		throw new dbexception('Не смог изменить параметр', 0, $ex);
 	}
 	exit;
 }
 
 if ($oper == 'del') {
-	$sql = 'DELETE FROM eq_param WHERE id = :id';
 	try {
-		DB::prepare($sql)->execute([':id' => $paramid]);
+		$sql = 'delete from eq_param where id = :id';
+		db::prepare($sql)->execute([':id' => $paramid]);
 	} catch (PDOException $ex) {
-		throw new DBException('Не смог удалить параметр', 0, $ex);
+		throw new dbexception('Не смог удалить параметр', 0, $ex);
 	}
 	exit;
 }
