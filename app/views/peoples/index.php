@@ -1,5 +1,5 @@
 <div class="container-fluid">
-	<h4>Справочники / Сотрудники</h4>
+	<h4><?= $section; ?></h4>
 	<div class="row">
 		<div class="col-xs-12 col-md-7 col-sm-7">
 			<table id="list1"></table>

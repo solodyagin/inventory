@@ -12,13 +12,15 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$this->Add('main', '<i class="fas fa-hashtag"></i> Журналы', 'Журналы', 3, 'doc', '');
-$mod = new Mod();
-if ($mod->IsActive('news')) {
-	$this->Add('doc', '<i class="fas fa-newspaper"></i> Новости', 'Новости', 3, 'doc/news', 'news');
+use core\mod;
+
+$this->add('main', '<i class="fas fa-hashtag"></i> Журналы', 'Журналы', 3, 'doc', '');
+$mod = new mod();
+if ($mod->isActive('news')) {
+	$this->add('doc', '<i class="fas fa-newspaper"></i> Новости', 'Новости', 3, 'doc/news', 'news');
 }
 unset($mod);
-$this->Add('doc', '<i class="fab fa-empire"></i> Имущество', 'Имущество', 3, 'doc/equipment', 'equipment');
+$this->add('doc', '<i class="fab fa-empire"></i> Имущество', 'Имущество', 3, 'doc/equipment', 'equipment');

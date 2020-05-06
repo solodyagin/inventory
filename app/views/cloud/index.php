@@ -10,9 +10,13 @@
  * Лицензия: GPL-3.0
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
+namespace app\views;
 
-$user = User::getInstance();
-$cfg = Config::getInstance();
+use core\user;
+use core\config;
+
+$user = user::getInstance();
+$cfg = config::getInstance();
 ?>
 <link rel="stylesheet" href="public/css/upload.css">
 <link rel="stylesheet" href="public/js/skin/ui.dynatree.css">
@@ -30,14 +34,14 @@ $cfg = Config::getInstance();
 			<div class="form-inline">
 				<p>
 					<input name="foldername" id="foldername" type="text" placeholder="Имя папки" class="form-control">
-					<?php if ($user->isAdmin() || $user->TestRights([1,4])): ?>
+					<?php if ($user->isAdmin() || $user->testRights([1,4])): ?>
 						<button name="newfolder" id="newfolder" class="btn btn-small btn-success" type="button">Новая папка</button>
 					<?php endif; ?>
-					<?php if ($user->isAdmin() || $user->TestRights([1,6])): ?>
+					<?php if ($user->isAdmin() || $user->testRights([1,6])): ?>
 						<button name="delfolder" id="delfolder" class="btn btn-small btn-danger" type="button">Удалить</button>
 					<?php endif; ?>
 				</p>
-				<?php if ($user->isAdmin() || $user->TestRights([1,4])): ?>
+				<?php if ($user->isAdmin() || $user->testRights([1,4])): ?>
 					<div align="center" id="simple-btn" class="btn btn-primary js-fileapi-wrapper" style="text-align:center;visibility:hidden">
 						<div class="js-browse" align="center">
 							<span class="btn-txt">Загрузить файл</span>
@@ -58,7 +62,7 @@ $cfg = Config::getInstance();
 	</div>
 </div>
 <script>
-	function ViewFileList(keyme) {
+	function viewFileList(keyme) {
 		$.jgrid.gridUnload('#cloud_files');
 		$('#cloud_files').jqGrid({
 			url: 'cloud/listfiles?cloud_dirs_id=' + keyme,
@@ -104,8 +108,7 @@ $cfg = Config::getInstance();
 		}
 	});
 
-	function GetTree() {
-		// --- Initialize first Dynatree -------------------------------------------
+	function getTree() {
 		$('#tree').dynatree({
 			autoCollapse: false,
 			minExpandLevel: 3,
@@ -114,28 +117,21 @@ $cfg = Config::getInstance();
 			},
 			onActivate: function (node) {
 				selectedkey = node.data.key;
-				ViewFileList(selectedkey);
+				viewFileList(selectedkey);
 				$('#simple-btn').fileapi('data', {'selectedkey': selectedkey});
 				$("#simple-btn").css('visibility', 'visible');
 			},
-			/*onLazyRead: function (node) {
-				// Mockup a slow reqeuest ...
-				node.appendAjax({
-					url: 'sample-data2.json',
-					debugLazyDelay: 750 // don't do this in production code
-				});
-			},*/
 			dnd: {
 				onDragStart: function (node) {
 					/** This function MUST be defined to enable dragging for the tree.
 					 *  Return false to cancel dragging of node.
 					 */
-					logMsg('tree.onDragStart(%o)', node);
+					//logMsg('tree.onDragStart(%o)', node);
 					return true;
 				},
 				onDragStop: function (node) {
-					// This function is optional.
-					logMsg('tree.onDragStop(%o)', node);
+					/* This function is optional. */
+					//logMsg('tree.onDragStop(%o)', node);
 				},
 				autoExpandMS: 1000,
 				preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
@@ -147,14 +143,14 @@ $cfg = Config::getInstance();
 					 *  Return ['before', 'after'] to restrict available hitModes.
 					 *  Any other return value will calc the hitMode from the cursor position.
 					 */
-					logMsg('tree.onDragEnter(%o, %o)', node, sourceNode);
+					//logMsg('tree.onDragEnter(%o, %o)', node, sourceNode);
 					return true;
 				},
 				onDragOver: function (node, sourceNode, hitMode) {
 					/** Return false to disallow dropping this node.
 					 *
 					 */
-					logMsg('tree.onDragOver(%o, %o, %o)', node, sourceNode, hitMode);
+					//logMsg('tree.onDragOver(%o, %o, %o)', node, sourceNode, hitMode);
 					// Prevent dropping a parent below it's own child
 					if (node.isDescendantOf(sourceNode)) {
 						return false;
@@ -168,27 +164,26 @@ $cfg = Config::getInstance();
 					/** This function MUST be defined to enable dropping of items on
 					 * the tree.
 					 */
-					logMsg('tree.onDrop(%o, %o, %s)', node, sourceNode, hitMode);
+					//logMsg('tree.onDrop(%o, %o, %s)', node, sourceNode, hitMode);
 					sourceNode.move(node, hitMode);
 					$.get('cloud/movefolder?nodekey=' + node.data.key + '&srnodekey=' + sourceNode.data.key, function (data) {
 						if (data !== '') {
 							$().toastmessage('showWarningToast', data);
 						}
 					});
-
 					//SaveAllNodes(node, sourceNode);
 					//expand the drop target
 					//sourceNode.expand(true);
 				},
 				onDragLeave: function (node, sourceNode) {
-					logMsg('tree.onDragLeave(%o, %o)', node, sourceNode);
+					//logMsg('tree.onDragLeave(%o, %o)', node, sourceNode);
 				}
 			}
 		});
 	}
 
 	selectedkey = '';
-	GetTree();
+	getTree();
 
 	$('#newfolder').click(function () {
 		if ($('#foldername').val() === '') {
@@ -199,7 +194,7 @@ $cfg = Config::getInstance();
 				if (data !== '') {
 					$().toastmessage('showWarningToast', data);
 				}
-				GetTree();
+				getTree();
 			});
 		}
 	});
@@ -214,7 +209,7 @@ $cfg = Config::getInstance();
 					if (data !== '') {
 						$().toastmessage('showWarningToast', data);
 					}
-					GetTree();
+					getTree();
 				});
 			}
 		}

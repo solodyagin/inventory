@@ -11,10 +11,17 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$cfg = Config::getInstance();
+use core\config;
+use core\db;
+use core\dbexception;
+use core\request;
+use core\user;
+use core\utils;
+
+$cfg = config::getInstance();
 ?>
 <link rel="stylesheet" href="public/css/upload.css">
 <link href="public/js/jcrop/jquery.Jcrop.min.css" rel="stylesheet">
@@ -60,12 +67,12 @@ $cfg = Config::getInstance();
 	});
 </script>
 <?php
-$step = GetDef('step', 'add');
-$id = GetDef('id');
+$req = request::getInstance();
+$step = $req->get('step', 'add');
+$id = $req->get('id');
 
-$user = User::getInstance();
-
-if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
+$user = user::getInstance();
+if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 	echo "<script>orgid='';</script>";
 	echo "<script>placesid='';</script>";
 	echo "<script>userid='';</script>";
@@ -75,14 +82,14 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 	echo "<script>step='$step';</script>";
 
 	if ($step == 'edit') {
-		$sql = 'SELECT * FROM equipment WHERE id = :id';
 		try {
-			$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+			$sql = 'SELECT * FROM equipment WHERE id = :id';
+			$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
-				$dtpost = MySQLDateTimeToDateTimeNoTime($row['datepost']);
+				$dtpost = utils::MySQLDateTimeToDateTimeNoTime($row['datepost']);
 				echo "<script>dtpost='$dtpost';</script>";
 
-				$dtendgar = MySQLDateTimeToDateTimeNoTime($row['dtendgar']);
+				$dtendgar = utils::MySQLDateTimeToDateTimeNoTime($row['dtendgar']);
 				echo "<script>dtendgar='$dtendgar';</script>";
 
 				$orgid = $row['orgid'];
@@ -112,12 +119,12 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 				$kntid = $row['kntid'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать объект имущества', 0, $ex);
+			throw new dbexception('Не могу выбрать объект имущества', 0, $ex);
 		}
 
-		$sql = 'SELECT * FROM nome WHERE id = :nomeid';
 		try {
-			$row = DB::prepare($sql)->execute(array(':nomeid' => $nomeid))->fetch();
+			$sql = 'select * from nome where id = :nomeid';
+			$row = db::prepare($sql)->execute([':nomeid' => $nomeid])->fetch();
 			if ($row) {
 				$vendorid = $row['vendorid'];
 				echo "<script>vendorid='$vendorid';</script>";
@@ -126,7 +133,7 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 				echo "<script>grouid='$groupid';</script>";
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Не могу выбрать номенклатуру', 0, $ex);
+			throw new dbexception('Не могу выбрать номенклатуру', 0, $ex);
 		}
 	} else {
 		$dtpost = '';
@@ -175,11 +182,11 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 					<div class="col-xs-9">
 						<select class="chosen-select" name="kntid" id="kntid">
 							<?php
-							$morgs = GetArrayKnt();
-							for ($i = 0; $i < count($morgs); $i++) {
-								$nid = $morgs[$i]['id'];
+							$knts = utils::getArrayKnt();
+							for ($i = 0; $i < count($knts); $i++) {
+								$nid = $knts[$i]['id'];
 								$sl = ($nid == $kntid) ? 'selected' : '';
-								echo "<option value=\"$nid\" $sl>{$morgs[$i]['name']}</option>";
+								echo "<option value=\"$nid\" $sl>{$knts[$i]['name']}</option>";
 							}
 							?>
 						</select>
@@ -191,15 +198,16 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 						<div id="sgroups">
 							<select class="chosen-select" name="sgroupname" id="sgroupname">
 								<?php
-								$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
 								try {
-									$arr = DB::prepare($sql)->execute()->fetchAll();
+									$sql = 'select * from group_nome where active = 1 order by name';
+									$arr = db::prepare($sql)->execute()->fetchAll();
 									foreach ($arr as $row) {
-										$sl = ($row['id'] == $groupid) ? 'selected' : '';
-										echo "<option value=\"{$row['id']}\" $sl>{$row['name']}</option>";
+										$rowid = $row['id'];
+										$sl = ($rowid == $groupid) ? 'selected' : '';
+										echo "<option value=\"$rowid\" $sl>{$row['name']}</option>";
 									}
 								} catch (PDOException $ex) {
-									throw new DBException('Не могу выбрать список групп', 0, $ex);
+									throw new dbexception('Не могу выбрать список групп', 0, $ex);
 								}
 								?>
 							</select>
@@ -214,7 +222,7 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 						<div id="sorg">
 							<select class="chosen-select" name="sorgid" id="sorgid">
 								<?php
-								$morgs = GetArrayOrgs();
+								$morgs = utils::getArrayOrgs();
 								for ($i = 0; $i < count($morgs); $i++) {
 									$nid = $morgs[$i]['id'];
 									$sl = ($nid == $orgid) ? 'selected' : '';
@@ -402,42 +410,42 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 			}
 		});
 
-		function UpdateChosen() {
+		function updateChosen() {
 			for (var selector in config) {
 				$(selector).chosen({width: '100%'});
 				$(selector).chosen(config[selector]);
 			}
 		}
 
-		function GetListPlaces(orgid, placesid) {
+		function getListPlaces(orgid, placesid) {
 			$('#splaces').load('route/deprecated/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid);
-			UpdateChosen();
+			updateChosen();
 		}
 
-		function GetListUsers(orgid, userid) {
+		function getListUsers(orgid, userid) {
 			$('#susers').load('route/deprecated/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid);
-			UpdateChosen();
+			updateChosen();
 		}
 
-		function GetListNome(groupid, vendorid, nmd) {
+		function getListNome(groupid, vendorid, nmd) {
 			$.ajax({
 				url: 'route/deprecated/server/common/getlistnomes.php?groupid=' + groupid + '&vendorid=' + (vendorid || '') + '&nomeid=' + nmd,
 				success: function (answ) {
 					$('#snomes').html(answ);
-					UpdateChosen();
+					updateChosen();
 				}
 			});
 		}
 
-		function GetListVendors(groupid, vendorid) {
+		function getListVendors(groupid, vendorid) {
 			$.ajax({
 				url: 'route/deprecated/server/common/getlistvendors.php?groupid=' + groupid + '&vendorid=' + (vendorid || ''),
 				success: function (answ) {
 					$('#svendors').html(answ);
-					GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
+					getListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
 					$('#svendid').on('change', function (evt, params) {
 						$('#snomes').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
-						GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val());
+						getListNome($('#sgroupname :selected').val(), $('#svendid :selected').val());
 					});
 				}
 			});
@@ -455,7 +463,7 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 		});
 
 		// правка Мазур
-		$('#bshtr').click(function Calculate() {
+		$('#bshtr').click(function () {
 			$.get('route/deprecated/server/common/getean13.php', function (data) {
 				$('#shtrihkod').val(data);
 			});
@@ -466,27 +474,27 @@ if ($user->isAdmin() || $user->TestRights([1, 4, 5, 6])):
 		$('#sorgid').on('change', function (evt, params) {
 			$('#splaces').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
 			$("#susers").html = 'идет загрузка...';
-			GetListPlaces($('#sorgid :selected').val(), ''); // перегружаем список помещений организации
-			GetListUsers($('#sorgid :selected').val(), ''); // перегружаем пользователей организации
+			getListPlaces($('#sorgid :selected').val(), ''); // перегружаем список помещений организации
+			getListUsers($('#sorgid :selected').val(), ''); // перегружаем пользователей организации
 		});
 
 		// выбираем производителя по группе
 		$('#sgroupname').on('change', function (evt, params) {
 			$('#svendors').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
-			GetListVendors($('#sgroupname :selected').val()); // перегружаем список vendors
+			getListVendors($('#sgroupname :selected').val()); // перегружаем список vendors
 		});
 
 		// загружаем места
-		GetListPlaces($('#sorgid :selected').val(), placesid);
+		getListPlaces($('#sorgid :selected').val(), placesid);
 
 		// загружаем пользователей
-		GetListUsers($('#sorgid :selected').val(), userid);
+		getListUsers($('#sorgid :selected').val(), userid);
 
 		// загружаем производителя
-		GetListVendors($('#sgroupname :selected').val(), vendorid);
+		getListVendors($('#sgroupname :selected').val(), vendorid);
 
 		// номенклатура
-		GetListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
+		getListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
 	</script>
 	<script>
 		var FileAPI = {

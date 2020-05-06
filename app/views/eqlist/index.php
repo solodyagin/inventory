@@ -11,7 +11,11 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-$cfg = Config::getInstance();
+namespace app\views;
+
+use core\config;
+
+$cfg = config::getInstance();
 ?>
 <div class="container-fluid">
 	<div class="row-fluid">
@@ -56,7 +60,7 @@ $cfg = Config::getInstance();
 		}(window.location.search.substr(1).split('&')));
 	}(jQuery));
 
-	function LoadMoveInfoTable(ids) {
+	function loadMoveInfoTable(ids) {
 		var sUrl = 'moveinfo/list?eqid=' + ids;
 		//$('#tbl_move').jqGrid('setGridParam', {url: sUrl});
 		$('#tbl_move').jqGrid({
@@ -93,7 +97,7 @@ $cfg = Config::getInstance();
 		});
 	}
 
-	function ListEqByPlaces(list, pager) {
+	function listEqByPlaces(list, pager) {
 		var tmp = $.QueryString['usid'];
 		if (typeof tmp !== 'undefined') {
 			curuserid = tmp;
@@ -117,7 +121,7 @@ $cfg = Config::getInstance();
 			onSelectRow: function (ids) {
 				$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
 				$('#geteqid').val(ids);
-				LoadMoveInfoTable(ids);
+				loadMoveInfoTable(ids);
 			},
 			autowidth: true,
 			height: 200,
@@ -137,7 +141,7 @@ $cfg = Config::getInstance();
 		});
 	}
 
-	function ListEqByMat(list, pager) {
+	function listEqByMat(list, pager) {
 		var tmp = $.QueryString['usid'];
 		if (typeof tmp !== 'undefined') {
 			curuserid = tmp;
@@ -163,7 +167,7 @@ $cfg = Config::getInstance();
 			onSelectRow: function (ids) {
 				$('#photoid').load('route/deprecated/server/equipment/getphoto.php?eqid=' + ids);
 				$('#geteqid').val(ids);
-				LoadMoveInfoTable(ids);
+				loadMoveInfoTable(ids);
 			},
 			autowidth: true,
 			height: 200,
@@ -187,15 +191,15 @@ $cfg = Config::getInstance();
 
 	$('#plc').click(function (e) {
 		$.jgrid.gridUnload('#list2');
-		ListEqByPlaces('#list2', 'pager2');
+		listEqByPlaces('#list2', 'pager2');
 	});
 
 	$('#mto').click(function (e) {
 		$.jgrid.gridUnload('#list2');
-		ListEqByMat('#list2', 'pager2');
+		listEqByMat('#list2', 'pager2');
 	});
 
 	$('#plc').tab('show'); // Выбор первой вкладки
 
-	ListEqByPlaces('#list2', 'pager2');
+	listEqByPlaces('#list2', 'pager2');
 </script>

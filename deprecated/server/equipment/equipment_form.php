@@ -12,43 +12,54 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
+
+//use PDOException;
+use core\baseuser;
+use core\db;
+use core\dbexception;
+use core\equipment;
+use core\request;
+use core\user;
+use core\utils;
 
 include_once(SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php');
 
-function SendEmailByPlaces($plid, $title, $txt) {
+function sendEmailByPlaces($plid, $title, $txt) {
 	try {
 		$sql = <<<TXT
-SELECT userid uid,
-  users.email email
-FROM places_users
-  INNER JOIN users ON users.id = places_users.userid
-WHERE places_users.placesid = $plid AND users.email <> ''
+select
+	userid uid,
+	users.email email
+from places_users
+	inner join users on users.id = places_users.userid
+where places_users.placesid = $plid
+	and users.email <> ''
 TXT;
-		$arr = DB::prepare($sql)->execute()->fetchAll();
-		foreach ($arr as $row) {
-			smtpmail($row['email'], $title, $txt);
+		$rows = db::prepare($sql)->execute()->fetchAll();
+		foreach ($rows as $row) {
+			utils::smtpmail($row['email'], $title, $txt);
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Ошибка SendEmailByPlaces', 0, $ex);
+		throw new dbexception('Ошибка SendEmailByPlaces', 0, $ex);
 	}
 }
 
-$step = GetDef('step');
-$sorgid = PostDef('sorgid');
-$splaces = PostDef('splaces');
-$suserid = PostDef('suserid');
+$req = request::getInstance();
+$step = $req->get('step');
+$sorgid = $req->get('sorgid');
+$splaces = $req->get('splaces');
+$suserid = $req->get('suserid');
 
 // Выполняем только при наличии у пользователя соответствующей роли
 // http://грибовы.рф/wiki/doku.php/основы:доступ:роли
 
-$user = User::getInstance();
-
-if (($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) && ($step != '')) {
+$user = user::getInstance();
+if (($user->isAdmin() || $user->testRights([1, 4, 5, 6])) && ($step != '')) {
 	if ($step != 'move') {
-		$dtpost = DateToMySQLDateTime2(PostDef('dtpost') . ' 00:00:00');
-		$dtendgar = DateToMySQLDateTime2(PostDef('dtendgar') . ' 00:00:00');
+		$dtpost = utils::DateToMySQLDateTime2($req->get('dtpost') . ' 00:00:00');
+		$dtendgar = utils::DateToMySQLDateTime2($req->get('dtendgar') . ' 00:00:00');
 		if ($dtpost == '') {
 			$err[] = 'Не выбрана дата!';
 		}
@@ -61,34 +72,34 @@ if (($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) && ($step != '')) {
 		if ($suserid == '') {
 			$err[] = 'Не выбран пользователь!';
 		}
-		$sgroupname = PostDef('sgroupname');
+		$sgroupname = $req->get('sgroupname');
 		if ($sgroupname == '') {
 			$err[] = 'Не выбрана группа номенклатуры!';
 		}
-		$svendid = PostDef('svendid');
+		$svendid = $req->get('svendid');
 		if ($svendid == '') {
 			$err[] = 'Не выбран производитель!';
 		}
-		$snomeid = PostDef('snomeid');
+		$snomeid = $req->get('snomeid');
 		if ($snomeid == '') {
 			$err[] = 'Не выбрана номенклатура!';
 		}
-		$kntid = PostDef('kntid');
+		$kntid = $req->get('kntid');
 		if ($kntid == '') {
 			$err[] = 'Не выбран поставщик!';
 		}
-		$os = PostDef('os', '0');
-		$mode = PostDef('mode', '0');
-		$mapyet = PostDef('mapyet', '0');
-		$buhname = PostDef('buhname');
-		$sernum = PostDef('sernum');
-		$invnum = PostDef('invnum');
-		$shtrihkod = PostDef('shtrihkod');
-		$cost = PostDef('cost');
-		$picphoto = PostDef('picname');
-		$currentcost = PostDef('currentcost');
-		$comment = PostDef('comment');
-		$ip = PostDef('ip');
+		$os = $req->get('os', '0');
+		$mode = $req->get('mode', '0');
+		$mapyet = $req->get('mapyet', '0');
+		$buhname = $req->get('buhname');
+		$sernum = $req->get('sernum');
+		$invnum = $req->get('invnum');
+		$shtrihkod = $req->get('shtrihkod');
+		$cost = $req->get('cost');
+		$picphoto = $req->get('picname');
+		$currentcost = $req->get('currentcost');
+		$comment = $req->get('comment');
+		$ip = $req->get('ip');
 	} else {
 		if ($sorgid == '') {
 			$err[] = 'Не выбрана организация!';
@@ -104,19 +115,19 @@ if (($user->isAdmin() || $user->TestRights([1, 4, 5, 6])) && ($step != '')) {
 		} else {
 			$tmcgo = '0';
 		}
-		$comment = PostDef('comment');
+		$comment = $req->get('comment');
 	}
 
 	if ($step == 'add') {
 		if (count($err) == 0) {
 			try {
 				$sql = <<<TXT
-INSERT INTO equipment (orgid, placesid, usersid, nomeid, buhname, datepost, cost, currentcost, sernum, invnum, shtrihkod, os, mode, comment,
-  active, ip, mapyet, photo, kntid, dtendgar, repair, mapx, mapy, mapmoved)
-VALUES (:sorgid, :splaces, :suserid, :snomeid, :buhname, :dtpost, :cost, :currentcost, :sernum, :invnum, :shtrihkod, :os, :mode, :comment,
-  '1', :ip, :mapyet, :picphoto, :kntid, :dtendgar, 0, '', '', 0)
+insert into equipment (orgid, placesid, usersid, nomeid, buhname, datepost, cost, currentcost, sernum, invnum, shtrihkod, os, mode, comment,
+	active, ip, mapyet, photo, kntid, dtendgar, repair, mapx, mapy, mapmoved)
+values (:sorgid, :splaces, :suserid, :snomeid, :buhname, :dtpost, :cost, :currentcost, :sernum, :invnum, :shtrihkod, :os, :mode, :comment,
+	'1', :ip, :mapyet, :picphoto, :kntid, :dtendgar, 0, '', '', 0)
 TXT;
-				DB::prepare($sql)->execute([
+				db::prepare($sql)->execute([
 					':sorgid' => $sorgid,
 					':splaces' => $splaces,
 					':suserid' => $suserid,
@@ -138,7 +149,7 @@ TXT;
 					':dtendgar' => $dtendgar
 				]);
 			} catch (PDOException $ex) {
-				throw new DBException('Не смог добавить номенклатуру', 0, $ex);
+				throw new dbexception('Не смог добавить номенклатуру', 0, $ex);
 			}
 			if ($cfg->sendemail == 1) {
 				// $txt="Внимание! На Вашу ответственность переведена новая единица ТМЦ. <a href=$url?content_page=eq_list&usid=$suserid>Подробности здесь.</a>";
@@ -150,30 +161,30 @@ TXT;
 
 	if ($step == 'edit') {
 		if (count($err) == 0) {
-			$id = GetDef('id');
+			$id = $req->get('id');
 			try {
 				$sql = <<<TXT
-UPDATE equipment
-SET usersid = :usersid,
-  nomeid = :nomeid,
-  buhname = :buhname,
-  datepost = :datepost,
-  cost = :cost,
-  currentcost = :currentcost,
-  sernum = :sernum,
-  invnum = :invnum,
-  shtrihkod = :shtrihkod,
-  os = :os,
-  mode = :mode,
-  comment = :comment,
-  photo = :photo,
-  ip = :ip,
-  mapyet = :mapyet,
-  kntid = :kntid,
-  dtendgar = :dtendgar
-WHERE id = :id
+update equipment
+set usersid = :usersid,
+	nomeid = :nomeid,
+	buhname = :buhname,
+	datepost = :datepost,
+	cost = :cost,
+	currentcost = :currentcost,
+	sernum = :sernum,
+	invnum = :invnum,
+	shtrihkod = :shtrihkod,
+	os = :os,
+	mode = :mode,
+	comment = :comment,
+	photo = :photo,
+	ip = :ip,
+	mapyet = :mapyet,
+	kntid = :kntid,
+	dtendgar = :dtendgar
+where id = :id
 TXT;
-				DB::prepare($sql)->execute([
+				db::prepare($sql)->execute([
 					':usersid' => $suserid,
 					':nomeid' => $snomeid,
 					':buhname' => $buhname,
@@ -194,19 +205,19 @@ TXT;
 					':id' => $id
 				]);
 			} catch (PDOException $ex) {
-				throw new DBException('Не смог изменить номенклатуру', 0, $ex);
+				throw new dbexception('Не смог изменить номенклатуру', 0, $ex);
 			}
 		}
 	}
 
 	if ($step == 'move') {
 		if (count($err) == 0) {
-			$id = GetDef('id');
-			$etmc = new Equipment();
-			$etmc->GetById($id);
+			$id = $req->get('id');
+			$etmc = new equipment();
+			$etmc->getById($id);
 			try {
-				$sql = "UPDATE equipment SET tmcgo = :tmcgo, mapmoved = 1, orgid = :sorgid, placesid = :splaces, usersid = :suserid WHERE id = :id";
-				DB::prepare($sql)->execute([
+				$sql = "update equipment set tmcgo = :tmcgo, mapmoved = 1, orgid = :sorgid, placesid = :splaces, usersid = :suserid where id = :id";
+				db::prepare($sql)->execute([
 					':tmcgo' => $tmcgo,
 					':sorgid' => $sorgid,
 					':splaces' => $splaces,
@@ -214,14 +225,14 @@ TXT;
 					':id' => $id
 				]);
 			} catch (PDOException $ex) {
-				throw new DBException('Не смог изменить регистр номенклатуры - перемещение', 0, $ex);
+				throw new dbexception('Не смог изменить регистр номенклатуры - перемещение', 0, $ex);
 			}
 			try {
 				$sql = <<<TXT
-INSERT INTO move (eqid, dt, orgidfrom, orgidto, placesidfrom, placesidto, useridfrom, useridto, comment)
-VALUES (:eqid, NOW(), :orgidfrom, :orgidto, :placesidfrom, :placesidto, :useridfrom, :useridto, :comment)
+insert into move (eqid, dt, orgidfrom, orgidto, placesidfrom, placesidto, useridfrom, useridto, comment)
+values (:eqid, now(), :orgidfrom, :orgidto, :placesidfrom, :placesidto, :useridfrom, :useridto, :comment)
 TXT;
-				DB::prepare($sql)->execute([
+				db::prepare($sql)->execute([
 					':eqid' => $id,
 					':orgidfrom' => $etmc->orgid,
 					':orgidto' => $sorgid,
@@ -232,20 +243,20 @@ TXT;
 					':comment' => $comment
 				]);
 			} catch (PDOException $ex) {
-				throw new DBException('Не смог добавить перемещение', 0, $ex);
+				throw new dbexception('Не смог добавить перемещение', 0, $ex);
 			}
 			if ($cfg->sendemail == 1) {
-				$touser = new BaseUser();
+				$touser = new baseuser();
 				$touser->getById($suserid);
 				$url = $cfg->urlsite;
 				$tmcname = $etmc->tmcname;
 				$txt = "Внимание! На Вашу ответственность переведена новая единица ТМЦ ($tmcname). <a href=$url/index.php?content_page=eq_list&usid=$suserid>Подробности здесь.</a>";
-				smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);   // отсылаем уведомление кому пришло
-				SendEmailByPlaces($etmc->placesid, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
-				SendEmailByPlaces($splaces, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
+				utils::smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);   // отсылаем уведомление кому пришло
+				sendEmailByPlaces($etmc->placesid, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
+				sendEmailByPlaces($splaces, 'Изменился состав ТМЦ в помещении', "Внимание! В закрепленном за вами помещении изменился состав ТМЦ. <a href=$url/index.php?content_page=eq_list>Подробнее здесь.</a>");
 				$touser->getById($etmc->usersid);
 				$txt = "Внимание! С вашей отвественности снята единица ТМЦ ($tmcname). <a href=$url/index.php?content_page=eq_list&usid=$etmc->usersid>Подробности здесь.</a>";
-				smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);
+				utils::smtpmail($touser->email, 'Уведомление о перемещении ТМЦ', $txt);
 			}
 		}
 	}
@@ -255,7 +266,5 @@ if (count($err) == 0) {
 	echo 'ok';
 } else {
 	echo "<script>$('#messenger').addClass('alert alert-danger');</script>";
-	for ($i = 0; $i <= count($err); $i++) {
-		echo "$err[$i]<br>";
-	}
+	echo implode('<br>', $err);
 }

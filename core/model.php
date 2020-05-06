@@ -12,19 +12,19 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class Model {
+class model {
 
 	private $name;
 
-	function __construct() {
+	public function __construct() {
 		$modelName = get_class($this);
 		$arr = explode('_', $modelName);
 		$this->name = strtolower($arr[1]);
 	}
 
-	function getData() {
+	public function getData() {
 		
 	}
 

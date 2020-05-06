@@ -12,12 +12,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$mod = new Mod();
-$mod->Register('cloud', 'Хранилище документов', 'Грибов Павел');
-if ($mod->IsActive('cloud')) {
-	$this->Add('main', '<i class="fas fa-cloud"></i> Хранилище документов', 'Хранилище документов', 2, 'cloud', 'cloud');
+use core\mod;
+
+$mod = new mod();
+$mod->register('cloud', 'Хранилище документов', 'Грибов Павел');
+if ($mod->isActive('cloud')) {
+	$this->add('main', '<i class="fas fa-cloud"></i> Хранилище документов', 'Хранилище документов', 2, 'cloud', 'cloud');
 }
 unset($mod);

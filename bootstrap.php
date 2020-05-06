@@ -17,8 +17,10 @@ defined('SITE_EXEC') or die('Доступ запрещён');
 
 $err = []; // Массив с сообщениями об ошибках для показа пользователю при генерации страницы
 $ok = []; // Массив с информационными сообщениями для показа пользователю при генерации страницы
+
 // Некоторые установки
 date_default_timezone_set('Europe/Moscow'); // Временная зона по умолчанию
+
 // Если нет файла конфигурации, то запускаем инсталлятор
 if (!is_file(SITE_ROOT . '/app/config.php')) {
 	header('Location: install/index.php');
@@ -27,44 +29,28 @@ if (!is_file(SITE_ROOT . '/app/config.php')) {
 
 $time_start = microtime(true); // Засекаем время начала выполнения скрипта
 
-/**
- * Функция автоматической загрузки классов
- * @param type $class
- * @return boolean
- */
-function __autoload($class) {
-	$arr = explode('_', $class);
-	if (empty($arr[1])) {
-		$folder = 'core';
-	} else {
-		switch (strtolower($arr[0])) {
-			case 'controller':
-				$folder = 'app/controllers';
-				break;
-			case 'model':
-				$folder = 'app/models';
-				break;
-			case 'view':
-				$folder = 'app/views';
-				break;
-		}
-	}
-	$filename = SITE_ROOT . "/$folder/" . strtolower($class) . '.php';
-	if (!file_exists($filename)) {
-		return false;
-	}
-	require_once $filename;
-}
+use PDO;
+use PDOException;
+use core\config;
+use core\user;
+use core\db;
+use core\dbexception;
+use core\utils;
+use core\menu;
+use core\router;
+
+// Подключаем Composer
+require SITE_ROOT . '/vendor/autoload.php';
 
 // Получаем настройки из файла конфигурации
-$cfg = Config::getInstance();
+$cfg = config::getInstance();
 $cfg->loadFromFile();
 
 // Задаём обработчик исключений
 error_reporting(E_ALL);
 set_error_handler(function ($level, $message, $file, $line) {
 	if (error_reporting() !== 0) { // to keep the @ operator working
-		throw new ErrorException($message, 0, $level, $file, $line);
+		throw new \ErrorException($message, 0, $level, $file, $line);
 	}
 });
 set_exception_handler(function ($exception) {
@@ -75,10 +61,10 @@ set_exception_handler(function ($exception) {
 	http_response_code($code);
 	$class = get_class($exception);
 	$message = $exception->getMessage();
-	if ($class == 'DBException') {
+	if ($class == 'dbexception') {
 		$message .= ': ' . $exception->getPrevious()->getMessage();
 	}
-	$cfg = Config::getInstance();
+	$cfg = config::getInstance();
 	if ($cfg->debug) {
 		echo <<<TEXT
 <h1>Fatal error</h1>
@@ -99,28 +85,26 @@ TEXT;
 	}
 });
 
-// Загружаем все, что нужно для работы движка
-include_once SITE_ROOT . '/inc/functions.php'; // Загружаем функции
-
+// Добавляем поле "inventory_id"
 try {
 	$bytes = bin2hex(random_bytes(10));
-	switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+	switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 		case 'mysql':
 			$sql = "select count(*) cnt from information_schema.columns where table_name='config' and column_name='inventory_id'";
-			$row = DB::prepare($sql)->execute()->fetch();
+			$row = db::prepare($sql)->execute()->fetch();
 			$cnt = ($row) ? $row['cnt'] : 0;
 			if ($cnt == 0) {
 				$sql = "alter table config add column inventory_id varchar(20) not null default '$bytes'";
-				DB::prepare($sql)->execute();
+				db::prepare($sql)->execute();
 			}
 			break;
 		case 'pgsql':
 			$sql = "alter table config add column if not exists inventory_id varchar(20) not null default '$bytes'";
-			DB::prepare($sql)->execute();
+			db::prepare($sql)->execute();
 			break;
 	}
 } catch (PDOException $ex) {
-	throw DBException('Ошибка при добавлении поля "inventory_id"', 0, $ex);
+	throw new dbexception('Ошибка при добавлении поля "inventory_id"', 0, $ex);
 }
 
 // Получаем настройки из базы
@@ -130,17 +114,17 @@ $cfg->loadFromDB();
 if (strtotime($cfg->version) < strtotime(SITE_VERSION)) {
 	try {
 		if ($cfg->version == '2020-04-20') {
-			DB::prepare('update config set theme = :theme')->execute([':theme' => 'cerulean']);
+			db::prepare('update config set theme = :theme')->execute([':theme' => 'cerulean']);
 			$cfg->theme = 'cerulean'; // Применение темы
 		}
-		DB::prepare('update config set version = :version')->execute([':version' => SITE_VERSION]);
+		db::prepare('update config set version = :version')->execute([':version' => SITE_VERSION]);
 	} catch (PDOException $ex) {
-		throw DBException('Ошибка обновления БД', 0, $ex);
+		throw new dbexception('Ошибка обновления БД', 0, $ex);
 	}
 }
 
 // Аутентифицируем пользователя по кукам
-$user = User::getInstance();
+$user = user::getInstance();
 $user->loginByCookie();
 
 
@@ -186,11 +170,11 @@ include_once SITE_ROOT . '/vendor/phpmailer/class.phpmailer.php'; // Класс 
  * после чего очередь сокращаем на 1 письмо
  */
 try {
-	$row = DB::prepare('select * from mailq limit 1')->execute()->fetch();
+	$row = db::prepare('select * from mailq limit 1')->execute()->fetch();
 	if ($row) {
-		mailq($row['to'], $row['title'], $row['btxt']);
+		utils::mailq($row['to'], $row['title'], $row['btxt']);
 		try {
-			DB::prepare('delete from mailq where id = :id')->execute([':id' => $row['id']]);
+			db::prepare('delete from mailq where id = :id')->execute([':id' => $row['id']]);
 		} catch (PDOException $ex) {
 			$err[] = 'Не получилось удалить сообщение из очереди ' . $ex->getMessage();
 		}
@@ -200,8 +184,24 @@ try {
 }
 
 // Инициализируем заполнение меню
-$gmenu = new Menu();
-$gmenu->GetFromFiles(SITE_ROOT . '/inc/menu');
+$gmenu = new menu();
+$gmenu->getFromFiles(SITE_ROOT . '/inc/menu');
+
+// Маршрутизация
+$router = router::getInstance();
+
+// Добавляем маршруты
+$router->add('/?', ['controller' => 'main', 'action' => 'index']);
+
+// Добавляем в таблицу маршрутов короткие ссылки
+$router->add('/{controller}/?');
+$router->add('/{controller}/{id:\d+}');
+$router->add('/{controller}/{action}'); // например, /account/login
+
+// Добавляем маршруты для модулей
+$router->add('/{module}/{controller}/'); // например, /somemodule/controller/
+$router->add('/{module}/{controller}/{id:\d+}'); // например, /somemodule/controller/1
+$router->add('/{module}/{controller}/{action}'); // например, /somemodule/controller/index
 
 // Запускаем маршрутизатор
-Router::dispatch();
+$router->dispatch();

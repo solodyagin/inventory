@@ -12,22 +12,20 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
+
+use core\utils;
 
 /**
  * Класс для работы с меню
  */
-class Menu {
+class menu {
 
-	var $arr_menu = []; // Массив где хранится меню
-	var $count = 0;
+	public $arr_menu = []; // Массив где хранится меню
+	public $count = 0;
 
-	/* структура массива:
-	 * []
-	 */
-
-	/** Добавляем пункт меню. Если такой uid уже есть - то обновляем содержимое
-	 *
+	/**
+	 *  Добавляет пункт меню. Если такой uid уже есть - то обновляем содержимое
 	 * @param type $parents (main - первый уровень меню), иначе ссылка вида uid на id "родителя"
 	 * @param type $name    Наименование пункта меню
 	 * @param type $comment Пояснение
@@ -35,7 +33,7 @@ class Menu {
 	 * @param type $uid     Некий идетификатор
 	 * @param type $path    Путь для запуска скрипта (подставляется как content_page=$path)
 	 */
-	function Add($parents, $name, $comment, $sort, $uid, $path) {
+	public function add($parents, $name, $comment, $sort, $uid, $path) {
 		// Если корневой уровень меню - то добавляем его
 		if ($parents == 'main') {
 			$this->count++;
@@ -63,8 +61,8 @@ class Menu {
 		}
 	}
 
-	function GetFromFiles($pp) {
-		$mfiles = GetArrayFilesInDir($pp);
+	function getFromFiles($pp) {
+		$mfiles = utils::getArrayFilesInDir($pp);
 		foreach ($mfiles as $fname) {
 			if (is_file("$pp/$fname")) {
 				include_once("$pp/$fname");
@@ -72,7 +70,7 @@ class Menu {
 		}
 	}
 
-	function GetList($parents) {
+	function getList($parents) {
 		$res = [];
 		foreach ($this->arr_menu as $value) {
 			if ($parents == $value['parents']) {

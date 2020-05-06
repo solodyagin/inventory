@@ -1,21 +1,3 @@
-<?php
-/*
- * WebUseOrg3 - учёт оргтехники в организации
- * Лицензия: GPL-3.0
- * Разработчик: Грибов Павел
- * Сайт: http://грибовы.рф
- */
-/*
- * Inventory - учёт оргтехники в организации
- * Лицензия: GPL-3.0
- * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
- */
-
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
-
-$cfg = Config::getInstance();
-?>
 <link rel="stylesheet" href="public/css/upload.css">
 <script src="public/js/FileAPI/FileAPI.min.js"></script>
 <script src="public/js/FileAPI/FileAPI.exif.js"></script>

@@ -11,30 +11,37 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-/* Проверка прав */
-$user = User::getInstance();
-(($user->isAdmin()) || $user->TestRights([1,4,5,6])) or die('Недостаточно прав');
+use PDOException;
+use core\db;
+use core\dbexception;
+use core\request;
+use core\user;
 
-$step = GetDef('step');
-$id = GetDef('id');
+// Проверка прав
+$user = user::getInstance();
+(($user->isAdmin()) || $user->testRights([1, 4, 5, 6])) or die('Недостаточно прав');
+
+$req = request::getInstance();
+$step = $req->get('step');
+$id = $req->get('id');
 $name = '';
 $vendorid = '';
 $groupid = '';
 
 if ($step == 'edit') {
-	$sql = 'SELECT * FROM nome WHERE id = :id';
 	try {
-		$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
+		$sql = 'select * from nome where id = :id';
+		$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 		if ($row) {
 			$groupid = $row['groupid'];
 			$vendorid = $row['vendorid'];
 			$name = $row['name'];
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не могу выбрать номенклатуру', 0, $ex);
+		throw new dbexception('Не могу выбрать номенклатуру', 0, $ex);
 	}
 }
 ?>
@@ -78,16 +85,16 @@ if ($step == 'edit') {
 		<div class="col-sm-9">
 			<select class="chosen-select form-control" name="groupid" id="groupid">
 				<?php
-				$sql = 'SELECT * FROM group_nome WHERE active = 1 ORDER BY name';
 				try {
-					$arr = DB::prepare($sql)->execute()->fetchAll();
-					foreach ($arr as $row) {
+					$sql = 'select * from group_nome where active = 1 order by name';
+					$rows = db::prepare($sql)->execute()->fetchAll();
+					foreach ($rows as $row) {
 						$vl = $row['id'];
 						$sl = ($row['id'] == $groupid) ? 'selected' : '';
 						echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
 					}
 				} catch (PDOException $ex) {
-					throw new DBException('Не могу выбрать группу номенклатуры', 0, $ex);
+					throw new dbexception('Не могу выбрать группу номенклатуры', 0, $ex);
 				}
 				?>
 			</select>
@@ -98,16 +105,16 @@ if ($step == 'edit') {
 		<div class="col-sm-9">
 			<select class="chosen-select form-control" name="vendorid" id="vendorid">
 				<?php
-				$sql = 'SELECT * FROM vendor WHERE active = 1 ORDER BY name';
 				try {
-					$arr = DB::prepare($sql)->execute()->fetchAll();
+					$sql = 'select * from vendor where active = 1 order by name';
+					$arr = db::prepare($sql)->execute()->fetchAll();
 					foreach ($arr as $row) {
 						$vl = $row['id'];
 						$sl = ($row['id'] == $vendorid) ? 'selected' : '';
 						echo "<option value=\"$vl\" $sl>{$row['name']}</option>";
 					}
 				} catch (PDOException $ex) {
-					throw new DBException('Не могу выбрать производителя', 0, $ex);
+					throw new dbexception('Не могу выбрать производителя', 0, $ex);
 				}
 				?>
 			</select>

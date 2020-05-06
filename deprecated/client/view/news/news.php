@@ -11,26 +11,33 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$step = GetDef('step');
-$id = GetDef('id');
+use PDOException;
+use core\db;
+use core\dbexception;
+use core\request;
+use core\utils;
+
+$req = request::getInstance();
+$step = $req->get('step');
+$id = $req->get('id');
 $dtpost = '';
 $title = '';
 $txt = '';
 
 if ($step == 'edit') {
-	$sql = 'SELECT * FROM news WHERE id = :id';
 	try {
-		$row = DB::prepare($sql)->execute(array(':id' => $id))->fetch();
+		$sql = 'select * from news where id = :id';
+		$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 		if ($row) {
-			$dtpost = MySQLDateTimeToDateTimeNoTime($row['dt']);
+			$dtpost = utils::MySQLDateTimeToDateTimeNoTime($row['dt']);
 			$title = $row['title'];
 			$txt = $row['body'];
 		}
 	} catch (PDOException $ex) {
-		throw new DBException('Не смог выбрать новость', 0, $ex);
+		throw new dbexception('Не смог выбрать новость', 0, $ex);
 	}
 } else {
 	$step = 'add';
@@ -52,7 +59,7 @@ if ($step == 'edit') {
 			var error = 0;
 			$('form').find(':input').each(function () {
 				for (var i = 0; i < fields.length; i++) {
-					if ($(this).attr('name') == fields[i]) {
+					if ($(this).attr('name') === fields[i]) {
 						if (!$(this).val()) {
 							error = 1;
 							$(this).parent().addClass('has-error');
@@ -63,16 +70,14 @@ if ($step == 'edit') {
 				}
 			});
 			if (error === 1) {
-				$('#messenger').addClass('alert alert-danger')
-								.html('Не все обязательные поля заполнены!')
-								.fadeIn('slow');
+				$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 				return false;
 			}
 			return true;
 		});
 	});
 
-	$().ready(function () {
+	$(function () {
 		$(document).on('focusin', function (e) {
 			if ($(event.target).closest('.mce-window').length) {
 				e.stopImmediatePropagation();

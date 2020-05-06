@@ -12,9 +12,11 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class BaseUser {
+use PDOException;
+
+class baseuser {
 
 	public $id; // Идентификатор пользователя
 	public $randomid; // Случайный идентификатор (время от времени может меняться)
@@ -50,15 +52,15 @@ class BaseUser {
 	 * @param array $roles
 	 * @return boolean
 	 */
-	function TestRights($roles) {
+	public function testRights($roles) {
 		$sr = implode(',', array_map('intval', $roles));
 		$sql = "select count(*) as cnt from usersroles where userid = :id and role in ($sr)";
 		try {
-			$row = DB::prepare($sql)->execute([':id' => $this->id])->fetch();
+			$row = db::prepare($sql)->execute([':id' => $this->id])->fetch();
 			$cnt = ($row) ? $row['cnt'] : 0;
 			return $cnt > 0;
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.TestRights', 0, $ex);
+			throw new dbexception('Ошибка выполнения user.testRights', 0, $ex);
 		}
 	}
 
@@ -66,20 +68,20 @@ class BaseUser {
 	 * Обновляем данные о последнем посещении
 	 * @param type $id
 	 */
-	function UpdateLastdt($id) {
+	public function updateLastDt($id) {
 		$lastdt = date('Y-m-d H:i:s');
 		$sql = 'update users set lastdt = :lastdt where id = :id';
 		try {
-			DB::prepare($sql)->execute([':lastdt' => $lastdt, ':id' => $id]);
+			db::prepare($sql)->execute([':lastdt' => $lastdt, ':id' => $id]);
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.UpdateLastdt', 0, $ex);
+			throw new dbexception('Ошибка выполнения user.updateLastDt', 0, $ex);
 		}
 	}
 
 	/**
 	 * Обновляем данные о текущем пользователе в базу
 	 */
-	function Update() {
+	public function update() {
 		try {
 			$sql = <<<TXT
 update users
@@ -87,7 +89,7 @@ set orgid = :orgid, login = :login, password = :password, salt = :salt,
 	email = :email, mode = :mode, active = :active
 where id = :id
 TXT;
-			DB::prepare($sql)->execute([
+			db::prepare($sql)->execute([
 				':orgid' => $this->orgid,
 				':login' => $this->login,
 				':password' => $this->password,
@@ -98,10 +100,10 @@ TXT;
 				':id' => $this->id
 			]);
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.Update (1)', 0, $ex);
+			throw new dbexception('Ошибка выполнения user.update (1)', 0, $ex);
 		}
 		try {
-			switch (DB::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
 				case 'mysql':
 					$sql = <<<TXT
 insert into users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, post)
@@ -128,7 +130,7 @@ TXT;
 					break;
 			}
 
-			DB::prepare($sql)->execute([
+			db::prepare($sql)->execute([
 				':usersid' => $this->id,
 				':fio' => $this->fio,
 				':telephonenumber' => $this->telephonenumber,
@@ -137,7 +139,7 @@ TXT;
 				':post' => $this->post
 			]);
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.Update (2)', 0, $ex);
+			throw new dbexception('Ошибка выполнения user.update (2)', 0, $ex);
 		}
 	}
 
@@ -147,7 +149,7 @@ TXT;
 	 * @param array $params
 	 * @return boolean
 	 */
-	function select($where, $params) {
+	private function select($where, $params) {
 		try {
 			$sql = <<<TXT
 select
@@ -158,7 +160,7 @@ from users u
 	left join users_profile p on p.usersid = u.id
 where $where
 TXT;
-			$row = DB::prepare($sql)->execute($params)->fetch();
+			$row = db::prepare($sql)->execute($params)->fetch();
 			if ($row) {
 				$this->id = $row['sid'];
 				$this->randomid = $row['randomid'];
@@ -178,7 +180,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка при получении данных пользователя', 0, $ex);
+			throw new dbexception('Ошибка при получении данных пользователя', 0, $ex);
 		}
 		return false;
 	}
@@ -188,7 +190,7 @@ TXT;
 	 * @param string $login
 	 * @return boolean
 	 */
-	function getByLogin($login) {
+	public function getByLogin($login) {
 		return $this->select('u.login = :login', [':login' => $login]);
 	}
 
@@ -197,7 +199,7 @@ TXT;
 	 * @param integer $id
 	 * @return boolean
 	 */
-	function getById($id) {
+	public function getById($id) {
 		return $this->select('u.id = :id', [':id' => $id]);
 	}
 
@@ -206,7 +208,7 @@ TXT;
 	 * @param string $randomid
 	 * @return boolean
 	 */
-	function getByRandomId($randomid) {
+	public function getByRandomId($randomid) {
 		return $this->select('u.randomid = :randomid', [':randomid' => $randomid]);
 	}
 
@@ -215,10 +217,10 @@ TXT;
 	 * @param type $randomid
 	 * @return boolean
 	 */
-	function getByRandomIdNoProfile($randomid) {
-		$sql = 'select * from users where randomid = :randomid';
+	public function getByRandomIdNoProfile($randomid) {
 		try {
-			$row = DB::prepare($sql)->execute([':randomid' => $randomid])->fetch();
+			$sql = 'select * from users where randomid = :randomid';
+			$row = db::prepare($sql)->execute([':randomid' => $randomid])->fetch();
 			if ($row) {
 				$this->id = $row['id'];
 				$this->randomid = $row['randomid'];
@@ -233,7 +235,7 @@ TXT;
 				return true;
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.getByRandomIdNoProfile', 0, $ex);
+			throw new dbexception('Ошибка выполнения user.getByRandomIdNoProfile', 0, $ex);
 		}
 		return false;
 	}
@@ -247,7 +249,7 @@ TXT;
 	 * @param string $email
 	 * @param string $mode
 	 */
-	function Add($randomid, $orgid, $login, $pass, $email, $mode) {
+	public function add($randomid, $orgid, $login, $pass, $email, $mode) {
 		$this->randomid = $randomid;
 		$this->orgid = $orgid;
 		$this->login = $login;
@@ -261,7 +263,7 @@ insert into users (randomid, orgid, login, password, salt, email, mode, lastdt, 
 values (:randomid, :orgid, :login, :password, :salt, :email, :mode, now(), 1)
 TXT;
 		try {
-			DB::prepare($sql)->execute([
+			db::prepare($sql)->execute([
 				':randomid' => $this->randomid,
 				':orgid' => $this->orgid,
 				':login' => $this->login,
@@ -271,10 +273,10 @@ TXT;
 				':mode' => $this->mode
 			]);
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения User.Add', 0, $ex);
+			throw new dbexception('Ошибка выполнения user.add', 0, $ex);
 		}
 
-		$zx = new BaseUser();
+		$zx = new baseuser();
 
 		if ($zx->getByRandomIdNoProfile($this->randomid)) {
 			// добавляю профиль
@@ -283,7 +285,7 @@ insert into users_profile (usersid, fio, telephonenumber, homephone, jpegphoto, 
 values (:userid, :fio, :telephonenumber, :homephone, :jpegphoto, :post)
 TXT;
 			try {
-				DB::prepare($sql)->execute([
+				db::prepare($sql)->execute([
 					':userid' => $zx->id,
 					':fio' => $this->fio,
 					':telephonenumber' => $this->telephonenumber,
@@ -292,10 +294,10 @@ TXT;
 					':post' => $this->post
 				]);
 			} catch (PDOException $ex) {
-				throw new DBException('Ошибка выполнения User.Add', 0, $ex);
+				throw new dbexception('Ошибка выполнения user.add', 0, $ex);
 			}
 		} else {
-			die('Не найден пользователь по randomid User.Add');
+			die('Не найден пользователь по randomid user.add');
 		}
 		unset($zx);
 	}

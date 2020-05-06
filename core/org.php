@@ -12,23 +12,25 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-class Org {
+use PDOException;
 
-	var $id; // идентификатор организации
-	var $name; // наименование организации
-	var $picmap; // файл картинки
-	var $active; // 1 - активна, 0 - помечена на удаление
+class org {
+
+	public $id; // идентификатор организации
+	public $name; // наименование организации
+	public $picmap; // файл картинки
+	public $active; // 1 - активна, 0 - помечена на удаление
 
 	/**
 	 * Получить данные об организации по идентификатору
 	 * @param type $id
 	 */
-	function GetById($id) {
-		$sql = 'select * from org where id = :id';
+	function getById($id) {
 		try {
-			$row = DB::prepare($sql)->execute([':id' => $id])->fetch();
+			$sql = 'select * from org where id = :id';
+			$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
 				$this->id = $row['sid'];
 				$this->name = $row['name'];
@@ -36,7 +38,7 @@ class Org {
 				$this->active = $row['active'];
 			}
 		} catch (PDOException $ex) {
-			throw new DBException('Ошибка выполнения Org.GetById', 0, $ex);
+			throw new dbexception('Ошибка выполнения org.getById', 0, $ex);
 		}
 	}
 

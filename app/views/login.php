@@ -11,8 +11,13 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-$user = User::getInstance();
-$cfg = Config::getInstance();
+namespace app\views;
+
+use core\user;
+use core\config;
+
+$user = user::getInstance();
+$cfg = config::getInstance();
 
 if (!$user->isLogged()):
 	?>
@@ -29,16 +34,16 @@ if (!$user->isLogged()):
 	<script>var examples = [];</script>
 	<div class="container-fluid">
 		<?php
-		$jpegphoto = $user->jpegphoto;
-		if (!is_file(SITE_ROOT . "/photos/$jpegphoto")) {
-			$jpegphoto = 'noimage.jpg';
+		$photo = $user->jpegphoto;
+		if (!is_file(SITE_ROOT . "/photos/$photo")) {
+			$photo = 'noimage.jpg';
 		}
 		?>
 		<div class="row">
 			<div class="col-xs-12 col-md-12 col-sm-12">
 				<div id="userpic" class="userpic">
 					<div class="js-preview userpic__preview thumbnail">
-						<img width="100%" src="photos/<?= $jpegphoto; ?>">
+						<img width="100%" src="photos/<?= $photo; ?>">
 					</div>
 					<div class="btn btn-success js-fileapi-wrapper">
 						<div class="js-browse">
@@ -53,7 +58,7 @@ if (!$user->isLogged()):
 						</div>
 					</div>
 				</div>
-				<input name="picname" id="picname" type="hidden" value="<?= $jpegphoto; ?>">
+				<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
 			</div>
 		</div>
 		<div class="row">

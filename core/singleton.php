@@ -12,9 +12,9 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-//namespace Core;
+namespace core;
 
-trait Singleton {
+trait singleton {
 
 	private static $_instances = [];
 

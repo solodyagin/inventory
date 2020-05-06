@@ -12,7 +12,9 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-echo generateEAN(getRandomDigits(7));
+use core\utils;
+
+echo utils::generateEAN(utils::getRandomDigits(7));

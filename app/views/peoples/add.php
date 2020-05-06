@@ -11,10 +11,12 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+namespace app\views;
 
-$cfg = Config::getInstance();
+use core\config;
+use core\utils;
+
+$cfg = config::getInstance();
 ?>
 <script>
 	$(function () {
@@ -83,7 +85,7 @@ $cfg = Config::getInstance();
 		<div class="col-sm-10">
 			<select class="chosen-select form-control" name="orgid" id="orgid">
 				<?php
-				$morgs = GetArrayOrgs();
+				$morgs = utils::getArrayOrgs();
 				for ($i = 0; $i < count($morgs); $i++) {
 					$id = $morgs[$i]['id'];
 					$sl = ($id == $cfg->defaultorgid) ? 'selected' : '';

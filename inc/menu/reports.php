@@ -12,8 +12,8 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$this->Add('main', '<i class="fas fa-chart-bar"></i> Отчёты', 'Отчёты', 3, 'reports', '');
-$this->Add('reports', '<i class="fab fa-empire"></i> Имущество', 'Отчеты по имуществу', 3, 'reports/report', 'report');
+$this->add('main', '<i class="fas fa-chart-bar"></i> Отчёты', 'Отчёты', 3, 'reports', '');
+$this->add('reports', '<i class="fab fa-empire"></i> Имущество', 'Отчеты по имуществу', 3, 'reports/report', 'report');

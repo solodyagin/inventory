@@ -11,11 +11,13 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$id = GetDef('id');
-$cfg = Config::getInstance();
+use core\request;
+
+$req = request::getInstance();
+$id = $req->get('id');
 ?>
 <table id="list_rep"></table>
 <div id="pager_rep"></div>

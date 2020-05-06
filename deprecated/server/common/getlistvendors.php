@@ -12,12 +12,18 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$groupid = GetDef('groupid', '1');
-$vendorid = GetDef('vendorid', '1');
-$addnone = GetDef('addnone');
+//use PDOException;
+use core\db;
+use core\dbexception;
+use core\request;
+
+$req = request::getInstance();
+$groupid = $req->get('groupid', '1');
+$vendorid = $req->get('vendorid', '1');
+$addnone = $req->get('addnone');
 
 echo '<select class="chosen-select" name="svendid" id="svendid">';
 if ($addnone == 'true') {
@@ -25,20 +31,22 @@ if ($addnone == 'true') {
 }
 try {
 	$sql = <<<TXT
-SELECT vendorid,
-  vendor.name
-FROM nome
-  INNER JOIN vendor ON vendor.id = vendorid
-WHERE groupid = :groupid
-GROUP BY vendorid, vendor.name
+select
+	vendorid,
+	vendor.name
+from nome
+	inner join vendor on vendor.id = vendorid
+where groupid = :groupid
+group by vendorid, vendor.name
 TXT;
-	$arr = DB::prepare($sql)->execute([':groupid' => $groupid])->fetchAll();
-	foreach ($arr as $row) {
-		$sl = ($row['vendorid'] == $vendorid) ? 'selected' : '';
-		echo "<option value=\"{$row['vendorid']}\" $sl>{$row['name']}</option>";
+	$rows = db::prepare($sql)->execute([':groupid' => $groupid])->fetchAll();
+	foreach ($rows as $row) {
+		$rvendorid = $row['vendorid'];
+		$rname = $row['name'];
+		$sl = ($rvendorid == $vendorid) ? 'selected' : '';
+		echo "<option value=\"$rvendorid\" $sl>$rname</option>";
 	}
 } catch (PDOException $ex) {
-	throw new DBException('Не могу выбрать список групп', 0, $ex);
+	throw new dbexception('Не могу выбрать список групп', 0, $ex);
 }
-
 echo '</select>';

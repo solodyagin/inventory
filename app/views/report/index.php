@@ -11,11 +11,14 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-/* Запрещаем прямой вызов скрипта. */
-defined('SITE_EXEC') or die('Доступ запрещён');
+namespace app\views;
 
-$user = User::getInstance();
-$cfg = Config::getInstance();
+use core\config;
+use core\user;
+use core\utils;
+
+$user = user::getInstance();
+$cfg = config::getInstance();
 ?>
 <div class="container-fluid">
 	<h4><?= $section; ?></h4>
@@ -35,7 +38,7 @@ $cfg = Config::getInstance();
 					<label for="sel_orgid" class="control-label">Организация</label>
 					<select class="chosen-select" name="sel_orgid" id="sel_orgid">
 						<?php
-						$morgs = GetArrayOrgs();
+						$morgs = utils::getArrayOrgs();
 						for ($i = 0; $i < count($morgs); $i++) {
 							$nid = $morgs[$i]['id'];
 							$sl = ($nid == $user->orgid) ? 'selected' : '';
@@ -78,7 +81,7 @@ $cfg = Config::getInstance();
 </div>
 <script>curuserid = <?= $user->id; ?>;</script>
 <script>
-	function ListEqByPlaces(oid, pid, plpid) {
+	function listEqByPlaces(oid, pid, plpid) {
 		if (!$('#gr').prop('checked')) {
 			$('#list2').jqGrid({
 				url: 'report/list?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
@@ -215,37 +218,37 @@ $cfg = Config::getInstance();
 		document.body.removeChild(link);
 	}
 
-	function UpdateChosen() {
+	function updateChosen() {
 		for (var selector in config) {
 			$(selector).chosen({width: '100%'});
 			$(selector).chosen(config[selector]);
 		}
 	}
 
-	function GetListPlaces(orgid, placesid) {
+	function getListPlaces(orgid, placesid) {
 		url = 'route/deprecated/server/common/getlistplaces.php?orgid=' + orgid + '&placesid=' + placesid + '&addnone=true';
 		$.get(url, function (data) {
 			$('#sel_pom').html(data);
-			UpdateChosen();
+			updateChosen();
 		});
 	}
 
-	function GetListUsers(orgid, userid) {
+	function getListUsers(orgid, userid) {
 		url = 'route/deprecated/server/common/getlistusers.php?orgid=' + orgid + '&userid=' + userid + '&addnone=true';
 		$.get(url, function (data) {
 			$('#sel_plp').html(data);
-			UpdateChosen();
+			updateChosen();
 		});
 	}
 
 	$('#sel_orgid').change(function () {
-		GetListUsers($('#sel_orgid :selected').val());
-		GetListPlaces($('#sel_orgid :selected').val());
+		getListUsers($('#sel_orgid :selected').val());
+		getListPlaces($('#sel_orgid :selected').val());
 	});
 
 	$('#sbt').click(function () {// обрабатываем отправку формы
 		$.jgrid.gridUnload('#list2');
-		ListEqByPlaces($('#sel_orgid :selected').val(), $('#splaces :selected').val(), $('#suserid :selected').val());
+		listEqByPlaces($('#sel_orgid :selected').val(), $('#splaces :selected').val(), $('#suserid :selected').val());
 		return false;
 	});
 
@@ -257,6 +260,6 @@ $cfg = Config::getInstance();
 		newWin3.document.write('</table>');
 	});
 
-	GetListUsers($('#sel_orgid :selected').val(), curuserid);
-	GetListPlaces($('#sel_orgid :selected').val(), curuserid);
+	getListUsers($('#sel_orgid :selected').val(), curuserid);
+	getListPlaces($('#sel_orgid :selected').val(), curuserid);
 </script>

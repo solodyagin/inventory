@@ -12,13 +12,21 @@
  * Разработчик: Сергей Солодягин (solodyagin@gmail.com)
  */
 
-# Запрещаем прямой вызов скрипта.
+// Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-$orgid = $cfg->defaultorgid;
-$addnone = GetDef('addnone');
+use core\config;
+use core\request;
+use core\user;
 
-if (($user->mode == 1) || $user->TestRights([1,4,5,6])) {
+$cfg = config::getInstance();
+$orgid = $cfg->defaultorgid;
+
+$req = request::getInstance();
+$addnone = $req->get('addnone');
+
+$user = user::getInstance();
+if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])) {
 	echo '<select name="tmcgo" id="tmcgo">';
 	if ($addnone == 'true') {
 		echo '<option value="-1">не выбрано</option>';
