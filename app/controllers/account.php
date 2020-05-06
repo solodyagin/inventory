@@ -20,7 +20,7 @@ use core\router;
 use core\user;
 use core\utils;
 
-class controller extends controller {
+class account extends controller {
 
 	function login() {
 		global $err;

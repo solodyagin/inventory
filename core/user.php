@@ -14,6 +14,7 @@
 
 namespace core;
 
+use PDO;
 use PDOException;
 
 class user extends baseuser {

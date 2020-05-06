@@ -29,8 +29,8 @@ if (!is_file(SITE_ROOT . '/app/config.php')) {
 
 $time_start = microtime(true); // Засекаем время начала выполнения скрипта
 
-use PDO;
-use PDOException;
+//use PDO;
+//use PDOException;
 use core\config;
 use core\user;
 use core\db;
