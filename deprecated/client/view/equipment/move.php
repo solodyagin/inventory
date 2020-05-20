@@ -61,7 +61,7 @@ $userid = $tmptmc->usersid;
 					<div class="form-group">
 						<label>Организация (куда):</label>
 						<div id="sorg">
-							<select class="chosen-select" name="sorgid" id="sorgid">
+							<select class="select2" name="sorgid" id="sorgid">
 								<?php
 								$morgs = utils::getArrayOrgs();
 								for ($i = 0; $i < count($morgs); $i++) {
@@ -98,10 +98,7 @@ $userid = $tmptmc->usersid;
 </div>
 <script>
 	function updateChosen() {
-		for (var selector in config) {
-			$(selector).chosen({width: '100%'});
-			$(selector).chosen(config[selector]);
-		}
+		$('.select2').select2({width: '100%'});
 	}
 
 	function getListUsers(orgid, userid) {

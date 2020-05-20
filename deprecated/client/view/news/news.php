@@ -14,7 +14,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-use PDOException;
+//use PDOException;
 use core\db;
 use core\dbexception;
 use core\request;

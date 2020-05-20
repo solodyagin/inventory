@@ -14,7 +14,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-use PDOException;
+//use PDOException;
 use core\db;
 use core\dbexception;
 use core\request;
@@ -83,7 +83,7 @@ if ($step == 'edit') {
 	<div class="form-group">
 		<label for="groupid" class="col-sm-3 control-label">Группа:</label>
 		<div class="col-sm-9">
-			<select class="chosen-select form-control" name="groupid" id="groupid">
+			<select class="select2 form-control" name="groupid" id="groupid">
 				<?php
 				try {
 					$sql = 'select * from group_nome where active = 1 order by name';
@@ -103,7 +103,7 @@ if ($step == 'edit') {
 	<div class="form-group">
 		<label for="vendorid" class="col-sm-3 control-label">Производитель:</label>
 		<div class="col-sm-9">
-			<select class="chosen-select form-control" name="vendorid" id="vendorid">
+			<select class="select2 form-control" name="vendorid" id="vendorid">
 				<?php
 				try {
 					$sql = 'select * from vendor where active = 1 order by name';
@@ -134,7 +134,7 @@ if ($step == 'edit') {
 </form>
 <div id="messenger"></div>
 <script>
-	for (var selector in config) {
-		$(selector).chosen(config[selector]);
-	}
+	$(function(){
+		$('.select2').select2();
+	});
 </script>

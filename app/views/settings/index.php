@@ -59,7 +59,7 @@ $cfg = config::getInstance();
 						<div class="form-group">
 							<label for="form_cfg_theme_sl" class="col-sm-3 control-label">Выберите тему:</label>
 							<div class="col-sm-9">
-								<select class="form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
+								<select class="select2 form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
 									<?php
 									$themes = utils::getArrayFilesInDir(SITE_ROOT . '/public/themes');
 									for ($i = 0; $i < count($themes); $i++) {
@@ -147,6 +147,8 @@ $cfg = config::getInstance();
 </form>
 <script>
 	$(function () {
+		$('.select2').select2();
+
 		$('#form_cfg_theme_sl').change(function () {
 			$('#bs_theme').attr('href', 'public/themes/' + $(this).val() + '/bootstrap.min.css');
 		});

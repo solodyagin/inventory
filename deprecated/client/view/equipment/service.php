@@ -14,7 +14,7 @@
 // Запрещаем прямой вызов скрипта.
 defined('SITE_EXEC') or die('Доступ запрещён');
 
-use PDOException;
+//use PDOException;
 use core\db;
 use core\dbexception;
 use core\request;
@@ -79,7 +79,7 @@ TXT;
 	foreach ($rows as $row) {
 		$rowid = $row['id'];
 		$sl = ($rowid == $userfrom) ? 'selected' : '';
-		$optUsers .= "<option value=\"$rowid\" $sl>{$row['fio']}</option>";
+		$optionsUsers .= "<option value=\"$rowid\" $sl>{$row['fio']}</option>";
 	}
 } catch (PDOException $ex) {
 	throw new dbexception('Не могу выбрать список пользователей', 0, $ex);
@@ -127,7 +127,7 @@ TXT;
 			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/equipment/service.php?step=<?= $step; ?>&eqid=<?= $eqid; ?>" method="post" name="form1" target="_self">
 				<label>Кто ремонтирует:</label>
 				<div id="sorg1">
-					<select class="chosen-select" name="kntid" id="kntid">
+					<select class="select2" name="kntid" id="kntid">
 						<?php
 						$morgs = utils::getArrayKnt();
 						for ($i = 0; $i < count($morgs); $i++) {
@@ -150,18 +150,18 @@ TXT;
 					<div class="col-xs-6 col-md-6 col-sm-6">
 						<label>Отправитель:</label>
 						<div id="susers1">
-							<select class="chosen-select"name="suserid1" id="suserid1">
+							<select class="select2 form-control" name="suserid1" id="suserid1">
 								<?= $optionsUsers; ?>
 							</select>
 						</div>
 						<label>Получатель:</label>
 						<div id="susers2">
-							<select class="chosen-select" name="suserid2" id="suserid2">
+							<select class="select2 form-control" name="suserid2" id="suserid2">
 								<?= $optionsUsers; ?>
 							</select>
 						</div>
 						<label>Статус:</label>
-						<select class="form-control" name="status" id="status">
+						<select class="select2 form-control" name="status" id="status">
 							<option value='1' <?= ($status == '1') ? 'selected' : ''; ?>>В сервисе</option>
 							<option value='0' <?= ($status == '0') ? 'selected' : ''; ?>>Работает</option>
 							<option value='2' <?= ($status == '2') ? 'selected' : ''; ?>>Есть заявка</option>
@@ -181,31 +181,30 @@ TXT;
 	</div>
 </div>
 <script>
-	var $dt = $('#dt'),
+	$(function(){
+		var $dt = $('#dt'),
 			$dtpost = $('#dtpost');
 
-	$dt.datepicker();
-	$dt.datepicker('option', 'dateFormat', 'dd.mm.yy');
-	if (step !== 'edit') {
-		$dt.datepicker('setDate', '0');
-	} else {
-		$dt.datepicker('setDate', dt);
-	}
+		$dt.datepicker();
+		$dt.datepicker('option', 'dateFormat', 'dd.mm.yy');
+		if (step !== 'edit') {
+			$dt.datepicker('setDate', '0');
+		} else {
+			$dt.datepicker('setDate', dt);
+		}
 
-	$dtpost.datepicker();
-	$dtpost.datepicker('option', 'dateFormat', 'dd.mm.yy');
-	if (step !== 'edit') {
-		$dtpost.datepicker('setDate', '0');
-	} else {
-		$dtpost.datepicker('setDate', dtpost);
-	}
+		$dtpost.datepicker();
+		$dtpost.datepicker('option', 'dateFormat', 'dd.mm.yy');
+		if (step !== 'edit') {
+			$dtpost.datepicker('setDate', '0');
+		} else {
+			$dtpost.datepicker('setDate', dtpost);
+		}
 
-	$('#status').change(function () {
-		$dt.datepicker('show');
+		$('#status').change(function () {
+			$dt.datepicker('show');
+		});
+
+		$('.select2').select2({width: '100%'});
 	});
-
-	for (var selector in config) {
-		$(selector).chosen({width: '100%'});
-		$(selector).chosen(config[selector]);
-	}
 </script>

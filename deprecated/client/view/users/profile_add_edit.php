@@ -163,9 +163,10 @@ if ($user->isAdmin()):
 	<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
 	<script src="public/js/statics/jquery.modal.js"></script>
 	<script>
-		for (var selector in config) {
-			$(selector).chosen(config[selector]);
-		}
+		$(function(){
+			$('.select2').select2();
+		});
+
 		jQuery(function ($) {
 			var $blind = $('.splash__blind');
 			$('.splash').mouseenter(function () {

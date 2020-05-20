@@ -180,7 +180,7 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 				<div class="form-group">
 					<label class="col-xs-3 control-label">От кого:</label>
 					<div class="col-xs-9">
-						<select class="chosen-select" name="kntid" id="kntid">
+						<select class="select2" name="kntid" id="kntid">
 							<?php
 							$knts = utils::getArrayKnt();
 							for ($i = 0; $i < count($knts); $i++) {
@@ -196,7 +196,7 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 					<label class="col-xs-3 control-label">Что:</label>
 					<div class="col-xs-9">
 						<div id="sgroups">
-							<select class="chosen-select" name="sgroupname" id="sgroupname">
+							<select class="select2" name="sgroupname" id="sgroupname">
 								<?php
 								try {
 									$sql = 'select * from group_nome where active = 1 order by name';
@@ -220,7 +220,7 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 					<label class="col-xs-3 control-label">Куда:</label>
 					<div class="col-xs-9">
 						<div id="sorg">
-							<select class="chosen-select" name="sorgid" id="sorgid">
+							<select class="select2" name="sorgid" id="sorgid">
 								<?php
 								$morgs = utils::getArrayOrgs();
 								for ($i = 0; $i < count($morgs); $i++) {
@@ -411,10 +411,7 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 		});
 
 		function updateChosen() {
-			for (var selector in config) {
-				$(selector).chosen({width: '100%'});
-				$(selector).chosen(config[selector]);
-			}
+			$('.select2').select2({width: '100%'});
 		}
 
 		function getListPlaces(orgid, placesid) {
@@ -509,9 +506,10 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 	<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
 	<script src="public/js/statics/jquery.modal.js"></script>
 	<script>
-		for (var selector in config) {
-			$(selector).chosen(config[selector]);
-		}
+		$(function(){
+			$('.select2').select2();
+		});
+
 		jQuery(function ($) {
 			var $blind = $('.splash__blind');
 			$('.splash')

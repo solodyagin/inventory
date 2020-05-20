@@ -63,7 +63,7 @@ $step = $req->get('step');
 		<form id="myForm" enctype="multipart/form-data" action="route/deprecated/server/equipment/repair.php?step=add&eqid=<?= $eqid; ?>" method="post" name="form1" target="_self">
 			<label>Кто ремонтирует:</label>
 			<div class="form-group">
-				<select class="chosen-select" name="kntid" id="kntid">
+				<select class="select2" name="kntid" id="kntid">
 					<?php
 					$knts = utils::getArrayKnt();
 					for ($i = 0; $i < count($knts); $i++) {
@@ -101,7 +101,7 @@ $step = $req->get('step');
 </div>
 <script>
 	var $dtpost = $('#dtpost'),
-			$dt = $('#dt');
+		$dt = $('#dt');
 
 	$dtpost.datepicker();
 	$dtpost.datepicker('option', 'dateFormat', 'dd.mm.yy');
@@ -115,8 +115,7 @@ $step = $req->get('step');
 		$dt.datepicker('show');
 	});
 
-	for (var selector in config) {
-		$(selector).chosen({width: '100%'});
-		$(selector).chosen(config[selector]);
-	}
+	$(function(){
+		$('.select2').select2({width: '100%'});
+	});
 </script>

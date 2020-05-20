@@ -28,7 +28,7 @@ if ($vendorid == '') {
 }
 $nomeid = $req->get('nomeid');
 
-echo '<select class="chosen-select" name="snomeid" id="snomeid">';
+echo '<select class="select2" name="snomeid" id="snomeid">';
 try {
 	$sql = 'select id, name from nome where groupid = :groupid and vendorid = :vendorid';
 	$rows = db::prepare($sql)->execute([':groupid' => $groupid, ':vendorid' => $vendorid])->fetchAll();

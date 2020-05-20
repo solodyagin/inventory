@@ -28,29 +28,41 @@ $user = user::getInstance();
 		<title><?= $cfg->sitename; ?></title>
 		<base href="<?= $cfg->rewrite_base; ?>">
 		<link rel="icon" type="image/png" href="public/images/favicon.png" sizes="16x16">
-		<link rel="stylesheet" href="public/css/jquery-ui.min.css">
-		<link rel="stylesheet" href="public/css/ui.multiselect.css">
-		<link rel="stylesheet" href="public/themes/<?= $cfg->theme; ?>/bootstrap.min.css" id="bs_theme">
-		<link rel="stylesheet" href="public/css/ui.jqgrid-bootstrap.css">
-		<link rel="stylesheet" href="public/css/chosen.css">
-		<link rel="stylesheet" href="public/css/jquery.toastmessage-min.css">
+		<!--FontAwesome-->
 		<link rel="stylesheet" href="public/css/all.min.css">
-		<link rel="stylesheet" href="public/css/common.css">
+		<!--jQuery-->
 		<script src="public/js/jquery-1.11.0.min.js"></script>
+		<!--jQuery UI-->
+		<link rel="stylesheet" href="public/css/jquery-ui.min.css">
 		<script src="public/js/jquery-ui.min.js"></script>
+		<!--Bootstrap-->
+		<link rel="stylesheet" href="public/themes/<?= $cfg->theme; ?>/bootstrap.min.css" id="bs_theme">
+		<script src="public/js/bootstrap.min.js"></script>
+		<!--Localisation assistance for jQuery-->
 		<script src="public/js/plugins/localisation/jquery.localisation-min.js"></script>
+		<!--jQuery UI Multiselect-->
+		<link rel="stylesheet" href="public/css/ui.multiselect.css">
 		<script src="public/js/ui.multiselect.js"></script>
+		<!--jqGrid-->
+		<link rel="stylesheet" href="public/css/ui.jqgrid-bootstrap.css">
 		<script src="public/js/i18n/grid.locale-ru.js"></script>
 		<script src="public/js/jquery.jqGrid.min.js"></script>
-		<script src="public/js/chosen.jquery.min.js"></script>
+		<!--Select2-->
+		<link rel="stylesheet" href="public/css/select2.min.css">
+		<link rel="stylesheet" href="public/css/select2-bootstrap.min.css">
+		<script src="public/js/select2.full.min.js"></script>
+		<!--ToastMessage-->
+		<link rel="stylesheet" href="public/css/jquery.toastmessage-min.css">
 		<script src="public/js/jquery.toastmessage-min.js"></script>
+		<!--jQuery Form Plugin-->
 		<script src="public/js/jquery.form.js"></script>
-		<script src="public/js/bootstrap.min.js"></script>
+		<!--Common-->
+		<link rel="stylesheet" href="public/css/common.css">
 		<script src="public/js/common.js"></script>
 		<script>
 			var defaultorgid = <?= $cfg->defaultorgid; ?>,
-					theme = '<?= $cfg->theme; ?>',
-					defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
+				theme = '<?= $cfg->theme; ?>',
+				defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
 
 			$.fn.bootstrapBtn = $.fn.button.noConflict();
 
@@ -62,23 +74,10 @@ $user = user::getInstance();
 			$.jgrid.styleUI.Bootstrap.base.footerTable = 'table table-bordered table-condensed';
 			$.jgrid.styleUI.Bootstrap.base.pagerTable = 'table table-condensed';
 
-			var config = {
-				'.chosen-select': {},
-				'.chosen-select-deselect': {allow_single_deselect: true},
-				'.chosen-select-no-single': {disable_search_threshold: 4},
-				'.chosen-select-no-results': {no_results_text: 'Ничего не найдено!'},
-				'.chosen-select-width': {width: '95%'}
-			};
-
 			$(function () {
 				$.localise('ui-multiselect', {/*language: 'en',*/ path: 'public/js/locale/'});
 			});
 		</script>
-		<style>
-			.chosen-container .chosen-results {
-				max-height:100px;
-			}
-		</style>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
 		<nav class="navbar navbar-default navbar-fixed-top">
@@ -131,20 +130,24 @@ $user = user::getInstance();
 		global $err, $ok;
 
 		if (count($err) != 0) {
+			echo '<div class="container-fluid"><div class="row"><div class="col-sm-12">';
 			echo '<div class="alert alert-danger">';
 			echo '<button type="button" class="close" data-dismiss="alert">&times;</button>';
 			for ($i = 0; $i < count($err); $i++) {
 				echo "<p>$err[$i]</p>";
 			}
 			echo '</div>';
+			echo '</div></div></div>';
 		}
 		if (count($ok) != 0) {
+			echo '<div class="container-fluid"><div class="row"><div class="col-sm-12">';
 			echo '<div class="alert alert-success">';
 			echo '<button type="button" class="close" data-dismiss="alert">&times;</button>';
 			for ($i = 0; $i < count($ok); $i++) {
 				echo "<p>$ok[$i]</p>";
 			}
 			echo '</div>';
+			echo '</div></div></div>';
 		}
 		?>
 

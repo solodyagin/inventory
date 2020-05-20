@@ -54,7 +54,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 				<div class="panel-body">
 					<div class="form-group">
 						<label for="orgs">Организация:</label>
-						<select class="chosen-select form-control" name="orgs" id="orgs">
+						<select class="select2 form-control" name="orgs" id="orgs">
 							<?php
 							for ($i = 0; $i < count($morgs); $i++) {
 								$idorg = $morgs[$i]['id'];
@@ -67,7 +67,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 					</div>
 					<div class="form-group">
 						<label for="fontsize">Размер шрифта:</label>
-						<select class="chosen-select form-control" name="fontsize" id="fontsize">
+						<select class="select2 form-control" name="fontsize" id="fontsize">
 							<option value="11px">11px</option>
 							<option value="12px">12px</option>
 							<option value="13px">13px</option>
@@ -76,25 +76,24 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 					</div>
 					<script>
 						$(function () {
-							for (var selector in config) {
-								$(selector).chosen(config[selector]);
-							}
-							$('#fontsize').val("<?= $cfg->fontsize; ?>").trigger('chosen:updated');
-						});
-					</script>
-					<script>
-						$('#orgs').change(function () {
-							var exdate = new Date();
-							exdate.setDate(exdate.getDate() + 365);
-							orgid = $('#orgs :selected').val();
-							document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
-						});
+							$('.select2').select2();
 
-						$('#fontsize').change(function () {
-							var exdate = new Date();
-							exdate.setDate(exdate.getDate() + 365);
-							fontsize = $('#fontsize :selected').val();
-							document.cookie = 'fontsize=' + fontsize + '; path=/; expires=' + exdate.toUTCString();
+							$('#fontsize').val("<?= $cfg->fontsize; ?>").trigger('change.select2');
+
+							$('#orgs').change(function () {
+								var exdate = new Date();
+								exdate.setDate(exdate.getDate() + 365);
+								orgid = $('#orgs :selected').val();
+								document.cookie = 'defaultorgid=' + orgid + '; path=/; expires=' + exdate.toUTCString();
+							});
+
+							$('#fontsize').change(function () {
+								var exdate = new Date();
+								exdate.setDate(exdate.getDate() + 365);
+								fontsize = $('#fontsize :selected').val();
+								document.cookie = 'fontsize=' + fontsize + '; path=/; expires=' + exdate.toUTCString();
+								window.location.reload();
+							});
 						});
 					</script>
 				</div>

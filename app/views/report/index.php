@@ -27,7 +27,7 @@ $cfg = config::getInstance();
 			<div class="form-group">
 				<div class="col-xs-12 col-md-4 col-sm-4">
 					<label for="sel_rep" class="control-label">Название отчета</label>
-					<select class="chosen-select" name="sel_rep" id="sel_rep">
+					<select class="select2" name="sel_rep" id="sel_rep">
 						<option value="1">Наличие оргтехники</option>
 						<option value="2">Наличие оргтехники - только не ОС и не списанное</option>
 					</select>
@@ -36,7 +36,7 @@ $cfg = config::getInstance();
 				</div>
 				<div class="col-xs-12 col-md-4 col-sm-4">
 					<label for="sel_orgid" class="control-label">Организация</label>
-					<select class="chosen-select" name="sel_orgid" id="sel_orgid">
+					<select class="select2" name="sel_orgid" id="sel_orgid">
 						<?php
 						$morgs = utils::getArrayOrgs();
 						for ($i = 0; $i < count($morgs); $i++) {
@@ -219,10 +219,7 @@ $cfg = config::getInstance();
 	}
 
 	function updateChosen() {
-		for (var selector in config) {
-			$(selector).chosen({width: '100%'});
-			$(selector).chosen(config[selector]);
-		}
+		$('.select2').select2({width: '100%'});
 	}
 
 	function getListPlaces(orgid, placesid) {

@@ -25,7 +25,7 @@ $groupid = $req->get('groupid', '1');
 $vendorid = $req->get('vendorid', '1');
 $addnone = $req->get('addnone');
 
-echo '<select class="chosen-select" name="svendid" id="svendid">';
+echo '<select class="select2" name="svendid" id="svendid">';
 if ($addnone == 'true') {
 	echo '<option value="-1">не выбрано</option>';
 }

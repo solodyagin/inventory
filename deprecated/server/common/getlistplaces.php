@@ -25,7 +25,7 @@ $orgid = $req->get('orgid', '1');
 $placesid = $req->get('placesid', '1');
 $addnone = $req->get('addnone');
 
-echo '<select class="chosen-select" name="splaces" id="splaces">';
+echo '<select class="select2" name="splaces" id="splaces">';
 if ($addnone == 'true') {
 	echo '<option value="-1">не выбрано</option>';
 }

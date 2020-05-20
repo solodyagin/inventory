@@ -22,7 +22,7 @@ $cfg = config::getInstance();
 	<h4><?= $section; ?></h4>
 	<div class="row">
 		<div class="col-md-3 col-sm-3">
-			<select id="orgs" class="chosen-select form-control">
+			<select id="orgs" class="select2 form-control">
 				<?php
 				$morgs = utils::getArrayOrgs(); // список активных организаций
 				for ($i = 0; $i < count($morgs); $i++) {
@@ -379,6 +379,8 @@ $cfg = config::getInstance();
 	}
 
 	$(function () {
+		$('.select2').select2();
+
 		$('#orgs').change(function () {
 			var exdate = new Date();
 			exdate.setDate(exdate.getDate() + 365);
@@ -388,10 +390,6 @@ $cfg = config::getInstance();
 			$.jgrid.gridUnload('#tbl_equpment');
 			loadTable();
 		});
-
-		for (var selector in config) {
-			$(selector).chosen(config[selector]);
-		}
 
 		loadTable();
 	});

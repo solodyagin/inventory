@@ -27,7 +27,7 @@ $addnone = $req->get('addnone');
 $dopname = $req->get('dopname');
 $chosen = $req->get('chosen', 'false');
 
-echo '<select class="chosen-select" name=suserid' . $dopname . " id=suserid" . $dopname . ">";
+echo '<select class="select2" name=suserid' . $dopname . " id=suserid" . $dopname . ">";
 if ($addnone == 'true') {
 	echo '<option value="-1">не выбрано</option>';
 }
@@ -58,9 +58,9 @@ echo '</select>';
 if ($chosen == 'true') {
 	echo <<<TXT
 <script>
-	for (var selector in config) {
-		$(selector).chosen(config[selector]);
-	}
+	$(function(){
+		$('.select2').select2();
+	});
 </script>
 TXT;
 }

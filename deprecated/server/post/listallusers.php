@@ -52,7 +52,7 @@ TXT;
 echo '</select>';
 ?>
 <script>
-	for (var selector in config) {
-		$(selector).chosen(config[selector]);
-	}
+	$(function(){
+		$('.select2').select2();
+	});
 </script>

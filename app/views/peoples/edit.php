@@ -93,7 +93,7 @@ unset($tmpuser);
 	<div class="form-group">
 		<label class="control-label col-sm-2">Организация:</label>
 		<div class="col-sm-10">
-			<select class="chosen-select form-control" name="orgid" id="orgid">
+			<select class="select2 form-control" name="orgid" id="orgid">
 				<?php
 				$morgs = utils::getArrayOrgs();
 				for ($i = 0; $i < count($morgs); $i++) {
@@ -108,7 +108,7 @@ unset($tmpuser);
 	<div class="form-group">
 		<label class="control-label col-sm-2">Роль:</label>
 		<div class="col-sm-10">
-			<select name="mode" id="mode" class="chosen-select form-control">
+			<select name="mode" id="mode" class="select2 form-control">
 				<option value="0" <?= ($mode == 0) ? 'selected' : ''; ?>>Пользователь</option>
 				<option value="1" <?= ($mode == 1) ? 'selected' : ''; ?>>Администратор</option>
 			</select>
@@ -146,7 +146,7 @@ unset($tmpuser);
 </form>
 <div id="messenger"></div>
 <script>
-	for (var selector in config) {
-		$(selector).chosen(config[selector]);
-	}
+	$(function(){
+		$('.select2').select2();
+	});
 </script>
