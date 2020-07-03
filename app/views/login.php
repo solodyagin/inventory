@@ -31,7 +31,6 @@ if (!$user->isLogged()):
 <?php else: ?>
 	<link rel="stylesheet" href="public/css/upload.css">
 	<link rel="stylesheet" href="public/js/jcrop/jquery.Jcrop.min.css">
-	<script>var examples = [];</script>
 	<div class="container-fluid">
 		<?php
 		$photo = $user->jpegphoto;
@@ -90,6 +89,8 @@ if (!$user->isLogged()):
 		</form>
 	</div>
 	<script>
+		var examples = [];
+
 		examples.push(function () {
 			$('#userpic').fileapi({
 				url: 'route/deprecated/server/common/uploadfile.php',

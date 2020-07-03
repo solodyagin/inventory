@@ -159,7 +159,7 @@ $cfg = config::getInstance();
 				if (gsr) {
 					exportData(e, '#list2');
 				} else {
-					$().toastmessage('showWarningToast', 'Сначала выберите строки!');
+					$.notify('Сначала выберите строки!');
 				}
 			}
 		});
@@ -219,7 +219,7 @@ $cfg = config::getInstance();
 	}
 
 	function updateChosen() {
-		$('.select2').select2({width: '100%'});
+		$('.select2').select2({width: '100%', theme: 'bootstrap'});
 	}
 
 	function getListPlaces(orgid, placesid) {

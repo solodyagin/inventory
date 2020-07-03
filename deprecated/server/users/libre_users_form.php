@@ -19,6 +19,8 @@ use core\baseuser;
 use core\request;
 use core\user;
 use core\utils;
+use core\db;
+use core\dbexception;
 
 $err = [];
 

@@ -74,7 +74,7 @@
 					}
 				}).dialog('open');
 			} else {
-				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+				$.notify('Сначала выберите строку!');
 			}
 		}
 	});

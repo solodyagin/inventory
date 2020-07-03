@@ -53,6 +53,6 @@ echo '</select>';
 ?>
 <script>
 	$(function(){
-		$('.select2').select2();
+		$('.select2').select2({theme: 'bootstrap'});
 	});
 </script>

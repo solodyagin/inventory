@@ -49,16 +49,9 @@ $cfg = config::getInstance();
 								<input type="text" class="form-control" name="urlsite" id="urlsite" value="<?= $cfg->urlsite; ?>" placeholder="http://где_мой_сайт" size="80">
 							</div>
 						</div>
-					</div>
-				</div>
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h3 class="panel-title">Оформление</h3>
-					</div>
-					<div class="panel-body">
 						<div class="form-group">
-							<label for="form_cfg_theme_sl" class="col-sm-3 control-label">Выберите тему:</label>
-							<div class="col-sm-9">
+							<label for="form_cfg_theme_sl" class="col-sm-2 control-label">Тема:</label>
+							<div class="col-sm-10">
 								<select class="select2 form-control" name="form_cfg_theme_sl" id="form_cfg_theme_sl">
 									<?php
 									$themes = utils::getArrayFilesInDir(SITE_ROOT . '/public/themes');
@@ -147,7 +140,7 @@ $cfg = config::getInstance();
 </form>
 <script>
 	$(function () {
-		$('.select2').select2();
+		$('.select2').select2({theme: 'bootstrap'});
 
 		$('#form_cfg_theme_sl').change(function () {
 			$('#bs_theme').attr('href', 'public/themes/' + $(this).val() + '/bootstrap.min.css');

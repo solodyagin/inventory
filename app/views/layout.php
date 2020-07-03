@@ -51,9 +51,8 @@ $user = user::getInstance();
 		<link rel="stylesheet" href="public/css/select2.min.css">
 		<link rel="stylesheet" href="public/css/select2-bootstrap.min.css">
 		<script src="public/js/select2.full.min.js"></script>
-		<!--ToastMessage-->
-		<link rel="stylesheet" href="public/css/jquery.toastmessage-min.css">
-		<script src="public/js/jquery.toastmessage-min.js"></script>
+		<!--Bootstrap Notify-->
+		<script src="public/libs/mouse0270-bootstrap-notify/bootstrap-notify.min.js"></script>
 		<!--jQuery Form Plugin-->
 		<script src="public/js/jquery.form.js"></script>
 		<!--Common-->
@@ -61,8 +60,8 @@ $user = user::getInstance();
 		<script src="public/js/common.js"></script>
 		<script>
 			var defaultorgid = <?= $cfg->defaultorgid; ?>,
-				theme = '<?= $cfg->theme; ?>',
-				defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
+					theme = '<?= $cfg->theme; ?>',
+					defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
 
 			$.fn.bootstrapBtn = $.fn.button.noConflict();
 
@@ -77,6 +76,8 @@ $user = user::getInstance();
 			$(function () {
 				$.localise('ui-multiselect', {/*language: 'en',*/ path: 'public/js/locale/'});
 			});
+
+			$.notifyDefaults({type: 'danger', offset: {x: 10, y: 57}});
 		</script>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
@@ -125,6 +126,22 @@ $user = user::getInstance();
 			</div>
 		</nav>
 
+		<div id="bmd_iframe" class="modal fade" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content bmd-modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title"></h4>
+					</div>
+					<div class="modal-body">
+						<div class="embed-responsive embed-responsive-16by9">
+							<iframe class="embed-responsive-item"></iframe>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<?php
 		// Отображение сообщений пользователю (если есть)
 		global $err, $ok;
@@ -134,7 +151,7 @@ $user = user::getInstance();
 			echo '<div class="alert alert-danger">';
 			echo '<button type="button" class="close" data-dismiss="alert">&times;</button>';
 			for ($i = 0; $i < count($err); $i++) {
-				echo "<p>$err[$i]</p>";
+				echo "<p>{$err[$i]}</p>";
 			}
 			echo '</div>';
 			echo '</div></div></div>';
@@ -144,7 +161,7 @@ $user = user::getInstance();
 			echo '<div class="alert alert-success">';
 			echo '<button type="button" class="close" data-dismiss="alert">&times;</button>';
 			for ($i = 0; $i < count($ok); $i++) {
-				echo "<p>$ok[$i]</p>";
+				echo "<p>{$ok[$i]}</p>";
 			}
 			echo '</div>';
 			echo '</div></div></div>';

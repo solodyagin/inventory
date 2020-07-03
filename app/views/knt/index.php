@@ -198,7 +198,7 @@
 			if (uiEvt.result.msg !== 'error') {
 				$list3.jqGrid().trigger('reloadGrid');
 			} else {
-				$().toastmessage('showErrorToast', 'Ошибка загрузки файла!');
+				$.notify('Ошибка загрузки файла!');
 			}
 		},
 		elements: {

@@ -117,7 +117,7 @@ select
 	mv.eqid,
 	nome.name,
 	mv.nomeid,
-	mv.dt,
+	to_char(mv.dt,'dd.MM.yyyy HH24:mi:ss') as dt,
 	mv.orgname1,
 	org.name as orgname2,
 	mv.place1,
@@ -127,7 +127,8 @@ select
 	move.comment as comment
 from move
 	inner join (
-		select move.id,
+		select
+			move.id,
 			move.eqid,
 			equipment.nomeid,
 			move.dt as dt,

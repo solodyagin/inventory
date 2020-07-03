@@ -98,7 +98,7 @@ $userid = $tmptmc->usersid;
 </div>
 <script>
 	function updateChosen() {
-		$('.select2').select2({width: '100%'});
+		$('.select2').select2({width: '100%', theme: 'bootstrap'});
 	}
 
 	function getListUsers(orgid, userid) {

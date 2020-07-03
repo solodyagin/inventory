@@ -213,7 +213,7 @@ $cfg = config::getInstance();
 									$dlgAddEdit.dialog('open');
 								});
 							} else {
-								$().toastmessage('showWarningToast', 'Выберите оргтехнику для ремонта!');
+								$.notify('Выберите оргтехнику для ремонта!');
 							}
 						}
 					});
@@ -247,7 +247,7 @@ $cfg = config::getInstance();
 				$('#' + subgrid_table_id).remove();
 			},
 			subGrid: true,
-			multiselect: true,
+			//multiselect: true,
 			autowidth: true,
 			shrinkToFit: true,
 			pager: '#pg_nav',
@@ -307,7 +307,7 @@ $cfg = config::getInstance();
 						$dlgAddEdit.dialog('open');
 					});
 				} else {
-					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+					$.notify('Сначала выберите строку!');
 				}
 			}
 		});
@@ -323,7 +323,7 @@ $cfg = config::getInstance();
 						$dlgAddEdit.dialog('open');
 					});
 				} else {
-					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+					$.notify('Сначала выберите строку!');
 				}
 			}
 		});
@@ -340,7 +340,7 @@ $cfg = config::getInstance();
 						$dlgAddEdit.dialog('open');
 					});
 				} else {
-					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+					$.notify('Сначала выберите строку!');
 				}
 			}
 		});
@@ -355,7 +355,7 @@ $cfg = config::getInstance();
 					s = $tblEquipment.jqGrid('getGridParam', 'selarrrow');
 					newWin = window.open('route/inc/ean13print.php?mass=' + s, 'printWindow');
 				} else {
-					$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+					$.notify('Сначала выберите строку!');
 				}
 			}
 		});
@@ -379,7 +379,7 @@ $cfg = config::getInstance();
 	}
 
 	$(function () {
-		$('.select2').select2();
+		$('.select2').select2({theme: 'bootstrap'});
 
 		$('#orgs').change(function () {
 			var exdate = new Date();

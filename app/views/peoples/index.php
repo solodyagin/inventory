@@ -18,14 +18,13 @@
 	$list1.jqGrid({
 		url: 'peoples/list',
 		datatype: 'json',
-		colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'Пароль', 'E-mail', 'Администратор', 'Действия'],
+		colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'E-mail', 'Администратор', 'Действия'],
 		colModel: [
 			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'usersid', index: 'u.id', width: 55, hidden: true},
 			{name: 'orgname', index: 'o.name', width: 60},
 			{name: 'fio', index: 'fio', width: 45},
 			{name: 'login', index: 'login', width: 45, editable: true},
-			{name: 'pass', index: 'pass', width: 30, editable: true, edittype: 'password', sortable: false, search: false},
 			{name: 'email', index: 'email', width: 30, editable: true},
 			{name: 'mode', index: 'mode', width: 30, editable: true, edittype: 'checkbox', editoptions: {value: 'Да:Нет'}, search: false},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
@@ -84,8 +83,8 @@
 		onClickButton: function () {
 			$('#add_edit').dialog({
 				autoOpen: false,
-				height: 420,
-				width: 640,
+				height: 600,
+				width: 780,
 				modal: true,
 				title: 'Добавление сотрудника'
 			}).dialog('open');
@@ -102,14 +101,14 @@
 			if (gsr) {
 				$('#add_edit').dialog({
 					autoOpen: false,
-					height: 420,
-					width: 640,
+					height: 600,
+					width: 780,
 					modal: true,
 					title: 'Редактирование сотрудника'
 				}).dialog('open');
 				$('#add_edit').load('peoples/edit?id=' + gsr);
 			} else {
-				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+				$.notify('Сначала выберите строку!');
 			}
 		}
 	});
@@ -123,14 +122,14 @@
 			if (gsr) {
 				$('#add_edit').dialog({
 					autoOpen: false,
-					height: 440,
-					width: 550,
+					height: 600,
+					width: 780,
 					modal: true,
 					title: 'Редактирование профиля'
 				}).dialog('open');
 				$('#add_edit').load('route/deprecated/client/view/users/profile_add_edit.php?userid=' + gsr);
 			} else {
-				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+				$.notify('Сначала выберите строку!');
 			}
 		}
 	});
@@ -143,12 +142,12 @@
 		autowidth: true,
 		url: 'roles/list?userid=0',
 		datatype: 'json',
-		colNames: ['Id', 'Право доступа', 'Действия'],
+		colNames: ['Id', 'Права доступа', 'Действия'],
 		colModel: [
 			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'role', index: 'role', width: 200, editable: true, edittype: 'select', editoptions: {
 					editrules: {required: true},
-					dataUrl: 'route/deprecated/server/users/getlistroles.php?orgid=' + defaultorgid
+					dataUrl: 'peoples/getlistroles?orgid=' + defaultorgid
 				}},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}
 		],

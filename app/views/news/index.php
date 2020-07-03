@@ -8,9 +8,11 @@
 		</div>
 	</div>
 </div>
+
 <script>
 	var $list1 = $('#list1'),
-			$dlg = $('#pg_add_edit');
+			$dlg = $('#pg_add_edit'),
+			$bmd = $('#bmd_iframe');
 
 	$list1.jqGrid({
 		url: 'news/list',
@@ -39,18 +41,22 @@
 		title: 'Добавить',
 		buttonicon: 'none',
 		onClickButton: function () {
-			$dlg.empty();
-			$dlg.dialog({
-				autoOpen: false,
-				height: 600,
-				width: 800,
-				modal: false,
+			$bmd.bmdIframe({
 				title: 'Добавление новости',
-				open: function () {
-					$(this).load('route/deprecated/client/view/news/news.php?step=add');
-				}
-			});
-			$dlg.dialog('open');
+				src: 'news/news?step=add'
+			}).modal();
+//			$dlg.empty();
+//			$dlg.dialog({
+//				autoOpen: false,
+//				height: 600,
+//				width: 800,
+//				modal: false,
+//				title: 'Добавление новости',
+//				open: function () {
+//					$(this).load('route/deprecated/client/view/news/news.php?step=add');
+//				}
+//			});
+//			$dlg.dialog('open');
 		}
 	});
 
@@ -61,23 +67,27 @@
 		onClickButton: function () {
 			var gsr = $list1.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
-				$dlg.empty();
-				$dlg.dialog({
-					autoOpen: false,
-					height: 600,
-					width: 800,
-					modal: false,
+				$bmd.bmdIframe({
 					title: 'Редактирование новости',
-					open: function () {
-						$(this).load('route/deprecated/client/view/news/news.php?step=edit&id=' + gsr);
-					}
-				});
-				$dlg.dialog('open');
+					src: 'news/news?step=edit&id=' + gsr
+				}).modal();
+//				$dlg.empty();
+//				$dlg.dialog({
+//					autoOpen: false,
+//					height: 600,
+//					width: 800,
+//					modal: false,
+//					title: 'Редактирование новости',
+//					open: function () {
+//						$(this).load('route/deprecated/client/view/news/news.php?step=edit&id=' + gsr);
+//					}
+//				});
+//				$dlg.dialog('open');
 			} else {
-				$().toastmessage('showWarningToast', 'Сначала выберите строку!');
+				$.notify('Сначала выберите строку!');
 			}
 		}
 	});
-	
+
 	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
 </script>

@@ -36,6 +36,13 @@ class news extends controller {
 		}
 	}
 
+	function news() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1])) {
+			$this->view->render('news/news');
+		}
+	}
+	
 	/** Добавление новости через jQuery UI диалог */
 	function add() {
 		global $err;

@@ -67,3 +67,40 @@ $(function () {
 		}
 	});
 });
+
+// iFrame inside Bootstrap 3 modal
+(function ($) {
+	$.fn.bmdIframe = function (options) {
+		var $dlg = $(this),
+				settings = $.extend({
+					classBtn: '.bmd-modal-button',
+					width: Math.max(Math.round($(window).width() * 0.6), 640),
+					height: Math.max(Math.round($(window).height() * 0.6), 360)
+				}, options);
+
+		$(settings.classBtn).on('click', function () {
+			var $btn = $(this);
+			$dlg.find('.modal-title').text($btn.attr('title') || '');
+			$dlg.find('.modal-dialog').css({
+				width: ($btn.data('bmdWidth') || settings.width) + 'px'
+				//, height: ($btn.data('bmdHeight') || settings.height) + 'px'
+			});
+			$dlg.find('iframe').attr('src', $btn.data('bmdSrc') || settings.src);
+		});
+
+		$dlg.on('show.bs.modal', function () {
+			$dlg.find('.modal-title').text(settings.title || '');
+			$dlg.find('.modal-dialog').css({
+				width: settings.width + 'px'
+				//, height: settings.height + 'px'
+			});
+			$dlg.find('iframe').attr('src', settings.src);
+		});
+
+		$dlg.on('hidden.bs.modal', function () {
+			$dlg.find('iframe').empty().attr('src', '');
+		});
+
+		return $dlg;
+	};
+})(jQuery);

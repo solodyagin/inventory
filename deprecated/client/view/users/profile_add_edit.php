@@ -54,46 +54,52 @@ if ($user->isAdmin()):
 	unset($tmpuser);
 	?>
 	<div class="container-fluid">
-		<div class="row">
+		<div class="row-fluid">
 			<div id="messenger"></div>
-			<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_profile_users_form.php?userid=<?= $userid; ?>" method="post" name="form1" target="_self">
-				<div class="row-fluid">
-					<div class="col-xs-6 col-md-6 col-sm-6">
-						<div class="form-group">
-							<label for="fio">ФИО</label>
-							<input class="form-control" placeholder="ФИО" name="fio" id="fio" value="<?= $fio; ?>">
-							<label for="post">Должность</label>
-							<input class="form-control" placeholder="Должность" name="post" id="post" value="<?= $post; ?>">
-							<label for="phone1">Сотовый:</label>
-							<input class="form-control" placeholder="Сотовый телефон" name="phone1" id="phone1" value="<?= $phone1; ?>">
-							<label for="phone2">Стационарный:</label>
-							<input class="form-control" placeholder="Стационарный телефон" name="phone2" id="phone2" value="<?= $phone2; ?>">
-						</div>
-					</div>
-					<div class="col-xs-6 col-md-6 col-sm-6">
-						<div id="userpic" class="userpic">
-							<div class="js-preview userpic__preview thumbnail">
-								<img src="photos/<?= $photo; ?>">
-							</div>
-							<div class="btn btn-success js-fileapi-wrapper">
-								<div class="js-browse">
-									<span class="btn-txt">Сменить фото</span>
-									<input type="file" name="filedata">
-								</div>
-								<div class="js-upload" style="display: none;">
-									<div class="progress progress-success"><div class="js-progress bar"></div></div>
-									<span class="btn-txt">Загружаем</span>
-								</div>
-							</div>
-						</div>
-						<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
-					</div>
-				</div>
-				<div class="form-group">
-					<input class="form-control" type="submit" name="Submit" value="Сохранить">
-				</div>
-			</form>
 		</div>
+		<form role="form" id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_profile_users_form.php?userid=<?= $userid; ?>" method="post" name="form1" target="_self">
+			<div class="row-fluid">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for="fio">ФИО:</label>
+						<input class="form-control" placeholder="ФИО" name="fio" id="fio" value="<?= $fio; ?>">
+					</div>
+					<div class="form-group">
+						<label for="post">Должность:</label>
+						<input class="form-control" placeholder="Должность" name="post" id="post" value="<?= $post; ?>">
+					</div>
+					<div class="form-group">
+						<label for="phone1">Сотовый:</label>
+						<input class="form-control" placeholder="Сотовый телефон" name="phone1" id="phone1" value="<?= $phone1; ?>">
+					</div>
+					<div class="form-group">
+						<label for="phone2">Стационарный:</label>
+						<input class="form-control" placeholder="Стационарный телефон" name="phone2" id="phone2" value="<?= $phone2; ?>">
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div id="userpic" class="userpic">
+						<div class="js-preview userpic__preview thumbnail">
+							<img src="photos/<?= $photo; ?>">
+						</div>
+						<div class="btn btn-success js-fileapi-wrapper">
+							<div class="js-browse">
+								<span class="btn-txt">Сменить фото</span>
+								<input type="file" name="filedata">
+							</div>
+							<div class="js-upload" style="display: none;">
+								<div class="progress progress-success"><div class="js-progress bar"></div></div>
+								<span class="btn-txt">Загружаем</span>
+							</div>
+						</div>
+					</div>
+					<input name="picname" id="picname" type="hidden" value="<?= $photo; ?>">
+				</div>
+				<div class="col-sm-12">
+					<input class="btn btn-primary" type="submit" name="Submit" value="Сохранить">
+				</div>
+			</div>
+		</form>
 	</div>
 	<div id="popup" class="popup" style="display: none;">
 		<div class="popup__body"><div class="js-img"></div></div>
@@ -118,7 +124,7 @@ if ($user->isAdmin()):
 					progress: '.js-progress'
 				},
 				onFileComplete: function (evt, uiEvt) {
-					if (uiEvt.result.msg == 'error') {
+					if (uiEvt.result.msg === 'error') {
 						$('#messenger').html('Ошибка загрузки фото');
 					} else {
 						$('#picname').val(uiEvt.result.msg);
@@ -164,7 +170,7 @@ if ($user->isAdmin()):
 	<script src="public/js/statics/jquery.modal.js"></script>
 	<script>
 		$(function(){
-			$('.select2').select2();
+			$('.select2').select2({theme: 'bootstrap'});
 		});
 
 		jQuery(function ($) {

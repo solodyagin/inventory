@@ -100,7 +100,8 @@ class peoples extends controller {
 		$responce->records = 0;
 		try {
 			$sql = <<<TXT
-select count(*) cnt
+select
+	count(*) cnt
 from users u
 	inner join org o on o.id = u.orgid
 	inner join users_profile p on p.usersid = u.id
@@ -134,7 +135,6 @@ select
 	o.name as orgname,
 	p.fio,
 	u.login,
-	u.password,
 	u.email,
 	u.mode,
 	u.active
@@ -153,7 +153,6 @@ select
 	o.name orgname,
 	p.fio,
 	u.login,
-	u.password,
 	u.email,
 	u.mode,
 	u.active
@@ -173,7 +172,7 @@ TXT;
 				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
 					"<i class=\"fas $ic\"></i>",
-					$row['id'], $row['orgname'], $row['fio'], $row['login'], 'скрыто', $row['email'], $mode
+					$row['id'], $row['orgname'], $row['fio'], $row['login'], $row['email'], $mode
 				];
 				$i++;
 			}
@@ -190,7 +189,6 @@ TXT;
 		$oper = $req->get('oper');
 		$id = $req->get('id');
 		$login = $req->get('login');
-		$pass = $req->get('pass');
 		$email = $req->get('email');
 		$mode = $req->get('mode');
 		switch ($oper) {
@@ -198,15 +196,7 @@ TXT;
 				// Проверяем: может ли пользователь редактировать?
 				($user->isAdmin() || $user->testRights([1])) or die('Недостаточно прав');
 				$imode = ($mode == 'Да') ? '1' : '0';
-				switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
-					case 'mysql':
-						$ps = ($pass != 'скрыто') ? "`password`=sha1(concat(sha1('$pass'), salt))," : '';
-						break;
-					case 'pgsql':
-						$ps = ($pass != 'скрыто') ? "password=sha1(concat(sha1('$pass'), salt::text))," : '';
-						break;
-				}
-				$sql = "update users set mode = :mode, login = :login, $ps email = :email where id = :id";
+				$sql = "update users set mode = :mode, login = :login, email = :email where id = :id";
 				try {
 					db::prepare($sql)->execute([':mode' => $imode, ':login' => $login, ':email' => $email, ':id' => $id]);
 				} catch (PDOException $ex) {
@@ -230,6 +220,25 @@ TXT;
 				}
 				break;
 		}
+	}
+
+	/**
+	 * Роли: http://грибовы.рф/wiki/doku.php/основы:доступ:роли
+	 */
+	function getlistroles() {
+		echo <<<TXT
+<select name="rolesusers" id="rolesusers">
+	<option value="1">Полный доступ</option>
+	<!--<option value="2">Просмотр финансовых отчетов</option>-->
+	<option value="3">Просмотр</option>
+	<option value="4">Добавление</option>
+	<option value="5">Редактирование</option>
+	<option value="6">Удаление</option>
+	<!--<option value="7">Отправка СМС</option>-->
+	<!--<option value="8">Манипуляции с деньгами</option>-->
+	<!--<option value="9">Редактирование карт</option>-->
+</select>
+TXT;
 	}
 
 }

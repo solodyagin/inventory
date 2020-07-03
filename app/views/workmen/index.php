@@ -22,7 +22,7 @@
 </form>
 <script>
 	function exportExcel(list, tmc) {
-		$().toastmessage('showWarningToast', 'Экспортирование не реализовано!');
+		$.notify('Экспортирование не реализовано!');
 	}
 
 	$('#workmen').jqGrid({
@@ -111,7 +111,7 @@
 						$('#pg_add_edit').dialog('open');
 						$('#pg_add_edit').load('route/deprecated/client/view/equipment/service.php?step=edit&eqid=' + id);
 					} else {
-						$().toastmessage('showWarningToast', 'Выберите оргтехнику для изменения статуса ремонта!');
+						$.notify('Выберите оргтехнику для изменения статуса ремонта!');
 					}
 				}
 			});
@@ -126,7 +126,7 @@
 						tmc = ret.nomename + ' инвентарный №' + ret.invnum;
 						exportExcel('#tbl_rep', tmc);
 					} else {
-						$().toastmessage('showWarningToast', 'Выберите оргтехнику для вывода отчета!');
+						$.notify('Выберите оргтехнику для вывода отчета!');
 					}
 				}
 			});
@@ -163,7 +163,7 @@
 				$('#pg_add_edit').dialog('open');
 				$('#pg_add_edit').load('route/deprecated/client/view/equipment/service.php?step=add&eqid=' + id);
 			} else {
-				$().toastmessage('showWarningToast', 'Выберите оргтехнику для ремонта!');
+				$.notify('Выберите оргтехнику для ремонта!');
 			}
 		}
 	});

@@ -137,6 +137,6 @@ $cfg = config::getInstance();
 <div id="messenger"></div>
 <script>
 	$(function(){
-		$('.select2').select2();
+		$('.select2').select2({theme: 'bootstrap'});
 	});
 </script>

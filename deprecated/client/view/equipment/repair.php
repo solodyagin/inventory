@@ -116,6 +116,6 @@ $step = $req->get('step');
 	});
 
 	$(function(){
-		$('.select2').select2({width: '100%'});
+		$('.select2').select2({width: '100%', theme: 'bootstrap'});
 	});
 </script>

@@ -76,7 +76,7 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 					</div>
 					<script>
 						$(function () {
-							$('.select2').select2();
+							$('.select2').select2({theme: 'bootstrap'});
 
 							$('#fontsize').val("<?= $cfg->fontsize; ?>").trigger('change.select2');
 

@@ -44,7 +44,7 @@ $cfg = config::getInstance();
 				<?php if ($user->isAdmin() || $user->testRights([1,4])): ?>
 					<div align="center" id="simple-btn" class="btn btn-primary js-fileapi-wrapper" style="text-align:center;visibility:hidden">
 						<div class="js-browse" align="center">
-							<span class="btn-txt">Загрузить файл</span>
+							<span class="upload-btn__txt">Загрузить файл</span>
 							<input type="file" name="filedata">
 						</div>
 						<div class="js-upload" style="display: none">
@@ -168,7 +168,7 @@ $cfg = config::getInstance();
 					sourceNode.move(node, hitMode);
 					$.get('cloud/movefolder?nodekey=' + node.data.key + '&srnodekey=' + sourceNode.data.key, function (data) {
 						if (data !== '') {
-							$().toastmessage('showWarningToast', data);
+							$.notify(data);
 						}
 					});
 					//SaveAllNodes(node, sourceNode);
@@ -187,12 +187,12 @@ $cfg = config::getInstance();
 
 	$('#newfolder').click(function () {
 		if ($('#foldername').val() === '') {
-			$().toastmessage('showWarningToast', 'Введите имя папки!');
+			$.notify('Введите имя папки!');
 		} else {
 			$('#tree').dynatree('destroy');
 			$.get('cloud/addfolder?foldername=' + $('#foldername').val(), function (data) {
 				if (data !== '') {
-					$().toastmessage('showWarningToast', data);
+					$.notify(data);
 				}
 				getTree();
 			});
@@ -201,13 +201,13 @@ $cfg = config::getInstance();
 
 	$('#delfolder').click(function () {
 		if (selectedkey === '') {
-			$().toastmessage('showWarningToast', 'Не выбрана папка!');
+			$.notify('Не выбрана папка!');
 		} else {
 			if (confirm('Вы подтверждаете удаление?')) {
 				$('#tree').dynatree('destroy');
 				$.get('cloud/delfolder?folderkey=' + selectedkey, function (data) {
 					if (data !== '') {
-						$().toastmessage('showWarningToast', data);
+						$.notify(data);
 					}
 					getTree();
 				});

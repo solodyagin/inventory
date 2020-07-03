@@ -411,7 +411,7 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 		});
 
 		function updateChosen() {
-			$('.select2').select2({width: '100%'});
+			$('.select2').select2({width: '100%', theme: 'bootstrap'});
 		}
 
 		function getListPlaces(orgid, placesid) {
@@ -507,7 +507,7 @@ if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])):
 	<script src="public/js/statics/jquery.modal.js"></script>
 	<script>
 		$(function(){
-			$('.select2').select2();
+			$('.select2').select2({theme: 'bootstrap'});
 		});
 
 		jQuery(function ($) {
