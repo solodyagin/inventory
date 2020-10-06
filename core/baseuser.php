@@ -16,6 +16,7 @@ namespace core;
 
 use PDO;
 use PDOException;
+use core\utils;
 
 class baseuser {
 
@@ -255,7 +256,7 @@ TXT;
 		$this->orgid = $orgid;
 		$this->login = $login;
 		// Хешируем пароль
-		$this->salt = generateSalt();
+		$this->salt = utils::generateSalt();
 		$this->password = sha1(sha1($pass) . $this->salt);
 		$this->email = $email;
 		$this->mode = $mode;
