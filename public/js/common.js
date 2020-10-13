@@ -34,35 +34,27 @@ $(function () {
 					$self.jqGrid('setGridWidth', grid.newWidth, false);
 				}
 			});
-		}
-	});
-	$.jgrid.extend({
+		},
 		saveCommonParam: function (stname) {
-			// Информация о колонках
-			colarray = $(this).jqGrid('getGridParam', 'colModel');
+			var colarray = $(this).jqGrid('getGridParam', 'colModel');
 			localStorage.setItem(stname, JSON.stringify(colarray));
-			//console.log(JSON.stringify(colarray));
 		},
 		loadCommonParam: function (stname) {
 			if (localStorage[stname] !== undefined) {
-				colarray = localStorage[stname];
+				var colarray = localStorage[stname];
 				if (colarray !== '') {
-					obj_for_load = JSON.parse(colarray); // загружаем JSON в массив
-					for (i in obj_for_load) {
-						//console.log("name:",obj_for_load[i].name);
-						//console.log("width:",obj_for_load[i].width);
-						if (obj_for_load[i].hidden === true) {
-							$(this).hideCol(obj_for_load[i].name);
+					var arr = JSON.parse(colarray);
+					for (var i in arr) {
+						if (arr[i].hidden === true) {
+							$(this).hideCol(arr[i].name);
 						} else {
-							$(this).showCol(obj_for_load[i].name);
-							if (obj_for_load[i].fixed === true) {
-								$(this).setColWidth(obj_for_load[i].name, obj_for_load[i].width);
+							$(this).showCol(arr[i].name);
+							if (arr[i].fixed === true) {
+								$(this).setColWidth(arr[i].name, arr[i].width);
 							}
 						}
 					}
 				}
-			} else {
-				console.log('В локальном хранилище не найден ключ ' + stname);
 			}
 		}
 	});
@@ -83,21 +75,21 @@ $(function () {
 			$dlg.find('.modal-title').text($btn.attr('title') || '');
 			$dlg.find('.modal-dialog').css({
 				width: ($btn.data('bmdWidth') || settings.width) + 'px'
-				//, height: ($btn.data('bmdHeight') || settings.height) + 'px'
+						//, height: ($btn.data('bmdHeight') || settings.height) + 'px'
 			});
 			$dlg.find('iframe').attr('src', $btn.data('bmdSrc') || settings.src);
 		});
 
-		$dlg.on('show.bs.modal', function () {
+		$dlg.off('show.bs.modal').on('show.bs.modal', function () {
 			$dlg.find('.modal-title').text(settings.title || '');
 			$dlg.find('.modal-dialog').css({
 				width: settings.width + 'px'
-				//, height: settings.height + 'px'
+//				, height: settings.height + 'px'
 			});
 			$dlg.find('iframe').attr('src', settings.src);
 		});
 
-		$dlg.on('hidden.bs.modal', function () {
+		$dlg.off('hidden.bs.modal').on('hidden.bs.modal', function () {
 			$dlg.find('iframe').empty().attr('src', '');
 		});
 

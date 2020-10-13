@@ -429,5 +429,31 @@ TXT;
 			echo 'Недостаточно прав';
 		}
 	}
+	
+	function add() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])) {
+			$this->view->render('equipment/add');
+		} else {
+			$data['section'] = 'Журнал / Имущество';
+			$this->view->render('restricted', $data);
+		}
+	}
 
+	function edit() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])) {
+			$this->view->render('equipment/edit');
+		} else {
+			$data['section'] = 'Журнал / Имущество';
+			$this->view->render('restricted', $data);
+		}
+	}
+
+	function move() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1])) {
+			$this->view->render('equipment/move');
+		}
+	}
 }

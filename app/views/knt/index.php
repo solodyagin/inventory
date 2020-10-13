@@ -45,7 +45,7 @@
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Имя', 'ИНН', 'КПП', 'Потребитель', 'Поставщик', 'Контролировать', 'ERPCode', 'Комментарий', 'Действия'],
 		colModel: [
-			{name: 'active', index: 'active', width: 20, search: false},
+			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'id', index: 'id', width: 55, search: false, hidden: true},
 			{name: 'name', index: 'name', width: 200, editable: true},
 			{name: 'inn', index: 'inn', width: 100, editable: true},

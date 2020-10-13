@@ -12,11 +12,11 @@
 	$list1.jqGrid({
 		url: 'orgs/list',
 		datatype: 'json',
-		colNames: [' ', 'Имя организации', 'Действия'],
+		colNames: ['', 'Имя организации', 'Действия'],
 		colModel: [
 			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'name', index: 'name', width: 400, editable: true},
-			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
+			{name: 'myac', width: 70, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
 		],
 		autowidth: true,
 		pager: '#pager1',

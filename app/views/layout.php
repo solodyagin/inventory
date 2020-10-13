@@ -59,9 +59,9 @@ $user = user::getInstance();
 		<link rel="stylesheet" href="public/css/common.css">
 		<script src="public/js/common.js"></script>
 		<script>
-			var defaultorgid = <?= $cfg->defaultorgid; ?>,
-					theme = '<?= $cfg->theme; ?>',
-					defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
+			var defaultorgid = <?= $cfg->defaultorgid; ?>;
+			var theme = '<?= $cfg->theme; ?>';
+			var defaultuserid = <?= ($user->isLogged()) ? $user->id : '-1'; ?>;
 
 			$.fn.bootstrapBtn = $.fn.button.noConflict();
 
@@ -182,8 +182,8 @@ $user = user::getInstance();
 		<footer class="footer">
 			<div class="container-fluid">
 				<p class="text-muted text-right">
-					2011-2017 &copy; <a href="http://xn--90acbu5aj5f.xn--p1ai" target="_blank">Павел Грибов</a><br>
-					2018-<?= date('Y'); ?> &copy; <a href="https://github.com/solodyagin/inventory" target="_blank">Сергей Солодягин</a><br>
+					webuserorg3 2011-2017 &copy; <a href="http://xn--90acbu5aj5f.xn--p1ai" target="_blank">Павел Грибов</a><br>
+					inventory 2018-<?= date('Y'); ?> &copy; <a href="https://github.com/solodyagin/inventory" target="_blank">Сергей Солодягин</a><br>
 					Собрано за <?= $time; ?> сек.
 				</p>
 			</div>

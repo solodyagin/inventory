@@ -57,6 +57,17 @@ class peoples extends controller {
 			$this->view->render('restricted', $data);
 		}
 	}
+	
+	/** Форма редактирования профиля сотрудника */
+	function profile() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1])) {
+			$this->view->render('peoples/profile');
+		} else {
+			$data['section'] = 'Справочники / Сотрудники';
+			$this->view->render('restricted', $data);
+		}
+	}
 
 	/** Для работы jqGrid */
 	function list() {
@@ -172,7 +183,12 @@ TXT;
 				$ic = ($row['active'] == '1') ? 'fa-check-circle' : 'fa-ban';
 				$responce->rows[$i]['cell'] = [
 					"<i class=\"fas $ic\"></i>",
-					$row['id'], $row['orgname'], $row['fio'], $row['login'], $row['email'], $mode
+					$row['id'],
+					$row['orgname'],
+					$row['fio'],
+					$row['login'],
+					$row['email'],
+					$mode
 				];
 				$i++;
 			}

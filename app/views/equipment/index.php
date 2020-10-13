@@ -55,6 +55,8 @@ $cfg = config::getInstance();
 	</div>
 </div>
 <script>
+	var $bmd = $('#bmd_iframe');
+
 	function loadTable() {
 		var $tblEquipment = $('#tbl_equpment'),
 				$dlgAddEdit = $('#pg_add_edit');
@@ -289,10 +291,10 @@ $cfg = config::getInstance();
 			title: 'Добавить',
 			buttonicon: 'none',
 			onClickButton: function () {
-				$dlgAddEdit.dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Добавление имущества'});
-				$dlgAddEdit.load('route/deprecated/client/view/equipment/equipment.php?step=add&id=', function () {
-					$dlgAddEdit.dialog('open');
-				});
+				$bmd.bmdIframe({
+					title: 'Добавление имущества',
+					src: 'equipment/add'
+				}).modal();
 			}
 		});
 		$tblEquipment.jqGrid('navButtonAdd', '#pg_nav', {
@@ -302,10 +304,10 @@ $cfg = config::getInstance();
 			onClickButton: function () {
 				var gsr = $tblEquipment.jqGrid('getGridParam', 'selrow');
 				if (gsr) {
-					$dlgAddEdit.dialog({autoOpen: false, height: 600, width: 780, modal: true, title: 'Редактирование имущества'});
-					$dlgAddEdit.load('route/deprecated/client/view/equipment/equipment.php?step=edit&id=' + gsr, function () {
-						$dlgAddEdit.dialog('open');
-					});
+					$bmd.bmdIframe({
+						title: 'Редактирование имущества',
+						src: 'equipment/edit?id=' + gsr
+					}).modal();
 				} else {
 					$.notify('Сначала выберите строку!');
 				}
@@ -318,10 +320,10 @@ $cfg = config::getInstance();
 			onClickButton: function () {
 				var gsr = $tblEquipment.jqGrid('getGridParam', 'selrow');
 				if (gsr) {
-					$dlgAddEdit.dialog({autoOpen: false, height: 440, width: 620, modal: true, title: 'Перемещение имущества'});
-					$dlgAddEdit.load('route/deprecated/client/view/equipment/move.php?id=' + gsr, function () {
-						$dlgAddEdit.dialog('open');
-					});
+					$bmd.bmdIframe({
+						title: 'Перемещение имущества',
+						src: 'equipment/move?id=' + gsr
+					}).modal();
 				} else {
 					$.notify('Сначала выберите строку!');
 				}

@@ -8,11 +8,9 @@
 		</div>
 	</div>
 </div>
-
 <script>
-	var $list1 = $('#list1'),
-			$dlg = $('#pg_add_edit'),
-			$bmd = $('#bmd_iframe');
+	var $list1 = $('#list1');
+	var $bmd = $('#bmd_iframe');
 
 	$list1.jqGrid({
 		url: 'news/list',
@@ -45,18 +43,6 @@
 				title: 'Добавление новости',
 				src: 'news/news?step=add'
 			}).modal();
-//			$dlg.empty();
-//			$dlg.dialog({
-//				autoOpen: false,
-//				height: 600,
-//				width: 800,
-//				modal: false,
-//				title: 'Добавление новости',
-//				open: function () {
-//					$(this).load('route/deprecated/client/view/news/news.php?step=add');
-//				}
-//			});
-//			$dlg.dialog('open');
 		}
 	});
 
@@ -71,18 +57,6 @@
 					title: 'Редактирование новости',
 					src: 'news/news?step=edit&id=' + gsr
 				}).modal();
-//				$dlg.empty();
-//				$dlg.dialog({
-//					autoOpen: false,
-//					height: 600,
-//					width: 800,
-//					modal: false,
-//					title: 'Редактирование новости',
-//					open: function () {
-//						$(this).load('route/deprecated/client/view/news/news.php?step=edit&id=' + gsr);
-//					}
-//				});
-//				$dlg.dialog('open');
 			} else {
 				$.notify('Сначала выберите строку!');
 			}

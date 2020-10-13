@@ -11,14 +11,15 @@
 		</div>
 	</div>
 </div>
-<div id="add_edit"></div>
 <script>
-	var $list1 = $('#list1'), $list2 = $('#list2');
+	var $list1 = $('#list1'),
+			$list2 = $('#list2'),
+			$bmd = $('#bmd_iframe');
 
 	$list1.jqGrid({
 		url: 'peoples/list',
 		datatype: 'json',
-		colNames: [' ', 'Id', 'Организация', 'ФИО', 'Логин', 'E-mail', 'Администратор', 'Действия'],
+		colNames: ['', 'Id', 'Организация', 'ФИО', 'Логин', 'E-mail', 'Администратор', 'Действия'],
 		colModel: [
 			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'usersid', index: 'u.id', width: 55, hidden: true},
@@ -27,7 +28,7 @@
 			{name: 'login', index: 'login', width: 45, editable: true},
 			{name: 'email', index: 'email', width: 30, editable: true},
 			{name: 'mode', index: 'mode', width: 30, editable: true, edittype: 'checkbox', editoptions: {value: 'Да:Нет'}, search: false},
-			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
+			{name: 'myac', width: 70, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
 		],
 		onSelectRow: function (id) {
 			var caption = 'Набор прав сотрудника "' + $list1.jqGrid('getCell', id, 'fio') + '"';
@@ -81,14 +82,10 @@
 		title: 'Добавить',
 		buttonicon: 'none',
 		onClickButton: function () {
-			$('#add_edit').dialog({
-				autoOpen: false,
-				height: 600,
-				width: 780,
-				modal: true,
-				title: 'Добавление сотрудника'
-			}).dialog('open');
-			$('#add_edit').load('peoples/add');
+			$bmd.bmdIframe({
+				title: 'Добавление сотрудника',
+				src: 'peoples/add'
+			}).modal();
 		}
 	});
 
@@ -99,14 +96,10 @@
 		onClickButton: function () {
 			var gsr = $list1.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
-				$('#add_edit').dialog({
-					autoOpen: false,
-					height: 600,
-					width: 780,
-					modal: true,
-					title: 'Редактирование сотрудника'
-				}).dialog('open');
-				$('#add_edit').load('peoples/edit?id=' + gsr);
+				$bmd.bmdIframe({
+					title: 'Редактирование сотрудника',
+					src: 'peoples/edit?id=' + gsr
+				}).modal();
 			} else {
 				$.notify('Сначала выберите строку!');
 			}
@@ -120,14 +113,10 @@
 		onClickButton: function () {
 			var gsr = $list1.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
-				$('#add_edit').dialog({
-					autoOpen: false,
-					height: 600,
-					width: 780,
-					modal: true,
-					title: 'Редактирование профиля'
-				}).dialog('open');
-				$('#add_edit').load('route/deprecated/client/view/users/profile_add_edit.php?userid=' + gsr);
+				$bmd.bmdIframe({
+					title: 'Редактирование сотрудника',
+					src: 'peoples/profile?id=' + gsr
+				}).modal();
 			} else {
 				$.notify('Сначала выберите строку!');
 			}

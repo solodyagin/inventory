@@ -19,7 +19,7 @@
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Подразделение', 'Наименование', 'Комментарий', 'Действия'],
 		colModel: [
-			{name: 'active', index: 'active', width: 20},
+			{name: 'active', index: 'active', width: 22, fixed: true, sortable: false, search: false},
 			{name: 'id', index: 'id', width: 55, hidden: true},
 			{name: 'opgroup', index: 'opgroup', width: 100, editable: true},
 			{name: 'name', index: 'name', width: 200, editable: true,
