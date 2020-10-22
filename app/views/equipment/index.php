@@ -116,11 +116,12 @@ $cfg = config::getInstance();
 					$('#tbl_move').jqGrid('setGridParam', {url: 'moveinfo/list?eqid=' + ids});
 					$('#tbl_move').jqGrid({
 						url: 'moveinfo/list?eqid=' + ids,
+						editurl: 'moveinfo/change?eqid=' + ids,
 						datatype: 'json',
 						colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', '', 'Комментарий', ''],
 						colModel: [
 							{name: 'id', index: 'id', width: 25, hidden: true},
-							{name: 'dt', index: 'dt', width: 95},
+							{name: 'dt', index: 'dt', width: 60, sorttype: 'date', formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s', newformat: 'd.m.Y H:i:s'}},
 							{name: 'orgname1', index: 'orgname1', width: 120, hidden: true},
 							{name: 'place1', index: 'place1', width: 80},
 							{name: 'user1', index: 'user1', width: 90},
@@ -140,7 +141,6 @@ $cfg = config::getInstance();
 						viewrecords: true,
 						height: 200,
 						sortorder: 'asc',
-						editurl: 'moveinfo/change?eqid=' + ids,
 						caption: 'История перемещений'
 					}).trigger('reloadGrid');
 					$('#tbl_move').jqGrid('destroyGroupHeader');

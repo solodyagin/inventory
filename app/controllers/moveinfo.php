@@ -49,7 +49,61 @@ class moveinfo extends controller {
 		$responce->total = 0;
 		$responce->records = 0;
 		try {
-			$sql = 'select count(*) cnt from move';
+			//$sql = 'select count(*) cnt from move';
+			switch (db::getAttribute(PDO::ATTR_DRIVER_NAME)) {
+				case 'mysql':
+					$sql = <<<TXT
+select
+	count(*) cnt
+from move
+	inner join (
+		select move.id,
+			move.eqid,
+			equipment.nomeid,
+			move.dt as dt,
+			org.name as orgname1,
+			places.name as place1,
+			users_profile.fio as user1
+		from move
+			inner join org on org.id = orgidfrom
+			inner join places on places.id = placesidfrom
+		inner join users_profile on users_profile.usersid = useridfrom
+		inner join equipment on equipment.id = eqid
+	) as mv on move.id = mv.id
+	inner join org on org.id = move.orgidto
+	inner join places on places.id = placesidto
+	inner join users_profile on users_profile.usersid = useridto
+	inner join nome on nome.id = mv.nomeid
+$where
+TXT;
+				case 'pgsql':
+					$sql = <<<TXT
+select
+	count(*) cnt
+from move
+	inner join (
+		select
+			move.id,
+			move.eqid,
+			equipment.nomeid,
+			move.dt as dt,
+			org.name as orgname1,
+			places.name as place1,
+			users_profile.fio as user1
+		from move
+			inner join org on org.id = orgidfrom
+			inner join places on places.id = placesidfrom
+		inner join users_profile on users_profile.usersid = useridfrom
+		inner join equipment on equipment.id = eqid
+	) as mv on move.id = mv.id
+	inner join org on org.id = move.orgidto
+	inner join places on places.id = placesidto
+	inner join users_profile on users_profile.usersid = useridto
+	inner join nome on nome.id = mv.nomeid
+$where
+TXT;
+					break;
+			}
 			$row = db::prepare($sql)->execute()->fetch();
 			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
@@ -117,7 +171,8 @@ select
 	mv.eqid,
 	nome.name,
 	mv.nomeid,
-	to_char(mv.dt,'dd.MM.yyyy HH24:mi:ss') as dt,
+	-- to_char(mv.dt, 'dd.MM.yyyy HH24:mi:ss') as dt,
+	mv.dt::timestamp(0) as dt,
 	mv.orgname1,
 	org.name as orgname2,
 	mv.place1,

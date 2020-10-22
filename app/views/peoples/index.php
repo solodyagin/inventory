@@ -2,21 +2,21 @@
 	<h4><?= $section; ?></h4>
 	<div class="row">
 		<div class="col-xs-12 col-md-7 col-sm-7">
-			<table id="list1"></table>
+			<table id="grid1"></table>
 			<div id="pager1"></div>
 		</div>
 		<div class="col-xs-12 col-md-5 col-sm-5">
-			<table id="list2"></table>
+			<table id="grid2"></table>
 			<div id="pager2"></div>
 		</div>
 	</div>
 </div>
 <script>
-	var $list1 = $('#list1'),
-			$list2 = $('#list2'),
+	var $grid1 = $('#grid1'),
+			$grid2 = $('#grid2'),
 			$bmd = $('#bmd_iframe');
 
-	$list1.jqGrid({
+	$grid1.jqGrid({
 		url: 'peoples/list',
 		datatype: 'json',
 		colNames: ['', 'Id', 'Организация', 'ФИО', 'Логин', 'E-mail', 'Администратор', 'Действия'],
@@ -31,9 +31,9 @@
 			{name: 'myac', width: 70, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}, search: false}
 		],
 		onSelectRow: function (id) {
-			var caption = 'Набор прав сотрудника "' + $list1.jqGrid('getCell', id, 'fio') + '"';
-			$list2.jqGrid('setCaption', caption);
-			$list2.jqGrid('setGridParam', {
+			var caption = 'Набор прав сотрудника "' + $grid1.jqGrid('getCell', id, 'fio') + '"';
+			$grid2.jqGrid('setCaption', caption);
+			$grid2.jqGrid('setGridParam', {
 				url: 'roles/list?userid=' + id + '&orgid=' + defaultorgid,
 				editurl: 'roles/change?userid=' + id + '&orgid=' + defaultorgid
 			}).trigger('reloadGrid');
@@ -47,23 +47,23 @@
 		editurl: 'peoples/change',
 		caption: 'Справочник сотрудников',
 		loadComplete: function () {
-			$list2.jqGrid('setCaption', 'Набор прав доступа сотрудника');
-			$list2.jqGrid('setGridParam', {
+			$grid2.jqGrid('setCaption', 'Набор прав доступа сотрудника');
+			$grid2.jqGrid('setGridParam', {
 				url: 'roles/list?userid=0',
 				editurl: 'roles/change?userid=0'
 			}).trigger('reloadGrid');
 		}
 	});
-	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
-	$list1.jqGrid('navGrid', '#pager1', {edit: false, add: false, del: false, search: false});
-	$list1.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
+	$grid1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
+	$grid1.jqGrid('navGrid', '#pager1', {edit: false, add: false, del: false, search: false});
+	$grid1.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
 
-	$list1.jqGrid('navButtonAdd', '#pager1', {
+	$grid1.jqGrid('navButtonAdd', '#pager1', {
 		caption: '<i class="fas fa-tag"></i>',
 		title: 'Выбор колонок',
 		buttonicon: 'none',
 		onClickButton: function () {
-			$list1.jqGrid('columnChooser', {
+			$grid1.jqGrid('columnChooser', {
 				width: 550,
 				dialog_opts: {
 					modal: true,
@@ -77,7 +77,7 @@
 		}
 	});
 
-	$list1.jqGrid('navButtonAdd', '#pager1', {
+	$grid1.jqGrid('navButtonAdd', '#pager1', {
 		caption: '<i class="fas fa-user-plus"></i>',
 		title: 'Добавить',
 		buttonicon: 'none',
@@ -89,12 +89,12 @@
 		}
 	});
 
-	$list1.jqGrid('navButtonAdd', '#pager1', {
+	$grid1.jqGrid('navButtonAdd', '#pager1', {
 		caption: '<i class="fas fa-user-md"></i>',
 		title: 'Изменить данные',
 		buttonicon: 'none',
 		onClickButton: function () {
-			var gsr = $list1.jqGrid('getGridParam', 'selrow');
+			var gsr = $grid1.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				$bmd.bmdIframe({
 					title: 'Редактирование сотрудника',
@@ -106,12 +106,12 @@
 		}
 	});
 
-	$list1.jqGrid('navButtonAdd', '#pager1', {
+	$grid1.jqGrid('navButtonAdd', '#pager1', {
 		caption: '<i class="fas fa-id-card"></i>',
 		title: 'Профиль',
 		buttonicon: 'none',
 		onClickButton: function () {
-			var gsr = $list1.jqGrid('getGridParam', 'selrow');
+			var gsr = $grid1.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
 				$bmd.bmdIframe({
 					title: 'Редактирование сотрудника',
@@ -127,7 +127,7 @@
 		top: 0, left: 0, width: 500
 	};
 
-	$list2.jqGrid({
+	$grid2.jqGrid({
 		autowidth: true,
 		url: 'roles/list?userid=0',
 		datatype: 'json',

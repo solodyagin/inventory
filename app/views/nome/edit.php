@@ -13,23 +13,32 @@
 
 namespace app\views;
 
-use core\baseuser;
 use core\config;
+//use PDOException;
+use core\db;
+use core\dbexception;
 use core\request;
-use core\utils;
 
 $cfg = config::getInstance();
 
 $req = request::getInstance();
 $id = $req->get('id');
 
-$tmpuser = new baseuser();
-$tmpuser->getById($id);
-$orgid = $tmpuser->orgid;
-$login = $tmpuser->login;
-$email = $tmpuser->email;
-$mode = $tmpuser->mode;
-unset($tmpuser);
+$name = '';
+$vendorid = '';
+$groupid = '';
+
+try {
+	$sql = 'select * from nome where id = :id';
+	$row = db::prepare($sql)->execute([':id' => $id])->fetch();
+	if ($row) {
+		$groupid = $row['groupid'];
+		$vendorid = $row['vendorid'];
+		$name = $row['name'];
+	}
+} catch (PDOException $ex) {
+	throw new dbexception('Не могу выбрать номенклатуру', 0, $ex);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru-RU">
@@ -57,16 +66,9 @@ unset($tmpuser);
 		<link rel="stylesheet" href="public/css/select2.min.css">
 		<link rel="stylesheet" href="public/css/select2-bootstrap.min.css">
 		<script src="public/js/select2.full.min.js"></script>
-		<!--PassGen-->
-		<script src="public/js/jquery.passgen.min.js"></script>
-		<style>
-			#pass_gen, #pass_show {
-				font: initial;
-			}
-		</style>
 		<script>
 			$(function () {
-				var fields = ['login', 'email'];
+				var fields = ['namenome'];
 
 				$('form').submit(function () {
 					var $form = $(this),
@@ -93,28 +95,12 @@ unset($tmpuser);
 
 				$('#myForm').ajaxForm(function (msg) {
 					if (msg !== 'ok') {
-						$('#messenger').html(msg);
+						$('#messenger').addClass('alert alert-danger').html(msg);
 					} else {
 						if (window.top) {
 							window.top.$('#bmd_iframe').modal('hide');
 							window.top.$('#grid1').jqGrid().trigger('reloadGrid');
 						}
-					}
-				});
-
-				$('#pass_gen').click(function () {
-					$('#pass').val($.passGen());
-				});
-
-				$('#pass_show').click(function () {
-					var $btn = $(this);
-					$btn.toggleClass('active');
-					if ($btn.hasClass('active')) {
-						$btn.find('i').removeClass('fa-eye-slash').addClass('fa-eye');
-						$btn.closest('.input-group').find('input').prop('type', 'text');
-					} else {
-						$btn.find('i').removeClass('fa-eye').addClass('fa-eye-slash');
-						$btn.closest('.input-group').find('input').prop('type', 'password');
 					}
 				});
 
@@ -126,47 +112,49 @@ unset($tmpuser);
 		</script>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
-		<form id="myForm" enctype="multipart/form-data" action="route/deprecated/server/users/libre_users_form.php?step=edit&id=<?= $id; ?>" method="post">
+		<form id="myForm" enctype="multipart/form-data" action="route/deprecated/server/tmc/add_edit_tmc.php?step=edit&id=<?= $id; ?>" method="post" name="form1" target="_self">
 			<div class="form-group">
-				<label class="control-label">Организация:</label>
-				<select class="form-control select2" name="orgid" id="orgid">
+				<label for="groupid" class="control-label">Группа:</label>
+				<select class="form-control select2" name="groupid" id="groupid">
 					<?php
-					$orgs = utils::getArrayOrgs();
-					for ($i = 0; $i < count($orgs); $i++) {
-						$oid = $orgs[$i]['id'];
-						$sl = ($oid == $cfg->defaultorgid) ? 'selected' : '';
-						echo "<option value=\"$oid\" $sl>{$orgs[$i]['name']}</option>";
+					try {
+						$sql = 'select * from group_nome where active = 1 order by name';
+						$rows = db::prepare($sql)->execute()->fetchAll();
+						foreach ($rows as $row) {
+							$rid = $row['id'];
+							$sl = ($rid == $groupid) ? 'selected' : '';
+							echo "<option value=\"$rid\" $sl>{$row['name']}</option>";
+						}
+					} catch (PDOException $ex) {
+						throw new dbexception('Не могу выбрать группу номенклатуры', 0, $ex);
 					}
 					?>
 				</select>
 			</div>
 			<div class="form-group">
-				<label class="control-label">Роль:</label>
-				<select name="mode" id="mode" class="form-control select2">
-					<option value="0" <?= ($mode == 0) ? 'selected' : ''; ?>>Пользователь</option>
-					<option value="1" <?= ($mode == 1) ? 'selected' : ''; ?>>Администратор</option>
+				<label for="vendorid" class="control-label">Производитель:</label>
+				<select class="form-control select2" name="vendorid" id="vendorid">
+					<?php
+					try {
+						$sql = 'select * from vendor where active = 1 order by name';
+						$arr = db::prepare($sql)->execute()->fetchAll();
+						foreach ($arr as $row) {
+							$rid = $row['id'];
+							$sl = ($rid == $vendorid) ? 'selected' : '';
+							echo "<option value=\"$rid\" $sl>{$row['name']}</option>";
+						}
+					} catch (PDOException $ex) {
+						throw new dbexception('Не могу выбрать производителя', 0, $ex);
+					}
+					?>
 				</select>
 			</div>
 			<div class="form-group">
-				<label class="control-label">Логин:</label>
-				<input class="form-control" placeholder="Логин" name="login" id="login" value="<?= $login; ?>">
+				<label for="namenome" class="control-label">Наименование:</label>
+				<input class="form-control" placeholder="Введите наименование номенклатуры" name="namenome" id="namenome" size="100" value="<?= $name; ?>">
 			</div>
 			<div class="form-group">
-				<label class="control-label">Пароль:</label>
-				<div class="input-group">
-					<input type="password" class="form-control" placeholder="Пароль" name="pass" id="pass" value="">
-					<span class="input-group-btn">
-						<button type="button" class="btn btn-default" id="pass_gen"><i class="fas fa-dice"></i></button>
-						<button type="button" class="btn btn-default" id="pass_show"><i class="fas fa-eye-slash"></i></button>
-					</span>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Почта:</label>
-				<input class="form-control" placeholder="Email" name="email" id="email" size="16" value="<?= $email; ?>">
-			</div>
-			<div class="form-group">
-				<button class="btn btn-primary" type="submit">Сохранить</button>
+				<button class="btn btn-primary" type="submit" name="Submit">Сохранить</button>
 			</div>
 		</form>
 		<div id="messenger"></div>

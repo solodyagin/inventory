@@ -61,15 +61,16 @@ $cfg = config::getInstance();
 	}(jQuery));
 
 	function loadMoveInfoTable(ids) {
+		var $tblMove = $('#tbl_move');
 		var sUrl = 'moveinfo/list?eqid=' + ids;
-		//$('#tbl_move').jqGrid('setGridParam', {url: sUrl});
-		$('#tbl_move').jqGrid({
+		$tblMove.jqGrid('setGridParam', {url: sUrl});
+		$tblMove.jqGrid({
 			url: sUrl,
 			datatype: 'json',
 			colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'Комментарий'],
 			colModel: [
-				{name: 'id', index: 'id', width: 25},
-				{name: 'dt', index: 'dt', width: 95},
+				{name: 'id', index: 'id', width: 25, hidden: true},
+				{name: 'dt', index: 'dt', width: 60, sorttype: 'date', formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s', newformat: 'd.m.Y H:i:s'}},
 				{name: 'orgname1', index: 'orgname1', width: 120},
 				{name: 'place1', index: 'place1', width: 80},
 				{name: 'user1', index: 'user1', width: 90},
@@ -82,13 +83,14 @@ $cfg = config::getInstance();
 			pager: '#pager4',
 			sortname: 'dt',
 			scroll: 1,
+			shrinkToFit: true,
 			viewrecords: true,
-			height: 'auto',
+			height: 200,
 			sortorder: 'asc',
 			caption: 'История перемещений'
 		}).trigger('reloadGrid');
-		$('#tbl_move').jqGrid('destroyGroupHeader');
-		$('#tbl_move').jqGrid('setGroupHeaders', {
+		$tblMove.jqGrid('destroyGroupHeader');
+		$tblMove.jqGrid('setGroupHeaders', {
 			useColSpanStyle: true,
 			groupHeaders: [
 				{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},
@@ -109,7 +111,7 @@ $cfg = config::getInstance();
 			datatype: 'json',
 			colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв. номер', 'Сер. номер', 'Штрихкод', 'Списан'],
 			colModel: [
-				{name: 'id', index: 'id', width: 20},
+				{name: 'id', index: 'id', width: 20, hidden: true},
 				{name: 'plname', index: 'plname', width: 55, hidden: true, viewable: false},
 				{name: 'namenome', index: 'namenome', width: 100},
 				{name: 'grname', index: 'grname', width: 100},

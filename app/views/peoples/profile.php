@@ -55,10 +55,6 @@ unset($tmpuser);
 		<link rel="stylesheet" href="public/css/ui.jqgrid-bootstrap.css">
 		<script src="public/js/i18n/grid.locale-ru.js"></script>
 		<script src="public/js/jquery.jqGrid.min.js"></script>
-		<!--Select2-->
-		<link rel="stylesheet" href="public/css/select2.min.css">
-		<link rel="stylesheet" href="public/css/select2-bootstrap.min.css">
-		<script src="public/js/select2.full.min.js"></script>
 
 		<link rel="stylesheet" href="public/css/upload.css">
 		<link rel="stylesheet" href="public/js/jcrop/jquery.Jcrop.min.css">
@@ -71,12 +67,9 @@ unset($tmpuser);
 					if (msg !== 'ok') {
 						$('#messenger').html(msg);
 					} else {
-//						$('#add_edit').html('');
-//						$('#add_edit').dialog('destroy');
-//						$('#list2').jqGrid().trigger('reloadGrid');
 						if (window.top) {
 							window.top.$('#bmd_iframe').modal('hide');
-							window.top.$('#list1').jqGrid().trigger('reloadGrid');
+							window.top.$('#grid1').jqGrid().trigger('reloadGrid');
 						}
 					}
 				});
@@ -198,10 +191,6 @@ unset($tmpuser);
 		<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
 		<script src="public/js/statics/jquery.modal.js"></script>
 		<script>
-			$(function () {
-				$('.select2').select2({theme: 'bootstrap'});
-			});
-
 			jQuery(function ($) {
 				var $blind = $('.splash__blind');
 				$('.splash').mouseenter(function () {

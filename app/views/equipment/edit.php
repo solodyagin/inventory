@@ -15,10 +15,12 @@ use core\config;
 use core\db;
 use core\dbexception;
 use core\request;
-use core\user;
 use core\utils;
 
 $cfg = config::getInstance();
+
+$req = request::getInstance();
+$id = $req->get('id');
 ?>
 <!DOCTYPE html>
 <html lang="ru-RU">
@@ -61,17 +63,18 @@ $cfg = config::getInstance();
 			}
 		</style>
 		<script>
-			var examples = [];
 			$(function () {
 				var fields = ['dtpost', 'sorgid', 'splaces', 'suserid', 'sgroupname', 'svendid', 'snomeid'];
+
 				$('form').submit(function () {
-					var error = 0;
-					$('form').find(':input').each(function () {
+					var $form = $(this),
+							error = false;
+					$form.find(':input').each(function () {
 						var $input = $(this);
 						for (var i = 0; i < fields.length; i++) {
 							if ($input.attr('name') === fields[i]) {
 								if (!$input.val()) {
-									error = 1;
+									error = true;
 									$input.parent().addClass('has-error');
 								} else {
 									$input.parent().removeClass('has-error');
@@ -79,7 +82,7 @@ $cfg = config::getInstance();
 							}
 						}
 					});
-					if (error === 1) {
+					if (error) {
 						$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 						return false;
 					}
@@ -96,45 +99,27 @@ $cfg = config::getInstance();
 						}
 					}
 				});
+
+				$('.select2').select2({theme: 'bootstrap'});
 			});
 		</script>
 		<?php
-		$req = request::getInstance();
-		$step = $req->get('step', 'add');
-		$id = $req->get('id');
-
-		$user = user::getInstance();
-
-		echo "<script>var orgid='';</script>";
-		echo "<script>var placesid='';</script>";
-		echo "<script>var userid='';</script>";
-		echo "<script>var vendorid='';</script>";
-		echo "<script>var groupid='';</script>";
-		echo "<script>var nomeid='';</script>";
-		echo "<script>var step='$step';</script>";
-
+		$dtpost = '';
+		$dtendgar = '';
+		$orgid = '';
+		$placesid = '';
+		$userid = '';
+		$nomeid = '';
 		try {
 			$sql = 'select * from equipment where id = :id';
 			$row = db::prepare($sql)->execute([':id' => $id])->fetch();
 			if ($row) {
 				$dtpost = utils::MySQLDateTimeToDateTimeNoTime($row['datepost']);
-				echo "<script>dtpost='$dtpost';</script>";
-
 				$dtendgar = utils::MySQLDateTimeToDateTimeNoTime($row['dtendgar']);
-				echo "<script>dtendgar='$dtendgar';</script>";
-
 				$orgid = $row['orgid'];
-				echo "<script>orgid='$orgid';</script>";
-
 				$placesid = $row['placesid'];
-				echo "<script>placesid='$placesid';</script>";
-
 				$userid = $row['usersid'];
-				echo "<script>userid='$userid';</script>";
-
 				$nomeid = $row['nomeid'];
-				echo "<script>nomeid='$nomeid';</script>";
-
 				$buhname = $row['buhname'];
 				$cost = $row['cost'];
 				$currentcost = $row['currentcost'];
@@ -153,15 +138,14 @@ $cfg = config::getInstance();
 			throw new dbexception('Не могу выбрать объект имущества', 0, $ex);
 		}
 
+		$vendorid = '';
+		$groupid = '';
 		try {
 			$sql = 'select * from nome where id = :nomeid';
 			$row = db::prepare($sql)->execute([':nomeid' => $nomeid])->fetch();
 			if ($row) {
 				$vendorid = $row['vendorid'];
-				echo "<script>vendorid='$vendorid';</script>";
-
 				$groupid = $row['groupid'];
-				echo "<script>grouid='$groupid';</script>";
 			}
 		} catch (PDOException $ex) {
 			throw new dbexception('Не могу выбрать номенклатуру', 0, $ex);
@@ -169,10 +153,19 @@ $cfg = config::getInstance();
 		if ($photo == '') {
 			$photo = 'noimage.jpg';
 		}
+
+		echo "<script>var dtpost='$dtpost';</script>";
+		echo "<script>var dtendgar='$dtendgar';</script>";
+		echo "<script>var orgid='$orgid';</script>";
+		echo "<script>var placesid='$placesid';</script>";
+		echo "<script>var userid='$userid';</script>";
+		echo "<script>var nomeid='$nomeid';</script>";
+		echo "<script>var vendorid='$vendorid';</script>";
+		echo "<script>var groupid='$groupid';</script>";
 		?>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
-		<form role="form" id="myForm" class="form-horizontal" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
+		<form role="form" id="myForm" class="form-horizontal" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=edit&id=<?= $id; ?>" method="post" name="form1" target="_self">
 			<div id="messenger"></div>
 			<div class="row-fluid">
 				<div class="col-sm-6">
@@ -201,9 +194,9 @@ $cfg = config::getInstance();
 										$sql = 'select * from group_nome where active = 1 order by name';
 										$arr = db::prepare($sql)->execute()->fetchAll();
 										foreach ($arr as $row) {
-											$rowid = $row['id'];
-											$sl = ($rowid == $groupid) ? 'selected' : '';
-											echo "<option value=\"$rowid\" $sl>{$row['name']}</option>";
+											$rid = $row['id'];
+											$sl = ($rid == $groupid) ? 'selected' : '';
+											echo "<option value=\"$rid\" $sl>{$row['name']}</option>";
 										}
 									} catch (PDOException $ex) {
 										throw new dbexception('Не могу выбрать список групп', 0, $ex);
@@ -221,11 +214,11 @@ $cfg = config::getInstance();
 							<div id="sorg">
 								<select class="select2" name="sorgid" id="sorgid">
 									<?php
-									$morgs = utils::getArrayOrgs();
-									for ($i = 0; $i < count($morgs); $i++) {
-										$nid = $morgs[$i]['id'];
+									$orgs = utils::getArrayOrgs();
+									for ($i = 0; $i < count($orgs); $i++) {
+										$nid = $orgs[$i]['id'];
 										$sl = ($nid == $orgid) ? 'selected' : '';
-										echo "<option value=\"$nid\" $sl>{$morgs[$i]['name']}</option>";
+										echo "<option value=\"$nid\" $sl>{$orgs[$i]['name']}</option>";
 									}
 									?>
 								</select>
@@ -361,6 +354,8 @@ $cfg = config::getInstance();
 		</div>
 
 		<script>
+			var examples = [];
+
 			examples.push(function () {
 				$('#userpic').fileapi({
 					url: 'route/deprecated/server/common/uploadfile.php',
@@ -407,24 +402,19 @@ $cfg = config::getInstance();
 				});
 			});
 
-			$('#dtendgar').datepicker({
-				todayBtn: true,
-				language: 'ru',
-				autoclose: true,
-				todayHighlight: true
-			});
-
 			$('#dtpost').datepicker({
 				todayBtn: true,
 				language: 'ru',
 				autoclose: true,
 				todayHighlight: true
-			});
+			}).datepicker('setDate', dtpost);
 
-			$('#dtpost').datepicker('setDate', dtpost);
-			$('#dtendgar').datepicker('setDate', dtendgar);
-
-			$('#sernum').focus();
+			$('#dtendgar').datepicker({
+				todayBtn: true,
+				language: 'ru',
+				autoclose: true,
+				todayHighlight: true
+			}).datepicker('setDate', dtendgar);
 
 			function updateChosen() {
 				$('.select2').select2({width: '100%', theme: 'bootstrap'});
@@ -511,7 +501,7 @@ $cfg = config::getInstance();
 		</script>
 		<script>
 			var FileAPI = {
-				debug: true,
+				debug: false,
 				media: true,
 				staticPath: './FileAPI/'
 			};
@@ -522,10 +512,6 @@ $cfg = config::getInstance();
 		<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
 		<script src="public/js/statics/jquery.modal.js"></script>
 		<script>
-			$(function () {
-				$('.select2').select2({theme: 'bootstrap'});
-			});
-
 			jQuery(function ($) {
 				var $blind = $('.splash__blind');
 				$('.splash')

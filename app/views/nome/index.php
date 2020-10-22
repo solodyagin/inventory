@@ -2,15 +2,16 @@
 	<h4><?= $section; ?></h4>
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-sm-12">
-			<table id="list1"></table>
+			<table id="grid1"></table>
 			<div id="pager1"></div>
-			<div id="add_edit"></div>
 		</div>
 	</div>
 </div>
 <script>
-	var $list1 = $('#list1');
-	$list1.jqGrid({
+	var $grid1 = $('#grid1'),
+			$bmd = $('#bmd_iframe');
+
+	$grid1.jqGrid({
 		url: 'nome/list',
 		datatype: 'json',
 		colNames: [' ', 'Id', 'Группа', 'Производитель', 'Наименование', ''],
@@ -38,41 +39,29 @@
 		sortorder: 'asc',
 		editurl: 'nome/change'
 	});
-	$list1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
-	$list1.jqGrid('navGrid', '#pager1', {edit: false, add: false, del: false, search: false});
-	$list1.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
-	$list1.jqGrid('navButtonAdd', '#pager1', {
+	$grid1.jqGrid('setGridHeight', $(window).innerHeight() / 2);
+	$grid1.jqGrid('navGrid', '#pager1', {edit: false, add: false, del: false, search: false});
+	$grid1.jqGrid('filterToolbar', {stringResult: true, searchOnEnter: false});
+	$grid1.jqGrid('navButtonAdd', '#pager1', {
 		buttonicon: 'none',
 		caption: '<i class="fas fa-plus-circle"></i>',
 		onClickButton: function () {
-			$('#add_edit').empty().dialog({
+			$bmd.bmdIframe({
 				title: 'Добавление номенклатуры',
-				autoOpen: false,
-				modal: true,
-				height: 280,
-				width: 640,
-				open: function () {
-					$(this).load('route/deprecated/client/view/tmc/nome_add_edit.php?step=add');
-				}
-			}).dialog('open');
+				src: 'nome/add'
+			}).modal();
 		}
 	});
-	$list1.jqGrid('navButtonAdd', '#pager1', {
+	$grid1.jqGrid('navButtonAdd', '#pager1', {
 		buttonicon: 'none',
 		caption: '<i class="fas fa-edit"></i>',
 		onClickButton: function () {
-			var gsr = $list1.jqGrid('getGridParam', 'selrow');
+			var gsr = $grid1.jqGrid('getGridParam', 'selrow');
 			if (gsr) {
-				$('#add_edit').empty().dialog({
+				$bmd.bmdIframe({
 					title: 'Редактирование номенклатуры',
-					autoOpen: false,
-					modal: true,
-					height: 280,
-					width: 640,
-					open: function () {
-						$(this).load('route/deprecated/client/view/tmc/nome_add_edit.php?step=edit&id=' + gsr);
-					}
-				}).dialog('open');
+					src: 'nome/edit?id=' + gsr
+				}).modal();
 			} else {
 				$.notify('Сначала выберите строку!');
 			}

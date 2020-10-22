@@ -187,13 +187,14 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 							</div>
 						</div>
 						<script>
-							$('#tbl_move').jqGrid({
+							var $tblMove = $('#tbl_move');
+							$tblMove.jqGrid({
 								url: 'moveinfo/list?eqid=',
 								datatype: 'json',
 								colNames: ['Id', 'Дата', 'Организация', 'Помещение', 'Сотрудник', 'Организация', 'Помещение', 'Сотрудник', 'Оргтехника', 'Комментарий'],
 								colModel: [
 									{name: 'id', index: 'id', width: 25, hidden: true},
-									{name: 'dt', index: 'dt', width: 100},
+									{name: 'dt', index: 'dt', width: 60, sorttype: 'date', formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s', newformat: 'd.m.Y H:i:s'}},
 									{name: 'orgname1', index: 'orgname1', width: 140, hidden: true},
 									{name: 'place1', index: 'place1', width: 90},
 									{name: 'user1', index: 'user1', width: 90},
@@ -206,14 +207,13 @@ $mod->Register('commits-widget', 'Виджет разработки на github.
 								autowidth: true,
 								pager: '#pager2',
 								sortname: 'dt',
-								scroll: true,
+								scroll: 1,
 								shrinkToFit: true,
 								height: 200,
 								sortorder: 'desc'
 							});
-
-							$('#tbl_move').jqGrid('destroyGroupHeader');
-							$('#tbl_move').jqGrid('setGroupHeaders', {
+							$tblMove.jqGrid('destroyGroupHeader');
+							$tblMove.jqGrid('setGroupHeaders', {
 								useColSpanStyle: true,
 								groupHeaders: [
 									{startColumnName: 'orgname1', numberOfColumns: 3, titleText: 'Откуда'},

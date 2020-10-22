@@ -14,7 +14,6 @@
 use core\config;
 use core\db;
 use core\dbexception;
-use core\request;
 use core\user;
 use core\utils;
 
@@ -61,17 +60,18 @@ $cfg = config::getInstance();
 			}
 		</style>
 		<script>
-			var examples = [];
 			$(function () {
 				var fields = ['dtpost', 'sorgid', 'splaces', 'suserid', 'sgroupname', 'svendid', 'snomeid'];
+
 				$('form').submit(function () {
-					var error = 0;
-					$('form').find(':input').each(function () {
+					var $form = $(this),
+							error = false;
+					$form.find(':input').each(function () {
 						var $input = $(this);
 						for (var i = 0; i < fields.length; i++) {
 							if ($input.attr('name') === fields[i]) {
 								if (!$input.val()) {
-									error = 1;
+									error = true;
 									$input.parent().addClass('has-error');
 								} else {
 									$input.parent().removeClass('has-error');
@@ -79,7 +79,7 @@ $cfg = config::getInstance();
 							}
 						}
 					});
-					if (error === 1) {
+					if (error) {
 						$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 						return false;
 					}
@@ -96,39 +96,31 @@ $cfg = config::getInstance();
 						}
 					}
 				});
+
+				$('.select2').select2({theme: 'bootstrap'});
 			});
 		</script>
 		<?php
-		$req = request::getInstance();
-		$step = $req->get('step', 'add');
-		$id = $req->get('id');
-
+		$orgid = $cfg->defaultorgid;
+		$placesid = 1;
 		$user = user::getInstance();
+		$userid = $user->id;
+		$nomeid = 1;
 
-		echo "<script>var orgid='';</script>";
-		echo "<script>var placesid='';</script>";
-		echo "<script>var userid='';</script>";
+		echo "<script>var orgid=$orgid;</script>";
+		echo "<script>var placesid='$placesid';</script>";
+		echo "<script>var userid='$userid';</script>";
+		echo "<script>var nomeid='$nomeid';</script>";
 		echo "<script>var vendorid='';</script>";
 		echo "<script>var groupid='';</script>";
-		echo "<script>var nomeid='';</script>";
-		echo "<script>var step='$step';</script>";
-		echo "<script>var dtpost='';</script>";
-		$orgid = $cfg->defaultorgid;
-		echo "<script>var orgid=$orgid;</script>";
-		$placesid = 1;
-		echo "<script>var placesid='$placesid';</script>";
-		$userid = $user->id;
-		echo "<script>var userid='$userid';</script>";
-		$nomeid = 1;
-		echo "<script>var nomeid='$nomeid';</script>";
+
 		$groupid = 1;
 		$kntid = '';
-		echo "<script>var dtendgar='';</script>";
 		$photo = 'noimage.jpg';
 		?>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
-		<form role="form" id="myForm" class="form-horizontal" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=<?= $step; ?>&id=<?= $id; ?>" method="post" name="form1" target="_self">
+		<form role="form" id="myForm" class="form-horizontal" enctype="multipart/form-data" action="route/deprecated/server/equipment/equipment_form.php?step=add&id=" method="post" name="form1" target="_self">
 			<div id="messenger"></div>
 			<div class="row-fluid">
 				<div class="col-sm-6">
@@ -157,9 +149,9 @@ $cfg = config::getInstance();
 										$sql = 'select * from group_nome where active = 1 order by name';
 										$arr = db::prepare($sql)->execute()->fetchAll();
 										foreach ($arr as $row) {
-											$rowid = $row['id'];
-											$sl = ($rowid == $groupid) ? 'selected' : '';
-											echo "<option value=\"$rowid\" $sl>{$row['name']}</option>";
+											$rid = $row['id'];
+											$sl = ($rid == $groupid) ? 'selected' : '';
+											echo "<option value=\"$rid\" $sl>{$row['name']}</option>";
 										}
 									} catch (PDOException $ex) {
 										throw new dbexception('Не могу выбрать список групп', 0, $ex);
@@ -177,11 +169,11 @@ $cfg = config::getInstance();
 							<div id="sorg">
 								<select class="select2" name="sorgid" id="sorgid">
 									<?php
-									$morgs = utils::getArrayOrgs();
-									for ($i = 0; $i < count($morgs); $i++) {
-										$nid = $morgs[$i]['id'];
+									$orgs = utils::getArrayOrgs();
+									for ($i = 0; $i < count($orgs); $i++) {
+										$nid = $orgs[$i]['id'];
 										$sl = ($nid == $orgid) ? 'selected' : '';
-										echo "<option value=\"$nid\" $sl>{$morgs[$i]['name']}</option>";
+										echo "<option value=\"$nid\" $sl>{$orgs[$i]['name']}</option>";
 									}
 									?>
 								</select>
@@ -296,7 +288,7 @@ $cfg = config::getInstance();
 			<div class="row-fluid">
 				<div class="col-sm-2 col-sm-offset-10">
 					<div class="form-group">
-						<input type="submit" class="form-control btn btn-primary" name="Submit" value="Сохранить">
+						<input type="submit" class="form-control btn btn-primary" name="Submit" value="Добавить">
 					</div>
 				</div>
 			</div>
@@ -310,6 +302,8 @@ $cfg = config::getInstance();
 		</div>
 
 		<script>
+			var examples = [];
+
 			examples.push(function () {
 				$('#userpic').fileapi({
 					url: 'route/deprecated/server/common/uploadfile.php',
@@ -356,29 +350,23 @@ $cfg = config::getInstance();
 				});
 			});
 
-			$('#dtendgar').datepicker({
-				todayBtn: true,
-				language: 'ru',
-				autoclose: true,
-				todayHighlight: true
-			});
+			var exdate = new Date();
 
 			$('#dtpost').datepicker({
 				todayBtn: true,
 				language: 'ru',
 				autoclose: true,
 				todayHighlight: true
-			});
+			}).datepicker('setDate', exdate);
 
-			if (step !== 'edit') {
-				$('#dtpost').datepicker('setDate', '0');
-				$('#dtendgar').datepicker('setDate', '0');
-			} else {
-				$('#dtpost').datepicker('setDate', dtpost);
-				$('#dtendgar').datepicker('setDate', dtendgar);
-			}
+			exdate.setFullYear(exdate.getFullYear() + 1);
 
-			$('#sernum').focus();
+			$('#dtendgar').datepicker({
+				todayBtn: true,
+				language: 'ru',
+				autoclose: true,
+				todayHighlight: true
+			}).datepicker('setDate', exdate);
 
 			function updateChosen() {
 				$('.select2').select2({width: '100%', theme: 'bootstrap'});
@@ -465,7 +453,7 @@ $cfg = config::getInstance();
 		</script>
 		<script>
 			var FileAPI = {
-				debug: true,
+				debug: false,
 				media: true,
 				staticPath: './FileAPI/'
 			};
@@ -476,10 +464,6 @@ $cfg = config::getInstance();
 		<script src="public/js/jcrop/jquery.Jcrop.min.js"></script>
 		<script src="public/js/statics/jquery.modal.js"></script>
 		<script>
-			$(function () {
-				$('.select2').select2({theme: 'bootstrap'});
-			});
-
 			jQuery(function ($) {
 				var $blind = $('.splash__blind');
 				$('.splash')

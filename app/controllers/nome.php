@@ -26,13 +26,37 @@ use core\utils;
 
 class nome extends controller {
 
+	var $section = 'Справочники / Номенклатура';
+
 	function index() {
-		$data['section'] = 'Справочники / Номенклатура';
+		$data['section'] = $this->section;
 		$user = user::getInstance();
 		if ($user->isAdmin() || $user->testRights([1, 4, 5, 6])) {
 			$this->view->renderTemplate('nome/index', $data);
 		} else {
 			$this->view->renderTemplate('restricted', $data);
+		}
+	}
+
+	/** Форма добавления номенклатуры */
+	function add() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1])) {
+			$this->view->render('nome/add');
+		} else {
+			$data['section'] = $this->section;
+			$this->view->render('restricted', $data);
+		}
+	}
+
+	/** Форма редактирования номенклатуры */
+	function edit() {
+		$user = user::getInstance();
+		if ($user->isAdmin() || $user->testRights([1])) {
+			$this->view->render('nome/edit');
+		} else {
+			$data['section'] = $this->section;
+			$this->view->render('restricted', $data);
 		}
 	}
 

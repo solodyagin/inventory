@@ -16,10 +16,10 @@
 		url: 'news/list',
 		editurl: 'news/change',
 		datatype: 'json',
-		colNames: ['Id', 'Дата', 'Заголовок', 'Закреплено', 'Действия'],
+		colNames: ['Id', 'Дата', 'Заголовок', 'Закреплена на главной?', 'Действия'],
 		colModel: [
 			{name: 'id', index: 'id', width: 55, editable: false, hidden: true},
-			{name: 'dt', index: 'dt', width: 60, editable: false},
+			{name: 'dt', index: 'dt', width: 60, editable: false, sorttype: 'date', formatter: 'date', formatoptions: {srcformat: 'Y-m-d H:i:s', newformat: 'd.m.Y H:i:s'}},
 			{name: 'title', index: 'title', width: 200, editable: true},
 			{name: 'stiker', index: 'stiker', width: 200, editable: true, formatter: 'checkbox', edittype: 'checkbox', editoptions: {value: '1:0'}},
 			{name: 'myac', width: 80, fixed: true, sortable: false, resize: false, formatter: 'actions', formatoptions: {keys: true}}

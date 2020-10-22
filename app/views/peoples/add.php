@@ -54,14 +54,16 @@ $cfg = config::getInstance();
 		<script>
 			$(function () {
 				var fields = ['login', 'pass', 'email'];
+
 				$('form').submit(function () {
-					var error = 0;
-					$(this).find(':input').each(function () {
+					var $form = $(this),
+							error = false;
+					$form.find(':input').each(function () {
 						var $input = $(this);
 						for (var i = 0; i < fields.length; i++) {
 							if ($input.attr('name') === fields[i]) {
 								if (!$input.val()) {
-									error = 1;
+									error = true;
 									$input.parent().addClass('has-error');
 								} else {
 									$input.parent().removeClass('has-error');
@@ -69,7 +71,7 @@ $cfg = config::getInstance();
 							}
 						}
 					});
-					if (error === 1) {
+					if (error) {
 						$('#messenger').addClass('alert alert-danger').html('Не все обязательные поля заполнены!').fadeIn('slow');
 						return false;
 					}
@@ -82,28 +84,32 @@ $cfg = config::getInstance();
 					} else {
 						if (window.top) {
 							window.top.$('#bmd_iframe').modal('hide');
-							window.top.$('#list1').jqGrid().trigger('reloadGrid');
+							window.top.$('#grid1').jqGrid().trigger('reloadGrid');
 						}
 					}
 				});
-			});
-		</script>
-		<script>
-			$(function () {
+
 				$('#pass').val($.passGen());
+
 				$('#pass_gen').click(function () {
 					$('#pass').val($.passGen());
 				});
+
 				$('#pass_show').click(function () {
-					var $t = $(this);
-					$t.toggleClass('active');
-					if ($t.hasClass('active')) {
-						$t.find('i').removeClass('fa-eye-slash').addClass('fa-eye');
-						$t.closest('.input-group').find('input').prop('type', 'text');
+					var $btn = $(this);
+					$btn.toggleClass('active');
+					if ($btn.hasClass('active')) {
+						$btn.find('i').removeClass('fa-eye-slash').addClass('fa-eye');
+						$btn.closest('.input-group').find('input').prop('type', 'text');
 					} else {
-						$t.find('i').removeClass('fa-eye').addClass('fa-eye-slash');
-						$t.closest('.input-group').find('input').prop('type', 'password');
+						$btn.find('i').removeClass('fa-eye').addClass('fa-eye-slash');
+						$btn.closest('.input-group').find('input').prop('type', 'password');
 					}
+				});
+
+				$('.select2').select2({
+					theme: 'bootstrap',
+					width: '100%'
 				});
 			});
 		</script>
@@ -114,11 +120,11 @@ $cfg = config::getInstance();
 				<label class="control-label">Организация:</label>
 				<select class="form-control select2" name="orgid" id="orgid">
 					<?php
-					$morgs = utils::getArrayOrgs();
-					for ($i = 0; $i < count($morgs); $i++) {
-						$id = $morgs[$i]['id'];
-						$sl = ($id == $cfg->defaultorgid) ? 'selected' : '';
-						echo "<option value=\"$id\" $sl>{$morgs[$i]['name']}</option>";
+					$orgs = utils::getArrayOrgs();
+					for ($i = 0; $i < count($orgs); $i++) {
+						$oid = $orgs[$i]['id'];
+						$sl = ($oid == $cfg->defaultorgid) ? 'selected' : '';
+						echo "<option value=\"$oid\" $sl>{$orgs[$i]['name']}</option>";
 					}
 					?>
 				</select>
@@ -153,10 +159,5 @@ $cfg = config::getInstance();
 			</div>
 		</form>
 		<div id="messenger"></div>
-		<script>
-			$(function () {
-				$('.select2').select2({theme: 'bootstrap'});
-			});
-		</script>
 	</body>
 </html>
