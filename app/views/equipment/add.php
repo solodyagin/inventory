@@ -286,10 +286,8 @@ $cfg = config::getInstance();
 				</div>
 			</div>
 			<div class="row-fluid">
-				<div class="col-sm-2 col-sm-offset-10">
-					<div class="form-group">
-						<input type="submit" class="form-control btn btn-primary" name="Submit" value="Добавить">
-					</div>
+				<div class="col-sm-2 col-sm-offset-2">
+					<input type="submit" class="form-control btn btn-primary" name="Submit" value="Добавить">
 				</div>
 			</div>
 		</form>
