@@ -23,7 +23,7 @@ $cfg = config::getInstance();
 <div class="container-fluid">
 	<h4><?= $section; ?></h4>
 	<div class="row-fluid">
-		<form class="form-horizontal" enctype="multipart/form-data" action="?content_page=reports&step=view" method="post" name="form1" target="_self">
+		<form class="form-horizontal" name="form1">
 			<div class="form-group">
 				<div class="col-xs-12 col-md-4 col-sm-4">
 					<label for="sel_rep" class="control-label">Название отчета</label>
@@ -79,14 +79,15 @@ $cfg = config::getInstance();
 		<div id="pager2"></div>
 	</div>
 </div>
-<script>curuserid = <?= $user->id; ?>;</script>
 <script>
+	var curuserid = <?= $user->id; ?>;
+
 	function listEqByPlaces(oid, pid, plpid) {
 		if (!$('#gr').prop('checked')) {
 			$('#list2').jqGrid({
 				url: 'report/list?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 				datatype: 'json',
-				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
+				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв.№', 'Сер.№', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 				colModel: [
 					{name: 'id', index: 'id', width: 20, hidden: true},
 					{name: 'plname', index: 'plname', width: 110},
@@ -115,7 +116,7 @@ $cfg = config::getInstance();
 			$('#list2').jqGrid({
 				url: 'report/list?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 				datatype: 'json',
-				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инвентарник', 'Серийник', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
+				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв.№', 'Сер.№', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 				colModel: [
 					{name: 'id', index: 'id', width: 20, hidden: true},
 					{name: 'plname', index: 'plname', width: 110},
@@ -154,10 +155,10 @@ $cfg = config::getInstance();
 			caption: '<i class="fas fa-save"></i>',
 			title: 'Экспорт в CSV',
 			buttonicon: 'none',
-			onClickButton: function (e) {
+			onClickButton: function () {
 				var gsr = $('#list2').jqGrid('getGridParam', 'selrow');
 				if (gsr) {
-					exportData(e, '#list2');
+					exportData('#list2');
 				} else {
 					$.notify('Сначала выберите строки!');
 				}
@@ -165,9 +166,7 @@ $cfg = config::getInstance();
 		});
 	}
 
-	function exportData(e, id) {
-		//var gridid = $(id).getDataIDs();
-		//var label = $(id).getRowData(gridid[0]);
+	function exportData(id) {
 		var selRowIds = $(id).jqGrid('getGridParam', 'selarrrow');
 		var obj = new Object();
 		obj.count = selRowIds.length;
@@ -177,20 +176,20 @@ $cfg = config::getInstance();
 				obj.items.push($(id).getRowData(selRowIds[elem]));
 			}
 			var json = JSON.stringify(obj);
-			JSONToCSVConvertor(json, 'csv', 1);
+			JSONToCSVConvertor(json, '', 1);
 		}
 	}
 
-	function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+	function JSONToCSVConvertor(JSONData, reportTitle, showLabel) {
 		var arrData = (typeof JSONData !== 'object') ? JSON.parse(JSONData) : JSONData;
-		var CSV = '';
-		if (ShowLabel) {
+		var csv = '';
+		if (showLabel) {
 			var row = '';
 			for (var index in arrData.items[0]) {
 				row += index + ';';
 			}
 			row = row.slice(0, -1);
-			CSV += row + '\r\n';
+			csv += row + '\r\n';
 		}
 		for (var i = 0; i < arrData.items.length; i++) {
 			var row = '';
@@ -198,24 +197,28 @@ $cfg = config::getInstance();
 				row += '"' + arrData.items[i][index].replace(/(<([^>]+)>)/ig, '') + '";';
 			}
 			row.slice(0, row.length - 1);
-			CSV += row + '\r\n';
+			csv += row + '\r\n';
 		}
-		if (CSV === '') {
+		if (csv === '') {
 			alert('Invalid data');
 			return;
 		}
-		var link = document.createElement('a');
-		link.id = 'lnkDwnldLnk';
-		document.body.appendChild(link);
-		var csv = CSV;
-		blob = new Blob([csv], {type: 'text/csv'});
-		var myURL = window.URL || window.webkitURL;
-		$('#lnkDwnldLnk').attr({
-			'download': 'Export.csv',
-			'href': myURL.createObjectURL(blob)
-		});
-		$('#lnkDwnldLnk')[0].click();
-		document.body.removeChild(link);
+		var exportedFilename = (reportTitle || 'Export') + '.csv';
+		blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+		if (navigator.msSaveBlob) { // IE 10+
+			navigator.msSaveBlob(blob, exportedFilename);
+		} else {
+			var link = document.createElement('a');
+			document.body.appendChild(link);
+			if (link.download !== undefined) {
+				var myURL = window.URL || window.webkitURL;
+				link.setAttribute('href', myURL.createObjectURL(blob));
+				link.setAttribute('download', exportedFilename);
+				link.style.visibility = 'hidden';
+				link.click();
+			}
+			document.body.removeChild(link);
+		}
 	}
 
 	function updateChosen() {
@@ -250,13 +253,25 @@ $cfg = config::getInstance();
 	});
 
 	$('#btprint').click(function () {// обрабатываем отправку формы
-		var newWin3 = window.open('', 'printWindow3', '');
-		newWin3.focus();
-		newWin3.document.write('<table id="list222">');
-		newWin3.document.write($('#list2').html());
-		newWin3.document.write('</table>');
+		var win = window.open('', 'printWindow3', '');
+		var styleElem = win.document.createElement('style');
+		styleElem.type = 'text/css';
+		var css = 'table{border:1px solid #000;width:100%;border-collapse:collapse}th,td{border:1px solid #000}';
+		styleElem.appendChild(win.document.createTextNode(css));
+		var head = win.document.getElementsByTagName('head')[0];
+		head.appendChild(styleElem);
+		var $table = $('#list2').clone();
+		$('.jqgfirstrow', $table).remove();
+		var $tr = $('<tr/>').prependTo($table);
+		var $htable = $('#list2').closest('.ui-jqgrid-view').find('.ui-jqgrid-htable');
+		$('tr:eq(0) > th:visible > .ui-th-div', $htable).each(function () {
+			$('<th/>').text($(this).text()).appendTo($tr);
+		});
+		win.document.body.innerHTML = $('<div/>').append($table).html();
+		win.focus();
+		return false;
 	});
 
 	getListUsers($('#sel_orgid :selected').val(), curuserid);
-	getListPlaces($('#sel_orgid :selected').val(), curuserid);
+	getListPlaces($('#sel_orgid :selected').val(), 0);
 </script>
