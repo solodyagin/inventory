@@ -154,14 +154,18 @@ $id = $req->get('id');
 			$photo = 'noimage.jpg';
 		}
 
-		echo "<script>var dtpost='$dtpost';</script>";
-		echo "<script>var dtendgar='$dtendgar';</script>";
-		echo "<script>var orgid='$orgid';</script>";
-		echo "<script>var placesid='$placesid';</script>";
-		echo "<script>var userid='$userid';</script>";
-		echo "<script>var nomeid='$nomeid';</script>";
-		echo "<script>var vendorid='$vendorid';</script>";
-		echo "<script>var groupid='$groupid';</script>";
+		echo <<<TXT
+<script>
+	var dtpost='$dtpost',
+		dtendgar='$dtendgar',
+		orgid='$orgid',
+		placesid='$placesid',
+		userid='$userid',
+		nomeid='$nomeid',
+		vendorid='$vendorid',
+		groupid='$groupid';
+</script>
+TXT;
 		?>
 	</head>
 	<body style="font-size:<?= $cfg->fontsize; ?>;">
@@ -268,7 +272,7 @@ $id = $req->get('id');
 							<div class="js-preview userpic__preview thumbnail">
 								<img src="photos/<?= $photo; ?>">
 							</div>
-							<div class="btn btn-success js-fileapi-wrapper">
+							<div class="btn btn-success btn-xs js-fileapi-wrapper">
 								<div class="js-browse">
 									<span class="btn-txt">Сменить фото</span>
 									<input type="file" name="filedata">
@@ -463,26 +467,24 @@ $id = $req->get('id');
 				return false;
 			});
 
-			// правка Мазур
 			$('#bshtr').click(function () {
 				$.get('route/deprecated/server/common/getean13.php', function (data) {
 					$('#shtrihkod').val(data);
 				});
 				return false;
 			});
-			// конец правки Мазур
 
-			$('#sorgid').on('change', function (evt, params) {
-				$('#splaces').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
+			$('#sorgid').on('change', function () {
+				$('#splaces').html = 'идет загрузка...';
 				$("#susers").html = 'идет загрузка...';
-				getListPlaces($('#sorgid :selected').val(), ''); // перегружаем список помещений организации
-				getListUsers($('#sorgid :selected').val(), ''); // перегружаем пользователей организации
+				getListPlaces($('#sorgid :selected').val(), ''); // перезагружаем список помещений организации
+				getListUsers($('#sorgid :selected').val(), ''); // перезагружаем пользователей организации
 			});
 
 			// выбираем производителя по группе
-			$('#sgroupname').on('change', function (evt, params) {
-				$('#svendors').html = 'идет загрузка...'; // заглушка. Зачем?? каналы счас быстрые
-				getListVendors($('#sgroupname :selected').val()); // перегружаем список vendors
+			$('#sgroupname').on('change', function () {
+				$('#svendors').html = 'идет загрузка...';
+				getListVendors($('#sgroupname :selected').val()); // перезагружаем список vendors
 			});
 
 			// загружаем места
@@ -496,6 +498,10 @@ $id = $req->get('id');
 
 			// номенклатура
 			getListNome($('#sgroupname :selected').val(), $('#svendid :selected').val(), nomeid);
+
+			if ($('#shtrihkod').val() === '') {
+				$('#bshtr').click();
+			}
 		</script>
 		<script>
 			var FileAPI = {

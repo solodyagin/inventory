@@ -31,7 +31,7 @@ $cfg = config::getInstance();
 						<option value="1">Наличие оргтехники</option>
 						<option value="2">Наличие оргтехники - только не ОС и не списанное</option>
 					</select>
-					<label for="sel_plp" class="control-label">Сотрудник</label>
+					<label for="sel_plp" class="control-label">Ответственный</label>
 					<div name="sel_plp" id="sel_plp"></div>
 				</div>
 				<div class="col-xs-12 col-md-4 col-sm-4">
@@ -69,9 +69,10 @@ $cfg = config::getInstance();
 				</div>
 			</div>
 			<div class="form-group">
-				<div class="col-sm-offset-4 col-sm-4">
+				<div class="col-xs-12 col-md-12 col-sm-12">
 					<button class="btn btn-primary" id="sbt">Сформировать</button>
-					<button class="btn btn-default" id="btprint">Распечатать</button>
+					<button class="btn btn-default" id="exportToCSV"><i class="fas fa-save"></i> Экспорт в CSV</button>
+					<button class="btn btn-default" id="btprint"><i class="fas fa-print"></i> Печать</button>
 				</div>
 			</div>
 		</form>
@@ -87,18 +88,19 @@ $cfg = config::getInstance();
 			$('#list2').jqGrid({
 				url: 'report/list?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 				datatype: 'json',
-				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв.№', 'Сер.№', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
+				colNames: ['Id', 'Помещение', 'Ответственный', 'Группа номенклатуры', 'Наименование', 'Инв.№', 'Сер.№', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 				colModel: [
 					{name: 'id', index: 'id', width: 20, hidden: true},
-					{name: 'plname', index: 'plname', width: 110},
-					{name: 'namenome', index: 'namenome', width: 140},
-					{name: 'grname', index: 'grname', width: 140},
-					{name: 'invnum', index: 'invnum', width: 100},
-					{name: 'sernum', index: 'sernum', width: 100},
-					{name: 'shtrihkod', index: 'shtrihkod', width: 100},
-					{name: 'mode', index: 'mode', width: 55, formatter: 'checkbox', edittype: 'checkbox'},
-					{name: 'os', index: 'os', width: 55, formatter: 'checkbox', edittype: 'checkbox'},
-					{name: 'buhname', index: 'buhname', width: 155}
+					{name: 'plname', index: 'plname', width: 140},
+					{name: 'fio', index: 'fio', width: 120},
+					{name: 'grname', index: 'grname', width: 100},
+					{name: 'namenome', index: 'namenome', width: 160},
+					{name: 'invnum', index: 'invnum', width: 80},
+					{name: 'sernum', index: 'sernum', width: 80},
+					{name: 'shtrihkod', index: 'shtrihkod', width: 80},
+					{name: 'mode', index: 'mode', width: 30, formatter: 'checkbox', edittype: 'checkbox'},
+					{name: 'os', index: 'os', width: 30, formatter: 'checkbox', edittype: 'checkbox'},
+					{name: 'buhname', index: 'buhname', width: 140}
 				],
 				rownumbers: true,
 				autowidth: true,
@@ -109,25 +111,26 @@ $cfg = config::getInstance();
 				rowNum: 1000,
 				scroll: 1,
 				sortorder: 'asc',
-				caption: 'Список имущества',
-				multiselect: true
+				caption: 'Список имущества'
+//				multiselect: true
 			});
 		} else {
 			$('#list2').jqGrid({
 				url: 'report/list?curuserid=' + plpid + '&curorgid=' + oid + '&curplid=' + pid + '&tpo=' + $('#sel_rep :selected').val() + '&os=' + $('#os').prop('checked') + '&mode=' + $('#mode').prop('checked') + '&repair=' + $('#repair').prop('checked'),
 				datatype: 'json',
-				colNames: ['Id', 'Помещение', 'Наименование', 'Группа', 'Инв.№', 'Сер.№', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
+				colNames: ['Id', 'Помещение', 'Ответственный', 'Группа номенклатуры', 'Наименование', 'Инв.№', 'Сер.№', 'Штрихкод', 'Списан', 'ОС', 'Бух.имя'],
 				colModel: [
 					{name: 'id', index: 'id', width: 20, hidden: true},
-					{name: 'plname', index: 'plname', width: 110},
-					{name: 'namenome', index: 'namenome', width: 140},
-					{name: 'grname', index: 'grname', width: 140},
-					{name: 'invnum', index: 'invnum', width: 100},
-					{name: 'sernum', index: 'sernum', width: 100},
-					{name: 'shtrihkod', index: 'shtrihkod', width: 100},
-					{name: 'mode', index: 'mode', width: 55, formatter: 'checkbox', edittype: 'checkbox'},
-					{name: 'os', index: 'os', width: 55, formatter: 'checkbox', edittype: 'checkbox'},
-					{name: 'buhname', index: 'buhname', width: 155}
+					{name: 'plname', index: 'plname', width: 140},
+					{name: 'fio', index: 'fio', width: 120},
+					{name: 'grname', index: 'grname', width: 100},
+					{name: 'namenome', index: 'namenome', width: 160},
+					{name: 'invnum', index: 'invnum', width: 80},
+					{name: 'sernum', index: 'sernum', width: 80},
+					{name: 'shtrihkod', index: 'shtrihkod', width: 80},
+					{name: 'mode', index: 'mode', width: 30, formatter: 'checkbox', edittype: 'checkbox'},
+					{name: 'os', index: 'os', width: 30, formatter: 'checkbox', edittype: 'checkbox'},
+					{name: 'buhname', index: 'buhname', width: 140}
 				],
 				grouping: true,
 				groupingView: {
@@ -150,30 +153,31 @@ $cfg = config::getInstance();
 
 		$('#list2').jqGrid('navGrid', '#pager2', {edit: false, add: false, del: false, search: false});
 
-		$('#list2').jqGrid('navButtonAdd', '#pager2', {
-			id: 'ExportToCSV',
-			caption: '<i class="fas fa-save"></i>',
-			title: 'Экспорт в CSV',
-			buttonicon: 'none',
-			onClickButton: function () {
-				var gsr = $('#list2').jqGrid('getGridParam', 'selrow');
-				if (gsr) {
-					exportData('#list2');
-				} else {
-					$.notify('Сначала выберите строки!');
-				}
-			}
-		});
+//		$('#list2').jqGrid('navButtonAdd', '#pager2', {
+//			id: 'exportToCSV',
+//			caption: '<i class="fas fa-save"></i>',
+//			title: 'Экспорт в CSV',
+//			buttonicon: 'none',
+//			onClickButton: function () {
+//				var gsr = $('#list2').jqGrid('getGridParam', 'selrow');
+//				if (gsr) {
+//					exportData('#list2');
+//				} else {
+//					$.notify('Сначала выберите строки!');
+//				}
+//			}
+//		});
 	}
 
-	function exportData(id) {
-		var selRowIds = $(id).jqGrid('getGridParam', 'selarrrow');
+	function exportData(gridId) {
+//		var selRowIds = $(gridId).jqGrid('getGridParam', 'selarrrow');
+		var selRowIds = $(gridId).jqGrid('getDataIDs');
 		var obj = new Object();
 		obj.count = selRowIds.length;
 		if (obj.count) {
 			obj.items = new Array();
-			for (elem in selRowIds) {
-				obj.items.push($(id).getRowData(selRowIds[elem]));
+			for (id in selRowIds) {
+				obj.items.push($(gridId).getRowData(selRowIds[id]));
 			}
 			var json = JSON.stringify(obj);
 			JSONToCSVConvertor(json, '', 1);
@@ -246,13 +250,18 @@ $cfg = config::getInstance();
 		getListPlaces($('#sel_orgid :selected').val());
 	});
 
-	$('#sbt').click(function () {// обрабатываем отправку формы
+	$('#sbt').click(function () {
 		$.jgrid.gridUnload('#list2');
 		listEqByPlaces($('#sel_orgid :selected').val(), $('#splaces :selected').val(), $('#suserid :selected').val());
 		return false;
 	});
 
-	$('#btprint').click(function () {// обрабатываем отправку формы
+	$('#exportToCSV').click(function () {
+		exportData('#list2');
+		return false;
+	});
+
+	$('#btprint').click(function () {
 		var win = window.open('', 'printWindow3', '');
 		var styleElem = win.document.createElement('style');
 		styleElem.type = 'text/css';
@@ -272,6 +281,6 @@ $cfg = config::getInstance();
 		return false;
 	});
 
-	getListUsers($('#sel_orgid :selected').val(), curuserid);
+	getListUsers($('#sel_orgid :selected').val(), /*curuserid*/0);
 	getListPlaces($('#sel_orgid :selected').val(), 0);
 </script>

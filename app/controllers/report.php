@@ -55,25 +55,25 @@ class report extends controller {
 		$mode = $req->get('mode');
 		$where = '';
 		if ($curuserid != '-1') {
-			$where .= " and equipment.usersid = '$curuserid'";
+			$where .= " and eq.usersid = '$curuserid'";
 		}
 		if ($curplid != '-1') {
-			$where .= " and equipment.placesid = '$curplid'";
+			$where .= " and eq.placesid = '$curplid'";
 		}
 		if ($curorgid != '-1') {
-			$where .= " and equipment.orgid = '$curorgid'";
+			$where .= " and eq.orgid = '$curorgid'";
 		}
 		if ($os == 'true') {
-			$where .= " and equipment.os = 1";
+			$where .= " and eq.os = 1";
 		}
 		if ($repair == 'true') {
-			$where .= " and equipment.repair = 1";
+			$where .= " and eq.repair = 1";
 		}
 		if ($mode == 'true') {
-			$where .= " and equipment.mode = 1";
+			$where .= " and eq.mode = 1";
 		}
 		if ($tpo == '2') {
-			$where .= " and equipment.mode = 0  and equipment.os = 0";
+			$where .= " and eq.mode = 0 and eq.os = 0";
 		}
 		// Готовим ответ
 		$responce = new stdClass();
@@ -82,35 +82,16 @@ class report extends controller {
 		$responce->records = 0;
 		try {
 			$sql = <<<TXT
-select
-	places.name as plname,
-	res.*
-from places
-	inner join (
-		select
-			name as namenome,
-			eq.*
-		from nome
-			inner join (
-				select
-					equipment.id as eqid,
-					equipment.placesid as plid,
-					equipment.nomeid as nid,
-					equipment.buhname as bn,
-					equipment.cost as cs,
-					equipment.currentcost as curc,
-					equipment.invnum,
-					equipment.sernum,
-					equipment.shtrihkod,
-					equipment.mode,
-					equipment.os
-				from equipment
-				where equipment.active = 1 $where
-			) as eq on nome.id = eq.nid
-	) as res on places.id = res.plid
+select count(eq.id) as cnt
+from equipment eq
+	inner join places pl on pl.id = eq.placesid
+	inner join nome nm on nm.id = eq.nomeid
+	inner join group_nome gr on gr.id = nm.groupid
+	inner join users_profile u on u.usersid = eq.usersid
+where eq.active = 1 $where
 TXT;
-			$rows = db::prepare($sql)->execute()->fetchAll();
-			$count = ($rows) ? count($rows) : 0;
+			$row = db::prepare($sql)->execute()->fetch();
+			$count = ($row) ? $row['cnt'] : 0;
 		} catch (PDOException $ex) {
 			throw new dbexception('Не могу сформировать список по оргтехнике/помещениям/пользователю!(1)', 0, $ex);
 		}
@@ -133,38 +114,29 @@ TXT;
 				case 'mysql':
 					$sql = <<<TXT
 select
-	name as grname,
-	res2.*
-from group_nome
-	inner join (
-		select
-			places.name as plname,
-            res.*
-			from places
-				inner join (
-					select
-						name as namenome,
-						nome.groupid as grpid,
-						eq.*
-					from nome
-						inner join (
-							select
-								equipment.id as eqid,
-								equipment.placesid as plid,
-								equipment.nomeid as nid,
-								equipment.buhname as bn,
-								equipment.cost as cs,
-								equipment.currentcost as curc,
-								equipment.invnum,
-								equipment.sernum,
-								equipment.shtrihkod,
-								equipment.mode,
-								equipment.os
-							from equipment
-							where equipment.active = 1 $where
-						) as eq on nome.id = eq.nid
-				) as res on places.id = res.plid
-			) as res2 on group_nome.id = res2.grpid
+	gr.name as grname,
+	pl.name as plname,
+	nm.name as namenome,
+	nm.groupid as grpid,
+	eq.id as eqid,
+	eq.placesid as plid,
+	eq.nomeid as nid,
+	eq.buhname as bn,
+	eq.cost as cs,
+	eq.currentcost as curc,
+	eq.invnum,
+	eq.sernum,
+	eq.shtrihkod,
+	eq.mode,
+	eq.os,
+	eq.usersid,
+	u.fio
+from equipment eq
+	inner join places pl on pl.id = eq.placesid
+	inner join nome nm on nm.id = eq.nomeid
+	inner join group_nome gr on gr.id = nm.groupid
+	inner join users_profile u on u.usersid = eq.usersid
+where eq.active = 1 $where
 order by $sidx $sord
 limit $start, $limit
 TXT;
@@ -172,38 +144,29 @@ TXT;
 				case 'pgsql':
 					$sql = <<<TXT
 select
-	name as grname,
-	res2.*
-from group_nome
-	inner join (
-		select
-			places.name as plname,
-            res.*
-			from places
-				inner join (
-					select
-						name as namenome,
-						nome.groupid as grpid,
-						eq.*
-					from nome
-						inner join (
-							select
-								equipment.id as eqid,
-								equipment.placesid as plid,
-								equipment.nomeid as nid,
-								equipment.buhname as bn,
-								equipment.cost as cs,
-								equipment.currentcost as curc,
-								equipment.invnum,
-								equipment.sernum,
-								equipment.shtrihkod,
-								equipment.mode,
-								equipment.os
-							from equipment
-							where equipment.active = 1 $where
-						) as eq on nome.id = eq.nid
-				) as res on places.id = res.plid
-			) as res2 on group_nome.id = res2.grpid
+	gr.name as grname,
+	pl.name as plname,
+	nm.name as namenome,
+	nm.groupid as grpid,
+	eq.id as eqid,
+	eq.placesid as plid,
+	eq.nomeid as nid,
+	eq.buhname as bn,
+	eq.cost as cs,
+	eq.currentcost as curc,
+	eq.invnum,
+	eq.sernum,
+	eq.shtrihkod,
+	eq.mode,
+	eq.os,
+	eq.usersid,
+	u.fio
+from equipment eq
+	inner join places pl on pl.id = eq.placesid
+	inner join nome nm on nm.id = eq.nomeid
+	inner join group_nome gr on gr.id = nm.groupid
+	inner join users_profile u on u.usersid = eq.usersid
+where eq.active = 1 $where
 order by $sidx $sord
 offset $start limit $limit
 TXT;
@@ -214,8 +177,19 @@ TXT;
 			foreach ($arr as $row) {
 				$responce->rows[$i]['id'] = $row['eqid'];
 				$responce->rows[$i]['cell'] = [
-					$row['eqid'], $row['plname'], $row['namenome'], $row['grname'], $row['invnum'], $row['sernum'], $row['shtrihkod'], $row['mode'], $row['os'], $row['bn'],
-					$row['cs'], $row['curc']
+					$row['eqid'], // Id
+					$row['plname'], // Помещение
+					$row['fio'], // Ответственный
+					$row['grname'], // Группа номенклатуры
+					$row['namenome'], // Наименование
+					$row['invnum'], // Инв.№
+					$row['sernum'], // Сер.№
+					$row['shtrihkod'], // Штрихкод
+					$row['mode'], // Списан
+					$row['os'], // ОС
+					$row['bn'], // Бух.имя
+					//$row['cs'],
+					//$row['curc'],
 				];
 				$i++;
 			}

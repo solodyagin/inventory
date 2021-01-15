@@ -44,7 +44,7 @@ if (!$user->isLogged()):
 					<div class="js-preview userpic__preview thumbnail">
 						<img width="100%" src="photos/<?= $photo; ?>">
 					</div>
-					<div class="btn btn-success js-fileapi-wrapper">
+					<div class="btn btn-success btn-xs js-fileapi-wrapper">
 						<div class="js-browse">
 							<span class="btn-txt">Сменить фото</span>
 							<input type="file" name="filedata">
